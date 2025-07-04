@@ -2,8 +2,8 @@ Week 2
 
 25_7_6 -> 25_7_12
 
-2__DATA_TYPE__ 
-3__OPERAION__
+DataType
+Operation
 
 这周了解所有的数据类型:
 

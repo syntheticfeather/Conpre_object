@@ -1,5 +1,5 @@
-
-public class L {
+package JavaStudy.DataType;
+ class L {
 
     public void test() {
         System.out.println("for int");
@@ -31,3 +31,4 @@ public class L {
     }
 
 }
+

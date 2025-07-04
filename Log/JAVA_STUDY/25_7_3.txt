@@ -2,7 +2,7 @@ Week 1
 
 25_7_3 -> 25_7_5
 
-__HELLO_WORLD__
+HelloWorld
     程序员的经典起手：
         配置好开发环境
         学习java的基础框架

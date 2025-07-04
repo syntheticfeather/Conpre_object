@@ -1,5 +1,5 @@
-
-public class L {
+package JavaStudy.Operation;
+class L {
 
     public void test() {
         int a = 2;
