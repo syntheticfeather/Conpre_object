@@ -1,5 +1,5 @@
 package JavaStudy.If;
- class L {
+public  class L {
 
     public void test(int x) {
         if (x > 0) {

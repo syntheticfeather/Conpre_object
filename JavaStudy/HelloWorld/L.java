@@ -1,5 +1,5 @@
 package JavaStudy.HelloWorld;
-class L {
+public class L {
 
     public void test() {
         System.out.println("Hello World");// 自带\n

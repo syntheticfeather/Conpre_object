@@ -1,5 +1,5 @@
 package JavaStudy.Array;
-class Array {
+public class Array {
 
     public void test() {
     }

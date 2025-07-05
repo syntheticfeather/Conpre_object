@@ -1,3 +1,25 @@
-If 
+Week 3
+
+25_7_13 -> 25_7_19
+
+If-else
+    if 
+    else if
+    else
+    if ()
+    {
+        if ()
+    }
+Switch
+
 Loop
+    for ()
+    while ()
+
+
 Array
+    int[] arr = new int[size];
+    arr[index] = value;
+    int[][] arr = new int[rows][cols];
+
+2.3.7 and 2.4.2 -> 2.4.7

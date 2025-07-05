@@ -1,5 +1,5 @@
 package JavaStudy.DataType;
- class L {
+public class L {
 
     public void test() {
         System.out.println("for int");
