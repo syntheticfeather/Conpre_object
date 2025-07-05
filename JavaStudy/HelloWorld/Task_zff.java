@@ -1,6 +1,6 @@
 package JavaStudy.HelloWorld;
 
-public class Task {
+public class Task_zff{
 
     public static void main(String[] args) {
         // 输出 "Hello World"
