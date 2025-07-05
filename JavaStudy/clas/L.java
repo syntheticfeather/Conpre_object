@@ -25,6 +25,7 @@ class man {
     final int ID;
     private String name;
     private String gender;
+    private int[] score;
 
     public man(int age, String name, String gender, int ID) {
         // 函数名与类名相同，构造函数。
@@ -43,6 +44,10 @@ class man {
         System.out.println("性别: " + gender);
         // 该局的函数是类中的辅助函数，不向外界暴露。
         System.out.println("出生年份" + GetBirthYear());
+        for(int s: this.score)
+        {
+            System.out.println(s);
+        }
     }
 
     // 对必要的修改情况，仍是书写 public 函数
@@ -56,7 +61,6 @@ class man {
         return 2025 - age;
     }
 
-    private int[] score;
     // 可变变量的传入
     // 与传入数组的差异
     // 两者不算方法的重载，int... 是一种更方便的书写方式
