@@ -1,11 +1,29 @@
 package JavaStudy.clas;
+
 public class L {
 
     public void test() {
         man me = new man(19, "gcc", "Male", 1000);
         // me.ID = 5;// 这句将报错，虽然是public 但是 final
         // me.age = 5;// 这句将报错，age为private，不能直接修改
+        me.RecordScore(100, 90, 80, 70, 60);
         me.show();
+        Animal.printHabitat();
+        // 只是用上层类型的方法，所以可以统一用Animal调用        
+        Animal dog = new dog();
+        Animal cat = new cat();
+        cat c = new cat();
+        // 我们要使用子类新增的功能，所以只能用Tinydog来调用
+        tinyDog tinyDog = new tinyDog();
+        // 多态
+        dog.eat();
+        cat.eat();
+        dog.play(); 
+        cat.play();       
+        c.ha(); 
+        tinyDog.woof();
+        tinyDog.need();
+        tinyDog.fly();  
     }
 
     public static void main(String[] args) {
@@ -71,4 +89,110 @@ class man {
     // public void RecordScore(int[] score) {
     //     this.score = score;
     // }
+}
+
+
+
+interface Animal {
+    // 
+    String LOCATION  = "Earth"; // 接口中的变量默认为 public static final
+    static void printHabitat() {
+        System.out.println("location: " + Animal.LOCATION);
+    }
+    public void eat();
+    public void sleep();
+    public void woof();
+    default void play() {
+        System.out.println("Animal is playing.");
+    }
+}
+
+interface Flyable {
+    public void fly();
+    public boolean  isFlyAble();
+}
+    
+
+class dog implements Animal{
+    // 实现接口
+    protected int life = 10;
+    @Override
+    public void eat() {
+        System.out.println("Dog is eating.");
+    }
+
+    @Override
+    public void sleep() {
+        System.out.println("Dog is sleeping.");
+    }
+
+    @Override
+    public void woof() {
+        System.out.println("Dog is barking.");
+    }
+}
+
+class tinyDog extends dog implements Flyable {
+    // 继承父类
+    // 又实现接口
+
+    private int age = 1;
+    @Override
+    public void woof() {
+        System.out.println("Tiny dog is barking softly.");
+    }
+
+    @Override
+    public void play() {
+        System.out.println("Tiny dog is playing with a small ball.");
+    }
+
+    public void need()
+    {
+        System.out.println("Tiny dog needs a snack.");
+    }
+
+    public void theRenmainLife()
+    {
+        System.out.println("Remaining life: " + (life - age));
+    }
+
+    public void fly()
+    {
+        if (isFlyAble())
+            System.out.println("Tiny dog is flying. really?");    
+        else    
+            System.out.println("Tiny dog is not able to fly.");
+    }
+
+    public boolean  isFlyAble()
+    {
+        return false;
+    }
+}
+
+class cat implements Animal {
+    @Override
+    public void eat() {
+        System.out.println("Cat is eating.");
+    }
+
+    @Override
+    public void sleep() {
+        System.out.println("Cat is sleeping.");
+    }
+
+    @Override
+    public void woof() {
+        System.out.println("Cat does not bark.");
+    }
+    @Override
+    public void play() {
+        System.out.println("Cat is playing with toy.");
+    }
+
+    public void ha()
+    {
+        System.out.println("Haaaaaaaaaaaaaaa-");
+    }
 }

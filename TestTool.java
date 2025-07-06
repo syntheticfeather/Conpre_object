@@ -1,5 +1,6 @@
+import JavaStudy.clas.L;
+import java.util.HashMap;
 import java.util.Random;
-
 public class TestTool {
 
     Random ran = new Random();
@@ -30,5 +31,19 @@ public class TestTool {
             arr[i] = ran.nextDouble() * (upper - lower) + lower;
         }
         return arr;
+    }
+
+
+    public static void main(String[] args) {
+        L l = new L();
+        l.test();
+        JavaStudy.DataType.L l2 = new JavaStudy.DataType.L();
+        HashMap<String, Integer> map = new HashMap<>()
+        {
+            {
+                put("two", 2 );
+            }
+        };
+        map.put("one", 1);
     }
 }
