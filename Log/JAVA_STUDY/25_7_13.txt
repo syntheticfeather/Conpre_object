@@ -2,6 +2,12 @@ Week 3
 
 25_7_13 -> 25_7_19
 
+if
+Loop
+Array
+
+2.3.7 and 2.4.2 -> 2.4.7
+
 If-else
     if 
     else if
@@ -21,5 +27,3 @@ Array
     int[] arr = new int[size];
     arr[index] = value;
     int[][] arr = new int[rows][cols];
-
-2.3.7 and 2.4.2 -> 2.4.7
