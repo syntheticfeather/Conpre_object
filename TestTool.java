@@ -54,11 +54,10 @@ class Task {
 
     public void input() {
         Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
         try (FileWriter fw = new FileWriter(".\\JavaStudy\\FileOI\\Input.txt")) {
-            while (true) {
+            for (int i = 0; i < n; i++) {
                 String str = sc.nextLine();
-                if (str.isEmpty())
-                    break;
                 fw.write(str.replace(" ", "_") + "\n");
             }
         } catch (Exception e) {

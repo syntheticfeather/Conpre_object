@@ -9,6 +9,8 @@ package JavaStudy.FileOI;
  *          学号_姓名_投诉时间(YYYY_MM_DD)_投诉内容
  *      同学们通过控制台输入。
  *      输入格式为:
+ *          第一行 n 输入的行数
+ * z        接下来 n 行,每行输入一个投诉信息
  *          学号 姓名(只有英文名) 投诉时间(YYYY MM DD) 投诉内容 (投诉内容只有英文)
  *          (中间都以一个空格区分,并且前后不会有多余的空格)
  *
@@ -65,6 +67,7 @@ class Task {
 }
 
 // 测试输出案例
+// 2
 // 2021001 Alice 2023 12 01 Professor_late_to_class
 // 2021005 Eva 2023 12 02 No_TA_session
 

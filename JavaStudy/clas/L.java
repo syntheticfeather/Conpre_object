@@ -1,4 +1,4 @@
-package JavaStudy.clas;
+package JavaStudy.Clas;
 
 public class L {
 
