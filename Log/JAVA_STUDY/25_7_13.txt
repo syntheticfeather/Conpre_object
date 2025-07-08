@@ -5,7 +5,7 @@ Week 3
 if
 Loop
 Array
-String StringBuilder
+String StringBuilder StringJoiner
 FILE IO
 
 2.3.7 and 2.4.2 -> 2.4.7
@@ -32,3 +32,37 @@ Array
     int[] arr = new int[size];
     arr[index] = value;
     int[][] arr = new int[rows][cols];
+
+
+String
+    构造方法
+    查找子字符(串)方法
+    长度查询
+    替换方法
+    如何判断是否为空或者全为空白字符
+    怎么直接分割字符串
+    怎么取出子串
+    怎么从String变成其他类型(int)的数据
+    反转字符串
+
+StringBuilder
+    构造方法
+    append()方法
+    insert()方法
+    toString()方法
+    链式操作是如何做到的
+    怎么扩容的？
+    
+StringJoiner
+    构造方法
+    构造方法中带前后字符串的，是什么时候加入前后字符串的
+    add()方法
+    toString()方法
+    多个joiner直接merge怎么做到的
+
+FILE IO
+    读文件
+    写文件
+    追加文件
+    关闭文件
+    try-catch-finally结构 (干嘛的)
