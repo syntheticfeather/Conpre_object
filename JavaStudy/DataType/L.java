@@ -28,6 +28,17 @@ public class L {
     public static void main(String[] args) {
         L ins = new L(); //创建对象
         ins.test();
+
+        int n=3300;
+        int y=100 + (++n);
+        int x=100 + (n++);
+        System.out.println(y);//3401
+        System.out.println(x);//3401
+
+        double a = 1.0 / 10;
+        double b = 1 - 9.0 / 10;
+        System.out.println(a);
+        System.out.println(b);//a!=b
     }
 
 }
