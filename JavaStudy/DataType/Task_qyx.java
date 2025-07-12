@@ -33,12 +33,12 @@ public class Task_qyx {
         System.out.println("5.0 / 2 = " + doubleDivision);
         System.out.println("5 / 2 + 5.0 / 2 = " + result);
         
-        System.out.println("\n类型自动提升详细解释：");
-        System.out.println("1. 5 / 2 中，两个操作数均为int类型，因此执行整数除法，结果为2（小数部分被截断）");
-        System.out.println("2. 5.0 / 2 中，5.0是double类型，2是int类型");
-        System.out.println("   - 根据Java类型提升规则，int类型的2会自动提升为double类型（2.0）");
-        System.out.println("   - 执行double类型除法，结果为2.5");
-        System.out.println("3. 最终表达式为 2 + 2.5，由于2被赋值给double变量，会转换为2.0");
+        System.out.println("\n类型自动提升详细解释,");
+        System.out.println("1. 5 / 2 中,两个操作数均为int类型,因此执行整数除法,结果为2(小数部分被截断)");
+        System.out.println("2. 5.0 / 2 中,5.0是double类型,2是int类型");
+        System.out.println("   - 根据Java类型提升规则,int类型的2会自动提升为double类型(2.0)");
+        System.out.println("   - 执行double类型除法,结果为2.5");
+        System.out.println("3. 最终表达式为 2 + 2.5,由于2被赋值给double变量,会转换为2.0");
         System.out.println("   - 2.0 + 2.5 = 4.5");
     }
 
