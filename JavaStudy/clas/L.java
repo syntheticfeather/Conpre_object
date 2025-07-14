@@ -25,14 +25,39 @@ public class L {
     // tinyDog.need();
     // tinyDog.fly();
     // }
-
     public static void main(String[] args) {
         var ins = new L();
+        zzz z = new zzz();
+        z.test2();
     }
 
 }
 
+class zi {
+
+    protected void say2() {
+        System.out.println("say something");
+    }
+
+    public void test() {
+        say();
+    }
+
+    private void say() {
+        System.out.println("say something");
+    }
+}
+
+class zzz extends zi {
+
+    public void test2() {
+        test();
+        say2();
+    }
+}
+
 class man {
+
     // 未标明访问权限，默认为public
     // me.age = 26; // 可直接修改成员变量的值，很显然不太好
     // 所以全部设置为private
@@ -88,6 +113,7 @@ class man {
 }
 
 interface Animall {
+
     //
     String LOCATION = "Earth"; // 接口中的变量默认为 public static final
 
@@ -107,12 +133,14 @@ interface Animall {
 }
 
 interface Flyable {
+
     public void fly();
 
     public boolean isFlyAble();
 }
 
 class dog implements Animall {
+
     // 实现接口
     protected int life = 10;
 
@@ -157,10 +185,11 @@ class tinyDog extends dog implements Flyable {
     }
 
     public void fly() {
-        if (isFlyAble())
+        if (isFlyAble()) {
             System.out.println("Tiny dog is flying. really?");
-        else
+        } else {
             System.out.println("Tiny dog is not able to fly.");
+        }
     }
 
     public boolean isFlyAble() {
@@ -169,6 +198,7 @@ class tinyDog extends dog implements Flyable {
 }
 
 class cat implements Animall {
+
     @Override
     public void eat() {
         System.out.println("Cat is eating.");

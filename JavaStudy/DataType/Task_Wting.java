@@ -28,7 +28,8 @@ public class Task_Wting {
     System.out.println(PI);
     String s="Abondance";
     System.out.println(s);
-    int b=1111111;
+    //int b=1111111修正
+    Byte b=0b1111111;
     System.out.println(b);
 
     //任务四：溢出试验
