@@ -1,4 +1,5 @@
-public class Task_zff {
+package JavaStudy.Operation;
+public class Task_Zff {
     //计算两数之和
     public static int getSum(int x,int y){
         return x+y;
