@@ -81,18 +81,7 @@ public class Task_Wting {
         
     }
     //任务五：
-/*
-题目描述：
-    小明要当智能人工，想让人工智能帮忙
-    根据用户输入匹配预设回复规则：
-    1. 输入"你好"/"hello" → "您好，请问有什么可以帮助您？"
-    2. 输入"价格"且包含"优惠" → "当前周年庆全场8折"
-    3. 输入"退货"且金额＞500 → "请联系VIP客服专线400-xxxx"
-    4. 输入"?"且长度＞10 → "您的问题已记录，稍后回复"
-    5. 其他情况 → "请详细描述您的问题"
-    要求实现复合条件判断
-*/
-   public static String answer(String input,double amount) {
+    public static String answer(String input,double amount) {
        if("你好".equals(input) || "hello".equals(input)){
             return "您好，请问有什么可以帮助您？";
        }
