@@ -145,11 +145,11 @@ public class Task_Zff {
             }
         }
     }
-    double[][] result=new double[n][n];
-    for(int i=0;i<n;i++){
-        System.arraycopy(augmented[i], n, result[i], 0, n);
-    }
-    return result;
+        double[][] result=new double[n][n];
+        for(int i=0;i<n;i++){
+            System.arraycopy(augmented[i], n, result[i], 0, n);
+        }
+        return result;
     }
     public static void main(String[] args) {
         int[] sq1=new int[]{3,5,7,9};
