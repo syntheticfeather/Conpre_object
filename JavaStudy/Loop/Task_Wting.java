@@ -61,7 +61,7 @@ public class Task_Wting{
                         if(d==a||d==b||d==c){
                             continue;
                         }
-                        System.out.println(""+a+""+b+""+c+""+d);
+                        System.out.println(a+","+b+","+c+","+d);
                     }
                 }
             }
