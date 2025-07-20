@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的博客网站</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- 顶部区域 -->
+    <header class="header">
+        <!-- 构建导航区域 -->
+        <div class="container">
+            <!-- logo -->
+            <div class="logo">
+                <i class="fas fa-blog"></i>
+                <span>我的博客网站</span>
+            </div>
+            <!-- 设置导航栏 -->
+            <nav class="navbar">
+                <ul>
+                    <li><a href="#" class="active"><i class="fas fa-home"></i>首页</a></li>
+                    <li><a href="#"><i class="fas fa-folder"></i>分类</a></li>
+                    <li><a href="#"><i class="fas fa-tags"></i>标签</a></li>
+                    <li><a href="#"><i class="fas fa-user"></i>关于</a></li>
+                </ul>
+            </nav>
+            <!-- 搜索栏 -->
+            <div class="search-bar">
+                <input type="text" placeholder="搜索需要的内容">
+                <button><i class="fas fa-search"></i></button>
+            </div>
+            <div class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+    <!-- 移动菜单覆盖层 -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- 移动端菜单容器 -->
+    <div class="mobile-menu-container" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <div class="mobile-menu-title">导航菜单</div>
+            <button class="mobile-close-btn" id="closeMobileMenu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <!-- 移动端搜索框 -->
+        <div class="search-bar">
+            <input type="text" placeholder="搜索...">
+            <button type="button">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+        <nav class="mobile-navbar">
+            <ul>
+                <li><a href="#" class="active"><i class="fas fa-home"></i>首页</a></li>
+                <li><a href="#"><i class="fas fa-folder"></i>分类</a></li>
+                <li><a href="#"><i class="fas fa-tags"></i>标签</a></li>
+                <li><a href="#"><i class="fas fa-user"></i>关于</a></li>
+                <li><a href="#"><i class="fas fa-envelope"></i>联系</a></li>
+                <li><a href="#"><i class="fas fa-star"></i>收藏</a></li>
+            </ul>
+        </nav>
+    </div>
+
+
+    <!-- 主要内容区 -->
+    <main class="main-content">
+        <div class="container">
+            <div class="blog-posts">
+                <!-- 文章 -->
+                <article class="post">
+                    <!-- 头部 -->
+                    <div class="post-header">
+                        <h2 class="post-title">深入理解CSS Flexbox布局</h2>
+                        <div class="post-meta">
+                            <span><i class="fas fa-calendar"></i> 2025-07-20</span>
+                            <span><i class="fas fa-user"></i> 张三</span>
+                            <span><i class="fas fa-comments"></i> 24条评论</span>
+                        </div>
+                    </div>
+                    <!-- 文章封面 -->
+                    <div class="post-thumbnail">
+                        <img src="https://images.unsplash.com/photo-1547658719-da2b51169166?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+                            alt="CSS FlexBox">
+                    </div>
+                    <!-- 文章内容简介 -->
+                    <div class="post-content">
+                        <p>Flexbox是CSS3中一种强大的布局方式，它能够更有效地对容器中的项目进行排列、对齐和分配空间...</p>
+                    </div>
+                    <!-- 文章底部跳转信息 -->
+                    <div class="post-footer">
+                        <a href="#" class="read-more">阅读全文<i class="fas fa-arrow-right"></i></a>
+                        <!-- 分类栏 -->
+                        <div class="post-tags">
+                            <span>CSS</span>
+                            <span>布局</span>
+                            <span>前端</span>
+                        </div>
+                    </div>
+                </article>
+                <article class="post">
+                    <!-- 头部 -->
+                    <div class="post-header">
+                        <h2 class="post-title">React hooks 完全指南</h2>
+                        <div class="post-meta">
+                            <span><i class="fas fa-calendar"></i> 2025-07-20</span>
+                            <span><i class="fas fa-user"></i> 李liu</span>
+                            <span><i class="fas fa-comments"></i> 90条评论</span>
+                        </div>
+                    </div>
+                    <!-- 文章封面 -->
+                    <div class="post-thumbnail">
+                        <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+                            alt="CSS FlexBox">
+                    </div>
+                    <!-- 文章内容简介 -->
+                    <div class="post-content">
+                        <p>React hooks 是 React 16.8 版本引入的新特性，它可以帮助我们在不编写 class 的情况下使用 state 和其他 React 特性。本文将详细介绍 React
+                            hooks 的使用方法，并通过实例讲解其背后的原理。</p>
+                    </div>
+                    <!-- 文章底部跳转信息 -->
+                    <div class="post-footer">
+                        <a href="#" class="read-more">阅读全文<i class="fas fa-arrow-right"></i></a>
+                        <!-- 分类栏 -->
+                        <div class="post-tags">
+                            <span>React</span>
+                            <span>hooks</span>
+                            <span>前端</span>
+                        </div>
+                    </div>
+                </article>
+                <!-- 更多文章    -->
+            </div>
+            <!-- 侧边栏区 -->
+            <aside class="sidebar">
+                <div class="widget about-widget">
+                    <!--  -->
+                    <div class="widget-title">
+                        <h3><i class="fas fa-user"></i>关于我</h3>
+                    </div>
+                    <div class="widget-content">
+                        <div class="avatar">
+                            <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+                                alt="作者头像">
+                        </div>
+                        <p>前端开发工程师，热爱分享技术知识和经验。专注于React、Vue和CSS新特性。</p>
+                        <!-- 跳转其他页 -->
+                        <div class="social-links">
+                            <a href="#"><i class="fab fa-github"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-linkedin"></i></a>
+                            <a href="#"><i class="fab fa-weibo"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="widget popular-posts">
+                    <div class="widget-title">
+                        <h3><i class="fas fa-fire"></i>热门文章</h3>
+                    </div>
+                    <div class="widget-content">
+                        <ul>
+                            <li>
+                                <a href="#">
+                                    <div class="popular-post-thumb">
+                                        <img src="images/react.jpg" alt="React">
+                                    </div>
+                                    <div class="popular-post-content">
+                                        <h4>React hooks 完全指南</h4>
+                                        <span>2025-7-20</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <div class="popular-post-thumb">
+                                        <img src="images/vue.jpg" alt="Vue">
+                                    </div>
+                                    <div class="popular-post-content">
+                                        <h4>Vue 3.0 新特性</h4>
+                                        <span>2025-7-20</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <!-- 更多热门文章 -->
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="widget categories">
+                    <div class="widget-title">
+                        <h3><i class="fas fa-folder"></i>分类</h3>
+                    </div>
+                    <div class="widget-content">
+                        <ul>
+                            <li><a href="#">javascript</a></li>
+                            <li><a href="#">CSS</a></li>
+                            <li><a href="#">React</a></li>
+                            <li><a href="#">Vue</a></li>
+                            <li><a href="#">Node.js</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-widget">
+                    <h3>快速链接</h3>
+                    <ul>
+                        <li><a href="#">首页</a></li>
+                        <li><a href="#">关于我</a></li>
+                        <li><a href="#">文章分类</a></li>
+                        <li><a href="#">联系我</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-widget">
+                <h3>订阅更新</h3>
+                <p>订阅获取最新文章通知</p>
+                <form class="subscribe-form">
+                    <input type="email" placeholder="输入您的邮箱">
+                    <button type="submit">订阅</button>
+                </form>
+            </div>
+            <!-- 其他页脚跳转信息 -->
+        </div>
+        <div class="copyright">
+            <p>&copy; 2023 我的技术博客. 保留所有权利</p>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>

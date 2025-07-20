@@ -1,0 +1,50 @@
+my-frontend-project/
+├── public/                   # 静态资源（不经过构建）
+│   ├── index.html            # 主 HTML 入口
+│   ├── favicon.ico           # 网站图标
+│   └── robots.txt            # SEO 配置文件
+│
+├── src/                      # 核心源代码
+│   ├── assets/               # 静态资产（构建时会处理）
+│   │   ├── images/           # 图片
+│   │   ├── fonts/            # 字体
+│   │   └── styles/           # 全局样式（如 reset.css）
+│   │
+│   ├── components/           # 通用组件（可复用）
+│   │   ├── Button/
+│   │   │   ├── Button.jsx    # 组件逻辑
+│   │   │   ├── Button.css    # 组件样式
+│   │   │   └── index.js      # 统一导出
+│   │   └── ...               # 其他组件（如 Card, Navbar）
+│   │
+│   ├── layouts/              # 页面布局组件（如 Header+Footer 组合）
+│   │
+│   ├── pages/                # 路由页面组件（与路由一一对应）
+│   │   ├── HomePage.jsx      
+│   │   ├── AboutPage.jsx
+│   │   └── User/
+│   │       ├── ProfilePage.jsx
+│   │       └── SettingsPage.jsx
+│   │
+│   ├── hooks/                # 自定义 React Hooks
+│   ├── contexts/             # Context API 全局状态
+│   ├── store/                # 状态管理（Redux/Zustand）
+│   │   ├── slices/           # Redux Toolkit 切片
+│   │   └── index.js          # Store 配置
+│   │
+│   ├── utils/                # 工具函数（日期格式化、请求封装等）
+│   ├── services/             # API 请求层（对接后端接口）
+│   │   └── api.js            # Axios 实例封装
+│   │
+│   ├── routes/               # 路由配置（React Router 等）
+│   ├── App.jsx               # 根组件
+│   └── index.js              # 应用入口（渲染根组件）
+│
+├── tests/                    # 测试文件
+│   ├── unit/                 # 单元测试
+│   └── e2e/                  # 端到端测试（Cypress）
+│
+├── .gitignore                # Git 忽略规则
+├── package.json              # 依赖和脚本
+├── README.md                 # 项目说明
+└── vite.config.js            # 构建工具配置（Webpack/Vite 等）
