@@ -151,9 +151,7 @@ public class Task_qyx {
             int n = A.length;
             double[][] augmented = new double[n][2 * n];
             for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    augmented[i][j] = A[i][j];
-                }
+                System.arraycopy(A[i], 0, augmented[i], 0, n);
                 augmented[i][n + i] = 1;
             }
             return augmented;
