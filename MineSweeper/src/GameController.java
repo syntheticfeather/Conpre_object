@@ -27,6 +27,7 @@ public class GameController {
         cell.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                //  @wt
                 // 判断游戏状态
 
                 // 左右键分别处理
@@ -38,12 +39,14 @@ public class GameController {
     // 处理左键点击（翻开格子）
     private void handleLeftClick(int row, int col) {
         // TODO: 实现翻开逻辑
+        // @wt
         gameEngine.revealCell(row, col);
     }
 
     // 处理右键点击（标记旗子）
     private void handleRightClick(int row, int col) {
         // TODO: 实现旗子逻辑
+        // @wt
         gameEngine.toggleFlag(row, col);
     }
 

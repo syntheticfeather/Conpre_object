@@ -4,6 +4,8 @@ package MineSweeper.src;
 import MineSweeper.src.Enums.Difficulty;
 import MineSweeper.src.Enums.GameState;
 
+// @qyx
+
 public class GameEngine {
 
     private Difficulty difficulty;
@@ -50,17 +52,19 @@ public class GameEngine {
     }
 
     // 生成地雷位置
-    private void generateMines() {
+    private void generateMines() {        
         // TODO: 随机生成地雷位置
     }
 
     // 翻开格子
     public void revealCell(int row, int col) {
+        // @wt
         // TODO: 实现翻开逻辑（包括递归翻开空白区域）
     }
 
     // 点击已经翻开的数字格
     public void clickNumber(int row, int col) {
+        // @qyx
         // TODO: 实现点击数字逻辑（判断，符合的翻开周围格子）
     }
 
@@ -71,6 +75,7 @@ public class GameEngine {
 
     // 标记/取消标记格子
     public void toggleFlag(int row, int col) {
+        // @wt
         // TODO: 切换旗子状态
     }
 

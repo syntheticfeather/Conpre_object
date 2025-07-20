@@ -14,6 +14,8 @@ import javax.swing.JPanel;
 
 import MineSweeper.src.Enums.Difficulty;
 
+// @zff qyx
+
 public class GameUI {
 
     private JFrame mainFrame;
@@ -101,9 +103,9 @@ public class GameUI {
         private JLabel row, col, mineCount;
 
         public StartPanel() {
-            if (gameEngine == null) {
-                gameEngine = new GameEngine();
-            }
+            // if (gameEngine == null) {
+            //     gameEngine = new GameEngine();
+            // }
             setLayout(null);
             // TODO: 构建开始界面UI
             JPanel panel = new JPanel(null);
@@ -113,21 +115,21 @@ public class GameUI {
 
             difficultyCombo = new JComboBox<>(Difficulty.values());
             startButton = new JButton("开始游戏");
-            row = new JLabel("行数:" + gameEngine.getRows());
-            col = new JLabel("列数:" + gameEngine.getCols());
-            mineCount = new JLabel("雷数:" + gameEngine.getMineCount());
+            // row = new JLabel("行数:" + gameEngine.getRows());
+            // col = new JLabel("列数:" + gameEngine.getCols());
+            // mineCount = new JLabel("雷数:" + gameEngine.getMineCount());
             // 上下布局
             difficultyCombo.setBounds(150, 50, 100, 30);
             startButton.setBounds(150, 200, 100, 30);
-            row.setBounds(120 ,100, 60, 30);
-            row.setBounds(220 ,100, 60, 30);
-            mineCount.setBounds(160, 150, 80, 30);
+            // row.setBounds(120 ,100, 60, 30);
+            // row.setBounds(220 ,100, 60, 30);
+            // mineCount.setBounds(160, 150, 80, 30);
 
             panel.add(difficultyCombo);
             panel.add(startButton);
-            panel.add(row);
-            panel.add(col);
-            panel.add(mineCount);
+            // panel.add(row);
+            // panel.add(col);
+            // panel.add(mineCount);
 
             // 为 startbutton 设置图片
             ImageIcon icon = new ImageIcon("");
@@ -150,7 +152,7 @@ public class GameUI {
 
     // 内部类：游戏界面
     class GamePanel extends JPanel {
-
+        // @qyx
         private JButton newGameButton;
         private JButton backButton;
         private JLabel flagCountLabel;
@@ -196,7 +198,11 @@ public class GameUI {
         private JButton backButton;
 
         public EndPanel() {
+            // @qyx
             // TODO: 构建结束界面UI
+
+            // 是不是最佳时间
+
         }
 
         public void setTime(int seconds) {
