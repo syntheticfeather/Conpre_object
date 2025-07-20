@@ -9,21 +9,21 @@ public class Task_qyx {
 
     // 温度单位转换
     public static double fahrenheitToCelsius(double f) {
-      double g=(f - 32) * 5/9
+      double g=(f - 32) * 5/9;
         return g;
     }
 
     // 三维空间两点欧氏距离平方
     public static double euclideanDistanceSquared(double x1, double y1, double z1, 
                                                    double x2, double y2, double z2) {
-      double x=Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2) + Math.pow(z1 - z2, 2)
+      double x=Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2) + Math.pow(z1 - z2, 2);
         return x;
     }
 
     // 垂直上抛位移计算
     public static double verticalDisplacement(double v0, double t) {
         final double g = 9.8;
-        double a=v0 * t - g * Math.pow(t, 2) / 2
+        double a=v0 * t - g * Math.pow(t, 2) / 2;
         return a;
     }
 
