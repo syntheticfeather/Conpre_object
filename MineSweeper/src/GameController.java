@@ -23,13 +23,13 @@ public class GameController {
     }
 
     // 为格子添加鼠标监听器
-    public void setupCellListeners(JButton cell, int row, int col) {
+    public static void setupCellListeners(JButton cell, int row, int col) {
         cell.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+
                 //  @wt
                 // 判断游戏状态
-
                 // 左右键分别处理
                 // 更新游戏状态
             }

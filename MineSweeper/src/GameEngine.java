@@ -5,7 +5,6 @@ import MineSweeper.src.Enums.Difficulty;
 import MineSweeper.src.Enums.GameState;
 
 // @qyx
-
 public class GameEngine {
 
     private Difficulty difficulty;
@@ -52,7 +51,7 @@ public class GameEngine {
     }
 
     // 生成地雷位置
-    private void generateMines() {        
+    private void generateMines() {
         // TODO: 随机生成地雷位置
     }
 
@@ -119,5 +118,18 @@ public class GameEngine {
 
     public Difficulty getDifficulty() {
         // TODO
+    }
+
+    // 按名称获取对应位置的格子状态
+    public int getGridState(String name, int row, int col) {
+        int[][] res = null;
+        switch (name) {
+            case "field" -> res = field;
+            case "visit" -> res = visit;
+            case "state" -> res = state;
+            case "flag" -> res = flag;
+            default -> throw new AssertionError();
+        }
+        return res[row][col];
     }
 }
