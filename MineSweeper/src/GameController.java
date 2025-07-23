@@ -23,15 +23,26 @@ public class GameController {
     }
 
     // 为格子添加鼠标监听器
-    public static void setupCellListeners(JButton cell, int row, int col) {
+    public static void setupCellListeners(JButton cell, int row, int col,GameEngine gameEngine, GameUI gameUI){
         cell.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-
                 //  @wt
                 // 判断游戏状态
                 // 左右键分别处理
                 // 更新游戏状态
+                if(gameEngine.getGameState()!=GameState.PLAYING){
+                    return;
+                }
+                GameController controller=new GameController(gameUI);
+                    controller.setGameEngine(gameEngine);
+                if(SwingUtilities.isLeftMouseButton(e)){
+                    controller.handleLeftClick(row,col);
+                }else if(SwingUtilities.isRightMouseButton(e)){
+                    controller.handleRightClick(row,col);
+                }
+                gameUI.getGamePanel().updateGameBoard();
+                controller.checkGameState();
             }
         });
     }
@@ -40,14 +51,27 @@ public class GameController {
     private void handleLeftClick(int row, int col) {
         // TODO: 实现翻开逻辑
         // @wt
+        if(gameEngine.visit[row][col]==1||gameEngine.flag[row][col]==1){
+            return;
+        }
         gameEngine.revealCell(row, col);
+        if(gameEngine.getGridState("state",row,col)==1){
+            gameEngine.getGameState(GameState.LOST);//失败处理，直接弹出失败界面？
+        }else{
+            gameEngine.checkWinCondition();
+        }
     }
 
     // 处理右键点击（标记旗子）
     private void handleRightClick(int row, int col) {
         // TODO: 实现旗子逻辑
         // @wt
+        if(gameEngine.getGridState("visit", row, col)==1){
+            return;
+        }
         gameEngine.toggleFlag(row, col);
+        gameUI.getGamePanel().updateFlagCount(gameEngine.getRemainingFlags());
+        gameEngine.checkWinCondition();
     }
 
     // 检查并更新游戏状态
