@@ -58,7 +58,25 @@ public class GameEngine {
     // 翻开格子
     public void revealCell(int row, int col) {
         // @wt
-        // TODO: 实现翻开逻辑（包括递归翻开空白区域）
+        // 实现翻开逻辑（包括递归翻开空白区域）
+        if(visit[row][col]==1||flag[row][col]==1){
+            return;
+        }//已翻开或插旗不翻
+        visit[row][col]=1;
+        if(state[row][col]==1){
+            return;
+        }//翻到雷，失败处理
+        if(field[row][col]==0){
+            revealCell(row-1, col);//上
+            revealCell(row+1, col);//下
+            revealCell(row, col-1);//左
+            revealCell(row, col+1);//右
+            revealCell(row-1, col-1);//左上
+            revealCell(row-1, col+1);//右上
+            revealCell(row+1, col-1);//左下
+            revealCell(row+1, col+1);//右下
+        }
+        
     }
 
     // 点击已经翻开的数字格
@@ -75,7 +93,18 @@ public class GameEngine {
     // 标记/取消标记格子
     public void toggleFlag(int row, int col) {
         // @wt
-        // TODO: 切换旗子状态
+        // 切换旗子状态
+        if(visit[row][col]==1){
+            return;
+        }
+        if(flag[row][col]==0){
+            flag[row][col]=1;
+            flagsPlaced++;
+        }
+        else{
+            flag[row][col]=0;
+            flagsPlaced--;
+        }
     }
 
     // 检查游戏是否胜利
