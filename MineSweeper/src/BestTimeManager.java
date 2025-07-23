@@ -1,13 +1,14 @@
 package MineSweeper.src;
 
 // File 4: BestTimeManager.java (最佳时间管理)
-import MineSweeper.src.Enums.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
+
+import MineSweeper.src.Enums.Difficulty;
 
 // @zff
 
@@ -27,7 +28,21 @@ public class BestTimeManager {
     // 从文件加载最佳时间
     private void loadBestTimes() {
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
-            // TODO
+            String line;
+            while((line=reader.readLine())!=null){
+                if(line.isEmpty()){
+                    continue;
+                }
+                String[] parts=line.split(":");
+                if(parts.length!=2){
+                    continue;
+                }
+                Difficulty difficulty = Difficulty.valueOf(parts[0].trim());
+                int time = Integer.parseInt(parts[1].trim());
+                if(time>0){
+                    bestTimes.put(difficulty, time);
+                }
+            }
         } catch (IOException e) {
             // 文件不存在或读取错误，使用默认值
             System.out.println("无法读取最佳时间记录: " + e.getMessage());
@@ -36,12 +51,24 @@ public class BestTimeManager {
 
     // 检查并保存最佳时间
     public boolean checkAndSaveBestTime(Difficulty difficulty, int time) {
-        // TODO
+        if(time<=0){
+            return false;
+        }
+        Integer currentBest = bestTimes.get(difficulty);
+        if(currentBest==null||time<currentBest){
+            bestTimes.put(difficulty, time);
+            saveBestTimes();
+            return true;
+        }
+        return false;
     }
 
     // 保存最佳时间到文件
     private void saveBestTimes() {
         try (PrintWriter writer = new PrintWriter(FILE_NAME)) {
+            for (Map.Entry<Difficulty, Integer> entry : bestTimes.entrySet()) {
+                writer.println(entry.getKey() + ":" + entry.getValue());
+            }
         } catch (IOException e) {
             System.err.println("保存最佳时间失败: " + e.getMessage());
         }
@@ -49,5 +76,6 @@ public class BestTimeManager {
 
     // 获取指定难度的最佳时间
     public int getBestTime(Difficulty difficulty) {
+        return bestTimes.getOrDefault(difficulty, 0);
     }
 }
