@@ -23,8 +23,8 @@ public class GameController {
     }
 
     // 为格子添加鼠标监听器
-    public static void setupCellListeners(JButton cell, int row, int col,GameEngine gameEngine, GameUI gameUI){
-        cell.addMouseListener(new MouseAdapter() {
+    public static void setupCellListeners(JButton cell, int row, int col,GameEngine gameEngine, GameUI gameUI){//添加了三个参数GameEngine gameEngine, GameUI gameUI
+        cell.addMouseListener(new MouseAdapter() {                     //不加有报错：Cannot make a static reference to the non-static field gameEngine
             @Override
             public void mouseClicked(MouseEvent e) {
                 //  @wt
@@ -35,7 +35,7 @@ public class GameController {
                     return;
                 }
                 GameController controller=new GameController(gameUI);
-                    controller.setGameEngine(gameEngine);
+                controller.setGameEngine(gameEngine);
                 if(SwingUtilities.isLeftMouseButton(e)){
                     controller.handleLeftClick(row,col);
                 }else if(SwingUtilities.isRightMouseButton(e)){
