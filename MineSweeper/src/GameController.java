@@ -78,9 +78,10 @@ public class GameController {
     private void checkGameState() {
         GameState state = gameEngine.getGameState();
         if (state != GameState.PLAYING) {
-            int time;
-            boolean isBestTime;
-            // TODO: 检查是否为最佳时间
+            int time=gameEngine.getElapsedTime();
+            BestTimeManager timeManager = new BestTimeManager();
+            boolean isBestTime=timeManager.checkAndSaveBestTime(gameEngine.getDifficulty(), time);
+            // TODO: @zff 检查是否为最佳时间
             gameUI.showEndScreen(time, isBestTime);
         }
     }

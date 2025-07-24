@@ -27,8 +27,11 @@ public class BestTimeManager {
 
     // 从文件加载最佳时间
     private void loadBestTimes() {
+        for (Difficulty difficulty : Difficulty.values()) {
+            bestTimes.put(difficulty, Integer.MAX_VALUE);
+        }
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
-            String line;
+            String line;//可能为空
             while((line=reader.readLine())!=null){
                 if(line.isEmpty()){
                     continue;
@@ -54,7 +57,7 @@ public class BestTimeManager {
         if(time<=0){
             return false;
         }
-        Integer currentBest = bestTimes.get(difficulty);
+        Integer currentBest = bestTimes.getOrDefault(difficulty, Integer.MAX_VALUE);//可能为空
         if(currentBest==null||time<currentBest){
             bestTimes.put(difficulty, time);
             saveBestTimes();
@@ -76,6 +79,6 @@ public class BestTimeManager {
 
     // 获取指定难度的最佳时间
     public int getBestTime(Difficulty difficulty) {
-        return bestTimes.getOrDefault(difficulty, 0);
+        return bestTimes.getOrDefault(difficulty, Integer.MAX_VALUE);
     }
 }
