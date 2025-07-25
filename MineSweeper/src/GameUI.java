@@ -3,6 +3,7 @@ package MineSweeper.src;
 // File 2: GameUI.java (界面系统)
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
@@ -11,8 +12,10 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 import MineSweeper.src.Enums.Difficulty;
+import MineSweeper.src.Enums.GameState;
 
 // @zff qyx
 
@@ -152,23 +155,98 @@ public class GameUI {
 
     // 内部类：游戏界面
     class GamePanel extends JPanel {
-        // @qyx
+        // @qyx zff
         private JButton newGameButton;
         private JButton backButton;
         private JLabel flagCountLabel;
         private JLabel timerLabel;
         private JPanel gridPanel;
+        private Timer gameTimer;
+        private GameEngine gameEngine;
+
+        private ImageIcon unopenedIcon;
+        private ImageIcon flagIcon;
+        private ImageIcon mineIcon;
+        private ImageIcon[] numberIcons;
 
         public GamePanel() {
             // TODO: 构建游戏界面UI
+            newGameButton = new JButton("新游戏");
+            backButton = new JButton("返回");
+            flagCountLabel = new JLabel("旗子: 0");
+            timerLabel = new JLabel("时间: 0秒");
+            gridPanel = new JPanel();
+
+            String basePath = "MineSweeper\\resources\\img\\";
+
+            numberIcons = new ImageIcon[9];
+            numberIcons[0] = new ImageIcon(basePath + "0.png"); 
+            numberIcons[1] = new ImageIcon(basePath + "1.png");
+            numberIcons[2] = new ImageIcon(basePath + "2.png");
+            numberIcons[3] = new ImageIcon(basePath + "3.png");
+            numberIcons[4] = new ImageIcon(basePath + "4.png");
+            numberIcons[5] = new ImageIcon(basePath + "5.png");
+            numberIcons[6] = new ImageIcon(basePath + "6.png");
+            numberIcons[7] = new ImageIcon(basePath + "7.png");
+            numberIcons[8] = new ImageIcon(basePath + "8.png");
+            unopenedIcon = new ImageIcon(basePath + "-1.png");
+            flagIcon = new ImageIcon(basePath + "f.png");
+            mineIcon = new ImageIcon(basePath + "m.png");
+
+            gameTimer = new Timer(1000, e -> {
+                if (gameEngine != null && gameEngine.getGameState() == GameState.PLAYING) {
+                    updateTimer(gameEngine.getElapsedTime());
+                }
+            });
         }
 
         public void initGameBoard(GameEngine gameEngine) {
             // TODO: 根据游戏引擎初始化游戏网格
+            this.gameEngine = gameEngine;
+            gridPanel.removeAll();
+            int rows=gameEngine.getRows();
+            int cols=gameEngine.getCols();
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    JButton cell = new JButton();
+                    GameController.setupCellListeners(cell, i, j, gameEngine, GameUI.this);
+                    gridPanel.add(cell);
+                }
+            }
+            updateFlagCount(gameEngine.getRemainingFlags());
+            updateTimer(0);
+            gameTimer.start();
+            revalidate();
         }
 
         public void updateGameBoard() {
             // TODO: 更新游戏网格显示
+            if (gameEngine == null) return;
+            Component[] cells = gridPanel.getComponents();
+            int rows = gameEngine.getRows();
+            int cols = gameEngine.getCols();
+    
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    JButton cell = (JButton) cells[i * cols + j];
+                    int visit = gameEngine.getGridState("visit", i, j);
+                    int flag = gameEngine.getGridState("flag", i, j);
+                    int field = gameEngine.getGridState("field", i, j);
+                    int state = gameEngine.getGridState("state", i, j);
+                    if (flag == 1) {
+                        cell.setIcon(flagIcon); 
+                    } else if (visit == 1) {
+                        if (state == 1) {
+                            cell.setIcon(mineIcon); 
+                        } else {
+                            cell.setIcon(numberIcons[field]);
+                        }
+                    } else {
+                        cell.setIcon(unopenedIcon); 
+                    }
+                    cell.setText("");
+                    }
+                }
         }
 
         public void setNewGameListener(ActionListener listener) {
@@ -200,8 +278,6 @@ public class GameUI {
         public EndPanel() {
             // @qyx
             // TODO: 构建结束界面UI
-
-            // 是不是最佳时间
 
         }
 
