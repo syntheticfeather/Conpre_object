@@ -4,6 +4,9 @@ package MineSweeper.src;
 import MineSweeper.src.Enums.Difficulty;
 import MineSweeper.src.Enums.GameState;
 
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
 // @qyx
 public class GameEngine {
 
@@ -52,7 +55,27 @@ public class GameEngine {
 
     // 生成地雷位置
     private void generateMines() {
-        // TODO: 随机生成地雷位置
+        //  随机生成地雷位置
+        //  @wt
+        int[][] temp=new int[mineCount][mineCount];
+        Random random=new Random();
+        Set<String>existingPairs=new HashSet<>();
+        int i=0;
+        while(i<mineCount){
+            int row=random.nextInt(rows);
+            int col=random.nextInt(rows);
+            String pairKey=row+","+col;
+            if(!existingPairs.contains(pairKey)){
+                existingPairs.add(pairKey);
+                temp[i][0]=row;
+                temp[i][1]=col;
+                i++;
+            }
+        }
+        for(int j=0;j<mineCount;j++){
+            state[temp[j][0]][temp[j][1]]=1;
+        }
+
     }
 
     // 翻开格子
@@ -63,6 +86,7 @@ public class GameEngine {
             return;
         }//已翻开或插旗不翻
         visit[row][col]=1;
+        calculateNumbers(row,col);
         if(state[row][col]==1){
             return;
         }//翻到雷，失败处理
@@ -76,7 +100,7 @@ public class GameEngine {
             revealCell(row+1, col-1);//左下
             revealCell(row+1, col+1);//右下
         }
-        
+        checkWinCondition();
     }
 
     // 点击已经翻开的数字格
@@ -87,7 +111,34 @@ public class GameEngine {
 
     // 计算该格子周围雷的数量
     private void calculateNumbers(int row, int col) {
-        // TODO: 计算周围雷的数量
+        //计算周围雷的数量
+        //@wt
+        int count=0;
+        if(state[row-1][col]==1){
+            count++;
+        }//上
+        if(state[row+1][col]==1){
+            count++;
+        }//下
+        if(state[row][col-1]==1){
+            count++;
+        }//左
+        if(state[row][col+1]==1){
+            count++;
+        }//右
+        if(state[row-1][col-1]==1){
+            count++;
+        }//左上
+        if(state[row-1][col+1]==1){
+            count++;
+        }//右上
+        if(state[row+1][col-1]==1){
+            count++;
+        }//左下
+        if(state[row+1][col+1]==1){
+            count++;
+        }//右下
+        field[row][col]=count;
     }
 
     // 标记/取消标记格子
@@ -98,8 +149,10 @@ public class GameEngine {
             return;
         }
         if(flag[row][col]==0){
-            flag[row][col]=1;
-            flagsPlaced++;
+            if(flagsPlaced<=mineCount){
+                flag[row][col]=1;
+                flagsPlaced++;
+            }
         }
         else{
             flag[row][col]=0;
@@ -110,6 +163,7 @@ public class GameEngine {
     // 检查游戏是否胜利
     private void checkWinCondition() {
         // TODO: 检查所有非雷格子是否都被翻开
+        //@qyx
     }
 
     // 获取游戏经过时间（秒）

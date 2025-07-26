@@ -23,8 +23,8 @@ public class GameController {
     }
 
     // 为格子添加鼠标监听器
-    public static void setupCellListeners(JButton cell, int row, int col,GameEngine gameEngine, GameUI gameUI){//添加了三个参数GameEngine gameEngine, GameUI gameUI
-        cell.addMouseListener(new MouseAdapter() {                     //不加有报错：Cannot make a static reference to the non-static field gameEngine
+    public static void setupCellListeners(JButton cell, int row, int col,GameEngine gameEngine, GameUI gameUI){
+            cell.addMouseListener(new MouseAdapter() {                    
             @Override
             public void mouseClicked(MouseEvent e) {
                 //  @wt
@@ -49,29 +49,20 @@ public class GameController {
 
     // 处理左键点击（翻开格子）
     private void handleLeftClick(int row, int col) {
-        // TODO: 实现翻开逻辑
+        // 实现翻开逻辑
         // @wt
-        if(gameEngine.visit[row][col]==1||gameEngine.flag[row][col]==1){
-            return;
-        }
         gameEngine.revealCell(row, col);
-        if(gameEngine.getGridState("state",row,col)==1){
-            gameEngine.getGameState(GameState.LOST);//失败处理，直接弹出失败界面？
-        }else{
-            gameEngine.checkWinCondition();
-        }
     }
 
     // 处理右键点击（标记旗子）
     private void handleRightClick(int row, int col) {
-        // TODO: 实现旗子逻辑
+        // 实现旗子逻辑
         // @wt
         if(gameEngine.getGridState("visit", row, col)==1){
             return;
         }
         gameEngine.toggleFlag(row, col);
         gameUI.getGamePanel().updateFlagCount(gameEngine.getRemainingFlags());
-        gameEngine.checkWinCondition();
     }
 
     // 检查并更新游戏状态
