@@ -1,12 +1,12 @@
 // File 1: GameEngine.java (游戏核心逻辑)
 package MineSweeper.src;
 
-import MineSweeper.src.Enums.Difficulty;
-import MineSweeper.src.Enums.GameState;
-
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+
+import MineSweeper.src.Enums.Difficulty;
+import MineSweeper.src.Enums.GameState;
 // @qyx
 public class GameEngine {
 
@@ -126,7 +126,7 @@ public class GameEngine {
                 revealCell(row+1, col+1); // 右下
             }
         }
-        // TODO: 实现点击数字逻辑（判断，符合的翻开周围格子）
+        //实现点击数字逻辑（判断，符合的翻开周围格子）
     }
 
     // 计算该格子周围雷的数量
@@ -182,7 +182,7 @@ public class GameEngine {
 
     // 检查游戏是否胜利
     private void checkWinCondition() {
-        // TODO: 检查所有非雷格子是否都被翻开
+        //检查所有非雷格子是否都被翻开
         boolean allNonMineRevealed = true;
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
@@ -210,35 +210,30 @@ public class GameEngine {
 
     // 获取格子状态（用于UI显示）
     public int[][] getfield() {
-        return field;
-        // TODO        
+        return field;       
     }
 
     // 获取游戏状态
     public GameState getGameState() {
         return gameState;
-        // TODO        
     }
 
     // 获取游戏配置
     public int getRows() {
         return rows;
-        // TODO
     }
 
     public int getCols() {
         return cols;
-        // TODO
     }
 
     public int getMineCount() {
         return mineCount;
-        // TODO
     }
+
 
     public Difficulty getDifficulty() {
         return difficulty;
-        // TODO
     }
 
     // 按名称获取对应位置的格子状态
