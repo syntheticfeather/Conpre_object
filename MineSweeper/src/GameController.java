@@ -51,7 +51,12 @@ public class GameController {
     private void handleLeftClick(int row, int col) {
         // 实现翻开逻辑
         // @wt
-        gameEngine.revealCell(row, col);
+        if(gameEngine.getGridState("visit",row,col)==0){
+            gameEngine.revealCell(row, col);
+        }
+        else{
+            gameEngine.clickNumber(row,col);
+        }
     }
 
     // 处理右键点击（标记旗子）

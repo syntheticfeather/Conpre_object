@@ -88,8 +88,8 @@ public class GameEngine {
         visit[row][col]=1;
         calculateNumbers(row,col);
         if(state[row][col]==1){
-            return;
-        }//翻到雷，失败处理
+            gameState = GameState.LOST;
+        }
         if(field[row][col]==0){
             revealCell(row-1, col);//上
             revealCell(row+1, col);//下
