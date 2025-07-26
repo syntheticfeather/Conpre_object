@@ -278,6 +278,17 @@ public class GameUI {
         public EndPanel() {
             // @qyx
             // TODO: 构建结束界面UI
+            setLayout(null);
+            resultLabel = new JLabel("游戏结束!");
+            timeLabel = new JLabel("你的时间: 0秒");
+            bestTimeLabel = new JLabel("新纪录！");
+            restartButton = new JButton("重新开始");
+            backButton = new JButton("返回主菜单");
+
+            add(resultLabel);
+            add(timeLabel);
+            add(bestTimeLabel); 
+            add(backButton);
 
         }
 
