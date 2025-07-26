@@ -279,16 +279,20 @@ public class GameUI {
             // @qyx
             // TODO: 构建结束界面UI
             setLayout(null);
+            setBackground(new Color(59, 78, 127));
+
+            JPanel panel = new JPanel();
+            panel.setBounds(300, 100, 400, 250);
+            panel.setBackground(new Color(59, 78, 127));
+            add(panel);
+
             resultLabel = new JLabel("游戏结束!");
             timeLabel = new JLabel("你的时间: 0秒");
-            bestTimeLabel = new JLabel("新纪录！");
-            restartButton = new JButton("重新开始");
-            backButton = new JButton("返回主菜单");
-
-            add(resultLabel);
-            add(timeLabel);
-            add(bestTimeLabel); 
-            add(backButton);
+            panel.add(resultLabel);
+            panel.add(timeLabel);
+            panel.add(bestTimeLabel); 
+            panel.add(restartButton);
+            panel.add(backButton);
 
         }
 
