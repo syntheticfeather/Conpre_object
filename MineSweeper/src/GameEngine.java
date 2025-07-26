@@ -106,6 +106,26 @@ public class GameEngine {
     // 点击已经翻开的数字格
     public void clickNumber(int row, int col) {
         // @qyx
+        if (visit[row][col] == 1 && field[row][col] > 0) {
+            int flaggedAround = 0;
+            for (int r = Math.max(0, row - 1); r <= Math.min(rows - 1, row + 1); r++) {
+                for (int c = Math.max(0, col - 1); c <= Math.min(cols - 1, col + 1); c++) {
+                    if (flag[r][c] == 1) {
+                        flaggedAround++;
+                    }
+                }
+            }
+            if (flaggedAround == field[row][col]) {
+                revealCell(row-1, col); // 上
+                revealCell(row+1, col); // 下
+                revealCell(row, col-1); // 左
+                revealCell(row, col+1); // 右
+                revealCell(row-1, col-1); // 左上
+                revealCell(row-1, col+1); // 右上
+                revealCell(row+1, col-1); // 左下
+                revealCell(row+1, col+1); // 右下
+            }
+        }
         // TODO: 实现点击数字逻辑（判断，符合的翻开周围格子）
     }
 
@@ -163,6 +183,18 @@ public class GameEngine {
     // 检查游戏是否胜利
     private void checkWinCondition() {
         // TODO: 检查所有非雷格子是否都被翻开
+        boolean allNonMineRevealed = true;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (state[i][j] == 0 && visit[i][j] == 0) {
+                    allNonMineRevealed = false;
+                    break;
+                }
+            }
+        }
+        if (allNonMineRevealed) {
+            gameState = GameState.WON;
+        }
         //@qyx
     }
 
@@ -178,28 +210,34 @@ public class GameEngine {
 
     // 获取格子状态（用于UI显示）
     public int[][] getfield() {
+        return field;
         // TODO        
     }
 
     // 获取游戏状态
     public GameState getGameState() {
+        return gameState;
         // TODO        
     }
 
     // 获取游戏配置
     public int getRows() {
+        return rows;
         // TODO
     }
 
     public int getCols() {
+        return cols;
         // TODO
     }
 
     public int getMineCount() {
+        return mineCount;
         // TODO
     }
 
     public Difficulty getDifficulty() {
+        return difficulty;
         // TODO
     }
 
