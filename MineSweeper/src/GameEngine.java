@@ -29,6 +29,15 @@ public class GameEngine {
     // 初始化游戏
     public void initGame(Difficulty difficulty) {
         // 根据难度设置参数
+
+        //初始化游戏数值
+        field=new int[rows][cols];
+        visit=new int[rows][cols];
+        state=new int[rows][cols];
+        flag=new int[rows][cols];
+        flagsPlaced=0;
+        gameState=GameState.PLAYING;
+        
         switch (difficulty) {
             case EASY -> {
                 rows = 9;
@@ -63,7 +72,7 @@ public class GameEngine {
         int i=0;
         while(i<mineCount){
             int row=random.nextInt(rows);
-            int col=random.nextInt(rows);
+            int col=random.nextInt(cols);
             String pairKey=row+","+col;
             if(!existingPairs.contains(pairKey)){
                 existingPairs.add(pairKey);
@@ -82,14 +91,15 @@ public class GameEngine {
     public void revealCell(int row, int col) {
         // @wt
         // 实现翻开逻辑（包括递归翻开空白区域）
+        if(state[row][col]==1){
+            gameState = GameState.LOST;
+            return;
+        }
         if(visit[row][col]==1||flag[row][col]==1){
             return;
         }//已翻开或插旗不翻
         visit[row][col]=1;
         calculateNumbers(row,col);
-        if(state[row][col]==1){
-            gameState = GameState.LOST;
-        }
         if(field[row][col]==0){
             revealCell(row-1, col);//上
             revealCell(row+1, col);//下
@@ -169,7 +179,7 @@ public class GameEngine {
             return;
         }
         if(flag[row][col]==0){
-            if(flagsPlaced<=mineCount){
+            if(flagsPlaced<mineCount){
                 flag[row][col]=1;
                 flagsPlaced++;
             }
