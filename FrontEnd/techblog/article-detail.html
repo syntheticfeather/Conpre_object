@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>深入理解CSS Flexbox布局 - 我的博客网站</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/article.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- 顶部区域 -->
+    <header class="header">
+        <!-- 构建导航区域 -->
+        <div class="container">
+            <!-- logo -->
+            <div class="logo">
+                <i class="fas fa-blog"></i>
+                <span>我的博客网站</span>
+            </div>
+            <!-- 设置导航栏 -->
+            <nav class="navbar">
+                <ul>
+                    <li><a href="#" class="active"><i class="fas fa-home"></i>首页</a></li>
+                    <li><a href="#"><i class="fas fa-folder"></i>分类</a></li>
+                    <li><a href="#"><i class="fas fa-tags"></i>标签</a></li>
+                    <li><a href="#"><i class="fas fa-user"></i>关于</a></li>
+                </ul>
+            </nav>
+            <!-- 搜索栏 -->
+            <div class="search-bar">
+                <input type="text" placeholder="搜索需要的内容">
+                <button><i class="fas fa-search"></i></button>
+            </div>
+            <div class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+    <!-- 移动菜单覆盖层 -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- 移动端菜单容器 -->
+    <div class="mobile-menu-container" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <div class="mobile-menu-title">导航菜单</div>
+            <button class="mobile-close-btn" id="closeMobileMenu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <!-- 添加的移动端搜索框 -->
+        <div class="mobile-search-container">
+            <div class="mobile-search-bar">
+                <input type="text" id="mobileSearchInput" placeholder="搜索文章、标签...">
+                <button id="mobileSearchBtn"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+        <nav class="mobile-navbar">
+            <ul>
+                <li><a href="#" class="active"><i class="fas fa-home"></i>首页</a></li>
+                <li><a href="#"><i class="fas fa-folder"></i>分类</a></li>
+                <li><a href="#"><i class="fas fa-tags"></i>标签</a></li>
+                <li><a href="#"><i class="fas fa-user"></i>关于</a></li>
+                <li><a href="#"><i class="fas fa-envelope"></i>联系</a></li>
+                <li><a href="#"><i class="fas fa-star"></i>收藏</a></li>
+            </ul>
+        </nav>
+    </div>
+    <!-- 文章头部 -->
+    <div class="article-header">
+        <div class="container">
+            <h1 class="article-title">深入理解CSS Flexbox布局</h1>
+            <div class="article-meta">
+                <div class="article-meta-item">
+                    <i class="fas fa-user"></i> 张三
+                </div>
+                <div class="article-meta-item">
+                    <i class="fas fa-calendar"></i> 2025-07-20
+                </div>
+                <div class="article-meta-item">
+                    <i class="fas fa-clock"></i> 8分钟阅读
+                </div>
+                <div class="article-meta-item">
+                    <i class="fas fa-comments"></i> 24条评论
+                </div>
+                <div class="article-meta-item">
+                    <i class="fas fa-eye"></i> 1.2K阅读量
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 文章内容 -->
+    <div class="article-content">
+        <p>Flexbox（弹性盒子）是CSS3中一种强大的布局方式，它能够更有效地对容器中的项目进行排列、对齐和分配空间。无论项目的大小是未知还是动态的，Flexbox都能轻松应对。本文将深入探讨Flexbox的各个方面，帮助您掌握这一现代布局技术。
+        </p>
+
+        <h2>Flexbox布局基础</h2>
+
+        <p>Flexbox布局由<strong>弹性容器</strong>（flex container）和<strong>弹性项目</strong>（flex
+            items）组成。要使用Flexbox布局，只需将容器的display属性设置为flex或inline-flex：</p>
+
+        <pre><code>.container {
+  display: flex; /* 或 inline-flex */
+}</code></pre>
+
+        <p>一旦设置了display: flex，容器内的直接子元素就自动成为弹性项目。</p>
+
+        <h3>主轴与交叉轴</h3>
+
+        <p>理解Flexbox的关键是掌握两个轴的概念：</p>
+
+        <ul>
+            <li><strong>主轴（main axis）</strong>：项目沿此轴排列，方向由flex-direction属性决定（默认为row）</li>
+            <li><strong>交叉轴（cross axis）</strong>：垂直于主轴的轴</li>
+        </ul>
+
+        <img src="https://images.unsplash.com/photo-1547658719-da2b51169166?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+            alt="Flexbox布局示意图">
+
+        <h2>容器属性</h2>
+
+        <h3>flex-direction</h3>
+
+        <p>定义主轴的方向：</p>
+
+        <pre><code>.container {
+  flex-direction: row | row-reverse | column | column-reverse;
+}</code></pre>
+
+        <h3>justify-content</h3>
+
+        <p>定义项目在主轴上的对齐方式：</p>
+
+        <pre><code>.container {
+  justify-content: flex-start | flex-end | center | space-between | space-around | space-evenly;
+}</code></pre>
+
+        <h3>align-items</h3>
+
+        <p>定义项目在交叉轴上的对齐方式：</p>
+
+        <pre><code>.container {
+  align-items: stretch | flex-start | flex-end | center | baseline;
+}</code></pre>
+
+        <h2>项目属性</h2>
+
+        <h3>flex-grow</h3>
+
+        <p>定义项目的放大比例，默认为0（不放大）：</p>
+
+        <pre><code>.item {
+  flex-grow: 2; /* 默认0 */
+}</code></pre>
+
+        <h3>flex-shrink</h3>
+
+        <p>定义项目的缩小比例，默认为1（空间不足时项目将缩小）：</p>
+
+        <pre><code>.item {
+  flex-shrink: 0; /* 禁止缩小 */
+}</code></pre>
+
+        <h3>flex-basis</h3>
+
+        <p>定义项目在分配多余空间之前的主轴尺寸：</p>
+
+        <pre><code>.item {
+  flex-basis: 200px; /* 或 auto */
+}</code></pre>
+
+        <h2>实际应用示例</h2>
+
+        <p>以下是一个常见的导航栏布局示例：</p>
+
+        <pre><code>.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: #2c3e50;
+}
+
+.logo {
+  flex: 0 0 120px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+}</code></pre>
+
+        <p>Flexbox彻底改变了CSS布局的方式，解决了传统布局中的许多痛点。通过熟练掌握Flexbox，您可以创建出灵活、响应式的布局，适应各种屏幕尺寸和设备。</p>
+
+        <div class="article-tags">
+            <a href="#" class="article-tag">CSS</a>
+            <a href="#" class="article-tag">布局</a>
+            <a href="#" class="article-tag">前端开发</a>
+            <a href="#" class="article-tag">响应式设计</a>
+            <a href="#" class="article-tag">Web开发</a>
+        </div>
+    </div>
+
+    <!-- 文章导航 -->
+    <div class="article-actions">
+        <a href="#" class="action-btn prev-btn">
+            <i class="fas fa-arrow-left"></i> 上一篇文章
+        </a>
+        <a href="#" class="action-btn next-btn">
+            下一篇文章 <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+
+    <!-- 相关文章 -->
+    <section class="related-articles">
+        <h2 class="section-title">相关文章推荐</h2>
+        <div class="related-grid">
+            <div class="related-card">
+                <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+                    alt="CSS Grid">
+                <div class="related-content">
+                    <h3>掌握CSS Grid布局</h3>
+                    <p>探索强大的二维布局系统，创建复杂的响应式网页设计。</p>
+                    <a href="#" class="read-more-small">阅读更多 <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            <div class="related-card">
+                <img src="https://images.unsplash.com/photo-1547658719-da2b51169166?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+                    alt="响应式设计">
+                <div class="related-content">
+                    <h3>响应式设计最佳实践</h3>
+                    <p>从移动优先到断点设计，掌握响应式网页开发的核心技术。</p>
+                    <a href="#" class="read-more-small">阅读更多 <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            <div class="related-card">
+                <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+                    alt="CSS动画">
+                <div class="related-content">
+                    <h3>现代CSS动画技术</h3>
+                    <p>使用CSS Transform和Transition创建流畅的用户体验。</p>
+                    <a href="#" class="read-more-small">阅读更多 <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 评论区域 -->
+    <div class="comments-section">
+        <h2 class="section-title">文章评论 (24)</h2>
+
+        <div class="comment-form">
+            <h3>发表评论</h3>
+            <form>
+                <div class="form-group">
+                    <label for="comment-name">姓名</label>
+                    <input type="text" id="comment-name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="comment-email">邮箱</label>
+                    <input type="email" id="comment-email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="comment-content">评论内容</label>
+                    <textarea id="comment-content" class="form-control" required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">提交评论</button>
+            </form>
+        </div>
+
+        <div class="comment-list">
+            <div class="comment">
+                <div class="comment-header">
+                    <div class="comment-avatar">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="用户头像">
+                    </div>
+                    <div>
+                        <div class="comment-author">李四</div>
+                        <div class="comment-date">2025-07-21 14:30</div>
+                    </div>
+                </div>
+                <div class="comment-content">
+                    <p>非常感谢作者分享！这篇文章解决了我一直以来的布局困惑。特别是justify-content和align-items的区别，现在终于搞清楚了。</p>
+                </div>
+                <div class="reply-btn">
+                    <i class="fas fa-reply"></i> 回复
+                </div>
+            </div>
+
+            <div class="comment">
+                <div class="comment-header">
+                    <div class="comment-avatar">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="用户头像">
+                    </div>
+                    <div>
+                        <div class="comment-author">王五</div>
+                        <div class="comment-date">2025-07-20 19:45</div>
+                    </div>
+                </div>
+                <div class="comment-content">
+                    <p>作为前端新手，这篇文章真的很有帮助！示例代码清晰易懂，让我很快就能上手使用Flexbox。期待作者更多的CSS教程！</p>
+                </div>
+                <div class="reply-btn">
+                    <i class="fas fa-reply"></i> 回复
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚保持不变 -->
+    <footer class="footer">
+        <!-- 原有页脚代码 -->
+    </footer>
+
+    <script src="js/article.js"></script>
+</body>
+
+</html>

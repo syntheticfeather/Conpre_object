@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的博客网站</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/sort.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- 顶部区域 -->
+    <header class="header">
+        <!-- 构建导航区域 -->
+        <div class="container">
+            <!-- logo -->
+            <div class="logo">
+                <i class="fas fa-blog"></i>
+                <span>我的博客网站</span>
+            </div>
+            <!-- 设置导航栏 -->
+            <nav class="navbar">
+                <ul>
+                    <li><a href="#" class="active"><i class="fas fa-home"></i>首页</a></li>
+                    <li><a href="#"><i class="fas fa-folder"></i>分类</a></li>
+                    <li><a href="#"><i class="fas fa-tags"></i>标签</a></li>
+                    <li><a href="#"><i class="fas fa-user"></i>关于</a></li>
+                </ul>
+            </nav>
+            <!-- 搜索栏 -->
+            <div class="search-bar">
+                <input type="text" placeholder="搜索需要的内容">
+                <button><i class="fas fa-search"></i></button>
+            </div>
+            <div class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+    <!-- 移动菜单覆盖层 -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- 移动端菜单容器 -->
+    <div class="mobile-menu-container" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <div class="mobile-menu-title">导航菜单</div>
+            <button class="mobile-close-btn" id="closeMobileMenu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <!-- 添加的移动端搜索框 -->
+        <div class="mobile-search-container">
+            <div class="mobile-search-bar">
+                <input type="text" id="mobileSearchInput" placeholder="搜索文章、标签...">
+                <button id="mobileSearchBtn"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+        <nav class="mobile-navbar">
+            <ul>
+                <li><a href="#" class="active"><i class="fas fa-home"></i>首页</a></li>
+                <li><a href="#"><i class="fas fa-folder"></i>分类</a></li>
+                <li><a href="#"><i class="fas fa-tags"></i>标签</a></li>
+                <li><a href="#"><i class="fas fa-user"></i>关于</a></li>
+                <li><a href="#"><i class="fas fa-envelope"></i>联系</a></li>
+                <li><a href="#"><i class="fas fa-star"></i>收藏</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <main>
+        <div class="container">
+            <div class="sort-container">
+                <!-- 水平均匀分布 -->                
+                <div class="sort">
+                    <h2>分类</h2>
+                    <ul class="sort-list">
+                        <li><a href="#">前端开发</a></li>
+                        <li><a href="#">后端开发</a></li>
+                        <li><a href="#">数据库</a></li>
+                        <li><a href="#">网络安全</a></li>
+                        <li><a href="#">其他</a></li>
+                    </ul>
+                </div>
+                <div class="sort">
+                    <h2>标签</h2>
+                    <ul class="sort-list">
+                        <li><a href="#">前端开发</a></li>
+                        <li><a href="#">后端开发</a></li>
+                        <li><a href="#">数据库</a></li>
+                        <li><a href="#">网络安全</a></li>
+                        <li><a href="#">其他</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+</body>
+
+</html>

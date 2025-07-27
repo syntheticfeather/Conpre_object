@@ -14,7 +14,11 @@ import java.util.Scanner;
 public class Client {
 
     public static void main(String[] args) throws IOException {
-        Socket sock = new Socket("localhost", 6666); // 连接指定服务器和端口
+        // 输入指定的ip地址和端口号
+        // 26.228.78.149 6666
+        String ip = "26.228.78.149";
+        int port = 6666;
+        Socket sock = new Socket(ip, port); // 连接指定服务器和端口
         try (InputStream input = sock.getInputStream()) {
             try (OutputStream output = sock.getOutputStream()) {
                 handle(input, output);

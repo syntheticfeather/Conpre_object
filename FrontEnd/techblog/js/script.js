@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const navbar = document.querySelector('.navbar');
     const closeMobileMenu = document.getElementById('closeMobileMenu');
     const overlay = document.getElementById('overlay');
+    const mobileSearchBtn = document.getElementById('mobileSearchBtn');
+    const mobileSearchInput = document.getElementById('mobileSearchInput');
 
     // 打开移动菜单
     function openMobileMenu() {
@@ -18,6 +20,34 @@ document.addEventListener('DOMContentLoaded', function () {
         mobileMenu.classList.remove('active');
         overlay.classList.remove('active');
         document.body.style.overflow = ''; // 恢复滚动
+    }
+
+    // 执行移动端搜索的函数
+    function performMobileSearch() {
+        const searchTerm = mobileSearchInput.value.trim();
+        if (searchTerm) {
+            alert(`移动端搜索: ${searchTerm}`);
+            console.log(`移动端搜索: ${searchTerm}`);
+            mobileSearchInput.value = '';
+            closeMobileMenuFn(); // 搜索后自动关闭菜单
+        } else {
+            // 如果搜索框为空，聚焦到输入框
+            mobileSearchInput.focus();
+        }
+    }
+
+    // 添加搜索按钮点击事件
+    if (mobileSearchBtn) {
+        mobileSearchBtn.addEventListener('click', performMobileSearch);
+    }
+
+    // 添加输入框回车键事件
+    if (mobileSearchInput) {
+        mobileSearchInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                performMobileSearch();
+            }
+        });
     }
 
     if (mobileMenuBtn) {

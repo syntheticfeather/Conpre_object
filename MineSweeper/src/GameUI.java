@@ -18,7 +18,6 @@ import MineSweeper.src.Enums.Difficulty;
 import MineSweeper.src.Enums.GameState;
 
 // @zff qyx
-
 public class GameUI {
 
     private JFrame mainFrame;
@@ -106,37 +105,38 @@ public class GameUI {
         private JLabel row, col, mineCount;
 
         public StartPanel() {
-            // if (gameEngine == null) {
-            //     gameEngine = new GameEngine();
-            // }
+            if (gameEngine == null) {
+                gameEngine = new GameEngine();
+            }
             setLayout(null);
             // TODO: 构建开始界面UI
             JPanel panel = new JPanel(null);
-            panel.setBounds(300, 100, 400, 250);
-            panel.setBackground((new Color(59, 78, 127)));
-            this.add(panel);
-
             difficultyCombo = new JComboBox<>(Difficulty.values());
             startButton = new JButton("开始游戏");
-            // row = new JLabel("行数:" + gameEngine.getRows());
-            // col = new JLabel("列数:" + gameEngine.getCols());
-            // mineCount = new JLabel("雷数:" + gameEngine.getMineCount());
-            // 上下布局
+            row = new JLabel("行数:" + gameEngine.getRows());
+            col = new JLabel("列数:" + gameEngine.getCols());
+            mineCount = new JLabel("雷数:" + gameEngine.getMineCount());
+            // 布局
+            // @qyx
+            // TODO
+            this.setBackground((new Color(255, 255, 255)));
+            panel.setBounds(300, 100, 400, 250);
+            panel.setBackground((new Color(59, 78, 127)));
             difficultyCombo.setBounds(150, 50, 100, 30);
             startButton.setBounds(150, 200, 100, 30);
-            // row.setBounds(120 ,100, 60, 30);
-            // row.setBounds(220 ,100, 60, 30);
-            // mineCount.setBounds(160, 150, 80, 30);
-
-            panel.add(difficultyCombo);
-            panel.add(startButton);
-            // panel.add(row);
-            // panel.add(col);
-            // panel.add(mineCount);
-
+            row.setBounds(120, 100, 60, 30);
+            row.setBounds(220, 100, 60, 30);
+            mineCount.setBounds(160, 150, 80, 30);
             // 为 startbutton 设置图片
             ImageIcon icon = new ImageIcon("");
             startButton.setIcon(icon);
+            // 设置组件
+            this.add(panel);
+            panel.add(difficultyCombo);
+            panel.add(startButton);
+            panel.add(row);
+            panel.add(col);
+            panel.add(mineCount);
 
         }
 
@@ -160,6 +160,7 @@ public class GameUI {
         private JButton backButton;
         private JLabel flagCountLabel;
         private JLabel timerLabel;
+        private JPanel topMenuPanel;
         private JPanel gridPanel;
         private Timer gameTimer;
         private GameEngine gameEngine;
@@ -266,7 +267,7 @@ public class GameUI {
         }
     }
 
-    // 内部类：结束界面
+// 内部类：结束界面
     class EndPanel extends JPanel {
 
         private JLabel resultLabel;

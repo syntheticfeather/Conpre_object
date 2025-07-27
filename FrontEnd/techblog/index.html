@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的博客网站</title>
+
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -49,12 +50,12 @@
                 <i class="fas fa-times"></i>
             </button>
         </div>
-        <!-- 移动端搜索框 -->
-        <div class="search-bar">
-            <input type="text" placeholder="搜索...">
-            <button type="button">
-                <i class="fas fa-search"></i>
-            </button>
+        <!-- 添加的移动端搜索框 -->
+        <div class="mobile-search-container">
+            <div class="mobile-search-bar">
+                <input type="text" id="mobileSearchInput" placeholder="搜索文章、标签...">
+                <button id="mobileSearchBtn"><i class="fas fa-search"></i></button>
+            </div>
         </div>
         <nav class="mobile-navbar">
             <ul>
@@ -95,7 +96,7 @@
                     </div>
                     <!-- 文章底部跳转信息 -->
                     <div class="post-footer">
-                        <a href="#" class="read-more">阅读全文<i class="fas fa-arrow-right"></i></a>
+                        <a href="article-detail.html#article-detail" class="read-more">阅读全文<i class="fas fa-arrow-right"></i></a>
                         <!-- 分类栏 -->
                         <div class="post-tags">
                             <span>CSS</span>
@@ -126,6 +127,7 @@
                     </div>
                     <!-- 文章底部跳转信息 -->
                     <div class="post-footer">
+                        <!-- 这个a会跳转到与index.html同级的article-detail.html页面，并添加id为article-detail的锚点 -->
                         <a href="#" class="read-more">阅读全文<i class="fas fa-arrow-right"></i></a>
                         <!-- 分类栏 -->
                         <div class="post-tags">

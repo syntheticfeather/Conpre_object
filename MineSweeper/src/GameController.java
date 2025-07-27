@@ -63,9 +63,6 @@ public class GameController {
     private void handleRightClick(int row, int col) {
         // 实现旗子逻辑
         // @wt
-        if(gameEngine.getGridState("visit", row, col)==1){
-            return;
-        }
         gameEngine.toggleFlag(row, col);
         gameUI.getGamePanel().updateFlagCount(gameEngine.getRemainingFlags());
     }
