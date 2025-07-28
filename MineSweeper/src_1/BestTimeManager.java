@@ -1,4 +1,4 @@
-package src;
+package MineSweeper.src_1;
 
 // File 4: BestTimeManager.java (最佳时间管理)
 import java.io.BufferedReader;
@@ -8,13 +8,14 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-import src.Enums.Difficulty;
+import MineSweeper.src_1.Enums.Difficulty;
+import MineSweeper.src_1.Enums.GameState;
 
 // @zff
 public class BestTimeManager {
 
     // 同级目录下的文件名
-    private static final String FILE_NAME = ".\\src\\best_times.txt";
+    private static final String FILE_NAME = ".\\MineSweeper\\src_1\\best_times.txt";
     // 格式:
     // 难度:时间(就以秒数记录)
     private final Map<Difficulty, Integer> bestTimes;
@@ -28,7 +29,7 @@ public class BestTimeManager {
     // 从文件加载最佳时间
     private void loadBestTimes() {
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
-            // TODO
+
             // 如果文件为空，则手动加入最大值
             if (reader.readLine() == null) {
                 for (Difficulty difficulty : Difficulty.values()) {
@@ -52,10 +53,10 @@ public class BestTimeManager {
     }
 
     // 检查并保存最佳时间
-    public boolean checkAndSaveBestTime(Difficulty difficulty, int time) {
+    public boolean checkAndSaveBestTime(Difficulty difficulty, int time, GameState gameState) {
         // TODO
         int flag = 0;
-        if (bestTimes.getOrDefault(difficulty, Integer.MAX_VALUE) > time) {
+        if (gameState == GameState.WON && bestTimes.getOrDefault(difficulty, Integer.MAX_VALUE) > time) {
             bestTimes.put(difficulty, time);
             flag = 1;
         }

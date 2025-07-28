@@ -1,4 +1,4 @@
-package src.Enums;
+package MineSweeper.src_1.Enums;
 
 public enum GameState {
     /**

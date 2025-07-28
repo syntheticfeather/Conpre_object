@@ -1,4 +1,4 @@
-package src;
+package MineSweeper.src_1;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -17,8 +17,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import src.Enums.Difficulty;
-import src.Enums.GameState;
+import MineSweeper.src_1.Enums.Difficulty;
+import MineSweeper.src_1.Enums.GameState;
 
 // @zff qyx
 public class GameUI {
@@ -36,6 +36,7 @@ public class GameUI {
 
     // 游戏引擎引用
     private final GameEngine gameEngine;
+    private String path = "MineSweeper/";
 
     public GameUI(GameController gc, GameEngine gE) {
         // 初始化主窗口
@@ -152,7 +153,7 @@ public class GameUI {
             col.setBounds(220, 100, 60, 30);
             mineCount.setBounds(160, 150, 80, 30);
             // 为 startbutton 设置图片
-            startButton.setIcon(new ImageIcon("resources/img/start.jpg"));
+            startButton.setIcon(new ImageIcon(path + "resources/img/start.jpg"));
             // 设置组件
             this.add(panel);
             panel.add(difficultyCombo);
@@ -196,8 +197,8 @@ public class GameUI {
             setLayout(new BorderLayout()); // 改为 BorderLayout 布局
             // TODO: 构建游戏界面UI
             topMenuPanel = new JPanel(null);
-            backButton = new JButton(new ImageIcon("resources/img/home.jpg"));
-            newGameButton = new JButton(new ImageIcon("resources/img/new.jpg"));
+            backButton = new JButton(new ImageIcon(path + "resources/img/home.jpg"));
+            newGameButton = new JButton(new ImageIcon(path + "resources/img/new.jpg"));
             // 白字并且大小大一些
             flagCountLabel = new JLabel("旗子: " + gameEngine.getRemainingFlags(), JLabel.TRAILING);
             flagCountLabel.setFont(new Font("Microsoft YaHei", Font.BOLD, 20));
@@ -251,7 +252,7 @@ public class GameUI {
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < cols; j++) {
                     // 设置图片
-                    buttons[i][j] = new JButton(new ImageIcon("resources/img/-1.jpg"));
+                    buttons[i][j] = new JButton(new ImageIcon(path + "resources/img/-1.jpg"));
                     // 设置按钮位置
                     buttons[i][j].setBounds(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
                     // 设置按钮点击事件
@@ -279,14 +280,14 @@ public class GameUI {
                         // 没翻开
                         if (gameEngine.getGridState("flag", i, j) == 1) {
                             // 旗子
-                            buttons[i][j].setIcon(new ImageIcon("resources/img/f.jpg"));
+                            buttons[i][j].setIcon(new ImageIcon(path + "resources/img/f.jpg"));
                         } else {
                             // 空地
-                            buttons[i][j].setIcon(new ImageIcon("resources/img/-1.jpg"));
+                            buttons[i][j].setIcon(new ImageIcon(path + "resources/img/-1.jpg"));
                         }
                     } else {
                         // 已经翻开了
-                        buttons[i][j].setIcon(new ImageIcon("resources/img/" + gameEngine.getGridState("field", i, j) + ".jpg"));
+                        buttons[i][j].setIcon(new ImageIcon(path + "resources/img/" + gameEngine.getGridState("field", i, j) + ".jpg"));
                     }
                 }
             }
@@ -332,8 +333,8 @@ public class GameUI {
             JPanel panel = new JPanel(null);
             panel.setBounds(framewidth / 2 - 400 / 2, 200, 400, 300);
             panel.setBackground(new Color(64, 76, 118));
-            restartButton = new JButton(new ImageIcon("resources/img/new.jpg"));
-            backButton = new JButton(new ImageIcon("resources/img/home.jpg"));
+            restartButton = new JButton(new ImageIcon(path + "resources/img/new.jpg"));
+            backButton = new JButton(new ImageIcon(path + "resources/img/home.jpg"));
             resultLabel = new JLabel("游戏结束！");
             bestTimeLabel = new JLabel("");
             timeLabel = new JLabel("");

@@ -1,10 +1,10 @@
 // File 1: GameEngine.java (游戏核心逻辑)
-package src;
+package MineSweeper.src_1;
 
 import java.util.Random;
 
-import src.Enums.Difficulty;
-import src.Enums.GameState;
+import MineSweeper.src_1.Enums.Difficulty;
+import MineSweeper.src_1.Enums.GameState;
 
 // @qyx
 public class GameEngine {

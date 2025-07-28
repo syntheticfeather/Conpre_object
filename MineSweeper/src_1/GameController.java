@@ -1,4 +1,4 @@
-package src;
+package MineSweeper.src_1;
 
 // File 3: GameController.java (事件控制)
 import java.awt.event.MouseAdapter;
@@ -6,7 +6,7 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JButton;
 
-import src.Enums.GameState;
+import MineSweeper.src_1.Enums.GameState;
 
 public final class GameController {
 
@@ -70,7 +70,7 @@ public final class GameController {
         GameState state = gameEngine.getGameState();
         if (state != GameState.PLAYING) {
             int time = gameEngine.getElapsedTime();
-            boolean isBestTime = bestTimeManager.checkAndSaveBestTime(gameEngine.getDifficulty(), time);
+            boolean isBestTime = bestTimeManager.checkAndSaveBestTime(gameEngine.getDifficulty(), time, gameEngine.getGameState());
             // TODO: 检查是否为最佳时间            
             gameUI.showEndScreen(time, isBestTime, bestTimeManager.getBestTime(gameEngine.getDifficulty()));
         }

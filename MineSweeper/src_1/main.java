@@ -1,4 +1,4 @@
-package src;
+package MineSweeper.src_1;
 
 import javax.swing.SwingUtilities;
 
