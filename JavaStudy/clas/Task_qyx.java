@@ -50,8 +50,8 @@ abstract class Animal implements Creature {
 
 class Human extends Animal {
     // 字段
-    private int lifespan; // 寿命
-    private String region; // 地域（默认为 80， Asia）
+    protected int lifespan; // 寿命
+    protected String region; // 地域（默认为 80， Asia）
 
     // 构造方法
     public Human() {
