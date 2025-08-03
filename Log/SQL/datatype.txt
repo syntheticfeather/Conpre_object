@@ -1,0 +1,45 @@
+mysql的数据类型:
+    数字型:
+        整型:
+            TINYINT: 1字节的整数
+            SMALLINT: 2字节的整数
+            MEDIUMINT: 3字节的整数
+            INT: 4字节的整数
+            BIGINT: 8字节的整数
+        浮点型:
+            FLOAT: 4字节的浮点数
+            DOUBLE: 8字节的浮点数
+            DECIMAL: 定点数
+    布尔值
+        BOOLEAN: 存储TRUE或FALSE值
+                 1个字节
+    
+    字符串型:
+        char(n): 固定长度的字符串, 最多n个字符 0-255
+        varchar(n): 可变长度的字符串, 最多n个字符 0-65535
+        tinyblob: 最大长度为255字节的二进制字符串
+        blob: 最大长度为65535字节的二进制字符串
+        mediumblob: 最大长度为16777215字节的二进制字符串
+        longblob: 最大长度为4294967295字节的二进制字符串
+        tinytext: 最大长度为255字节的字符串
+        text: 最大长度为65535字节的字符串
+        mediumtext: 最大长度为16777215字节的字符串
+        longtext: 最大长度为4294967295字节的字符串
+
+    日期时间型:
+        DATE: 日期值 YYYY-MM-DD
+        TIME: 时间值 HH:MM:SS
+        YEAR: 年份值 YYYY
+        DATATIME: 日期时间值  YYYY-MM-DD HH:MM:SS
+        TIMESTAMP: 时间戳值  YYYY-MM-DD HH:MM:SS         
+
+标识符:
+    unsigned: 无符号整数
+    zerofill: 左边填充0
+    binary: 二进制字符串
+    auto_increment: 自动增长
+    not null: 非空约束
+    unique: 唯一约束
+    default: 默认值
+    primary key: 主键约束
+    foreign key: 外键约束

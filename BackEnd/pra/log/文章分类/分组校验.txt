@@ -1,0 +1,5 @@
+分组校验
+
+class内部的interface
+
+没有分组的默认再Defalut分组下

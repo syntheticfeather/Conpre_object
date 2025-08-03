@@ -1,0 +1,11 @@
+GetMapping 查
+
+对隐私信息的屏蔽
+@jsonIgnore
+
+数据库和pojo命名不同的问题
+    配置文件映射解决
+    
+
+ThreadLocal优化
+    所有的Authentication都在解析器中进行
