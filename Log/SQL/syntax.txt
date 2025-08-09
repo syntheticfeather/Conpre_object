@@ -1,0 +1,86 @@
+DDL（数据定义语言）：用于定义和修改数据库结构，包括创建、修改和删除数据库对象（如数据库、表、索引等）。
+DQL（数据查询语言）：用于从数据库中检索数据，最常用的是 SELECT 语句。
+DML（数据操作语言）：用于操作数据库中的数据，包括插入、更新和删除数据，常用的语句有 INSERT、UPDATE 和 DELETE。
+DCL（数据控制语言）：用于控制数据库访问权限，包括授权和撤销授权，常用的语句有 GRANT 和 REVOKE。
+TCL（事务控制语言）：用于管理数据库事务，包括提交和回滚事务，常用的语句有 COMMIT 和 ROLLBACK。
+
+DDL语句:
+CREATE - 创建数据库或表。
+    CREATE TABLE table_name (
+        column1 datatype [constraints],
+        column2 datatype [constraints],
+        ...
+        primary key (column1),
+        foreign key (column2) references other_table(column2)
+    );
+
+ALTER - 修改数据库或表的结构。
+    添加列：
+        ALTER TABLE table_name ADD column_name datatype [constraints];
+    修改列类型：
+        ALTER TABLE table_name MODIFY column_name new_datatype [new_constraints];
+    修改列名：
+        ALTER TABLE table_name CHANGE column_name new_column_name datatype [new_constraints];
+    删除列：
+        ALTER TABLE table_name DROP COLUMN column_name;
+    添加主键：
+        ALTER TABLE table_name ADD PRIMARY KEY (column_name);
+    添加外键：
+        ALTER TABLE table_name ADD FOREIGN KEY (column_name) REFERENCES other_table(column_name);
+
+DROP - 删除数据库或表。
+    删除数据库：
+        DROP DATABASE database_name;
+    删除表：
+        DROP TABLE table_name;
+
+TRUNCATE - 删除表中的所有数据，但保留表的结构。
+    TRUNCATE TABLE table_name;  
+    
+COMMENT - 添加或更改数据库对象的注释。
+    为表添加注释：
+        ALTER TABLE table_name COMMENT 'This is a table comment';
+    为列添加注释：
+        ALTER TABLE table_name MODIFY column_name datatype COMMENT 'This is a column comment';
+
+INDEX - 创建或删除索引。
+    创建索引：
+        CREATE INDEX index_name ON table_name (column_name);
+    删除索引：
+        DROP INDEX index_name ON table_name;
+
+
+DQL语句:
+SELECT - 从数据库中检索数据。
+    SELECT column1, column2,... FROM table_name;
+    SELECT * FROM table_name;
+    去掉重复数据：
+        SELECT DISTINCT column1, column2,... FROM table_name;
+
+DML语句:
+INSERT - 向数据库中插入数据。
+    单条插入：
+        INSERT INTO table_name (column1, column2,...) VALUES (value1, value2,...);
+    全部字段插入：
+        INSERT INTO table_name VALUES (value1, value2,...);
+    批量加入:
+        INSERT INTO table_name (column1, column2,...) VALUES (value1, value2,...), (value1, value2,...),...;
+
+UPDATE - 更新数据库中的数据。
+    UPDATE table_name SET column1 = value1, column2 = value2,... WHERE condition;
+
+DELETE - 从数据库中删除数据。
+    DELETE FROM table_name WHERE condition;
+
+条件语句:
+    where:
+        column_name operator value
+
+        > < ...
+        between ... and ...
+        in(...) 满足某一条件的元素
+        like 'pattern' 模糊匹配
+        is null/not null 为空/非空
+
+        and or not 逻辑运算符
+    

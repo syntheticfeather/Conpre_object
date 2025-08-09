@@ -1,0 +1,11 @@
+spring-boot-starter-validation
+
+@validated
+
+    @pattern(regex = "^[a-zA-Z0-9]+$")
+
+
+对抛出异常的统一
+@restControllerAdvice
+    将异常统一包装一次     
+    @ExceptionHandler(Exception.class) 内部填exception的类型

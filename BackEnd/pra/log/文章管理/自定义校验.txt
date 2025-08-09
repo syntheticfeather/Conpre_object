@@ -1,0 +1,14 @@
+@Constraint(StateValidation.class)
+State
+
+
+StateValidation implements ConstraintValidator<State, String>{
+    value 为要校验的字符串
+    return false 校验失败
+    public boolean isValid(String value, ConstraintValidatorContext context) {
+        if(value == null || value.isEmpty()){
+            return false;
+        }
+    }
+
+} 
