@@ -55,18 +55,28 @@ public class GameEngine {
 
     // 生成星星分布*
     public void generateStars(){
+        int currentScore=Score;
+        exist=new int[rows][cols];
         color=new int[rows][cols];
-        Random rand = new Random();
-        for (int i = 0; i <rows; i++) {
+        for(int i=0;i<rows;i++){
             for(int j=0;j<cols;j++){
-                color[i][j]=rand.nextInt(5);
+                exist[i][j]=1;
+                color[i][j]=5;
             }
         }
-        if(hasEliminatableStars()==false){
-            generateStars();
-        }
+        Random rand = new Random();
+        do{
+            for (int i = 0; i <rows; i++) {
+                for(int j=0;j<cols;j++){
+                    color[i][j]=rand.nextInt(5);
+                }
+            }
+        }while(hasEliminatableStars()==false);
+        
         gameLevel++;
         Target=getTarget(gameLevel);
+        Score=currentScore;
+        gameState=GameState.PLAYING;
     }
     
     //检查是否存在可消灭星星
@@ -177,7 +187,7 @@ public class GameEngine {
                     break;
                 }
             }
-            while(!isEmpty){
+            if(!isEmpty){
                 if(j!=emptyCol){
                     for(int i=0;i<rows;i++){
                         exist[i][emptyCol]=exist[i][j];
@@ -217,13 +227,16 @@ public class GameEngine {
 
     //检查是否通关*
     public void checkPassCondition(){       
-        if (Score>=Target) {
-            gameState=GameState.PASS;
-        }else if(hasEliminatableStars()==true&&Score<Target){
-            gameState=GameState.LOST;
-        }
-        else{
-            gameState=GameState.PLAYING;
+        // 只有在没有可消除星星时才检查通关条件
+        if (!hasEliminatableStars()) {
+            if (Score >= Target) {
+                gameState = GameState.PASS;
+            } else {
+                gameState = GameState.LOST;
+            }
+        } else {
+            // 还有可消除星星时保持PLAYING状态
+            gameState = GameState.PLAYING;
         }
     }
 

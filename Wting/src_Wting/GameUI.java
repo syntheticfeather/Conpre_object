@@ -7,18 +7,15 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JComboBox;
-import javax.swing.JScrollPane;
 
 import Wting.src_Wting.Enums.GameState;
+
 public class GameUI {
 
     private final JFrame mainFrame;
@@ -268,7 +265,7 @@ public class GameUI {
                     }
                     final int r=i,c=j;
                     buttons[i][j].addActionListener(e -> {
-                        gameController.starCklick(r, c);
+                        gameController.starClick(r, c);
                     });
                     gridPanel.add(buttons[i][j]); 
                 }
@@ -324,15 +321,17 @@ public class GameUI {
         }
 
         public void showPassMessage() {
-            passLabel.setVisible(true);
-            new Thread(() -> {
-                try {
-                    Thread.sleep(2000);
-                    passLabel.setVisible(false);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }).start();
+            if(gameEngine.getGameState() == GameState.PASS){
+                passLabel.setVisible(true);
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(2000);
+                        passLabel.setVisible(false);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }).start();
+            }
         }
 
         public void setPauseButtonListener(ActionListener listener) {
@@ -383,11 +382,13 @@ public class GameUI {
         private final JLabel resultLabel;
         private JLabel scoreLabel, bestScoreLabel;
         private final JButton backButton;
+        private final JButton backToMenuButton; // 返回主菜单按钮
 
         public EndPanel() {
             // 构建结束界面UI
             JPanel panel = new JPanel(null);
             backButton = new JButton(new ImageIcon(path + "home.jpg"));
+            backToMenuButton = new JButton("返回主菜单"); // 新增按钮
             resultLabel = new JLabel("再接再厉！");
             scoreLabel = new JLabel("得分: " + gameEngine.getScore());
             bestScoreLabel = new JLabel("",JLabel.CENTER);
@@ -399,12 +400,18 @@ public class GameUI {
             resultLabel.setBounds(100, 100, 200, 50);
             scoreLabel.setBounds(100, 100, 200, 50);
             backButton.setBounds(250, 150, 100, 50);
+            backToMenuButton.setBounds(220, 180, 150, 40);
             // 设置组件
+            
             this.add(panel);
             panel.add(resultLabel);
             panel.add(scoreLabel);
             panel.add(bestScoreLabel);
             panel.add(backButton);
+            panel.add(backToMenuButton);
+        }
+        public void backToMenuButtonListener(ActionListener listener) {
+            backToMenuButton.addActionListener(listener);
         }
         
         public void setScore(int score) {

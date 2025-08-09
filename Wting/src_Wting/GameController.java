@@ -4,6 +4,8 @@ package Wting.src_Wting;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JButton;
+import javax.swing.SwingUtilities;
+
 import java.lang.Thread;
 
 import Wting.src_Wting.Enums.GameState;
@@ -37,7 +39,7 @@ public final class GameController {
                 }
                 if (e.getButton() == MouseEvent.BUTTON1) {
                     //消灭星星
-                    starCklick(row, col);
+                    starClick(row, col);
                 }
                 // 刷新游戏状态
                 checkGameState();
@@ -49,8 +51,9 @@ public final class GameController {
     }
 
     // 处理左键点击（消灭星星）
-    public void starCklick(int row, int col) {
-        if(gameEngine.getGameState()!= GameState.PLAYING||gameEngine.getGameState()!=GameState.PASS){
+    public void starClick(int row, int col) {
+        GameState state = gameEngine.getGameState();
+        if(state != GameState.PLAYING && state != GameState.PASS|| isEliminating){
             return;
         }
         if (gameEngine.getStarState("exist", row, col) == 1) {
@@ -70,11 +73,11 @@ public final class GameController {
         // 确保更新游戏面板
         checkGameState();
         gameUI.getGamePanel().updateGameBoard();
-        gameUI.getGamePanel().repaint();
     }
 
     // 检查并更新游戏状态
     private void checkGameState() {
+        gameEngine.checkPassCondition();
         GameState state = gameEngine.getGameState();
         // 通关判定
         if (state == GameState.PASS) {
@@ -85,24 +88,26 @@ public final class GameController {
             int reward = gameEngine.calculateReward();
             gameEngine.addScore(reward);// 无可消除且通关后进入下一关
             gameEngine.checkPassCondition();
-            eliminateRemaingStars();
+            state = gameEngine.getGameState();
             if(state == GameState.PASS){
-                new Thread(() -> {
+                new Thread(()->{
                     try {
-                        Thread.sleep(2000);
-                        gameEngine.generateStars(); // 生成下一关星星
-                        gameUI.getGamePanel().updateGameBoard();
-                        gameUI.getGamePanel().repaint();
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                    }
-                }).start();
-            }else {
-                state=GameState.LOST;
-                bestScoreManager.checkAndSaveBestScore(gameEngine.getScore(), gameEngine.getGameState());
-                boolean isBest = gameEngine.getScore() == bestScoreManager.getBestScore();
-                gameUI.showEndScreen(gameEngine.getScore(), isBest, bestScoreManager.getBestScore());
+                        Thread.sleep(1500); // 短暂延迟
+                        gameEngine.generateStars();
+                        SwingUtilities.invokeLater(() -> {
+                            gameUI.getGamePanel().updateLevel();
+                            gameUI.getGamePanel().updateTarget();
+                            gameUI.getGamePanel().updateGameBoard();
+                        });
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }).start();
             }
+        }else if(state == GameState.LOST){
+            bestScoreManager.checkAndSaveBestScore(gameEngine.getScore(), state);
+            boolean isBest = gameEngine.getScore() == bestScoreManager.getBestScore();
+            gameUI.showEndScreen(gameEngine.getScore(), isBest, bestScoreManager.getBestScore());
         }
     }
     
