@@ -265,7 +265,7 @@ public class GameUI {
                     }
                     final int r=i,c=j;
                     buttons[i][j].addActionListener(e -> {
-                        gameController.starClick(r, c);
+                        gameController.starClick(r, c);//这里直接引用了starClick,setupCellListeners没有用，可以删了
                     });
                     gridPanel.add(buttons[i][j]); 
                 }

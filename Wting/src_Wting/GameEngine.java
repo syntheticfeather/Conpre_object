@@ -55,7 +55,6 @@ public class GameEngine {
 
     // 生成星星分布*
     public void generateStars(){
-        int currentScore=Score;
         exist=new int[rows][cols];
         color=new int[rows][cols];
         for(int i=0;i<rows;i++){
@@ -75,7 +74,6 @@ public class GameEngine {
         
         gameLevel++;
         Target=getTarget(gameLevel);
-        Score=currentScore;
         gameState=GameState.PLAYING;
     }
     
@@ -89,7 +87,7 @@ public class GameEngine {
                     if (i > 0 && color[i][j] == color[i-1][j] && exist[i-1][j] == 1) return true;
                     if (j < cols-1 && color[i][j] == color[i][j+1] && exist[i][j+1] == 1) return true;
                     if (i < rows-1 && color[i][j] == color[i+1][j] && exist[i+1][j] == 1) return true;
-                 }
+                }
             }
         }
         return false;
@@ -177,7 +175,7 @@ public class GameEngine {
                 }
             }
         }
-            // 水平填充列
+            // 水平移动列
         int emptyCol=0;
         for (int j = 0; j <cols; j++) {
             boolean isEmpty=true;
@@ -201,29 +199,29 @@ public class GameEngine {
         }   
     }
     
-    //道具1-炸弹：炸掉以指定星星为中心3*3所有星星*
-    public void useBomb(int row, int col){
-        exist[row][col]=0;
-        exist[row+1][col]=0;
-        exist[row-1][col]=0;
-        exist[row][col+1]=0;
-        exist[row][col-1]=0;
-        exist[row+1][col+1]=0;
-        exist[row+1][col-1]=0;
-        exist[row-1][col+1]=0;
-        exist[row-1][col-1]=0;
-        Score=Score+405;
-    }
+    // //道具1-炸弹：炸掉以指定星星为中心3*3所有星星*
+    // public void useBomb(int row, int col){
+    //     exist[row][col]=0;
+    //     exist[row+1][col]=0;
+    //     exist[row-1][col]=0;
+    //     exist[row][col+1]=0;
+    //     exist[row][col-1]=0;
+    //     exist[row+1][col+1]=0;
+    //     exist[row+1][col-1]=0;
+    //     exist[row-1][col+1]=0;
+    //     exist[row-1][col-1]=0;
+    //     Score=Score+405;
+    // }
 
-    //道具2-颜料盘：指定星星颜色改为指定颜色*
-    public void useColor(int row, int col, int input){
-        color[row][col]=input;
-    }
+    // //道具2-颜料盘：指定星星颜色改为指定颜色*
+    // public void useColor(int row, int col, int input){
+    //     color[row][col]=input;
+    // }
 
-    //道具3-刷新：刷新星星布局*
-    public void useRefresh(){
-        generateStars();
-    }
+    // //道具3-刷新：刷新星星布局*
+    // public void useRefresh(){
+    //     generateStars();
+    // }
 
     //检查是否通关*
     public void checkPassCondition(){       

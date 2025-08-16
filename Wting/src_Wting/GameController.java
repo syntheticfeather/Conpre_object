@@ -25,30 +25,30 @@ public final class GameController {
        
     }
 
-    // 为格子添加鼠标监听器
-    public void setupCellListeners(JButton cell, int row, int col) {
-        cell.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                // 消除过程中或游戏未在进行中时点击无效
-                if (isEliminating){
-                    return;
-                }
-                if (gameEngine.getGameState() != GameState.LOST&&gameEngine.getGameState() != GameState.PLAYING&&gameEngine.getGameState() != GameState.PASS) {
-                    return;
-                }
-                if (e.getButton() == MouseEvent.BUTTON1) {
-                    //消灭星星
-                    starClick(row, col);
-                }
-                // 刷新游戏状态
-                checkGameState();
-                // 更新游戏状态           
-                gameUI.getGamePanel().updateGameBoard();
-                gameUI.getGamePanel().repaint();
-            }
-        });
-    }
+    // // 为格子添加鼠标监听器
+    // public void setupCellListeners(JButton cell, int row, int col) {
+    //     cell.addMouseListener(new MouseAdapter() {
+    //         @Override
+    //         public void mouseClicked(MouseEvent e) {
+    //             // 消除过程中或游戏未在进行中时点击无效
+    //             if (isEliminating){
+    //                 return;
+    //             }
+    //             if (gameEngine.getGameState() != GameState.LOST&&gameEngine.getGameState() != GameState.PLAYING&&gameEngine.getGameState() != GameState.PASS) {
+    //                 return;
+    //             }
+    //             if (e.getButton() == MouseEvent.BUTTON1) {
+    //                 //消灭星星
+    //                 starClick(row, col);
+    //             }
+    //             // 刷新游戏状态
+    //             // checkGameState();
+    //             // // 更新游戏状态           
+    //             // gameUI.getGamePanel().updateGameBoard();
+    //             // gameUI.getGamePanel().repaint();
+    //         }
+    //     });
+    // }
 
     // 处理左键点击（消灭星星）
     public void starClick(int row, int col) {
@@ -59,15 +59,9 @@ public final class GameController {
         if (gameEngine.getStarState("exist", row, col) == 1) {
             isEliminating = true;
             // 保存旧分数用于比较
-            int oldScore = gameEngine.getScore();
+            //int oldScore = gameEngine.getScore();
             gameEngine.eliminateStars(row, col);
             gameEngine.fillStar();
-            // 获取新分数
-            int newScore = gameEngine.getScore();
-            // 更新UI分数显示
-            if (newScore != oldScore) {
-                gameUI.getGamePanel().updateScore();
-            }
             isEliminating = false;
         }
         // 确保更新游戏面板
@@ -111,40 +105,6 @@ public final class GameController {
         }
     }
     
-    //道具使用 
-    public void useBomb(int row, int col) {
-        if (gameEngine.getGameState() == GameState.PLAYING && !isEliminating) {
-            gameEngine.useBomb(row, col);
-            gameEngine.fillStar();
-            gameUI.getGamePanel().updateGameBoard();
-            checkGameState();
-        }
-    }
-
-    public void useColor(int row, int col, int color) {
-        if (gameEngine.getGameState() == GameState.PLAYING && !isEliminating) {
-            gameEngine.useColor(row, col, color);
-            gameUI.getGamePanel().updateGameBoard();
-        }
-    }
-
-    public void useRefresh() {
-        if (gameEngine.getGameState() == GameState.PLAYING && !isEliminating) {
-            gameEngine.useRefresh();
-            gameUI.getGamePanel().updateGameBoard();
-        }
-    }
-    
-    public void eliminateRemaingStars(){
-        for(int i=0;i<gameEngine.getRows();i++){
-            for(int j=0;j<gameEngine.getCols();j++){
-                if(gameEngine.getStarState("exist", i, j)==1){
-                    gameEngine.setStarState("exist", i, j,0);
-                    gameEngine.setStarState("color", i, j,5);
-                }
-            }   
-        }
-    }
     public GameUI getGameUI() {
         return gameUI;
     }
