@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class StuSystem{
     public static void useStudentSystem(){
-        ArrayList<Student> list=new ArrayList<>();
+        ArrayList<Student> list = FileUtils.loadStudents();
         Scanner sc=new Scanner(System.in);
         while (true) { 
             //初始菜单

@@ -7,7 +7,7 @@ import java.util.Scanner;
 public class Start {
     public static void main(String[] args) {
         Scanner sc=new Scanner(System.in);
-        ArrayList<User> list=new ArrayList<>();
+        ArrayList<User> list = FileUtils.loadUsers();
         while (true) { 
             System.out.println("欢迎来到学生管理系统");
             System.out.println("请选择操作: 1.登录 2.注册 3.忘记密码 4.退出");
@@ -57,7 +57,7 @@ public class Start {
             }
             //用户名和密码是否正确
             User user=new User(name,password,null,null);
-            if(checkUserInfo(list, user)){
+            if(checkUserInfo(list, user)){//没有保存
                 System.out.println("登录成功");
                 StuSystem use=new StuSystem();
                 use.useStudentSystem();
@@ -173,7 +173,7 @@ public class Start {
 
     //验证用户名格式
     private static boolean checkUserName(String userName){
-        int len=userName.length();
+        /*int len=userName.length();
         if(len<3||len>15){
             return false;
         }
@@ -187,7 +187,8 @@ public class Start {
                 count++;
             }
         }
-        return count>0;
+        return count>0;*/
+        return userName.matches("^(?![0-9]+$)[a-zA-Z0-9]{3,15}$");
     }
 
     //判断用户名是否存在
@@ -204,7 +205,7 @@ public class Start {
 
     //验证身份证号格式
     private static boolean checkPersonId(String personId){
-        if(personId.length()!=18){
+        /*if(personId.length()!=18){
             return false;
         }
         if(personId.startsWith("0")){
@@ -221,12 +222,13 @@ public class Start {
             return true;
         }else{
             return false;
-        }
+        }*/
+        return personId.matches("^[1-9]\\d{16}[0-9Xx]$");
     }
 
     //验证手机号码格式
     private static boolean checkPhoneNumber(String phoneNumber){
-        if(phoneNumber.length()!=11){
+        /*if(phoneNumber.length()!=11){
             return false;
         }
         if(phoneNumber.startsWith("0")){
@@ -238,7 +240,8 @@ public class Start {
                 return false;
             }
         }
-        return true;
+        return true;*/
+        return phoneNumber.matches("^[1-9]\\d{10}$");
     }
 
     //生成验证码
