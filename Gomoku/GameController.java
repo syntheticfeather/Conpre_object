@@ -34,7 +34,7 @@ public final class GameController {
         });
     }
 
-    
+    //绑定界面按钮事件监听器
     private void setupEventListeners() {
         //重新开始
         ui.setRestartListener(e -> {

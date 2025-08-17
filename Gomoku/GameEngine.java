@@ -20,7 +20,7 @@ public class GameEngine {
         }
     }
     private final Stack<Move> moveHistory = new Stack<>();
-    private final int BOARD_SIZE;  // 棋盘大小（默认15x15）
+    private final int BOARD_SIZE;  // 棋盘大小（15x15）
     private PieceType[][] board;   // 棋盘状态
     private GameState gameState;   // 当前游戏状态
     private PieceType currentPlayer;  // 当前回合玩家

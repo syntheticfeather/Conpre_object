@@ -55,12 +55,12 @@ public class GameUI {
         mainFrame.setSize(boardSize * CELL_SIZE + 50, boardSize * CELL_SIZE + 100);
         mainFrame.setVisible(true);
     }
-    
+
     public void setUndoListener(ActionListener listener) {
         undoButton.addActionListener(listener);
     }
 
-    // 初始化棋盘按钮（绑定点击事件）
+    // 初始化棋盘按钮
     private void initBoardButtons(GameController controller) {
         int boardSize = engine.getBoardSize();
         for (int i = 0; i < boardSize; i++) {
