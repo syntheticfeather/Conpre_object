@@ -5,10 +5,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ShoppingClient {
+
     // 数据文件路径
-    private static final String USER_FILE = "data/users.dat";
-    private static final String PRODUCT_FILE = "data/products.dat";
-    private static final String ORDER_FILE = "data/orders.dat";
+    private static final String USER_FILE = "Wting1/data/users.dat";
+    private static final String PRODUCT_FILE = "Wting1/data/products.dat";
+    private static final String ORDER_FILE = "Wting1/data/orders.dat";
 
     private User currentUser;
     private Scanner scanner = new Scanner(System.in);
@@ -479,7 +480,7 @@ public class ShoppingClient {
     // 更新订单数据
     private void updateOrderdata() throws IOException, ClassNotFoundException {
         List<Order> allOrders = FileUtil.readList(ORDER_FILE);
-        allOrders.removeIf(o -> o.getOrderId().equals(currentUser.getId()));
+        allOrders.removeIf(o -> o.getUserId().equals(currentUser.getId()));
         allOrders.addAll(currentUser.getOrders());
         FileUtil.saveList(allOrders, ORDER_FILE);
     } 

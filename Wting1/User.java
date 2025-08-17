@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class User implements Serializable {
+
+    private static final long serialVersionUID = 1L;
     private String id;             // 自定义ID
     private String phone;          // 手机号（同时作为收货电话）
     private String password;       // 密码
