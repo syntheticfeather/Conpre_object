@@ -1,0 +1,32 @@
+<tr v-for="item in items" :key="item.id"> </tr>
+
+<a v-bind:href="item.url"></a>
+<a :href="item.url"></a>
+
+<div>
+    <span v-if="item.is_active"></span>
+    <span v-else-if="item.is_inactive"></span>
+    <span v-else></span>
+</div>
+
+<div>
+    <span v-show="item.is_active"></span>
+    <span v-show="item.is_inactive"></span>
+</div>
+
+<div>
+    <input v-on:input="onInput" >
+    <input @input="onInput" >
+</div>
+
+<div>
+
+<input v-model="inputValue">
+<input :value="inputValue">
+
+</div>
+
+生命周期函数
+mounted() {
+    console.log('Component mounted.')
+}
