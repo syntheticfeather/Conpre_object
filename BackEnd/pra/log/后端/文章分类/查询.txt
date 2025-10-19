@@ -1,3 +1,0 @@
-对时间格式进行规范
-@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-
