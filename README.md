@@ -1,6 +1,21 @@
 # Conpre_object
+
 挑战性综合项目
 
+## 所有的项目代码相关文件放到projecct里去
+
+#### 学习的markdown文档放document里面
+
+## 需求分析文档放需求分析文件夹
+
+#### 进去先看通知
+
+
+
+
+
+
+## java部分
 
 JavaStudy内容须知:
 
