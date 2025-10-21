@@ -1,0 +1,77 @@
+/* 首页样式 */
+/* 版心 */
+.wrapper {
+    margin: 0 auto;
+    width: 1200px;
+}
+
+body {
+    background-image: url(../images/bgi.jpg);
+    background-size: cover;
+}
+
+/* 信息注册 */
+.title {
+    margin: 110px 0 12px 262px;
+
+    font-size: 32px;
+    line-height: 30px;
+    font-weight: 600;
+    color: #000c14;
+}
+
+/* 主体部分 */
+.main {
+    margin-bottom: 197px;
+    padding: 0 20px 91px 20px;
+    width: 1050px;
+    height: 745px;
+    background-color: #fff;
+
+    border-radius: 35px;
+}
+
+.main h2 {
+    font-size: 24px;
+    line-height: 54px;
+    color: #2551e1;
+}
+
+div .base-information {
+    display: flex;
+    justify-content: center;
+}
+
+i {
+    color: red;
+}
+
+input {
+    height: 33px;
+    font-size: 14px;
+    color: #aaadad;
+    border: none;
+    outline: none;
+}
+
+div .infor-left {
+    padding-top: 4px;
+    padding-left: 15px;
+    width: 490px;
+    height: 396px;
+    background-color: #e2e7e6;
+    
+    font-size: 20px;
+    line-height: 10px;
+    color: #000;
+}
+
+div .infor-right {
+    width: 525px;
+    height: 396px;
+    background-color: #e2e7e6;
+    
+    font-size: 20px;
+    line-height: 10px;
+    color: #000;
+}
