@@ -1,0 +1,176 @@
+/* 首页样式 */
+/* 版心 */
+.wrapper {
+    margin: 0 auto;
+    width: 1200px;
+}
+
+body {
+    background-image: url(../images/bgi.jpg);
+    background-size: cover;
+}
+
+/* 贷款系统名称 */
+.name h1 {
+    margin-top: 239px;
+    margin-bottom: 30px;
+
+    font-size: 32px;
+    line-height: 30px;
+    font-weight: 400;
+    color: #000c14;
+    text-align: center;
+}
+
+/* 主体部分 */
+.main {
+    margin-bottom: 197px;
+    padding: 28px 24px;
+    width: 615px;
+    height: 584px;
+    background-color: #fff;
+
+    border-radius: 30px;
+}
+
+/* 标题 */
+.main h2 {
+    margin-top: 4px;
+    margin-bottom: 63px;
+
+    font-size: 24px;
+    line-height: 28px;
+    font-weight: 600;
+    color: #1b53f1;
+    text-align: center;
+}
+
+/* 登录方式 */
+.main .login-type a {
+    margin-right: 43px;
+
+    font-size: 20px;
+    line-height: 14px;
+    color: #010509;
+}
+
+/* 密码登录激活状态 */
+.main .login-type a.active {
+    color: #1b53f1;
+    font-weight: 600;
+}
+
+/* 信息填写框 */
+.main input {
+
+    font-size: 22px;
+    line-height: 24px;
+    color: #9ea3a4;
+    border: none;
+    outline: none;
+}
+
+.main input[type="text"] {
+    margin-top: 43px;
+}
+
+.main input[type="password"] {
+    margin-top: 40px;
+}
+
+hr {
+    border-bottom: 1px solid #9ea3a4;
+}
+
+/* 登录按钮  */
+.main button {
+    margin:38px 45px;
+
+    width: 460px;
+    height: 60px;
+    background-color: #165eff;
+
+    font-size: 28px;
+    line-height: 30px;
+    font-weight: 600;
+    color: #fff;
+    border: none;
+}
+
+.main button:hover {
+    background-color: #1b53f1;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(27, 83, 241, 0.3);
+}
+
+.main button:active {
+    transform: translateY(0);
+}
+
+/* 注册/忘记密码 */
+span {
+    font-size: 15px;
+    line-height: 17px;
+    color: #2c3336;
+}
+
+span a {
+    color: #525ac4;
+}
+
+.forget-password {
+    margin-left: 300px;
+    font-size: 15px;
+    line-height: 17px;
+    color: #525ac4;
+}
+
+/* 勾选条款 */
+label {
+    display: block;
+    margin-top: 44px;
+    width: 590px; 
+    text-align: center; 
+
+    font-size: 15px;
+    line-height: 17px;
+    color: #2c3336;
+}
+
+label a {
+    color: #525ac4;
+}
+
+/* 错误消息样式 */
+.error-message {
+    color: #e74c3c;
+    font-size: 14px;
+    margin-top: 5px;
+    display: none;
+}
+
+/* 加载动画 */
+.loading {
+    display: none;
+    margin: 0 auto;
+    width: 30px;
+    height: 30px;
+    border: 3px solid rgba(27, 83, 241, 0.3);
+    border-radius: 50%;
+    border-top-color: #1b53f1;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* 成功消息 */
+.success-message {
+    color: #2ecc71;
+    margin-top: 0;
+    display: none;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 500;
+}

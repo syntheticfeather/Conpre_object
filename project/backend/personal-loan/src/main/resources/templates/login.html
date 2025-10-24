@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录界面</title>
+    <link rel="stylesheet" href="../static/css/base.css">
+    <link rel="stylesheet" href="../static/css/login.css">
+</head>
+<body>
+    <div>
+        <div class="name wrapper">
+            <h1>此处为该借贷风控系统的名称或图标</h1>
+        </div>
+        <div class="main wrapper">
+            <h2>————欢迎登录————</h2>
+            <div class="login-type"><a href="#" class="active">密码登录</a><a href="#">验证码登录</a></div>
+            <form id="loginForm">
+                <input type="text" id="username" placeholder="请输入用户名/手机号码">
+                <div class="error-message" id="usernameError">请输入用户名或手机号码</div>
+                <hr>
+                <br>
+                <input type="password" id="password" placeholder="请输入密码">
+                <div class="error-message" id="passwordError">请输入密码</div>
+                <hr>
+                <br>
+                <button type="submit">登录</button>
+                <div class="loading" id="loadingSpinner"></div>
+                <div class="success-message" id="successMessage">登录成功！正在跳转...</div>
+            </form>
+            <span>还没有账号？<a href="registration.html">注册</a></span><a href="#" class="forget-password">忘记密码?</a>
+            <br>
+            <label><input type="checkbox" id="agreeCheckbox">同意并接受<a href="#">《服务条款》</a>和<a href="#">《隐私政策》</a></label>
+            <div class="error-message" id="checkboxError">请同意服务条款和隐私政策</div>
+        </div>
+    </div>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const isAgreed = document.getElementById('agreeCheckbox').checked;
+
+            document.getElementById('usernameError').style.display = 'none';
+            document.getElementById('passwordError').style.display = 'none';
+            document.getElementById('checkboxError').style.display = 'none';
+
+            let isValid = true;
+            if (!username) {
+                document.getElementById('usernameError').style.display = 'block';
+                isValid = false;
+            }
+            if (!password) {
+                document.getElementById('passwordError').style.display = 'block';
+                isValid = false;
+            }
+            if (!isAgreed) {
+                document.getElementById('checkboxError').style.display = 'block';
+                isValid = false;
+            }
+            if (!isValid) return;
+
+            //显示加载动画
+            document.getElementById('loadingSpinner').style.display = 'block';
+
+            setTimeout(() => {
+                // 隐藏加载动画
+                document.getElementById('loadingSpinner').style.display = 'none';
+                
+                // 验证逻辑（测试账号：admin/123456）
+                if (username === 'admin' && password === '123456') {
+                    // 显示成功消息
+                    document.getElementById('successMessage').style.display = 'block';
+                    
+                    // 跳转到个人中心
+                    setTimeout(() => {
+                        window.location.href = "userCenter.html";
+                    }, 1500);
+                } else {
+                    alert('用户名或密码错误！\n测试账号：admin\n测试密码：123456');
+                }
+            }, 1500);
+        });
+        // 输入时隐藏错误消息
+        document.getElementById('username').addEventListener('input', function() {
+            document.getElementById('usernameError').style.display = 'none';
+        });
+        
+        document.getElementById('password').addEventListener('input', function() {
+            document.getElementById('passwordError').style.display = 'none';
+        });
+        
+        document.getElementById('agreeCheckbox').addEventListener('change', function() {
+            document.getElementById('checkboxError').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
