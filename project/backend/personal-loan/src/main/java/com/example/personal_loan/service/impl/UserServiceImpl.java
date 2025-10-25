@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException(ErrorCode.PASSWORD_ERROR);
         }
 
-        String token = jwtUtil.generateToken(user.getPhone());
+        String token = jwtUtil.generateToken(user.getPhone(),user.getId().toString());
 
         return new LoginResponse(token, user.getPhone());
         
