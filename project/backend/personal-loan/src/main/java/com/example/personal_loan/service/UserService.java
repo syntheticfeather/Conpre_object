@@ -2,11 +2,16 @@ package com.example.personal_loan.service;
 
 import java.util.List;
 
+import com.example.personal_loan.controller.dto.LoginRequest;
+import com.example.personal_loan.controller.dto.LoginResponse;
 import com.example.personal_loan.entity.User;
 
 public interface UserService {
         // 用户登录(手机号+密码)
-        User login(String phone, String password);
+        LoginResponse login(LoginRequest request);
+
+        // 用户注册
+        User register(User user);
 
         // 添加用户
         User addUser(User user);

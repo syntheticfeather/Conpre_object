@@ -5,11 +5,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.personal_loan.controller.dto.LoginRequest;
+import com.example.personal_loan.controller.dto.LoginResponse;
 import com.example.personal_loan.dao.UserMapper;
 import com.example.personal_loan.entity.User;
 import com.example.personal_loan.exception.BusinessException;
 import com.example.personal_loan.exception.ErrorCode;
 import com.example.personal_loan.service.UserService;
+import com.example.personal_loan.utils.JwtUtil;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -17,18 +20,30 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+    
     @Override
-    public User login(String phone, String password){
-
-        User user = userMapper.findByPhone(phone);
-
+    public LoginResponse login(LoginRequest request) {
+        
+        User user = userMapper.findByPhone(request.getPhone());
         if (user == null) {
             throw new BusinessException(ErrorCode.USER_NOT_FOUND);
         }
-        if (!user.getPassword().equals(password)) { // 后续建议加密
+
+        if (!user.getPassword().equals(request.getPassword())) {
             throw new BusinessException(ErrorCode.PASSWORD_ERROR);
         }
-        return user;
+
+        String token = jwtUtil.generateToken(user.getPhone());
+
+        return new LoginResponse(token, user.getPhone());
+        
+    }
+
+    @Override
+    public User register(User user) {
+        return addUser(user);
     }
 
     @Override

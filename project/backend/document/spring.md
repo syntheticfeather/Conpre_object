@@ -115,3 +115,22 @@ Model-View-Controller（模型-视图-控制器）三层架构
 ## ResponseEntity<T>
 
 控制HTTP响应
+
+### JWT认证
+
+- 组成 Header.Payload.Signature
+    1. Header:头部，一个JSON对象，描述元数据，如签名算法和类型
+    2. Payload：一个JSON对象，包含用户标识，过期时间，签发时间
+    3. Signature:签名，用于验证消息在传递过程有没有被修改,将编码后的 Header和Payload、一个密钥（Secret）通过 Header 中指定的算法进行签名
+
+- 密钥和期限写在配置文件中（不应该写死，后续应优化），通过`@Value`注入
+
+- 认证流程
+    1. 登录
+    2. 生成JWT
+    3. 返回JWT给客户端，客户端保存
+    4. 后续请求携带JWT
+    5. 服务器验证是否过期
+    6. 从Payload中读取用户信息
+    7. 返回相应
+
