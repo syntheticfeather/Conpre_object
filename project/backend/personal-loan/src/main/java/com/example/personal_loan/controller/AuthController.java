@@ -15,9 +15,9 @@ import com.example.personal_loan.service.UserService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
-    
+
     @Autowired
     private UserService userService;
 
