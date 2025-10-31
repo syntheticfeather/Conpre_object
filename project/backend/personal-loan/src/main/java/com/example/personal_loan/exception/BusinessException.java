@@ -17,4 +17,8 @@ public class BusinessException extends RuntimeException {
         this.code = errorCode.getCode();
     }
     
+    public BusinessException(String message) {
+        super(message);
+        this.code = "LOAN_PRODUCT_ERROR"; // 贷款产品增删改查相关错误
+    }
 }

@@ -20,8 +20,8 @@ public class JwtUtil {
 
     public String generateToken(String userPhone, String userId) {
         return Jwts.builder()
-                .setSubject(userId) //主题：userId
-                .claim("userPhone", userPhone) // 声明：userPhone
+                .setSubject(userPhone) //主题：userPhone
+                .claim("userId", userId) // 声明：userId
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
@@ -47,15 +47,15 @@ public class JwtUtil {
         } catch (SignatureException e) {
             return false;
         }
-        // ... 其他异常处理?(要不要放全局)
+        // ... 其他异常处理?
     }
 
     public String getPhoneFromToken(String token) {
-        return getClaims(token).get("userPhone", String.class).trim();  // 从主题中获取手机号
+        return getClaims(token).getSubject();
     }
 
-    // 从主题中获取用户ID
+    // 获取用户ID
     public Long getUserIdFromToken(String token) {
-        return Long.valueOf(getClaims(token).getSubject());  // 获取用户ID
+        return getClaims(token).get("userId", Long.class);
     }
 }

@@ -102,21 +102,21 @@ Model-View-Controller（模型-视图-控制器）三层架构
 
 - `@Param`：给Mapper接口的方法参数指定其在SQL/xml配置文件中的名称,要与注解中的SQL的`#{ }`一致
 
-### 异常处理
+## 异常处理
 
-#### 流程
+### 流程
 
-#### 全局异常处理器
+### 全局异常处理器
 
 `@ControllerAdvice`：自动捕获所有 Controller 层抛出的异常，转化成统一的结果响应体
 
-#### 错误码枚举
+### 错误码枚举
 
 ## ResponseEntity<T>
 
 控制HTTP响应
 
-### JWT认证
+## JWT认证
 
 - 组成 Header.Payload.Signature
     1. Header:头部，一个JSON对象，描述元数据，如签名算法和类型
@@ -134,3 +134,18 @@ Model-View-Controller（模型-视图-控制器）三层架构
     6. 从Payload中读取用户信息
     7. 返回相应
 
+- 生成token
+
+``` java
+String token=Jwts.builder()
+    .setSubject(" ")
+    .claim()
+    .setIssuedAt()
+    .setExpiration()
+    .signWith()
+    .compact();
+```
+
+## 事务操作
+
+### @Transaction 声明式事务管理

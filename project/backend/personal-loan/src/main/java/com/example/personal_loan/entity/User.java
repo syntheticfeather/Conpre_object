@@ -1,5 +1,7 @@
 package com.example.personal_loan.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -32,4 +34,18 @@ public class User {
         message = "密码必须包含大小写字母、数字和特殊字符,长度8-20"
     )
     private String password;
+
+    private Integer creditScore;
+
+    private LocalDateTime createTime;
+
+    private LocalDateTime updateTime;
+
+    public User(String name, String password, String idCard, String phone, Integer creditScore) {
+        this.name = name;
+        this.password = password;
+        this.idCard = idCard;
+        this.phone = phone;
+        this.creditScore = creditScore;
+    }
 }
