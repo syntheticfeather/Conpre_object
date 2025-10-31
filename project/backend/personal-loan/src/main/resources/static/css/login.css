@@ -36,7 +36,7 @@ body {
 /* 标题 */
 .main h2 {
     margin-top: 4px;
-    margin-bottom: 63px;
+    margin-bottom: 13px;
 
     font-size: 24px;
     line-height: 28px;
@@ -46,12 +46,26 @@ body {
 }
 
 /* 登录方式 */
-.main .login-type a {
-    margin-right: 43px;
+.loginType {
+    margin-top: 23px;
+    padding-left: 20px;
+    display: flex;
+    justify-content: space-between;
+    width:300px;
+    height: 40px;
+}
+
+.main .login-type 
+#passwordLogin-btn
+,#smsLogin-btn {
+    margin: 0;
+    background-color: #fff;
 
     font-size: 20px;
     line-height: 14px;
     color: #010509;
+    border: none;
+    cursor: pointer;
 }
 
 /* 密码登录激活状态 */
@@ -71,7 +85,7 @@ body {
 }
 
 .main input[type="text"] {
-    margin-top: 43px;
+    margin-top: 20px;
 }
 
 .main input[type="password"] {
@@ -83,7 +97,7 @@ hr {
 }
 
 /* 登录按钮  */
-.main button {
+#login-btn {
     margin:38px 45px;
 
     width: 460px;
@@ -97,7 +111,7 @@ hr {
     border: none;
 }
 
-.main button:hover {
+#login-btn:hover {
     background-color: #1b53f1;
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(27, 83, 241, 0.3);
@@ -141,6 +155,50 @@ label a {
     color: #525ac4;
 }
 
+/* 登录表单切换 */
+.login-form {
+    display: none;
+}
+
+.login-form.active {
+    display: block;
+}
+
+/* 短信验证码容器 */
+.sms-code-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.sms-code-container input {
+    flex: 1;
+    margin-top: 0 !important;
+}
+
+.get-sms-btn {
+    padding: 10px 15px;
+    background-color: #165eff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.get-sms-btn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.get-sms-btn:hover:not(:disabled) {
+    background-color: #1b53f1;
+}
+
+#checkboxError {
+    text-align: center;
+}
+
 /* 错误消息样式 */
 .error-message {
     color: #e74c3c;
@@ -149,28 +207,28 @@ label a {
     display: none;
 }
 
-/* 加载动画 */
+/* 加载动画样式 */
 .loading {
     display: none;
-    margin: 0 auto;
-    width: 30px;
-    height: 30px;
-    border: 3px solid rgba(27, 83, 241, 0.3);
-    border-radius: 50%;
-    border-top-color: #1b53f1;
-    animation: spin 1s ease-in-out infinite;
+    text-align: center;
+    color: #165eff;
+    font-weight: bold;
+    margin: 10px 0;
+    padding: 10px;
 }
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-/* 成功消息 */
+/* 成功消息样式 */
 .success-message {
     color: #2ecc71;
-    margin-top: 0;
+    margin-top: 10px;
     display: none;
     text-align: center;
     font-size: 16px;
     font-weight: 500;
+    padding: 10px;
+}
+
+/* 输入框错误状态 */
+.input-error {
+    border-bottom: 1px solid #e74c3c !important;
 }
