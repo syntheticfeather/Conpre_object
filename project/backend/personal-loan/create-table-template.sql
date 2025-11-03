@@ -11,16 +11,16 @@ CREATE TABLE users(
 
 CREATE Table black_list(
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
-    level TINYINT COMMENT '黑名单等级',
+    user_id INT NOT NULL COMMENT '关联用户ID',
+    black_level TINYINT COMMENT '黑名单等级',
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    user_id INT NOT NULL COMMENT '关联用户ID',
     FOREIGN KEY (user_id) REFERENCES users(id)
 )COMMENT '黑名单表';
 
 CREATE TABLE user_certification(
     user_id INT PRIMARY KEY COMMENT '用户ID',
-    id_card CHAR(18) COMMENT '身份证号r',
+    id_card CHAR(18) COMMENT '身份证号',
     work_cert_id VARCHAR(50) COMMENT '工作证明',
     tri_cert_id VARCHAR(50) COMMENT '第三方证明',
     bank_card_id CHAR(16) COMMENT '银行卡号',
@@ -50,17 +50,18 @@ CREATE TABLE loan_products(
 CREATE TABLE loan_option(
     id INT PRIMARY KEY AUTO_INCREMENT,
     product_id INT NOT NULL,
-    period INT COMMENT '贷款期限',
+    loan_period INT COMMENT '贷款期限',
     loan_amount DECIMAL(12,2) COMMENT '贷款金额',
     repaid_type ENUM('等额本息', '等额本金', '先息后本', '一次性还本付息') COMMENT '还款方式',
     interest_rate DECIMAL(6,4) COMMENT '利率',
     FOREIGN KEY (product_id) REFERENCES loan_products(id)
 )COMMENT '贷款选项表';
 
-CREATE TABLE loans(
+CREATE TABLE orders(
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
     user_id INT NOT NULL COMMENT '用户ID',
     product_id INT NOT NULL COMMENT '产品ID',
+    application_id INT NOT NULL COMMENT '申请ID',
     repaid_amount DECIMAL(10,2) COMMENT '已还金额',
     outstanding_amount DECIMAL(10,2) COMMENT '未还金额',
     interest_rate DECIMAL(5,2) COMMENT '利率',
@@ -71,7 +72,23 @@ CREATE TABLE loans(
     start_date DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '开始日期',
     end_date DATETIME COMMENT '结束日期',
     Foreign Key (user_id) REFERENCES users(id),
-    Foreign Key (product_id) REFERENCES loan_products(id)
+    Foreign Key (product_id) REFERENCES loan_products(id),
+    Foreign Key (application_id) REFERENCES loan_applications(id)
 )COMMENT '用户已贷款项目表';
 
+CREATE TABLE loan_applications(
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '申请ID',
+    user_id INT NOT NULL COMMENT '用户id',
+    product_id INT NOT NULL COMMENT '产品id',
+    status ENUM('UNDER_REVIEW','APPROVED','REJECTED','CANCELLED') COMMENT '申请状态',
+    reject_reason VARCHAR(255) COMMENT '拒绝原因',
+    loan_amount DECIMAL(12,2) NOT NULL COMMENT '申请金额',
+    period INT NOT NULL COMMENT '申请期数',
+    repaid_type ENUM('等额本息', '等额本金', '先息后本', '一次性还本付息') NOT NULL,
+    interest_rate DECIMAL(6,4) COMMENT '申请时的利率 (审核后填写)',
+    apply_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '申请时间',
+    review_time DATETIME COMMENT '审核完成时间',
+    FOREIGN KEY (product_id) REFERENCES loan_products(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+)COMMENT '贷款申请表';
 // 管理员未设计
