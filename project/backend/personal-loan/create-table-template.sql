@@ -28,6 +28,10 @@ CREATE TABLE user_certification(
     Foreign Key (user_id) REFERENCES users(id)
 )COMMENT '用户认证表';
 
+/*
+* 工作证明和第三方证明，和不动产证明一样，建表，然后路径部分，说清楚，存图片的本地文件路径
+*/
+
 CREATE TABLE immovables_cert(
     immovable_cert_id VARCHAR(50) PRIMARY KEY COMMENT '不动产证明ID',
     property_cert_id VARCHAR(50) COMMENT '房产证，存路径', 
@@ -36,6 +40,10 @@ CREATE TABLE immovables_cert(
     Foreign Key (immovable_cert_id) REFERENCES user_certification(immovable_cert_id)
 )COMMENT '不动产认证表';
 
+
+/*
+* 评论功能？二期工程
+*/
 CREATE TABLE loan_products(
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
     product_name VARCHAR(50) COMMENT '产品名称',
@@ -57,6 +65,10 @@ CREATE TABLE loan_option(
     FOREIGN KEY (product_id) REFERENCES loan_products(id)
 )COMMENT '贷款选项表';
 
+
+/*
+* 加个合同，仍然存图片本地路径
+*/
 CREATE TABLE orders(
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
     user_id INT NOT NULL COMMENT '用户ID',
