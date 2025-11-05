@@ -5,6 +5,7 @@ CREATE TABLE users(
     id_card CHAR(18) COMMENT '身份证号',
     phone CHAR(11) COMMENT '手机号',
     credit_score TINYINT COMMENT '信誉分',
+    role INT COMMENT '用户权限',
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
 ) COMMENT '用户表';
@@ -21,21 +22,34 @@ CREATE Table black_list(
 CREATE TABLE user_certification(
     user_id INT PRIMARY KEY COMMENT '用户ID',
     id_card CHAR(18) COMMENT '身份证号',
-    work_cert_id VARCHAR(50) COMMENT '工作证明',
-    tri_cert_id VARCHAR(50) COMMENT '第三方证明',
+    work_cert_id INT COMMENT '工作证明',
+    tri_cert_id INT COMMENT '第三方证明',
     bank_card_id CHAR(16) COMMENT '银行卡号',
-    immovable_cert_id VARCHAR(50) COMMENT '不动产证明',
+    immovable_cert_id INT COMMENT '不动产证明',
     Foreign Key (user_id) REFERENCES users(id)
 )COMMENT '用户认证表';
 
 /*
 * 工作证明和第三方证明，和不动产证明一样，建表，然后路径部分，说清楚，存图片的本地文件路径
 */
+CREATE TABLE work_cert(
+    work_cert_id INT PRIMARY KEY COMMENT '工作证明ID',
+    employment_cert_path VARCHAR(255) COMMENT '在职证明图片路径',
+    salary_cert_path VARCHAR(255) COMMENT '收入证明图片路径',
+    Foreign Key (work_cert_id) REFERENCES user_certification(work_cert_id)
+)COMMENT '工作认证表';
+
+CREATE TABLE tri_cert(
+    tri_cert_id INT PRIMARY KEY COMMENT '第三方证明ID',
+    social_security_path VARCHAR(255) COMMENT '社保证明，存路径',
+    credit_report_path VARCHAR(255) COMMENT '征信报告，存路径',
+    Foreign Key (tri_cert_id) REFERENCES user_certification(tri_cert_id)
+)COMMENT '第三方认证表';
 
 CREATE TABLE immovables_cert(
-    immovable_cert_id VARCHAR(50) PRIMARY KEY COMMENT '不动产证明ID',
-    property_cert_id VARCHAR(50) COMMENT '房产证，存路径', 
-    car_cert_id VARCHAR(50) COMMENT '车产证明，存路径',
+    immovable_cert_id INT PRIMARY KEY COMMENT '不动产证明ID',
+    property_cert_path VARCHAR(255) COMMENT '房产证，存路径', 
+    car_cert_path VARCHAR(255) COMMENT '车产证明，存路径',
     total_value INT COMMENT '总资产值',
     Foreign Key (immovable_cert_id) REFERENCES user_certification(immovable_cert_id)
 )COMMENT '不动产认证表';
@@ -79,6 +93,7 @@ CREATE TABLE orders(
     interest_rate DECIMAL(5,2) COMMENT '利率',
     repaid_type VARCHAR(20) COMMENT '还款方式',
     status ENUM('NORMAL', 'OVERDUE', 'SETTLED') COMMENT '贷款状态',
+    contract VARCHAR(255) COMMENT '合同路径',
     current_term INT COMMENT '当前期数',
     overdue_days INT COMMENT '逾期天数',
     start_date DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '开始日期',
