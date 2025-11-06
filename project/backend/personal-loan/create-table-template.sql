@@ -22,10 +22,10 @@ CREATE Table black_list(
 CREATE TABLE user_certification(
     user_id INT PRIMARY KEY COMMENT '用户ID',
     id_card CHAR(18) COMMENT '身份证号',
-    work_cert_id INT COMMENT '工作证明',
-    tri_cert_id INT COMMENT '第三方证明',
+    work_cert_id INT UNIQUE COMMENT '工作证明',
+    tri_cert_id INT UNIQUE COMMENT '第三方证明',
     bank_card_id CHAR(16) COMMENT '银行卡号',
-    immovable_cert_id INT COMMENT '不动产证明',
+    immovable_cert_id INT UNIQUE COMMENT '不动产证明',
     Foreign Key (user_id) REFERENCES users(id)
 )COMMENT '用户认证表';
 
@@ -92,9 +92,10 @@ CREATE TABLE orders(
     outstanding_amount DECIMAL(10,2) COMMENT '未还金额',
     interest_rate DECIMAL(5,2) COMMENT '利率',
     repaid_type VARCHAR(20) COMMENT '还款方式',
+    loan_period INT COMMENT '贷款期限',
+    current_term INT COMMENT '当前期数',
     status ENUM('NORMAL', 'OVERDUE', 'SETTLED') COMMENT '贷款状态',
     contract VARCHAR(255) COMMENT '合同路径',
-    current_term INT COMMENT '当前期数',
     overdue_days INT COMMENT '逾期天数',
     start_date DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '开始日期',
     end_date DATETIME COMMENT '结束日期',
