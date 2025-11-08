@@ -19,7 +19,7 @@ import com.example.personal_loan.service.LoanProductService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/loan-products")
+@RequestMapping("/loan-products")
 public class LoanProductController {
     
     @Autowired
@@ -43,7 +43,7 @@ public class LoanProductController {
     @PatchMapping("/{id}")
     public ResponseEntity<LoanProduct> updateLoanProduct(@PathVariable Long id,@RequestBody LoanProduct loanProduct){
         loanProductService.updateLoanProduct(id,loanProduct);
-        return ResponseEntity.ok(loanProduct);
+        return ResponseEntity.ok(loanProductService.getLoanProductById(id));
     }
 
     @DeleteMapping("/{id}")

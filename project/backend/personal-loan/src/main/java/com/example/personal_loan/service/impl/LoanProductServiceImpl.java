@@ -63,15 +63,14 @@ public class LoanProductServiceImpl implements LoanProductService{
         if (loanProduct.getPromotionDetails() != null) {
             existing.setPromotionDetails(loanProduct.getPromotionDetails());
         }
-        if (loanProduct.getMinTerm() > loanProduct.getMaxTerm()) {
+        if (existing.getMinTerm() > existing.getMaxTerm()) {
             throw new BusinessException("最短期数不能大于最长期数");
         }
-        if (loanProduct.getTermStep() <= 0) {
+        if (existing.getTermStep() <= 0) {
             throw new BusinessException("期数步长必须大于0");
         }
 
-        loanProduct.setUpdateTime(LocalDateTime.now());
-        return loanProductMapper.update(loanProduct);
+        return loanProductMapper.update(existing);
     }
 
     @Override

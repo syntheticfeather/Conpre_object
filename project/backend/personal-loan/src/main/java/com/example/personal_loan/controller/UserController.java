@@ -20,7 +20,7 @@ import com.example.personal_loan.service.UserService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 public class UserController {
 
     @Autowired

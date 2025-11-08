@@ -56,6 +56,15 @@ public class JwtUtil {
 
     // 获取用户ID
     public Long getUserIdFromToken(String token) {
-        return getClaims(token).get("userId", Long.class);
+        Claims claims = getClaims(token);
+        Object userIdObj = claims.get("userId");
+    
+        if (userIdObj == null) {
+            return null;
+        }
+    
+        String userIdStr = claims.get("userId", String.class);
+        Long userId = Long.parseLong(userIdStr); // 安全地转回 Long
+        return userId;
     }
 }

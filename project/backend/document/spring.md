@@ -149,3 +149,34 @@ String token=Jwts.builder()
 ## 事务操作
 
 ### @Transaction 声明式事务管理
+
+## 测试
+
+### 控制器测试
+
+- `@WebMvcTest`
+  - 只初始化 Web 层相关的 Bean，不加载 Service
+  - 专注于控制器(Controller)、JSON 序列化、过滤器等 Web 层逻辑的测试
+  - 自动配置 MockMvc
+
+- `MockMvc`(允许在不启动 HTTP 服务器的情况下测试控制器)
+
+- 使用
+
+``` java
+// 测试单个
+@WebMvcTest(GreetingController.class) //测试多个用,隔开，不指定即测试所有控制器
+class GreetingControllerTest {
+    
+    @Autowired
+    private MockMvc mockMvc;
+    
+    @Test
+    void testGreetingEndpoint() throws Exception {
+        mockMvc.perform(get("/greeting"))
+               .andExpect(status().isOk())
+               .andExpect(content().string("Hello World"));
+    }
+}
+```
+

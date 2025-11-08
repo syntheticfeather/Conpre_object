@@ -27,4 +27,7 @@ public interface UserService {
     
         // 获取所有用户
         List<User> getAllUsers();
+
+        // 添加黑名单
+        void addToBlackList(Long userId, int blackLevel);
 }

@@ -37,6 +37,9 @@ public class User {
 
     private Integer creditScore;
 
+    // 用户权限 (0是客户)
+    private Integer role;
+
     private LocalDateTime createTime;
 
     private LocalDateTime updateTime;
