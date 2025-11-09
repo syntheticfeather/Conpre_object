@@ -1,0 +1,192 @@
+/* 首页样式 */
+/* 版心 */
+.wrapper {
+    margin: 0 auto;
+    width: 1200px;
+}
+
+body {
+    background-image: url(../images/bgi.jpg);
+    background-size: cover;
+}
+
+/* 信息注册 */
+.title {
+    margin: 110px 0 12px 262px;
+
+    font-size: 32px;
+    line-height: 30px;
+    font-weight: 600;
+    color: #000c14;
+}
+
+/* 主体部分 */
+.main {
+    margin-bottom: 197px;
+    padding: 0 20px 24px 20px;
+    width: 1050px;
+    height: 450px;
+    background-color: #fff;
+
+    border-radius: 35px;
+}
+
+.part_title {
+    display: flex;
+    justify-content: space-around;
+
+    padding: 0 15px;
+}
+
+.main h2 {
+    margin-right: 100px;
+
+    font-size: 24px;
+    line-height: 54px;
+    color: #2551e1;
+}
+
+/* 输入账户信息 */
+div .base-information {
+    display: flex;
+    justify-content: center;
+}
+
+div .infor{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+
+    margin-right: 15px;
+    padding-top: 4px;
+    padding-left: 30px;
+    width: 490px;
+    height: 310px;
+    background-color: #e2e7e6;
+    border-radius: 10px;
+}
+
+/* 绑定手机号 */
+div .authentication {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+
+    margin-right: 5px;
+    padding-top: 4px;
+    padding-left: 60px;
+    width: 480px;
+    height: 310px;
+    background-color: #e2e7e6;
+    border-radius: 10px;
+}
+
+p {
+    font-size: 20px;
+    line-height: 40px;
+    color: #000;
+}
+
+i {
+    color: red;
+}
+
+input {
+    padding: 7px 5px;
+    width: 360px;
+    height: 33px;
+    
+    font-size: 18px;
+    color: #aaadad;
+    border: none;
+    border-radius: 5px;
+    outline: none;
+}
+
+/* 输入错误提醒 */
+.input-error {
+    border-color: red;
+}
+
+/* 错误提示样式 */
+.error-message {
+    margin-bottom: 10px;
+    display: none; 
+    text-align: center;
+
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+
+     
+}
+
+/* 获取验证码按钮  */
+.get-code-btn {
+    margin-left: 190px;
+    margin-top: 50px;
+
+    width: 119px;
+    height: 33px;
+    background-color: #165eff;
+
+    font-size: 20px;
+    line-height: 33px;
+    font-weight: 600;
+    color: #fff;
+    border: none;
+}
+
+/* .get-code-btn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+} */
+
+/* 注册按钮  */
+.main .register-btn {
+    margin-left: 640px;
+    margin-top: 22px;
+
+    width: 119px;
+    height: 45px;
+    background-color: #165eff;
+
+    font-size: 24px;
+    line-height: 45px;
+    font-weight: 600;
+    color: #fff;
+    border: none;
+}
+
+/* .main .register-btn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+} */
+
+/* 关闭按钮  */
+.main .close-btn {
+    margin-left: 58px;
+    margin-top: 22px;
+
+    width: 119px;
+    height: 45px;
+    background-color: #165eff;
+
+    font-size: 24px;
+    line-height: 45px;
+    font-weight: 600;
+    color: #fff;
+    border: none;
+}
+
+/* 加载动画 */
+.loading {
+    text-align: center;
+    color: #165eff;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+#successMessage {
+    display: none;
+}
