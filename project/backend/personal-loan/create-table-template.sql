@@ -4,7 +4,6 @@ CREATE TABLE users(
     password VARCHAR(255) COMMENT '密码',
     id_card CHAR(18) COMMENT '身份证号',
     phone CHAR(11) COMMENT '手机号',
-    credit_score TINYINT COMMENT '信誉分',
     role INT COMMENT '用户权限',
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
@@ -22,6 +21,7 @@ CREATE Table black_list(
 CREATE TABLE user_certification(
     user_id INT PRIMARY KEY COMMENT '用户ID',
     id_card CHAR(18) COMMENT '身份证号',
+    credit_score TINYINT COMMENT '信誉分',
     work_cert_id INT UNIQUE COMMENT '工作证明',
     tri_cert_id INT UNIQUE COMMENT '第三方证明',
     bank_card_id CHAR(16) COMMENT '银行卡号',
