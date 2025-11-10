@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#FFFFFFFF</color>            <!-- 100%纯白 -->
+    <!-- 主蓝色 - 用于主要按钮、重要文字 -->
+    <color name="primary_blue_100">#FF165DFF</color>  <!-- 100% -->
+    <color name="primary_blue_90">#E6165DFF</color>   <!-- 90% -->
+    <color name="primary_blue_80">#CC165DFF</color>   <!-- 80% -->
+    <!-- 中性灰色系 -->
+    <color name="gray_dark_100">#FF000000</color>          <!-- 100%纯黑 -->
+    <color name="gray_dark_80">#CC000000</color>           <!-- 80%纯黑 -->
+    <color name="gray_dark_73">#BA000000</color>          <!-- 73%纯黑 -->
+
+    <color name="gray_medium">#666666</color>        <!-- 中灰 -->
+    <color name="gray_light">#999999</color>         <!-- 浅灰 -->
+    <color name="gray_lighter">#E0E0E0</color>       <!-- 更浅灰 -->
+    <color name="gray_lightest">#F5F5F5</color>      <!-- 最浅灰 -->
+    <!-- 蓝色系变体 -->
+    <color name="blue_dark">#005B94</color>          <!-- 深蓝 -->
+    <color name="blue_light">#CC60BFFF</color>         <!-- 浅蓝 -->
+    <color name="blue_lightest">#E2EBFF</color>      <!-- 最浅蓝 -->
+    <color name="success_green">#00F48D</color>      <!-- 认证状态 -->
+    <color name="transparent">#00000000</color>      <!-- 透明色 -->
+</resources>
