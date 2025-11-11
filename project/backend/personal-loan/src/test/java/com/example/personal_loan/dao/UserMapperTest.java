@@ -26,7 +26,6 @@ class UserMapperTest {
         user.setPassword("123456");
         user.setIdCard("110101199001011234");
         user.setPhone("13800138000");
-        user.setCreditScore(3);
         return user;
     }
 

@@ -56,6 +56,7 @@ Model-View-Controller（模型-视图-控制器）三层架构
 `@RequestBody`  将请求体中的JSON/Xml转化为java对象
 `@PathVariavle` 将路径中的参数绑定到方法参数上
 `@Valid` 表示该参数要经受 Bean Validation注解 的校验
+`@RequestParam(required = false)` 表示：这个请求参数是可选的，前端可以不传；如果不传，方法参数值就是 null（或基本类型的默认值）
 
 ### IOC（控制反转）
 
@@ -88,15 +89,19 @@ Model-View-Controller（模型-视图-控制器）三层架构
 
 ### 数据访问层（mybatis）
 
-@Mapper
+#### @Mapper
 
 - 作用：标记**接口**，让` MyBatis `在编译时能够找到这些接口，并为它们自动生成动态代理实现类。不需要再手动编写mapper层接口的实现类
 - 使用：
   - 在每个数据访问接口上**单独**使用
   - 在**主应用类上**用`@MapperScan("com.example.demo.mapper")` MyBatis 会自动扫描该包及其子包下的所有接口
-- 关联 SQL 语句：
-  - 静态 sql：使用**注解**。直接在方法上使用 @Select, @Insert, @Update, @Delete 等语句中的占位符用`#{ }`
-  - 动态 sql：**xml配置文件**，接口方法名与 XML 中的 id 对应
+
+#### 关联 SQL 语句
+
+- 静态 sql：使用**注解**。直接在方法上使用 @Select, @Insert, @Update, @Delete 等语句中的占位符用`#{ }`
+- 动态 sql：
+  1. **xml配置文件**，接口方法名与 XML 中的 id 对应
+  2. 也可以用**注解**
 
 - `@Options`：插入记录时设置自增id（配合 @Insert ）
 

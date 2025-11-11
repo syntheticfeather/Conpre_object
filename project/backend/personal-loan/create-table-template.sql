@@ -5,7 +5,7 @@ CREATE TABLE users(
     password VARCHAR(255) COMMENT '密码',
     id_card CHAR(18) COMMENT '身份证号',
     phone CHAR(11) COMMENT '手机号',
-    role INT COMMENT '用户权限',
+    role INT NOT NULL DEFAULT 0 COMMENT '用户权限',
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
 ) COMMENT '用户表';

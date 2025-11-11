@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.example.personal_loan.controller.dto.LoginRequest;
 import com.example.personal_loan.controller.dto.LoginResponse;
+import com.example.personal_loan.controller.dto.RegisterRequest;
+import com.example.personal_loan.controller.dto.RegisterResponse;
 import com.example.personal_loan.entity.User;
 
 public interface UserService {
@@ -11,13 +13,19 @@ public interface UserService {
         LoginResponse login(LoginRequest request);
 
         // 用户注册
-        User register(User user);
+        RegisterResponse userRegister(RegisterRequest request);
+
+        //管理员注册
+        RegisterResponse adminRegister(RegisterRequest request);
 
         // 添加用户
         User addUser(User user);
     
         // 删除用户
         void deleteUser(Long id);
+
+        // 批量删除
+        void deleteUsers(List<Long> ids);
     
         // 更新用户
         User updateUser(Long id,User user);
@@ -27,6 +35,9 @@ public interface UserService {
     
         // 获取所有用户
         List<User> getAllUsers();
+
+        // // 根据id，name搜索用户
+        // List<User> searchUsers(Long id, String name);
 
         // 添加黑名单
         void addToBlackList(Long userId, int blackLevel);

@@ -1,19 +1,24 @@
 package com.example.personal_loan.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.personal_loan.controller.dto.LoginRequest;
 import com.example.personal_loan.controller.dto.LoginResponse;
+import com.example.personal_loan.controller.dto.RegisterRequest;
+import com.example.personal_loan.controller.dto.RegisterResponse;
 import com.example.personal_loan.dao.BlackListMapper;
 import com.example.personal_loan.dao.UserMapper;
 import com.example.personal_loan.entity.BlackUser;
 import com.example.personal_loan.entity.User;
 import com.example.personal_loan.exception.BusinessException;
 import com.example.personal_loan.exception.ErrorCode;
+import com.example.personal_loan.exception.InvalidCredentialsException;
 import com.example.personal_loan.service.UserService;
 import com.example.personal_loan.utils.JwtUtil;
 
@@ -36,25 +41,31 @@ public class UserServiceImpl implements UserService {
     public LoginResponse login(LoginRequest request) {
         
         User user = userMapper.findByPhone(request.getPhone());
-        if (user == null) {
-            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+        if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new InvalidCredentialsException("用户名或密码错误"); 
         }
-
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new BusinessException(ErrorCode.PASSWORD_ERROR);
-        }
-
 
         String token = jwtUtil.generateToken(user.getPhone(),user.getId().toString());
 
-        return new LoginResponse(token, user.getPhone());
-        
+        return new LoginResponse(token);
     }
 
     @Override
-    public User register(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return addUser(user);
+    public RegisterResponse userRegister(RegisterRequest request) {
+        request.setPassword(passwordEncoder.encode(request.getPassword()));
+        User user = new User(request.getName(),request.getPassword(),null,request.getPhone());
+        user.setRole(0);    // 用户的注册，默认权限为0
+        User newUser=addUser(user);
+        return new RegisterResponse(newUser.getId(),newUser.getName(),newUser.getCreateTime());
+    }
+
+    @Override
+    public RegisterResponse adminRegister(RegisterRequest request){
+        request.setPassword(passwordEncoder.encode(request.getPassword()));
+        User user = new User(request.getName(),request.getPassword(),null,request.getPhone());
+        user.setRole(1);    // 管理员权限设为1
+        User newUser=addUser(user);
+        return new RegisterResponse(newUser.getId(),newUser.getName(),newUser.getCreateTime());
     }
 
     @Override
@@ -69,6 +80,7 @@ public class UserServiceImpl implements UserService {
         }
         
         userMapper.insert(user);
+        user.setCreateTime(LocalDateTime.now());
         return user;
     }
     
@@ -77,6 +89,17 @@ public class UserServiceImpl implements UserService {
         userMapper.delete(id);
     }
     
+    @Override
+    @Transactional // 可选：根据业务决定是否加事务
+    public void deleteUsers(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+        for (Long id : ids) {
+            userMapper.delete(id);
+        }
+    }
+
     @Override
     public User updateUser(Long id,User user) {
         
@@ -107,9 +130,6 @@ public class UserServiceImpl implements UserService {
         }
         if(user.getName()!=null){
             old.setName(user.getName());
-        }
-        if(user.getCreditScore()!=null){
-            old.setCreditScore(user.getCreditScore());
         }
         if(user.getRole()!=null){
             old.setRole(user.getRole());

@@ -36,6 +36,12 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
+    // @GetMapping("/search")
+    // public List<User> searchUsers(@RequestParam(required = false) Long id,
+    //                           @RequestParam(required = false) String name) {
+    //     return userService.searchUsers(id, name);
+    // }
+
     @PostMapping
     public ResponseEntity<User> addUser(@RequestBody @Valid User user) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.addUser(user));

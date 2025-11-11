@@ -16,8 +16,10 @@ public class User {
 
     private Long id;
 
-    @Size(min=2,max=20)
+    @Size(min=2,max=20,message="用户名长度必须在2-20之间")
     private String name;
+
+    private String avatar;
 
     @Pattern(regexp="^1[3-9]\\d{9}$",message="手机号格式不正确")
     @NotBlank(message="手机号不能为空")
@@ -35,8 +37,6 @@ public class User {
     )
     private String password;
 
-    private Integer creditScore;
-
     // 用户权限 (0是客户)
     private Integer role;
 
@@ -44,11 +44,10 @@ public class User {
 
     private LocalDateTime updateTime;
 
-    public User(String name, String password, String idCard, String phone, Integer creditScore) {
+    public User(String name, String password, String idCard, String phone) {
         this.name = name;
         this.password = password;
         this.idCard = idCard;
         this.phone = phone;
-        this.creditScore = creditScore;
     }
 }
