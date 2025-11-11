@@ -1,227 +1,11 @@
-// // ==================== 配置JWT ==================== 
-const JWT_CONFIG = {
-    tokenKey: 'controller_token',
-    refreshTokenKey: 'controller_refresh_token', 
-    tokenExpiryKey: 'controller_token_expiry',
-    tokenExpiryTime: 3 * 60 * 1000
-}
-// ==================== 配置信息 ====================
-const API_CONFIG = {
-    baseUrl: 'http://192.168.2.10:8080',
-    endpoints: {
-        login: '/api/auth/login',
-        smsLogin: '/api/auth/sms-login',   
-        sendSms: '/api/auth/send-sms' ,
-        refreshToken: '/api/auth/refresh', // 新增刷新token接口
-        logout: '/api/auth/logout' // 新增退出接口
-    },
-    storageKeys: {
-        token: JWT_CONFIG.tokenKey,
-        controllerInfo: 'controller_info',
-        isLogged: 'controller_is_logged'
-    }
-}
+// 在文件开头新增：
+const API_CONFIG = AdminWeb.API_CONFIG;
+const JWT_CONFIG = AdminWeb.JWT_CONFIG;
+const DOM_ELEMENTS = AdminWeb.DOM_ELEMENTS;
+const API_CLIENT = AdminWeb.API_CLIENT;
+const JWT_UTILS = AdminWeb.JWT_UTILS;
 
-// ==================== DOM元素引用 ====================
-const DOM_ELEMENTS = {
-    // 密码登录
-    passwordLoginBtn: document.getElementById('passwordLogin-btn'),
-    passwordLoginForm: document.getElementById('passwordLoginForm'),
-    passwordLoadingSpinner: document.getElementById('passwordLoadingSpinner'),
-    //验证码登录
-    smsLoginBtn: document.getElementById('smsLogin-btn'),
-    smsLoginForm: document.getElementById('smsLoginForm'),
-    getSmsBtn: document.getElementById('getSmsBtn'),
-    smsLoadingSpinner: document.getElementById('smsLoadingSpinner'),
-    
-    loginBtn: document.getElementById('login-btn'),
-    successMessage: document.getElementById('successMessage'),
-    // 输入字段
-    phoneInput: document.getElementById('phone'),
-    passwordInput: document.getElementById('password'),
-    smsPhoneInput: document.getElementById('smsPhone'),
-    smsCodeInput: document.getElementById('smsCode'),
-    agreeCheckbox: document.getElementById('agreeCheckbox')
-}
-// ==================== API 请求封装 ====================
-const API_CLIENT = {
-    // 通用请求方法
-    request: async function(url, options = {}) {
-        // 检查token是否有效
-        if (!JWT_UTILS.isTokenValid()) {
-            this.handleUnauthorized();
-            throw new Error('登录已过期，请重新登录');
-        }
-
-        // 添加认证头
-        const headers = {
-            'Content-Type': 'application/json',
-            ...JWT_UTILS.getAuthHeader(),
-            ...options.headers
-        };
-
-        try {
-            const response = await fetch(`${API_CONFIG.baseUrl}${url}`, {
-                ...options,
-                headers
-            });
-
-            // Token 过期，尝试刷新
-            if (response.status === 401) {
-                const refreshed = await this.refreshToken();
-                if (refreshed) {
-                    // 重试原始请求
-                    return this.request(url, options);
-                } else {
-                    this.handleUnauthorized();
-                    throw new Error('认证失败，请重新登录');
-                }
-            }
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || `请求失败（状态码：${response.status}）`);
-            }
-
-            return await response.json();
-        } catch (error) {
-            console.error('API请求失败:', error);
-            throw error;
-        }
-    },
-
-    // 刷新 token
-    refreshToken: async function() {
-        const refreshToken = JWT_UTILS.getRefreshToken();
-        if (!refreshToken) {
-            console.log('没有刷新token');
-            return false;
-        }
-
-        try {
-            const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.refreshToken}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ refreshToken })
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                JWT_UTILS.setToken(data.token, data.refreshToken);
-                console.log('Token刷新成功');
-                return true;
-            }
-        } catch (error) {
-            console.error('刷新token失败:', error);
-        }
-
-        return false;
-    },
-
-    // 处理未授权
-    handleUnauthorized: function() {
-        JWT_UTILS.clearTokens();
-        // 如果是登录页面，不清除，否则跳转到登录页
-        if (!window.location.href.includes('login.html')) {
-            alert('登录已过期，请重新登录');
-            window.location.href = 'login.html';
-        }
-    },
-
-    // 快捷方法
-    get: function(url) {
-        return this.request(url);
-    },
-
-    post: function(url, data) {
-        return this.request(url, {
-            method: 'POST',
-            body: JSON.stringify(data)
-        });
-    }
-}
-// ==================== JWT 工具函数 ====================
-const JWT_UTILS = {
-    // 获取 token（返回带Bearer前缀的完整格式）
-    getToken: function() {
-        const token = localStorage.getItem(JWT_CONFIG.tokenKey);
-        return token ? `Bearer ${token}` : null;  // ✅ 确保包含 Bearer 前缀
-    },
-
-    // 获取认证头（确保包含Bearer前缀）
-    getAuthHeader: function() {
-        const token = this.getToken(); // 这里返回的是带Bearer前缀的
-        return token ? { 'Authorization': token } : {};
-    },
-
-    // 保存 token 和过期时间
-    setToken: function(token, refreshToken) {
-        // 确保存储的token不包含Bearer前缀
-        const cleanToken = token.replace(/^Bearer\s+/i, '');
-        localStorage.setItem(JWT_CONFIG.tokenKey, cleanToken);
-        
-        if (refreshToken) {
-            const cleanRefreshToken = refreshToken.replace(/^Bearer\s+/i, '');
-            localStorage.setItem(JWT_CONFIG.refreshTokenKey, cleanRefreshToken);
-        }
-        
-        // 设置过期时间（当前时间 + 3分钟）
-        const expiryTime = Date.now() + JWT_CONFIG.tokenExpiryTime;
-        localStorage.setItem(JWT_CONFIG.tokenExpiryKey, expiryTime.toString());
-    },
-
-    // 获取原始token（不带Bearer前缀）
-    getRawToken: function() {
-        return localStorage.getItem(JWT_CONFIG.tokenKey);
-    },
-
-    // 获取 refresh token
-    getRefreshToken: function() {
-        return localStorage.getItem(JWT_CONFIG.refreshTokenKey);
-    },
-
-    // 检查 token 是否有效（3分钟内）
-    isTokenValid: function() {
-        const token = this.getRawToken(); // 使用原始token检查
-        const expiry = localStorage.getItem(JWT_CONFIG.tokenExpiryKey);
-        
-        if (!token) {
-            console.log('Token 不存在');
-            return false;
-        }
-        
-        if (expiry && Date.now() > parseInt(expiry)) {
-            console.log('Token 已过期');
-            return false;
-        }
-        
-        console.log('Token 有效');
-        return true;
-    },
-
-    // 获取剩余有效时间（秒）
-    getRemainingTime: function() {
-        const expiry = localStorage.getItem(JWT_CONFIG.tokenExpiryKey);
-        if (!expiry) return 0;
-        
-        const remaining = parseInt(expiry) - Date.now();
-        return Math.max(0, Math.floor(remaining / 1000));
-    },
-
-    // 清除所有 token
-    clearTokens: function() {
-        localStorage.removeItem(JWT_CONFIG.tokenKey);
-        localStorage.removeItem(JWT_CONFIG.refreshTokenKey);
-        localStorage.removeItem(JWT_CONFIG.tokenExpiryKey);
-        localStorage.removeItem('controller_is_logged');
-        localStorage.removeItem('controller_info');
-        localStorage.removeItem('phone');
-    }
-}
-//==================== 函数 ====================
-// 页面初始化函数
+// ==================== 初始化函数 ====================
 function init() {
     // 检查登录状态
     checkLoginStatus()
@@ -231,7 +15,7 @@ function init() {
     startTokenMonitor()
 }
 
-//绑定事件监听 
+// ==================== 事件绑定函数 ====================
 function bindEventListeners() {
     // 登录方式切换
     if (DOM_ELEMENTS.passwordLoginBtn) {
@@ -397,24 +181,7 @@ async function handlePasswordLogin(e) {
 }
 // 密码登录
 async function submitPasswordLogin(formData) {
-    const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.login}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            phone: formData.phone,
-            password: formData.password
-        })
-    })
-    // 处理HTTP错误状态（如401、403、500等）
-    if (!response.ok) {
-         // 尝试解析后端返回的错误信息
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.message || `登录失败（状态码：${response.status}）`)
-    }
-
-    return await response.json()
+    return await API_CLIENT.login(formData.phone, formData.password);
 }
 
 // ==================== 验证码登录处理 ====================
@@ -483,37 +250,7 @@ function validateSmsLogin(formData) {
 }
 // 验证码登录
 async function submitSmsLogin(formData) {
-    try {
-        const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.smsLogin}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                phone: formData.phone,
-                smsCode: formData.smsCode
-            })
-        })
-        
-        const data = await response.json() // 先解析响应体
-        
-        if (!response.ok) {
-            // 优化：抛出后端返回的具体错误信息
-            throw {
-                response: { data }
-            }
-        }
-        
-        return data
-    } catch (error) {
-        // 网络错误处理
-        if (!error.response) {
-            error.response = {
-                data: { msg: '网络异常，请检查网络连接' }
-            }
-        }
-        throw error
-    }
+    return await API_CLIENT.smsLogin(formData.phone, formData.smsCode);
 }
 
 // ==================== 验证码发送处理 =========
@@ -548,26 +285,12 @@ async function handleGetSmsCode() {
         showErrorById('smsPhoneError', error.message || '验证码发送失败，请重试')
     }
 }
+
 // 发送验证码
 async function sendSmsCode(phone) {
-    const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.sendSms}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ phone })
-    })
-    
-    const data = await response.json()
-    
-    if (!response.ok) {
-        // 抛出后端返回的错误信息
-        throw new Error(data.msg || '发送失败，请稍后再试')
-    }
-    
-    console.log(`验证码已发送到手机: ${phone}`)
-    return data
+    return await API_CLIENT.sendSms(phone);
 }
+
 // 验证码发送倒计时
 function startCountdown(btn) {
     let countdown = 60
@@ -608,8 +331,8 @@ function handleLoginSuccess(result, phone) {
         console.log(`Token已保存，将在${JWT_UTILS.getRemainingTime()}秒后过期`)
     }
     
-    if (controllerInfo) {
-        localStorage.setItem(API_CONFIG.storageKeys.controllerInfo, JSON.stringify(controllerInfo))
+    if (adminInfo) {
+        localStorage.setItem(API_CONFIG.storageKeys.adminInfo, JSON.stringify(adminInfo))
     }
     
     localStorage.setItem(API_CONFIG.storageKeys.isLogged, 'true')
@@ -624,16 +347,24 @@ function handleLoginSuccess(result, phone) {
 // 统一登录错误处理
 function handleLoginError(error) {
     let errorMessage = '登录失败，请稍后重试'
+    
     if (error.message.includes('手机号码或密码错误')) {
         errorMessage = '手机号码或密码错误'
     } else if (error.message.includes('验证码错误')) {
         errorMessage = '验证码错误'
     } else if (error.message.includes('Failed to fetch')) {
         errorMessage = '网络连接失败，请检查网络'
+    } else if (error.message.includes('用户不存在')) {
+        errorMessage = '用户不存在'
+    } else if (error.message.includes('密码错误')) {
+        errorMessage = '密码错误'
     } else {
-        errorMessage = error.message
+        errorMessage = error.message || '登录失败，请稍后重试'
     }
-    alert(errorMessage)
+    
+    // 显示错误提示
+    showErrorById('passwordError', errorMessage)
+    showErrorById('smsCodeError', errorMessage)
 }
 // ==================== token检查函数 ====================
 // 定时检查token状态（每分钟检查一次）
@@ -659,8 +390,8 @@ function showLoading(type, show) {
 
 // 显示成功消息
 function showSuccessMessage() {
-    if (DOM_ELEMENTS.successMessage) {
-        DOM_ELEMENTS.successMessage.style.display = 'block'
+    if (DOM_ELEMENTS.loginSuccessMessage) {
+        DOM_ELEMENTS.loginSuccessMessage.style.display = 'block'
     }
 }
 

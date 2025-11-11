@@ -104,22 +104,22 @@ hr {
 }
 
 /* 登录按钮  */
-#login-btn1,
-#login-btn2 {
-    margin:38px 45px;
-
+#passwordLogin-btn-submit,
+#smsLogin-btn-submit {
+    margin: 38px 45px;
     width: 460px;
     height: 60px;
     background-color: #165eff;
-
     font-size: 28px;
     line-height: 30px;
     font-weight: 600;
     color: #fff;
     border: none;
+    cursor: pointer;
 }
 
-#login-btn:hover {
+#passwordLogin-btn-submit:hover,
+#smsLogin-btn-submit:hover {
     background-color: #1b53f1;
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(27, 83, 241, 0.3);
@@ -204,6 +204,7 @@ label a {
     font-size: 14px;
     margin-top: 5px;
     display: none;
+    min-height: 20px; /* 确保有足够空间显示 */
 }
 
 /* 加载动画样式 */

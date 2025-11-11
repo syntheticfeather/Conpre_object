@@ -10,34 +10,32 @@
 <body>
     <div>
         <div class="name wrapper">
-            <h1>借贷风控系统</h1> 
+            <h1>借贷APP管理员控制系统</h1> 
         </div>
         <div class="main wrapper">
             <h2>————欢迎登录————</h2>
             <div class="login-type">
-                <div class="loginType">
                 <button type="button" class="active" id="passwordLogin-btn">密码登录</button>
                 <button type="button" id="smsLogin-btn">验证码登录</button>
-                </div>
             </div>
             
             <!-- 密码登录表单 -->
-            <form id="loginForm" class="login-form active">
-                <input type="text" id="username" placeholder="请输入用户名/手机号码">
-                <div class="error-message" id="usernameError">请输入用户名或手机号码</div>
+            <form class="login-form" id="passwordLoginForm">
+                <input type="text" id="phone" placeholder="请输入手机号码">
+                <div class="error-message" id="phoneError">请输入手机号码</div>
                 <hr>
                 <br>
                 <input type="password" id="password" placeholder="请输入密码">
                 <div class="error-message" id="passwordError">请输入密码</div>
                 <hr>
                 <br>
-                <button type="submit" id="login-btn">登录</button>
-                <div class="loading" id="loadingSpinner"></div>
+                <button type="submit" id="passwordLogin-btn-submit">登录</button>
+                <div class="loading" id="passwordLoadingSpinner"></div>
                 <div class="success-message" id="successMessage">登录成功！正在跳转...</div>
             </form>
             
             <!-- 验证码登录表单 -->
-            <form id="smsLoginForm" class="login-form">
+            <form class="login-form" id="smsLoginForm">
                 <input type="text" id="smsPhone" placeholder="请输入手机号码">
                 <div class="error-message" id="smsPhoneError">请输入手机号码</div>
                 <hr>
@@ -49,11 +47,12 @@
                 <div class="error-message" id="smsCodeError">请输入验证码</div>
                 <hr>
                 <br>
-                <button type="submit" id="login-btn">登录</button>
+                <button type="submit" id="smsLogin-btn-submit">登录</button>
                 <div class="loading" id="smsLoadingSpinner"></div>
+                <div class="success-message" id="successMessage">登录成功！正在跳转...</div>
             </form>
             
-            <span>还没有账号？<a href="registration copy.html">注册</a></span>
+            <span>还没有账号？<a href="registration.html">注册</a></span>
             <a href="#" class="forget-password">忘记密码?</a>
             <br>
             
@@ -65,6 +64,7 @@
             <div class="error-message" id="checkboxError">请同意服务条款和隐私政策!</div>
         </div>
     </div>
-    <script src="../JS/login.js"></script>
+    <script src="../JS/API.js"></script>
+<script src="../JS/login.js"></script>
 </body>
 </html>
