@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
         if (userMapper.findByIdCard(user.getIdCard()) != null) {
             throw new BusinessException(ErrorCode.ID_CARD_EXISTS);
         }
-
+        
         userMapper.insert(user);
         return user;
     }

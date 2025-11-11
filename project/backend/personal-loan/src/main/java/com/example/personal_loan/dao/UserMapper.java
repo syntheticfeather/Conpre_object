@@ -15,7 +15,7 @@ import com.example.personal_loan.entity.User;
 @Mapper
 public interface UserMapper {
 
-    @Insert("INSERT INTO users (user_name, password, id_card, phone,credit_score) VALUES ( #{name}, #{password}, #{idCard},#{phone},#{creditScore})")
+    @Insert("INSERT INTO users (user_name, password, id_card, phone,credit_score) VALUES ( #{name}, #{password}, #{idCard},#{phone},#{creditScore} )")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(User user);
 
