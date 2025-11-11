@@ -32,17 +32,17 @@ function bindEventListeners() {
     }
 
     // 获取短信验证码
-    if (DOM_ELEMENTS.getSmsBtn) {
-        DOM_ELEMENTS.getSmsBtn.addEventListener('click', handleGetSmsCode);
-    }
+    // if (DOM_ELEMENTS.getSmsBtn) {
+    //     DOM_ELEMENTS.getSmsBtn.addEventListener('click', handleGetSmsCode);
+    // }
 
     // 表单提交
     if (DOM_ELEMENTS.passwordLoginForm) {
         DOM_ELEMENTS.passwordLoginForm.addEventListener('submit', handlePasswordLogin);
     }
-    if (DOM_ELEMENTS.smsLoginForm) {
-        DOM_ELEMENTS.smsLoginForm.addEventListener('submit', handleSmsLogin);
-    }
+    // if (DOM_ELEMENTS.smsLoginForm) {
+    //     DOM_ELEMENTS.smsLoginForm.addEventListener('submit', handleSmsLogin);
+    // }
 
     // 输入时清除错误提示
     bindInputEvents();
@@ -169,7 +169,8 @@ async function handlePasswordLogin(e) {
     try {
         showLoading('password', true) // 显示加载状态
         // 调用登录接口，传递验证后的formData
-        const result = await submitPasswordLogin(formData)
+        const result = await API_CLIENT.login(formData.phone, formData.password)
+
         handleLoginSuccess(result, formData.phone)
     } catch (error) {
         console.error('密码登录失败:', error)
@@ -179,135 +180,135 @@ async function handlePasswordLogin(e) {
         showLoading('password', false) 
     }
 }
-// 密码登录
-async function submitPasswordLogin(formData) {
-    return await API_CLIENT.login(formData.phone, formData.password);
-}
+// 密码登录-删除？
+// async function submitPasswordLogin(formData) {
+//     return await API_CLIENT.login(formData.phone, formData.password);
+// }
 
-// ==================== 验证码登录处理 ====================
-// 验证码登录异步处理 
-async function handleSmsLogin(e) {
-    e.preventDefault()
+// // ==================== 验证码登录处理 ====================
+// // 验证码登录异步处理 
+// async function handleSmsLogin(e) {
+//     e.preventDefault()
     
-    console.log('开始验证码登录...')
+//     console.log('开始验证码登录...')
     
-    const formData = getSmsLoginData()
-    clearAllErrors()
+//     const formData = getSmsLoginData()
+//     clearAllErrors()
     
-    const validationResult = validateSmsLogin(formData)
-    if (!validationResult.isValid) {
-        console.log('验证码登录验证失败')
-        return
-    }
+//     const validationResult = validateSmsLogin(formData)
+//     if (!validationResult.isValid) {
+//         console.log('验证码登录验证失败')
+//         return
+//     }
     
-    try {
-        showLoading('sms', true)
-        const result = await submitSmsLogin(formData)
-        handleLoginSuccess(result, formData.phone)
-    } catch (error) {
-        console.error('短信登录失败:', error)
-        // 具体的错误提示
-        handleLoginError(error.response?.data?.msg || error.message)
-    } finally {
-        showLoading('sms', false)
-    }
-}
-// 获取验证码登录数据
-function getSmsLoginData() {
-    return {
-        phone: DOM_ELEMENTS.smsPhoneInput ? DOM_ELEMENTS.smsPhoneInput.value.trim() : '',
-        smsCode: DOM_ELEMENTS.smsCodeInput ? DOM_ELEMENTS.smsCodeInput.value.trim() : '',
-        isAgreed: DOM_ELEMENTS.agreeCheckbox ? DOM_ELEMENTS.agreeCheckbox.checked : false
-    }
-}
-// 验证验证码登录数据
-function validateSmsLogin(formData) {
-    const errors = {}
+//     try {
+//         showLoading('sms', true)
+//         const result = await submitSmsLogin(formData)
+//         handleLoginSuccess(result, formData.phone)
+//     } catch (error) {
+//         console.error('短信登录失败:', error)
+//         // 具体的错误提示
+//         handleLoginError(error.response?.data?.msg || error.message)
+//     } finally {
+//         showLoading('sms', false)
+//     }
+// }
+// // 获取验证码登录数据
+// function getSmsLoginData() {
+//     return {
+//         phone: DOM_ELEMENTS.smsPhoneInput ? DOM_ELEMENTS.smsPhoneInput.value.trim() : '',
+//         smsCode: DOM_ELEMENTS.smsCodeInput ? DOM_ELEMENTS.smsCodeInput.value.trim() : '',
+//         isAgreed: DOM_ELEMENTS.agreeCheckbox ? DOM_ELEMENTS.agreeCheckbox.checked : false
+//     }
+// }
+// // 验证验证码登录数据
+// function validateSmsLogin(formData) {
+//     const errors = {}
     
-    if (!formData.phone) {
-        errors.smsPhone = '请输入手机号码'
-    } else if (!/^1[3-9]\d{9}$/.test(formData.phone)) {
-        errors.smsPhone = '请输入正确的手机号码'
-    }
-    if (!formData.smsCode) {
-        errors.smsCode = '请输入验证码'
-    } else if (!/^\d{6}$/.test(formData.smsCode)) { // 新增：验证验证码格式（6位数字）
-        errors.smsCode = '请输入6位数字验证码'
-    }
-    if (!formData.isAgreed) {
-        errors.checkbox = '请同意服务条款和隐私政策'
-    }
+//     if (!formData.phone) {
+//         errors.smsPhone = '请输入手机号码'
+//     } else if (!/^1[3-9]\d{9}$/.test(formData.phone)) {
+//         errors.smsPhone = '请输入正确的手机号码'
+//     }
+//     if (!formData.smsCode) {
+//         errors.smsCode = '请输入验证码'
+//     } else if (!/^\d{6}$/.test(formData.smsCode)) { // 新增：验证验证码格式（6位数字）
+//         errors.smsCode = '请输入6位数字验证码'
+//     }
+//     if (!formData.isAgreed) {
+//         errors.checkbox = '请同意服务条款和隐私政策'
+//     }
     
-    // 显示错误
-    Object.keys(errors).forEach(field => {
-        showErrorById(`${field}Error`, errors[field])
-    })
+//     // 显示错误
+//     Object.keys(errors).forEach(field => {
+//         showErrorById(`${field}Error`, errors[field])
+//     })
     
-    return {
-        isValid: Object.keys(errors).length === 0,
-        errors: errors
-    }
-}
-// 验证码登录
-async function submitSmsLogin(formData) {
-    return await API_CLIENT.smsLogin(formData.phone, formData.smsCode);
-}
+//     return {
+//         isValid: Object.keys(errors).length === 0,
+//         errors: errors
+//     }
+// }
+// // 验证码登录
+// async function submitSmsLogin(formData) {
+//     return await API_CLIENT.smsLogin(formData.phone, formData.smsCode);
+// }
 
-// ==================== 验证码发送处理 =========
-// 验证码发送判定异步函数
-async function handleGetSmsCode() { 
-    const phone = DOM_ELEMENTS.smsPhoneInput ? DOM_ELEMENTS.smsPhoneInput.value.trim() : ''
-    const btn = DOM_ELEMENTS.getSmsBtn
+// // ==================== 验证码发送处理 =========
+// // 验证码发送判定异步函数
+// async function handleGetSmsCode() { 
+//     const phone = DOM_ELEMENTS.smsPhoneInput ? DOM_ELEMENTS.smsPhoneInput.value.trim() : ''
+//     const btn = DOM_ELEMENTS.getSmsBtn
     
-    // 倒计时中点击无反应
-    if (btn.disabled) return
+//     // 倒计时中点击无反应
+//     if (btn.disabled) return
     
-    clearErrorById('smsPhoneError')
-    clearErrorById('smsCodeError') 
+//     clearErrorById('smsPhoneError')
+//     clearErrorById('smsCodeError') 
     
-    if (!phone) {
-        showErrorById('smsPhoneError', '请输入手机号码')
-        return
-    }
+//     if (!phone) {
+//         showErrorById('smsPhoneError', '请输入手机号码')
+//         return
+//     }
     
-    if (!/^1[3-9]\d{9}$/.test(phone)) {
-        showErrorById('smsPhoneError', '请输入正确的手机号码')
-        return
-    }
+//     if (!/^1[3-9]\d{9}$/.test(phone)) {
+//         showErrorById('smsPhoneError', '请输入正确的手机号码')
+//         return
+//     }
     
-    // 发送验证码
-    try {
-        await sendSmsCode(phone)
-        // 后端返回成功后再开始倒计时
-        startCountdown(btn)
-    } catch (error) {
-        console.error('发送验证码失败:', error)
-        showErrorById('smsPhoneError', error.message || '验证码发送失败，请重试')
-    }
-}
+//     // 发送验证码
+//     try {
+//         await sendSmsCode(phone)
+//         // 后端返回成功后再开始倒计时
+//         startCountdown(btn)
+//     } catch (error) {
+//         console.error('发送验证码失败:', error)
+//         showErrorById('smsPhoneError', error.message || '验证码发送失败，请重试')
+//     }
+// }
 
-// 发送验证码
-async function sendSmsCode(phone) {
-    return await API_CLIENT.sendSms(phone);
-}
+// // 发送验证码
+// async function sendSmsCode(phone) {
+//     return await API_CLIENT.sendSms(phone);
+// }
 
-// 验证码发送倒计时
-function startCountdown(btn) {
-    let countdown = 60
-    btn.disabled = true
-    btn.textContent = `${countdown}秒后重新发送`
+// // 验证码发送倒计时
+// function startCountdown(btn) {
+//     let countdown = 60
+//     btn.disabled = true
+//     btn.textContent = `${countdown}秒后重新发送`
     
-    const timer = setInterval(() => {
-        countdown--
-        btn.textContent = `${countdown}秒后重新发送`
+//     const timer = setInterval(() => {
+//         countdown--
+//         btn.textContent = `${countdown}秒后重新发送`
         
-        if (countdown <= 0) {
-            clearInterval(timer)
-            btn.disabled = false
-            btn.textContent = '获取验证码'
-        }
-    }, 1000)
-}
+//         if (countdown <= 0) {
+//             clearInterval(timer)
+//             btn.disabled = false
+//             btn.textContent = '获取验证码'
+//         }
+//     }, 1000)
+// }
 
 // ==================== 登录结果处理 ====================
 // 登录成功处理
@@ -323,11 +324,11 @@ function handleLoginSuccess(result, phone) {
     
     // 保存登录状态和token（使用新的JWT工具）
     const token = result.data?.token || result.token
-    const refreshToken = result.data?.refreshToken || result.refreshToken
-    const controllerInfo = result.data?.controllerInfo || result.controllerInfo
+    const adminInfo = result.data?.adminInfo || result.adminInfo
+    // const refreshToken = result.data?.refreshToken || result.refreshToken
 
     if (token) {
-        JWT_UTILS.setToken(token, refreshToken)
+        JWT_UTILS.setToken(token)
         console.log(`Token已保存，将在${JWT_UTILS.getRemainingTime()}秒后过期`)
     }
     

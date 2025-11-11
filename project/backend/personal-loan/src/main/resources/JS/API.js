@@ -14,12 +14,12 @@ AdminWeb.API_CONFIG = {
         // 注册界面
         register: '/api/auth/register',// 注册接口
         // 登录界面
-        login: '/api/auth/login',// 登录接口?
-        passwordLogin: '/api/auth/password-login',// 密码登录接口?
-        smsLogin: '/api/auth/sms-login',
-        sendSms: '/api/auth/send-sms',
+        login: '/api/auth/login',// 登录接口
+        // passwordLogin: '/api/auth/password-login',// 密码登录接口
+        // smsLogin: '/api/auth/sms-login',
+        // sendSms: '/api/auth/send-sms',
 
-        refreshToken: '/api/auth/refresh',// 刷新token接口
+        // refreshToken: '/api/auth/refresh',// 刷新token接口
         logout: '/api/auth/logout' // 退出接口
     },
     storageKeys: {
@@ -62,7 +62,8 @@ AdminWeb.DOM_ELEMENTS = {
     getSmsBtn: document.getElementById('getSmsBtn'),
     smsLoadingSpinner: document.getElementById('smsLoadingSpinner'),
 
-    loginBtn: document.getElementById('login-btn'),
+    passwordLoginBtn: document.getElementById('passwordLogin-btn'),
+    smsLoginBtn: document.getElementById('smsLogin-btn'),
     loginSuccessMessage: document.getElementById('successMessage'),
     // 输入字段
     phoneInput: document.getElementById('phone'),
@@ -87,7 +88,14 @@ AdminWeb.DOM_ELEMENTS = {
 // ==================== API 请求封装/API客户端？ ====================
 AdminWeb.API_CLIENT = {
     // 通用请求方法
+    
     request: async function (url, options = {}) {
+        // 网络申请日志
+        console.log(`🔄 API请求: ${options.method || 'GET'} ${url}`, {
+            requiresAuth: this._requiresAuth(url),
+            hasToken: !!AdminWeb.JWT_UTILS.getRawToken(),
+            data: options.body ? JSON.parse(options.body) : null
+        })
         // 检查token是否有效（只在需要认证的请求中检查）
         if (this._requiresAuth(url) && !AdminWeb.JWT_UTILS.isTokenValid()) {
             this.handleUnauthorized();
@@ -136,8 +144,8 @@ AdminWeb.API_CLIENT = {
         const publicEndpoints = [
             AdminWeb.API_CONFIG.endpoints.login,
             AdminWeb.API_CONFIG.endpoints.register,
-            AdminWeb.API_CONFIG.endpoints.smsLogin,
-            AdminWeb.API_CONFIG.endpoints.sendSms
+            // AdminWeb.API_CONFIG.endpoints.smsLogin,
+            // AdminWeb.API_CONFIG.endpoints.sendSms
         ];
         return !publicEndpoints.includes(url);
     },
@@ -194,19 +202,6 @@ AdminWeb.API_CLIENT = {
         });
     },
 
-    put: function (url, data) {
-        return this.request(url, {
-            method: 'PUT',
-            body: JSON.stringify(data)
-        });
-    },
-
-    delete: function (url) {
-        return this.request(url, {
-            method: 'DELETE'
-        });
-    },
-
     // 专用方法 - 登录
     login: function (phone, password) {
         return this.post(AdminWeb.API_CONFIG.endpoints.login, {
@@ -220,20 +215,20 @@ AdminWeb.API_CLIENT = {
         return this.post(AdminWeb.API_CONFIG.endpoints.register, adminData);
     },
 
-    // 专用方法 - 验证码登录
-    smsLogin: function (phone, smsCode) {
-        return this.post(AdminWeb.API_CONFIG.endpoints.smsLogin, {
-            phone: phone,
-            smsCode: smsCode
-        });
-    },
+    // // 专用方法 - 验证码登录
+    // smsLogin: function (phone, smsCode) {
+    //     return this.post(AdminWeb.API_CONFIG.endpoints.smsLogin, {
+    //         phone: phone,
+    //         smsCode: smsCode
+    //     });
+    // },
 
-    // 专用方法 - 发送验证码
-    sendSms: function (phone) {
-        return this.post(AdminWeb.API_CONFIG.endpoints.sendSms, {
-            phone: phone
-        })
-    }
+    // // 专用方法 - 发送验证码
+    // sendSms: function (phone) {
+    //     return this.post(AdminWeb.API_CONFIG.endpoints.sendSms, {
+    //         phone: phone
+    //     })
+    // }
 }
 // ==================== JWT 工具函数 ====================
 AdminWeb.JWT_UTILS = {
@@ -250,7 +245,7 @@ AdminWeb.JWT_UTILS = {
     },
 
     // 保存 token 和过期时间
-    setToken: function (token, refreshToken) {
+    setToken: function (token) {
         // 确保存储的token不包含Bearer前缀
         const cleanToken = token.replace(/^Bearer\s+/i, '');
         localStorage.setItem(AdminWeb.JWT_CONFIG.tokenKey, cleanToken);
