@@ -1,9 +1,9 @@
 // 在文件开头新增：
-const API_CONFIG = AdminWeb.API_CONFIG;
-const JWT_CONFIG = AdminWeb.JWT_CONFIG;
-const DOM_ELEMENTS = AdminWeb.DOM_ELEMENTS;
-const API_CLIENT = AdminWeb.API_CLIENT;
-const JWT_UTILS = AdminWeb.JWT_UTILS;
+const API_CONFIG = AdminWeb.API_CONFIG
+const JWT_CONFIG = AdminWeb.JWT_CONFIG
+const DOM_ELEMENTS = AdminWeb.DOM_ELEMENTS
+const API_CLIENT = AdminWeb.API_CLIENT
+const JWT_UTILS = AdminWeb.JWT_UTILS
 
 // ==================== 初始化函数 ====================
 function init() {
@@ -13,11 +13,12 @@ function init() {
     bindEventListeners()
     // 启动token监控
     startTokenMonitor()
+    
 }
 
 // ==================== 事件绑定函数 ====================
 function bindEventListeners() {
-    // 登录方式切换
+    // 切换登录方式
     if (DOM_ELEMENTS.passwordLoginBtn) {
         DOM_ELEMENTS.passwordLoginBtn.addEventListener('click', (e) => {
             e.preventDefault()     //阻止表单默认提交
@@ -74,6 +75,18 @@ function bindInputEvents() {
     }
 }
 
+// 检查服务器连接
+async function checkServerConnection() {
+    try {
+        const response = await fetch(`${API_CONFIG.baseUrl}/api/health`).catch(() => null);
+        if (!response || !response.ok) {
+            console.warn('后端服务器可能未启动，请确保Spring Boot应用正在运行');
+        }
+    } catch (error) {
+        console.warn('无法连接到后端服务器:', error.message);
+    }
+}
+
 // 登录后自动跳转到管理员中心
 function checkLoginStatus() {
     const isLoginPage = window.location.href.includes('login.html')
@@ -101,11 +114,11 @@ function checkLoginStatus() {
     }
 }
 
-// 登录方式切换 
+// 登录方式切换工具函数
 function switchLoginType(type) {
     if (type === 'password') {
-        document.getElementById('passwordLogin-btn').classList.add('active')
-        document.getElementById('smsLogin-btn').classList.remove('active')
+        document.getElementById('change-passwordLogin-btn').classList.add('active')
+        document.getElementById('change-smsLogin-btn').classList.remove('active')
         DOM_ELEMENTS.passwordLoginForm.style.display = 'block'
         DOM_ELEMENTS.smsLoginForm.style.display = 'none'
     } else {
@@ -114,7 +127,7 @@ function switchLoginType(type) {
         DOM_ELEMENTS.passwordLoginForm.style.display = 'none'
         DOM_ELEMENTS.smsLoginForm.style.display = 'block'
     }
-    clearAllErrors();
+    clearAllErrors()
 }
 
 // ==================== 密码登录处理 ====================
@@ -170,7 +183,6 @@ async function handlePasswordLogin(e) {
         showLoading('password', true) // 显示加载状态
         // 调用登录接口，传递验证后的formData
         const result = await API_CLIENT.login(formData.phone, formData.password)
-
         handleLoginSuccess(result, formData.phone)
     } catch (error) {
         console.error('密码登录失败:', error)
@@ -180,10 +192,6 @@ async function handlePasswordLogin(e) {
         showLoading('password', false) 
     }
 }
-// 密码登录-删除？
-// async function submitPasswordLogin(formData) {
-//     return await API_CLIENT.login(formData.phone, formData.password);
-// }
 
 // // ==================== 验证码登录处理 ====================
 // // 验证码登录异步处理 
@@ -311,31 +319,32 @@ async function handlePasswordLogin(e) {
 // }
 
 // ==================== 登录结果处理 ====================
-// 登录成功处理
-function handleLoginSuccess(result, phone) {
+// 登录成功处理函数
+function handleLoginSuccess(result, phone) { 
     console.log('登录成功:', result)
     
     showSuccessMessage()
     
-    // 保存登录状态
-    console.log('登录成功:', result)
+    // 保存登录状态和token - 根据实际API响应调整
+    const token = result.token || result.data?.token
     
-    showSuccessMessage()
-    
-    // 保存登录状态和token（使用新的JWT工具）
-    const token = result.data?.token || result.token
-    const adminInfo = result.data?.adminInfo || result.adminInfo
-    // const refreshToken = result.data?.refreshToken || result.refreshToken
-
-    if (token) {
-        JWT_UTILS.setToken(token)
-        console.log(`Token已保存，将在${JWT_UTILS.getRemainingTime()}秒后过期`)
+    if (!token) {
+        console.error('登录响应中没有找到token')
+        showErrorById('passwordError', '登录响应异常，请重试')
+        return
     }
     
-    if (adminInfo) {
-        localStorage.setItem(API_CONFIG.storageKeys.adminInfo, JSON.stringify(adminInfo))
+    // 保存token
+    JWT_UTILS.setToken(token)
+    console.log(`Token已保存，将在${JWT_UTILS.getRemainingTime()}秒后过期`)
+    
+    // 保存管理员信息（根据实际API调整）
+    const adminInfo = {
+        phone: phone,
+        loginTime: new Date().toISOString()
     }
     
+    localStorage.setItem(API_CONFIG.storageKeys.adminInfo, JSON.stringify(adminInfo))
     localStorage.setItem(API_CONFIG.storageKeys.isLogged, 'true')
     localStorage.setItem('phone', phone)
     

@@ -53,18 +53,16 @@ AdminWeb.DOM_ELEMENTS = {
 
     // 登录页面
     // 密码登录
-    passwordLoginSubmitBtn: document.getElementById('passwordLogin-btn-submit'),
-    passwordLoginForm: document.getElementById('passwordLoginForm'),
-    passwordLoadingSpinner: document.getElementById('passwordLoadingSpinner'),
+    passwordLoginSubmitBtn: document.getElementById('passwordLogin-submit-btn'), // 密码登录提交按钮
+    passwordLoginForm: document.getElementById('passwordLoginForm'),  // 密码登录表单
+    passwordLoadingSpinner: document.getElementById('passwordLoadingSpinner'), // 密码登录加载动画
     //验证码登录
-    smsLoginSubmitBtn: document.getElementById('smsLogin-btn-submit'),
-    smsLoginForm: document.getElementById('smsLoginForm'),
-    getSmsBtn: document.getElementById('getSmsBtn'),
-    smsLoadingSpinner: document.getElementById('smsLoadingSpinner'),
+    smsLoginSubmitBtn: document.getElementById('smsLogin-submit-btn'), // 验证码登录提交按钮
+    smsLoginForm: document.getElementById('smsLoginForm'),  // 验证码登录表单
+    getSmsBtn: document.getElementById('getSmsBtn'), // 获取验证码按钮
+    smsLoadingSpinner: document.getElementById('smsLoadingSpinner'), // 验证码登录加载动画
 
-    passwordLoginBtn: document.getElementById('passwordLogin-btn'),
-    smsLoginBtn: document.getElementById('smsLogin-btn'),
-    loginSuccessMessage: document.getElementById('successMessage'),
+    loginSuccessMessage: document.getElementById('successMessage'), // 登录成功提示信息
     // 输入字段
     phoneInput: document.getElementById('phone'),
     passwordInput: document.getElementById('password'),
@@ -164,8 +162,8 @@ AdminWeb.API_CLIENT = {
     refreshToken: async function () {
         const refreshToken = AdminWeb.JWT_UTILS.getRefreshToken();
         if (!refreshToken) {
-            console.log('没有刷新token');
-            return false;
+            console.log('没有刷新token')
+            return false
         }
 
         try {
@@ -175,45 +173,78 @@ AdminWeb.API_CLIENT = {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ refreshToken })
-            });
+            })
 
             if (response.ok) {
-                const data = await response.json();
-                AdminWeb.JWT_UTILS.setToken(data.token, data.refreshToken);
-                console.log('Token刷新成功');
-                return true;
+                const data = await response.json()
+                AdminWeb.JWT_UTILS.setToken(data.token, data.refreshToken)
+                console.log('Token刷新成功')
+                return true
             }
         } catch (error) {
-            console.error('刷新token失败:', error);
+            console.error('刷新token失败:', error)
         }
 
-        return false;
+        return false
     },
 
     // 快捷方法
     get: function (url) {
-        return this.request(url);
+        return this.request(url)
     },
 
     post: function (url, data) {
         return this.request(url, {
             method: 'POST',
             body: JSON.stringify(data)
-        });
+        })
     },
 
-    // 专用方法 - 登录
-    login: function (phone, password) {
-        return this.post(AdminWeb.API_CONFIG.endpoints.login, {
-            phone: phone,
-            password: password
-        });
+    // 专用方法 - 登录 修改错误处理）
+    login: async function (phone, password) {
+        try {
+            const response = await fetch(`${this._getBaseUrl()}${AdminWeb.API_CONFIG.endpoints.login}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    phone: phone,
+                    password: password
+                })
+            });
+
+            if (!response.ok) {
+                // 处理登录失败
+                const errorText = await response.text();
+                let errorMessage = '登录失败';
+                
+                if (response.status === 401) {
+                    errorMessage = '手机号码或密码错误';
+                } else if (response.status === 400) {
+                    errorMessage = '请求参数错误';
+                }
+                
+                throw new Error(errorMessage);
+            }
+
+            const result = await response.json();
+            return result;
+        } catch (error) {
+            console.error('登录请求失败:', error);
+            throw error;
+        }
+    },
+
+    // 添加基础URL获取方法
+    _getBaseUrl: function() {
+        return AdminWeb.API_CONFIG.baseUrl;
     },
 
     // 专用方法 - 注册
     register: function (adminData) {
-        return this.post(AdminWeb.API_CONFIG.endpoints.register, adminData);
-    },
+        return this.post(AdminWeb.API_CONFIG.endpoints.register, adminData)
+    }
 
     // // 专用方法 - 验证码登录
     // smsLogin: function (phone, smsCode) {
@@ -230,34 +261,32 @@ AdminWeb.API_CLIENT = {
     //     })
     // }
 }
+
 // ==================== JWT 工具函数 ====================
 AdminWeb.JWT_UTILS = {
     // 获取 token（返回带Bearer前缀的完整格式）
     getToken: function () {
         const token = localStorage.getItem(AdminWeb.JWT_CONFIG.tokenKey);
-        return token ? `Bearer ${token}` : null;  //  确保包含 Bearer 前缀
+        return token ? `Bearer ${token}` : null;
     },
 
-    // 获取认证头（确保包含Bearer前缀）
+    // 获取认证头
     getAuthHeader: function () {
-        const token = this.getToken(); // 带Bearer前缀的
+        const token = this.getToken();
         return token ? { 'Authorization': token } : {};
     },
 
-    // 保存 token 和过期时间
+    // 保存 token（简化版本）
     setToken: function (token) {
         // 确保存储的token不包含Bearer前缀
         const cleanToken = token.replace(/^Bearer\s+/i, '');
         localStorage.setItem(AdminWeb.JWT_CONFIG.tokenKey, cleanToken);
 
-        if (refreshToken) {
-            const cleanRefreshToken = refreshToken.replace(/^Bearer\s+/i, '');
-            localStorage.setItem(AdminWeb.JWT_CONFIG.refreshTokenKey, cleanRefreshToken);
-        }
-
-        // 设置过期时间（当前时间 + 3分钟）
-        const expiryTime = Date.now() + AdminWeb.JWT_CONFIG.tokenExpiryTime;
+        // 设置过期时间（当前时间 + 24小时，根据jwt.expiration=86400000）
+        const expiryTime = Date.now() + (24 * 60 * 60 * 1000); // 24小时
         localStorage.setItem(AdminWeb.JWT_CONFIG.tokenExpiryKey, expiryTime.toString());
+        
+        console.log('Token保存成功，过期时间:', new Date(expiryTime).toLocaleString());
     },
 
     // 获取原始token（不带Bearer前缀）
@@ -265,28 +294,23 @@ AdminWeb.JWT_UTILS = {
         return localStorage.getItem(AdminWeb.JWT_CONFIG.tokenKey);
     },
 
-    // 获取 refresh token
-    getRefreshToken: function () {
-        return localStorage.getItem(AdminWeb.JWT_CONFIG.refreshTokenKey);
-    },
-
-    // 检查 token 是否有效（3分钟内）
+    // 检查 token 是否有效（24小时内）
     isTokenValid: function () {
-        const token = this.getRawToken() // 使用原始token检查
-        const expiry = localStorage.getItem(AdminWeb.JWT_CONFIG.tokenExpiryKey)
+        const token = this.getRawToken();
+        const expiry = localStorage.getItem(AdminWeb.JWT_CONFIG.tokenExpiryKey);
 
         if (!token) {
-            console.log('Token 不存在')
-            return false
-        }
-
-        if (expiry && Date.now() > parseInt(expiry)) {
-            console.log('Token 已过期')
+            console.log('Token 不存在');
             return false;
         }
 
-        console.log('Token 有效')
-        return true
+        if (expiry && Date.now() > parseInt(expiry)) {
+            console.log('Token 已过期');
+            return false;
+        }
+
+        console.log('Token 有效，剩余时间:', Math.floor((parseInt(expiry) - Date.now()) / 1000 / 60), '分钟');
+        return true;
     },
 
     // 获取剩余有效时间（秒）
@@ -301,11 +325,11 @@ AdminWeb.JWT_UTILS = {
     // 清除所有 token
     clearTokens: function () {
         localStorage.removeItem(AdminWeb.JWT_CONFIG.tokenKey);
-        localStorage.removeItem(AdminWeb.JWT_CONFIG.refreshTokenKey);
         localStorage.removeItem(AdminWeb.JWT_CONFIG.tokenExpiryKey);
         localStorage.removeItem('admin_is_logged');
         localStorage.removeItem('admin_info');
         localStorage.removeItem('phone');
+        console.log('所有token和登录状态已清除');
     }
 }
 

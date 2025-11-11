@@ -15,8 +15,8 @@
         <div class="main wrapper">
             <h2>————欢迎登录————</h2>
             <div class="login-type">
-                <button type="button" class="active" id="passwordLogin-btn">密码登录</button>
-                <button type="button" id="smsLogin-btn">验证码登录</button>
+                <button type="button" class="active" id="change-passwordLogin-btn">密码登录</button>
+                <button type="button" id="change-smsLogin-btn">验证码登录</button>
             </div>
             
             <!-- 密码登录表单 -->
@@ -29,7 +29,7 @@
                 <div class="error-message" id="passwordError">请输入密码</div>
                 <hr>
                 <br>
-                <button type="submit" id="passwordLogin-btn-submit">登录</button>
+                <button type="submit" id="passwordLogin-submit-btn">登录</button>
                 <div class="loading" id="passwordLoadingSpinner"></div>
                 <div class="success-message" id="successMessage">登录成功！正在跳转...</div>
             </form>
@@ -47,7 +47,7 @@
                 <div class="error-message" id="smsCodeError">请输入验证码</div>
                 <hr>
                 <br>
-                <button type="submit" id="smsLogin-btn-submit">登录</button>
+                <button type="submit" id="smsLogin-submit-btn">登录</button>
                 <div class="loading" id="smsLoadingSpinner"></div>
                 <div class="success-message" id="successMessage">登录成功！正在跳转...</div>
             </form>

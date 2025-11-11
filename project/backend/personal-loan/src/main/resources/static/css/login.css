@@ -65,8 +65,8 @@ body {
 }
 
 .main .login-type 
-#passwordLogin-btn
-,#smsLogin-btn {
+#change-passwordLogin-btn
+,#change-smsLogin-btn {
     margin: 0;
     background-color: #fff;
 
@@ -104,8 +104,8 @@ hr {
 }
 
 /* 登录按钮  */
-#passwordLogin-btn-submit,
-#smsLogin-btn-submit {
+#passwordLogin-submit-btn,
+#smsLogin-submit-btn {
     margin: 38px 45px;
     width: 460px;
     height: 60px;
@@ -118,8 +118,8 @@ hr {
     cursor: pointer;
 }
 
-#passwordLogin-btn-submit:hover,
-#smsLogin-btn-submit:hover {
+#passwordLogin-submit-btn:hover,
+#smsLogin-submit-btn:hover {
     background-color: #1b53f1;
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(27, 83, 241, 0.3);
