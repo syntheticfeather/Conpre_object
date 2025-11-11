@@ -1,6 +1,7 @@
 CREATE TABLE users(  
     id int NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT 'Primary Key',
     user_name VARCHAR(16),
+    avatar VARCHAR(255),
     password VARCHAR(255) COMMENT '密码',
     id_card CHAR(18) COMMENT '身份证号',
     phone CHAR(11) COMMENT '手机号',
