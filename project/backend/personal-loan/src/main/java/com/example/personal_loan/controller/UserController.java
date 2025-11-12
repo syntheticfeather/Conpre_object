@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.personal_loan.dto.UserSearchDto;
 import com.example.personal_loan.entity.User;
 import com.example.personal_loan.service.UserService;
 
@@ -41,6 +43,11 @@ public class UserController {
     //                           @RequestParam(required = false) String name) {
     //     return userService.searchUsers(id, name);
     // }
+
+    @GetMapping("/search-by-credit")
+    public ResponseEntity<List<UserSearchDto>> searchByCreditScore(@RequestParam String expr) {
+        return ResponseEntity.ok(userService.searchUsersByCreditScore(expr));
+    }
 
     @PostMapping
     public ResponseEntity<User> addUser(@RequestBody @Valid User user) {

@@ -14,10 +14,10 @@ import com.example.personal_loan.controller.dto.RegisterRequest;
 import com.example.personal_loan.controller.dto.RegisterResponse;
 import com.example.personal_loan.dao.BlackListMapper;
 import com.example.personal_loan.dao.UserMapper;
+import com.example.personal_loan.dto.UserSearchDto;
 import com.example.personal_loan.entity.BlackUser;
 import com.example.personal_loan.entity.User;
 import com.example.personal_loan.exception.BusinessException;
-import com.example.personal_loan.exception.ErrorCode;
 import com.example.personal_loan.exception.InvalidCredentialsException;
 import com.example.personal_loan.service.UserService;
 import com.example.personal_loan.utils.JwtUtil;
@@ -72,11 +72,11 @@ public class UserServiceImpl implements UserService {
     public User addUser(User user){
         
         if (userMapper.findByPhone(user.getPhone()) != null) {
-            throw new BusinessException(ErrorCode.PHONE_EXISTS);
+            throw new BusinessException("400","该手机号已被注册");
         }
        
         if (userMapper.findByIdCard(user.getIdCard()) != null) {
-            throw new BusinessException(ErrorCode.ID_CARD_EXISTS);
+            throw new BusinessException("400","身份证号已被注册");
         }
         
         userMapper.insert(user);
@@ -111,7 +111,7 @@ public class UserServiceImpl implements UserService {
         // 如果手机号被修改，校验唯一性
         if (user.getPhone() != null && !user.getPhone().equals(old.getPhone())) {
             if (userMapper.findByPhone(user.getPhone()) != null) {
-                throw new BusinessException(ErrorCode.PHONE_EXISTS);
+                throw new BusinessException("400","手机号已存在");
             }else{
                 old.setPhone(user.getPhone());   // 更新手机号
             }
@@ -119,7 +119,7 @@ public class UserServiceImpl implements UserService {
         // 校验身份证号唯一性
         if (user.getIdCard() != null && !user.getIdCard().equals(old.getIdCard())) {
             if (userMapper.findByIdCardExcludeId(user.getIdCard(), user.getId()) != 0) {
-                throw new BusinessException(ErrorCode.ID_CARD_EXISTS);
+                throw new BusinessException("400","身份证号已存在");
             }else{
                 old.setIdCard(user.getIdCard());  // 更新身份证号
             }
@@ -143,7 +143,7 @@ public class UserServiceImpl implements UserService {
     public User getUserById(Long id){
         User user = userMapper.findById(id);
         if(user==null){
-            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+            throw new BusinessException("404","该用户不存在");
         }
         return user;
     }
@@ -154,15 +154,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<UserSearchDto> searchUsersByCreditScore(String expr){
+        CreditExpr parsed = parseCreditExpression(expr.trim());
+        if (parsed == null) {
+            throw new BusinessException("400","无效的搜索");
+        }
+
+        return userMapper.selectUsersByCreditScore(parsed.operator, parsed.value);
+    }
+
+    @Override
     public void addToBlackList(Long userId, int blackLevel){
         User user = userMapper.findById(userId);
         if (user == null) {
-            throw new BusinessException("用户不存在");
+            throw new BusinessException("404","用户不存在");
         }
         
         // 检查是否已在黑名单
         if (blacklistMapper.selectByUserId(userId) != null) {
-            throw new BusinessException("用户已在黑名单中");
+            throw new BusinessException("400","用户已在黑名单中");
         }
 
         // 检查level范围 ？
@@ -171,5 +181,39 @@ public class UserServiceImpl implements UserService {
         blackUser.setUserId(userId);
         blackUser.setBlackLevel(blackLevel);
         blacklistMapper.insert(blackUser);
+    }
+
+
+    // 内部类
+    private static class CreditExpr {
+        private final String operator; // ">", ">=", "=", "<", "<="
+        private final Integer value;
+
+        public CreditExpr(String operator, Integer value) {
+            this.operator = operator;
+            this.value = value;
+        }
+    }
+
+    private CreditExpr parseCreditExpression(String expr) {
+
+        if (expr == null || expr.isEmpty()) {
+            return null;
+        }
+
+        String[] ops = {">=", "<=", ">", "<", "="};
+        for (String op : ops) {
+            if (expr.startsWith(op)) {
+                String numPart = expr.substring(op.length()).trim();
+                try {
+                    Integer val = Integer.valueOf(numPart);
+                    // 可选：校验范围（根据实际业务）
+                    return new CreditExpr(op, val);
+                } catch (NumberFormatException e) {
+                    return null;
+                }
+            }
+        }
+        return null;
     }
 }

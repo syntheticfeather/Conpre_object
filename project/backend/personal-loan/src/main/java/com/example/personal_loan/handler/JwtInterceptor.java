@@ -17,6 +17,8 @@ public class JwtInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        String uri = request.getRequestURI();
+        System.out.println("【JwtInterceptor】正在拦截请求: " + uri);
         String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             sendUnauthorizedJson(response, 401, "Missing or invalid Authorization header");

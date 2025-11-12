@@ -183,6 +183,7 @@ async function handlePasswordLogin(e) {
         showLoading('password', true) // 显示加载状态
         // 调用登录接口，传递验证后的formData
         const result = await API_CLIENT.login(formData.phone, formData.password)
+        console.log("------------表单提交事件触发了！");
         handleLoginSuccess(result, formData.phone)
     } catch (error) {
         console.error('密码登录失败:', error)

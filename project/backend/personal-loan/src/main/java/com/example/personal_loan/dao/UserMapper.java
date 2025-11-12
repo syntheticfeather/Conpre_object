@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import com.example.personal_loan.dto.UserSearchDto;
 import com.example.personal_loan.entity.User;
 
 @Mapper
@@ -24,6 +25,8 @@ public interface UserMapper {
 
     @Update("UPDATE users SET user_name = #{name}, phone = #{phone}, id_card = #{idCard} ,password=#{password} WHERE id = #{id}")
     int update(User user);
+
+    List<UserSearchDto> selectUsersByCreditScore(@Param("operator") String operator, @Param("value") Integer value);
 
     // 根据ID查询用户
     @Select("SELECT * FROM users WHERE id = #{id}")

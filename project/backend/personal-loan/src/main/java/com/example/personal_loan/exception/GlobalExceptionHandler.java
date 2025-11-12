@@ -27,6 +27,9 @@ public class GlobalExceptionHandler {
         response.put("code", e.getCode());
         response.put("message", e.getMessage());
         
+        if(e.getCode().equals("404")){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 

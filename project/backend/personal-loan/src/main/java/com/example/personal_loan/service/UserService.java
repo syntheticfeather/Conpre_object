@@ -6,6 +6,7 @@ import com.example.personal_loan.controller.dto.LoginRequest;
 import com.example.personal_loan.controller.dto.LoginResponse;
 import com.example.personal_loan.controller.dto.RegisterRequest;
 import com.example.personal_loan.controller.dto.RegisterResponse;
+import com.example.personal_loan.dto.UserSearchDto;
 import com.example.personal_loan.entity.User;
 
 public interface UserService {
@@ -38,6 +39,9 @@ public interface UserService {
 
         // // 根据id，name搜索用户
         // List<User> searchUsers(Long id, String name);
+
+        // 根据信誉分表达式搜索用户
+        List<UserSearchDto> searchUsersByCreditScore(String expr);
 
         // 添加黑名单
         void addToBlackList(Long userId, int blackLevel);
