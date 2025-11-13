@@ -1,4 +1,3 @@
-// 在文件开头新增：
 const API_CONFIG = AdminWeb.API_CONFIG
 const JWT_CONFIG = AdminWeb.JWT_CONFIG
 const DOM_ELEMENTS = AdminWeb.DOM_ELEMENTS
@@ -183,7 +182,6 @@ async function handlePasswordLogin(e) {
         showLoading('password', true) // 显示加载状态
         // 调用登录接口，传递验证后的formData
         const result = await API_CLIENT.login(formData.phone, formData.password)
-        console.log("------------表单提交事件触发了！");
         handleLoginSuccess(result, formData.phone)
     } catch (error) {
         console.error('密码登录失败:', error)
@@ -193,6 +191,10 @@ async function handlePasswordLogin(e) {
         showLoading('password', false) 
     }
 }
+// 密码登录-删除？
+// async function submitPasswordLogin(formData) {
+//     return await API_CLIENT.login(formData.phone, formData.password);
+// }
 
 // // ==================== 验证码登录处理 ====================
 // // 验证码登录异步处理 
@@ -320,7 +322,39 @@ async function handlePasswordLogin(e) {
 // }
 
 // ==================== 登录结果处理 ====================
-// 登录成功处理函数
+// 登录成功处理
+// function handleLoginSuccess(result, phone) {
+//     console.log('登录成功:', result)
+    
+//     showSuccessMessage()
+    
+//     // 保存登录状态
+//     console.log('登录成功:', result)
+    
+//     showSuccessMessage()
+    
+//     // 保存登录状态和token（使用新的JWT工具）
+//     const token = result.data?.token || result.token
+//     const adminInfo = result.data?.adminInfo || result.adminInfo
+//     // const refreshToken = result.data?.refreshToken || result.refreshToken
+
+//     if (token) {
+//         JWT_UTILS.setToken(token)
+//         console.log(`Token已保存，将在${JWT_UTILS.getRemainingTime()}秒后过期`)
+//     }
+    
+//     if (adminInfo) {
+//         localStorage.setItem(API_CONFIG.storageKeys.adminInfo, JSON.stringify(adminInfo))
+//     }
+    
+//     localStorage.setItem(API_CONFIG.storageKeys.isLogged, 'true')
+//     localStorage.setItem('phone', phone)
+    
+//     // 跳转到管理员中心
+//     setTimeout(() => {
+//         window.location.href = "index.html"
+//     }, 1500)
+// }
 function handleLoginSuccess(result, phone) { 
     console.log('登录成功:', result)
     

@@ -1,10 +1,14 @@
-import { API_CONFIG, JWT_CONFIG, DOM_ELEMENTS, API_CLIENT, JWT_UTILS } from './API.js'
+const API_CONFIG = AdminWeb.API_CONFIG
+const JWT_CONFIG = AdminWeb.JWT_CONFIG
+const DOM_ELEMENTS = AdminWeb.DOM_ELEMENTS
+const API_CLIENT = AdminWeb.API_CLIENT
+const JWT_UTILS = AdminWeb.JWT_UTILS
 
 // ==================== 初始化函数 ====================
 function init() {
     console.log('开始初始化...')
     
-    // 检查登录状态?
+    // 检查令牌时效
     // checkLoginStatus()
 
     // 显示首页面板
@@ -36,7 +40,7 @@ function bindEventListeners() {
         
         // 移除所有活动状态
         document.querySelectorAll('.nav-link').forEach(item => {
-            item.classList.remove('active');
+            item.classList.remove('active')
         })
         
         // 添加当前活动状态
@@ -48,8 +52,8 @@ function bindEventListeners() {
         
         // 隐藏所有面板
         document.querySelectorAll('.home-dashboard, .loan-dashboard, .user-dashboard, .risk-dashboard, .data-dashboard').forEach(panel => {
-            panel.style.display = 'none';
-        });
+            panel.style.display = 'none'
+        })
         
         // 显示对应面板
         switch (target) {
@@ -77,7 +81,7 @@ function bindEventListeners() {
             break;
         }
         })
-    });
+    })
     // 弹窗控制
     document.querySelectorAll('[data-modal]').forEach(button => {
         button.addEventListener('click', function() {
@@ -86,20 +90,28 @@ function bindEventListeners() {
         })
     })
 
-    // 关闭弹窗
+    // 关闭弹窗函数
+    function closeModal(modal) {
+        modal.style.display = 'none'
+    }
+
+    // 点击关闭按钮关闭弹窗
     document.querySelectorAll('.close-btn').forEach(button => {
         button.addEventListener('click', function() {
-            this.closest('.modal').style.display = 'none'
+            const modal = this.closest('.modal') // 找到最近的外层.modal
+            closeModal(modal)
         })
     })
 
-    // 点击弹窗外部关闭
-    window.addEventListener('click', function(e) {
-        if(e.target.classList.contains('modal')) {
-            e.target.style.display = 'none'
-        }
-    })
-
+    // 点击弹窗外部（遮罩层）关闭弹窗
+    // window.addEventListener('click', function(e) {
+    //     // 1. 判断点击目标是否是.modal
+    //     // 2. 同时判断点击目标不是.modal-content（避免点击内容区误关）
+    //     if (e.target.classList.contains('modal') && !e.target.querySelector('.model')) {
+    //         closeModal(e.target)
+    //     }
+    // })
+        
     // 为代办事项添加点击事件
     document.querySelectorAll('.task-list button').forEach(button => {
         button.addEventListener('click', function() {
@@ -129,7 +141,7 @@ function bindEventListeners() {
 }
 
 // ==================== 首页面板数据更新 ====================
-// ---------- 饼图 ----------
+// 饼图
 const pieDom = document.getElementById('pie-chart')
 const pieChart = echarts.init(pieDom, null, {
   width: 450, // 强制饼图canvas宽度
@@ -151,7 +163,7 @@ const pieOption = {
 }
 pieChart.setOption(pieOption)
 
-// ---------- 月度交易次数折线图 ----------
+// 月度交易次数折线图 
 const lineDom1 = document.getElementById('line-chart-1')
 const lineChart1 = echarts.init(lineDom1)
 const lineOption1 = {
@@ -174,7 +186,7 @@ const lineOption1 = {
 }
 lineChart1.setOption(lineOption1)
 
-// ---------- 月度贷款与还款总额折线图 ----------
+// 月度贷款与还款总额折线图
 const lineDom2 = document.getElementById('line-chart-2')
 const lineChart2 = echarts.init(lineDom2)
 const lineOption2 = {

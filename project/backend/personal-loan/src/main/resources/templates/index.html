@@ -20,28 +20,27 @@
             <ul class="nav-menu">
                 <li class="nav-item">
                     <a href="#" class="nav-link active" data-target="home-page">
-                        <span>首页</span>
-                        <!-- 最右边加一个右尖括号字体图标 -->
+                        <span class="iconfont icon-shouye-zhihui">首页</span><i class="iconfont icon-jinru"></i>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link" data-target="loan-management">
-                        <span>贷款管理</span>
+                        <span>贷款管理</span><i class="iconfont icon-jinru"></i>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link" data-target="user-management">
-                        <span>用户管理</span>
+                        <span>用户管理</span><i class="iconfont icon-jinru"></i>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link" data-target="riskAndCollection-management">
-                        <span>风险与催收管理</span>
+                        <span>风险与催收管理</span><i class="iconfont icon-jinru"></i>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link" data-target="dataAndSystem-management">
-                        <span>数据统计与系统管理</span>
+                        <span>数据统计与系统管理</span><i class="iconfont icon-jinru"></i>
                     </a>
                 </li>
             </ul>
@@ -52,7 +51,7 @@
             <div class="header">
                 <h2>首页</h2>
                 <div class="controller-info">
-                    <a href="#" class="icon ">代表系统消息的字体图标</a>
+                    <a href="#" class="iconfont icon-xiaoxi-zhihui"></a><i class="iconfont icon-user"></i>
                     <span>管理员XXX，您好！</span>
                     <button class="btn" id="logout-btn">退出登录</button>
                 </div>
@@ -131,6 +130,17 @@
 
             <!-- 贷款管理页面卡片 -->
             <div class="loan-dashboard" id="loan-management-content">
+                <!-- 已有贷款项目分类 -->
+                <div class="nav-product-type">
+                    <ul class="nav-list">
+                        <li><button>大额贷款</button></li>
+                        <li><button>小额贷款</button></li>
+                        <li><button>信用贷款</button></li>
+                        <li><button>短期贷款</button></li>
+                        <li><button>免息贷款</button></li>
+                    </ul>
+                    <button class="add-product-btn" data-modal="add-new-product">添加新项目</button>
+                </div>
                 <!-- 已有贷款项目 -->
                 <div class="setted-loan-product">
                     <!-- 车贷 -->
@@ -234,16 +244,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- 新增贷款项目 -->
-                <div class="new-loan-product">
-                    <h2>新增贷款项目</h2>
-                    <input type="text" name="产品名称" id="product-name" placeholder="请输入产品名称">
-                    <input type="text" name="产品描述" id="product-desc" placeholder="请输入产品描述">
-                    <input type="text" name="产品利率" id="product-rate" placeholder="请输入产品利率">
-                    <input type="text" name="产品期限" id="product-term" placeholder="请输入产品期限">
-                    <input type="text" name="产品用途" id="product-purpose" placeholder="请输入产品用途">
-                    <button type="submit" class="btn btn-primary" id="add-loan-product">新增</button>
-                </div>
             </div>
 
             <!-- 用户管理页面卡片 -->
@@ -273,7 +273,7 @@
                             <tr>
                                 <td>1</td>  
                                 <td>张三</td>
-                                <td>是</td>
+                                <td>在线</td>
                                 <td>无借贷</td>
                                 <td>4</td>
                                 <td>1234</td>
@@ -805,8 +805,21 @@
             </div>
         </div>
     </div>
-    <!-- 首页面板弹窗 -->
-     
+
+<!-- 贷款管理面板弹窗 -->
+    <!-- 添加贷款项目弹窗 -->
+    <div class="modal" id="add-new-product">
+        <button class="iconfont icon-close close-btn"></button>
+        <h2>新增贷款项目</h2>
+        <input type="text" name="产品名称" id="product-name" placeholder="请输入产品名称">
+        <input type="text" name="产品描述" id="product-desc" placeholder="请输入产品描述">
+        <input type="text" name="产品利率" id="product-rate" placeholder="请输入产品利率">
+        <input type="text" name="产品期限" id="product-term" placeholder="请输入产品期限">
+        <input type="text" name="产品用途" id="product-purpose" placeholder="请输入产品用途">
+        <button type="submit" class="btn btn-primary" id="add-loan-product">新增</button>
+    </div>
+
+<!-- 首页面板弹窗 -->
     <!-- <div class="modal" id="user-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -828,20 +841,6 @@
             </div>
             <div class="modal-body">
                 <p>这里可以配置AI审核规则、风险事件等级划分、规则效果分析和预警短信通知。</p>
-            </div>
-        </div>
-    </div> -->
-    
-    <!-- 贷款管理弹窗 -->
-    <!-- <div class="modal" id="loan-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">贷款项目管理</h3>
-                <button class="close-btn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p>这里可以管理还款期限、贷款用途、优惠政策和免息/降息设置。</p>
-                
             </div>
         </div>
     </div> -->
@@ -885,6 +884,7 @@
             </div>
         </div>
     </div> -->
+    <script src="../JS/API.js"></script>
     <script src="../JS/index.js"></script>
 </body>
 </html>

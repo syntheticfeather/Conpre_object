@@ -1,3 +1,4 @@
+/* 通用属性值预设 */
 :root {
     --primary-color: #2c3e50;
     --secondary-color: #3498db;
@@ -42,7 +43,7 @@ body {
 }
 
 .logo h1 {
-    font-size: 1.5rem;
+    font-size: 24px;
     font-weight: 600;
 }
 
@@ -51,12 +52,29 @@ body {
 }
 
 .nav-link {
-    display: block;
-    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    
+    font-size: 18px;
     color: rgba(255, 255, 255, 0.8);
     text-decoration: none;
     transition: all 0.3s;
     border-left: 3px solid transparent;
+}
+
+.nav-link .icon-shouye-zhihui {
+    font-size: 20px;
+    font-family: 宋体，楷体，微软雅黑;
+}
+
+.nav-link span {
+    margin-left: 20px;
+    font-family: 宋体，楷体，微软雅黑;
+}
+
+.nav-link .icon-jinru {
+    margin-right: 10px;
 }
 
 .nav-link:hover, .nav-link.active {
@@ -92,9 +110,16 @@ body {
     display: flex;
     align-items: center;
 }
-
+.controller-info .icon-xiaoxi-zhihui {
+    margin-right: 10px;
+    font-size: 22px;
+}
+.controller-info .icon-user {
+    margin-right: 5px;
+    font-size: 22px;
+}
 .controller-info span {
-    margin-right: 15px;
+    margin-right: 18px;
 }
 
 /* 所有按钮基础样式 */
@@ -128,11 +153,13 @@ body {
     color: white;
 }
 
-/* 首页面板 */
+
+/************* 首页面板 *************/
 .home-dashboard {    
     display: none;
     justify-content: space-evenly;
 }
+
 /* 用户数据概览 */
 .home-dashboard .left {
     display: flex;
@@ -232,63 +259,77 @@ body {
 }
 
 
-/* 贷款管理面板 */
+/************* 贷款管理面板 *************/
 .loan-dashboard {
   display: none;
+  flex-direction: column;
   justify-content: space-between;
+  margin-top: -10px;
 }
-
-/* 已有贷款产品 */
-.loan-dashboard .setted-loan-product {
+/* 项目分类 */
+.loan-dashboard .nav-product-type {
+    display: flex;
+    justify-content: space-between;
+}
+.loan-dashboard .nav-product-type ul {
+    width: 1150px;
     display: flex;
     justify-content: space-evenly;
-    flex-wrap: wrap;
-    overflow-y: auto;
-
-    width: 900px;
-    height: 600px;
 }
+.nav-product-type ul button {
+    padding: 0 5px;
+    height: 26px;
+    background-color: #c0cbcc;
+
+    color: #333;
+    font-size: 14px;
+    border-radius: 7px;
+    cursor: pointer;
+    border: none;
+}
+.nav-product-type ul button:hover {
+    background-color: #517eab;
+    color: #fff;
+}
+.nav-product-type .add-product-btn {
+    margin-right: 30px;
+    height: 28px;
+    width: 90px;
+    padding: 0 3px;
+    color: #333;
+    font-size: 16px;
+    border-radius: 7px;
+    cursor: pointer;
+}
+.nav-product-type .add-product-btn:hover {
+    border: none;
+    background-color: #484b52;
+    color: #fff;
+}
+/* 已有贷款产品 */
+.loan-dashboard .setted-loan-product {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    padding: 20px;
+
+    width:100%;
+}
+
 .loan-dashboard .setted-loan-product .card {
     width: 340px;
     height: 300px;
     background-color: #fff;
 }
 
-/* 增加新贷款产品 */
-.loan-dashboard .new-loan-product {
-    padding: 10px 20px;
-    width: 300px;
-    height: 600px;
 
-    border-left: 1px solid #aeaeae;
-}
-.loan-dashboard .new-loan-product h2 {
-    margin-top: 100px;
-
-    font-size: 24px;
-    font-weight: 600;
-    text-align: center;
-}
-.loan-dashboard .new-loan-product input {
-    margin: 10px auto;
-
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: var(--border-radius);
-}
-.loan-dashboard .new-loan-product button {
-    margin: 0 35px;
-    width: 200px;
-
-    font-size: 20px;
-}
-
-/* 用户管理面板 */
+/************* 用户管理面板 *************/  
 .user-dashboard {
     display: none;
     flex-direction: column;
     justify-content: center;
+
+    margin-top: -15px;
 }
 
 .user-dashboard .low-risk-user,
@@ -297,9 +338,12 @@ body {
     flex-direction: column;
     justify-content: center;
     margin: 0 auto;
+    padding: 5px;
 
     width: flex;
     height: 400px;
+    border-radius: 8px;
+    box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.2);
 }
 
 .user-dashboard hr {
@@ -314,6 +358,7 @@ body {
 
     font-size: 20px;
     align-items: center;
+    color:  #2c3e50;
 }
 .low-risk-user hr,
 .high-risk-user hr {
@@ -335,7 +380,8 @@ body {
     transition: all 0.3s;
 }
 .table-header button:hover {
-    background-color: #656771;
+    background-color: #4155b8;
+    color: #fff;
 }
 
 /* 表格样式 */
@@ -353,6 +399,10 @@ table {
     border-right: none;
     border-top: 3px solid #000;
     border-collapse: collapse;
+
+    font-size: 14px;
+    line-height: 24px;
+    text-align: center;
 }
 .low-risk-table th,
 td ,
@@ -360,9 +410,14 @@ td ,
 td {
     height: 30px;
     padding: 5px;
-    border-top: 2px solid #000;
-    border-right: 2px solid #000;
+    border: 2px solid #000;
 }
+
+.low-risk-table td:nth-child(3),
+.high-risk-table td:nth-child(3) {
+   color: #36D399;
+}
+
 .low-risk-table button,
 .high-risk-table button {
     width: 100%;
@@ -377,18 +432,40 @@ td {
 }
 .low-risk-table button:hover,
 .high-risk-table button:hover {
-    background-color: #a0a1a8;
-    color: white;
+    text-decoration-line: underline;
+}
+/* 滚动条样式 */
+/* 整体宽度 */
+.low-risk-table::-webkit-scrollbar,
+.high-risk-table::-webkit-scrollbar {
+    width: 6px; 
+}
+/* 滚动轨道样式 */
+.low-risk-table::-webkit-scrollbar-track,
+.high-risk-table::-webkit-scrollbar-track {
+    background: #ffffff; 
+    border-radius: 4px;
+}
+/* 滚动滑块样式 */
+.low-risk-table::-webkit-scrollbar-thumb,
+.high-risk-table::-webkit-scrollbar-thumb {
+    width: 4px;
+    height: 10px;
+
+    background: #3e566d; 
+    border-radius: 6px;
 }
 
-/* 风险与催收管理面板特定样式 */
+
+/************* 风险与催收管理面板特定样式 *************/
 .risk-dashboard {
   display: none;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
 }
 
-/* 数据统计与系统管理面板特定样式 */
+
+/************* 数据统计与系统管理面板特定样式 *************/
 .data-dashboard {
   display: none;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -426,45 +503,66 @@ td {
     min-height: 120px;
 }
 
-/* 弹窗样式 */
-/* .modal {
+/************* 弹窗样式 *************/
+/* 弹窗容器基础样式 */
+.modal {
     display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%);
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 1000;
-    justify-content: center;
-    align-items: center;
-}
 
-.modal-content {
-    background-color: white;
-    border-radius: var(--border-radius);
-    width: 90%;
-    max-width: 600px;
-    max-height: 80vh;
-    overflow-y: auto;
     padding: 20px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    width: 600px;
+    background-color: white; 
+    border-radius: 8px;
 }
 
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #eee;
-}
+/* 增加新贷款产品 */
+#add-new-product {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px 20px;
 
-.modal-title {
-    font-size: 1.3rem;
+    border: 1px solid #000;
+}
+#add-new-product h2 {
+    margin-top: 20px;
+
+    font-size: 24px;
     font-weight: 600;
-    color: var(--primary-color);
-} */
+    text-align: center;
+}
+#add-new-product .icon-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    background-color:rgba(0, 0, 0, 0);
+
+    font-size: 24px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+}
+#add-new-product input {
+    margin: 10px auto;
+    padding: 10px;
+    width: 300px;
+
+    border: 1px solid #ccc;
+    border-radius: var(--border-radius);
+}
+#add-new-product button {
+    margin: 0 auto;
+    width: 200px;
+
+    font-size: 20px;
+}
 
 /* 未知关闭按钮 */
 /* .close-btn {

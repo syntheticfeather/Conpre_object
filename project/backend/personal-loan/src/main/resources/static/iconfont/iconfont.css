@@ -1,8 +1,8 @@
 @font-face {
-  font-family: "iconfont"; /* Project id 5044179 */
-  src: url('iconfont.woff2?t=1760877016225') format('woff2'),
-       url('iconfont.woff?t=1760877016225') format('woff'),
-       url('iconfont.ttf?t=1760877016225') format('truetype');
+  font-family: "iconfont"; /* Project id 5038192 */
+  src: url('iconfont.woff2?t=1763030778836') format('woff2'),
+       url('iconfont.woff?t=1763030778836') format('woff'),
+       url('iconfont.ttf?t=1763030778836') format('truetype');
 }
 
 .iconfont {
@@ -13,103 +13,379 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-arrow-right:before {
-  content: "\e665";
+.icon-chart-bar:before {
+  content: "\e6b1";
 }
 
-.icon-setting:before {
-  content: "\e67d";
+.icon-complete:before {
+  content: "\e6b4";
 }
 
-.icon-RectangleCopy:before {
-  content: "\e6a2";
+.icon-hide:before {
+  content: "\e6b5";
 }
 
-.icon-geren:before {
-  content: "\e608";
+.icon-stop:before {
+  content: "\e6bb";
 }
 
-.icon-xinfeng:before {
-  content: "\e673";
+.icon-success:before {
+  content: "\e6bc";
 }
 
-.icon-xinfeng1:before {
-  content: "\e61b";
+.icon-time:before {
+  content: "\e6bd";
 }
 
-.icon-xinfengyoujian:before {
-  content: "\e6eb";
+.icon-user:before {
+  content: "\e6be";
 }
 
-.icon-xinfeng2:before {
-  content: "\e857";
-}
-
-.icon-dingwei:before {
-  content: "\e8ae";
+.icon-aichegujiabeifen7:before {
+  content: "\e602";
 }
 
 .icon-zhuanchezhuanyongbeifen:before {
   content: "\e604";
 }
 
-.icon-moon:before {
-  content: "\e855";
-}
-
-.icon-biaoji1:before {
-  content: "\e603";
-}
-
-.icon-dark:before {
-  content: "\e838";
-}
-
-.icon-moon1:before {
-  content: "\e600";
-}
-
-.icon-a-ziyuan8:before {
-  content: "\e688";
-}
-
-.icon-qianshuxieyi:before {
+.icon-xiaoxi-zhihui:before {
   content: "\e61d";
 }
 
-.icon-zaixianxuanfang:before {
+.icon-gengduo:before {
+  content: "\e61e";
+}
+
+.icon-shouye-zhihui:before {
+  content: "\e620";
+}
+
+.icon-fanhui:before {
+  content: "\e622";
+}
+
+.icon-guanbi:before {
+  content: "\e623";
+}
+
+.icon-a-xiala2:before {
+  content: "\e624";
+}
+
+.icon-bianji:before {
+  content: "\e625";
+}
+
+.icon-jinru:before {
+  content: "\e626";
+}
+
+.icon-tishi:before {
+  content: "\e628";
+}
+
+.icon-arrow-up-filling:before {
+  content: "\e6a8";
+}
+
+.icon-arrow-down-filling:before {
+  content: "\e6a9";
+}
+
+.icon-arrow-left-filling:before {
+  content: "\e6aa";
+}
+
+.icon-arrow-right-filling:before {
+  content: "\e6ab";
+}
+
+.icon-comment-filling:before {
+  content: "\e6ac";
+}
+
+.icon-dingwei:before {
   content: "\e61f";
 }
 
-.icon-biaoji2:before {
-  content: "\e681";
+.icon-xiala:before {
+  content: "\e621";
 }
 
-.icon-evening:before {
-  content: "\e6f2";
+.icon-baimao:before {
+  content: "\e64a";
 }
 
-.icon-Moon:before {
-  content: "\e714";
+.icon-top:before {
+  content: "\e69f";
 }
 
-.icon-shangchuan:before {
+.icon-upload:before {
+  content: "\e6a0";
+}
+
+.icon-clock-filling:before {
+  content: "\e6a1";
+}
+
+.icon-decline-filling:before {
+  content: "\e6a2";
+}
+
+.icon-favorite-filling:before {
+  content: "\e6a3";
+}
+
+.icon-filter-filling:before {
+  content: "\e6a4";
+}
+
+.icon-user-filling:before {
+  content: "\e6a5";
+}
+
+.icon-map-filling:before {
+  content: "\e6a6";
+}
+
+.icon-home-filling:before {
+  content: "\e6a7";
+}
+
+.icon-column-4:before {
+  content: "\e664";
+}
+
+.icon-add:before {
+  content: "\e665";
+}
+
+.icon-add-circle:before {
+  content: "\e666";
+}
+
+.icon-adjust:before {
+  content: "\e667";
+}
+
+.icon-arrow-up-circle:before {
+  content: "\e668";
+}
+
+.icon-arrow-right-circle:before {
+  content: "\e669";
+}
+
+.icon-arrow-down:before {
+  content: "\e66a";
+}
+
+.icon-arrow-right:before {
+  content: "\e66b";
+}
+
+.icon-browse:before {
+  content: "\e66c";
+}
+
+.icon-bottom:before {
+  content: "\e66d";
+}
+
+.icon-back:before {
+  content: "\e66e";
+}
+
+.icon-bad:before {
+  content: "\e66f";
+}
+
+.icon-arrow-double-left:before {
+  content: "\e670";
+}
+
+.icon-arrow-left-circle:before {
+  content: "\e671";
+}
+
+.icon-arrow-double-right:before {
   content: "\e672";
 }
 
-.icon-shangchuan1:before {
-  content: "\e631";
+.icon-camera:before {
+  content: "\e673";
 }
 
-.icon-shangchuan2:before {
-  content: "\e605";
+.icon-attachment:before {
+  content: "\e674";
 }
 
-.icon-biaoji:before {
-  content: "\e663";
+.icon-code:before {
+  content: "\e675";
 }
 
-.icon-yueliang:before {
-  content: "\e621";
+.icon-close:before {
+  content: "\e676";
+}
+
+.icon-calendar:before {
+  content: "\e677";
+}
+
+.icon-comment:before {
+  content: "\e678";
+}
+
+.icon-cry:before {
+  content: "\e679";
+}
+
+.icon-delete:before {
+  content: "\e67a";
+}
+
+.icon-direction-down:before {
+  content: "\e67b";
+}
+
+.icon-direction-right:before {
+  content: "\e67c";
+}
+
+.icon-direction-up:before {
+  content: "\e67d";
+}
+
+.icon-discount:before {
+  content: "\e67e";
+}
+
+.icon-download:before {
+  content: "\e67f";
+}
+
+.icon-edit:before {
+  content: "\e680";
+}
+
+.icon-eye-close:before {
+  content: "\e681";
+}
+
+.icon-email:before {
+  content: "\e682";
+}
+
+.icon-error:before {
+  content: "\e683";
+}
+
+.icon-favorite:before {
+  content: "\e684";
+}
+
+.icon-home:before {
+  content: "\e685";
+}
+
+.icon-file-open:before {
+  content: "\e686";
+}
+
+.icon-link:before {
+  content: "\e687";
+}
+
+.icon-fullscreen-shrink:before {
+  content: "\e688";
+}
+
+.icon-lock:before {
+  content: "\e689";
+}
+
+.icon-map:before {
+  content: "\e68a";
+}
+
+.icon-meh:before {
+  content: "\e68b";
+}
+
+.icon-menu:before {
+  content: "\e68c";
+}
+
+.icon-loading:before {
+  content: "\e68d";
+}
+
+.icon-help:before {
+  content: "\e68e";
+}
+
+.icon-notification:before {
+  content: "\e68f";
+}
+
+.icon-play:before {
+  content: "\e690";
+}
+
+.icon-mobile-phone:before {
+  content: "\e691";
+}
+
+.icon-minus:before {
+  content: "\e692";
+}
+
+.icon-navigation:before {
+  content: "\e693";
+}
+
+.icon-refresh:before {
+  content: "\e694";
+}
+
+.icon-pin:before {
+  content: "\e695";
+}
+
+.icon-save:before {
+  content: "\e696";
+}
+
+.icon-search:before {
+  content: "\e697";
+}
+
+.icon-share:before {
+  content: "\e698";
+}
+
+.icon-scanning:before {
+  content: "\e699";
+}
+
+.icon-security:before {
+  content: "\e69a";
+}
+
+.icon-sign-out:before {
+  content: "\e69b";
+}
+
+.icon-select:before {
+  content: "\e69c";
+}
+
+.icon-setting:before {
+  content: "\e69d";
+}
+
+.icon-survey:before {
+  content: "\e69e";
 }
 
