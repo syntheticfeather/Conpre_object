@@ -1,10 +1,11 @@
-package com.example.personal_loan.vo;
+package com.example.personal_loan.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import com.example.personal_loan.entity.LoanOption;
 
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,13 +13,23 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoanProductVO {
+public class ProductDto {
+
     private Long id;
 
     private String productName;
-    private String promotionDetails;
-    private LocalDateTime createTime;
 
-    // 一个产品对应多个可选方案（贷款选项）
+    @Min(value = 1, message = "最短期数不能小于1")
+    private Integer minTerm;
+
+    private Integer maxTerm;
+
+    private Integer termStep;
+
+    private String promotionDetails;
+
     private List<LoanOption> options;
+
+    private LocalDateTime createTime;
+    private LocalDateTime updateTime;
 }

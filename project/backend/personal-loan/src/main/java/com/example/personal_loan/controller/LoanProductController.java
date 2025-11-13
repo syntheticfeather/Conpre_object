@@ -13,8 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.personal_loan.entity.LoanProduct;
+import com.example.personal_loan.dto.ProductDto;
 import com.example.personal_loan.service.LoanProductService;
+import com.example.personal_loan.vo.LoanProductVO;
 
 import jakarta.validation.Valid;
 
@@ -23,32 +24,50 @@ import jakarta.validation.Valid;
 public class LoanProductController {
     
     @Autowired
-    private LoanProductService loanProductService;
+    private LoanProductService service;
     
-    @GetMapping
-    public ResponseEntity<List<LoanProduct>> getAllLoanProducts() {
-        return ResponseEntity.ok(loanProductService.getAllLoanProducts());
+    // ========== 用户端 ==========
+    @GetMapping("/user")
+    public ResponseEntity<List<LoanProductVO>> listForUser() {
+        return ResponseEntity.ok(service.getAllLoanProducts());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<LoanProduct> getLoanProductById(@PathVariable Long id){
-        return ResponseEntity.ok(loanProductService.getLoanProductById(id));
+    @GetMapping("/user/{productId}")
+    public ResponseEntity<LoanProductVO> getProductForUser(@PathVariable Long productId) {
+        return ResponseEntity.ok(service.getLoanProductById(productId));
     }
 
-    @PostMapping
-    public ResponseEntity<LoanProduct> createLoanProduct(@RequestBody @Valid LoanProduct loanProduct){
-        return ResponseEntity.ok(loanProductService.createLoanProduct(loanProduct));
+    // ========== 管理端 ==========
+    @GetMapping("/admin")
+    public ResponseEntity<List<ProductDto>> listForAdmin() {
+        return ResponseEntity.ok(service.adminGetAllProducts());
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<LoanProduct> updateLoanProduct(@PathVariable Long id,@RequestBody LoanProduct loanProduct){
-        loanProductService.updateLoanProduct(id,loanProduct);
-        return ResponseEntity.ok(loanProductService.getLoanProductById(id));
+    @GetMapping("/admin/{productId}")
+    public ResponseEntity<ProductDto> getProductForAdmin(@PathVariable Long productId) {
+        return ResponseEntity.ok(service.adminGetProductById(productId));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLoanProduct(@PathVariable Long id){
-        loanProductService.deleteLoanProduct(id);
-        return ResponseEntity.noContent().build();
+    @PostMapping("/admin")
+    public ResponseEntity<ProductDto> create(@RequestBody ProductDto dto) {
+        return ResponseEntity.ok(service.createLoanProduct(dto));
+    }
+
+    @PatchMapping("/admin/products/{id}")
+    public ResponseEntity<ProductDto> update(@PathVariable Long id, @RequestBody @Valid ProductDto dto) {
+        ProductDto updated = service.updateLoanProduct(id, dto);
+        return ResponseEntity.ok(updated);
+    }
+
+    @DeleteMapping("/admin/products/{productId}")
+    public ResponseEntity<String> deleteProduct(@PathVariable Long productId) {
+        service.deleteLoanProduct(productId);
+        return ResponseEntity.ok("Loan product delete success");
+    }
+
+    @DeleteMapping("/admin/options/{optionId}")
+    public ResponseEntity<String> deleteOption(@PathVariable Long optionId) {
+        service.deleteLoanOption(optionId);
+        return ResponseEntity.ok("The option of product delete success");
     }
 }

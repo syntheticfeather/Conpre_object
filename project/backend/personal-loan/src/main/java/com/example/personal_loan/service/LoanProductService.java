@@ -2,17 +2,34 @@ package com.example.personal_loan.service;
 
 import java.util.List;
 
-import com.example.personal_loan.entity.LoanProduct;
+import com.example.personal_loan.dto.ProductDto;
+import com.example.personal_loan.vo.LoanProductVO;
 
 public interface LoanProductService {
 
-    LoanProduct createLoanProduct(LoanProduct loanProduct);
+    /*
+     * 管理员使用
+     */
 
-    int deleteLoanProduct(Long id);
+    ProductDto createLoanProduct(ProductDto loanProductDto);
 
-    int updateLoanProduct(Long id,LoanProduct loanProduct);
+    // 删除产品的某个选项（贷款方案详情）
+    int deleteLoanOption(Long optionId);
 
-    LoanProduct getLoanProductById(Long id);
+    // 删除产品
+    int deleteLoanProduct(Long productId);
 
-    List<LoanProduct> getAllLoanProducts();
+    ProductDto updateLoanProduct(Long id,ProductDto loanProductDto);
+
+    // 根据productId查询产品及其选项
+    ProductDto adminGetProductById(Long id);
+
+    List<ProductDto> adminGetAllProducts ();
+
+    /*
+     * 用户使用
+     */
+
+    LoanProductVO getLoanProductById(Long id);
+    List<LoanProductVO> getAllLoanProducts();
 }

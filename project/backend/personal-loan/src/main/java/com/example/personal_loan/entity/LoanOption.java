@@ -15,8 +15,11 @@ public class LoanOption {
     private Long id;
     private Long productId;
 
-    private int loanPeriod;
+    private Integer loanPeriod;
+
     private BigDecimal loanAmount;
+
     private BigDecimal interestRate;
+    
     private RepaidType repaidType;
 }
