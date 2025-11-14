@@ -20,6 +20,7 @@ AdminWeb.API_CONFIG = {
         // sendSms: '/api/auth/send-sms',
 
         // refreshToken: '/api/auth/refresh',// 刷新token接口
+        logout: '/api/auth/logout' // 退出接口
     },
     storageKeys: {
         token: 'admin_token',
@@ -49,13 +50,6 @@ AdminWeb.DOM_ELEMENTS = {
     registerPasswordInput: document.getElementById('password'),
     confirmPasswordInput: document.getElementById('confirmPassword'),
     networkError: document.getElementById('networkError'),
-    registerSuccessMessage: document.getElementById('successMessage'), // 注册成功提示信息
-    // 输入字段
-    adminNameInput: document.getElementById('adminName'),
-    passwordInput: document.getElementById('password'),
-    confirmPasswordInput: document.getElementById('confirmPassword'),
-    phoneInput: document.getElementById('phone'),
-    smsCodeInput: document.getElementById('smsCode'),
 
     // 登录页面
     // 密码登录
@@ -75,6 +69,19 @@ AdminWeb.DOM_ELEMENTS = {
     smsPhoneInput: document.getElementById('smsPhone'),
     smsCodeInput: document.getElementById('smsCode'),
     agreeCheckbox: document.getElementById('agreeCheckbox'),
+
+    // 管理员中心页面
+    // 五个控制面板
+    // 首页
+    homePageContent: document.getElementById('home-page-content'),
+    // 贷款管理
+    loanManagementContent: document.getElementById('loan-management-content'),
+    // 用户管理
+    userManagementContent: document.getElementById('user-management-content'),
+    // 风险与催收管理
+    riskAndCollectionManagementContent: document.getElementById('riskAndCollection-management-content'),
+    // 数据统计与系统管理
+    dataAndSystemManagementContent: document.getElementById('dataAndSystem-management-content')
 }
 // ==================== API 请求封装/API客户端？ ====================
 AdminWeb.API_CLIENT = {
