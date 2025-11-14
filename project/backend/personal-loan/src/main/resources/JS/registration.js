@@ -91,22 +91,22 @@ function getFormData() {
 function validateForm(formData) {
     const errors = {}
     
-    // 用户名格式
-    if (!formData.adminName) {
+    // 用户名格式验证 (2-20位)
+    if (!formData.name) {
         errors.adminName = '请输入用户名'
-    } else if (formData.adminName.length < 0) {
-        errors.adminName = '用户名长度至少1位'
-    } else if (!/^[a-zA-Z0-9_]+$/.test(formData.adminName)) {
-        errors.adminName = '用户名只能包含字母、数字和下划线'
+    } else if (formData.name.length < 2 || formData.name.length > 20) {
+        errors.adminName = '用户名长度需为2-20位'
+    } else if (!/^[a-zA-Z0-9_\u4e00-\u9fa5]+$/.test(formData.name)) {
+        errors.adminName = '用户名只能包含字母、数字、下划线和中文字符'
     }
 
-    //密码格式
+    // 密码格式验证 (8-20位，包含大小写字母、数字和特殊字符)
     if (!formData.password) {
         errors.password = '请输入密码';
-    } else if (formData.password.length < 6 || formData.password.length > 8) {
-        errors.password = '密码长度需为6-8位';
+    } else if (formData.password.length < 8 || formData.password.length > 20) {
+        errors.password = '密码长度需为8-20位';
     } else if (!validatePasswordComplexity(formData.password)) {
-        errors.password = '密码需包含至少两种特殊符号';
+        errors.password = '密码需包含大小写字母、数字和特殊字符';
     }
     
     // 确认密码验证
@@ -115,10 +115,11 @@ function validateForm(formData) {
     } else if (formData.password !== formData.confirmPassword) {
         errors.confirmPassword = '两次输入的密码不一致';
     }
+    
     // 手机号验证
     if (!formData.phone) {
         errors.phone = '请输入手机号码'
-    }else if (!/^1[3-9]\d{9}$/.test(formData.phone)){
+    } else if (!/^1[3-9]\d{9}$/.test(formData.phone)) {
         errors.phone = '请输入正确的手机号码'
     }
     // 验证码验证
@@ -141,16 +142,16 @@ function validateForm(formData) {
 }
 // 密码复杂度验证函数
 function validatePasswordComplexity(password) {
-    const specialChars = '!@#$%^&*()_+-=[]{}|;:,.<>?';
-    let specialCharCount = 0
+    // 检查是否包含小写字母
+    const hasLowercase = /[a-z]/.test(password);
+    // 检查是否包含大写字母
+    const hasUppercase = /[A-Z]/.test(password);
+    // 检查是否包含数字
+    const hasNumber = /\d/.test(password);
+    // 检查是否包含特殊字符
+    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
     
-    for (let char of password) {
-        if (specialChars.includes(char)) {
-            specialCharCount++
-        }
-    }
-    
-    return specialCharCount >= 2
+    return hasLowercase && hasUppercase && hasNumber && hasSpecialChar;
 }
 
 // ==================== 注册处理函数 ====================
