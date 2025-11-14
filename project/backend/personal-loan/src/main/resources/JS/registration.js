@@ -6,7 +6,7 @@ const JWT_UTILS = AdminWeb.JWT_UTILS
 
 // ==================== 初始化函数 ====================
 function init() {
-    // 新增：显示当前环境
+    // 显示当前环境
     console.log(`后端地址: ${API_CONFIG.baseUrl}`);
     
     if (!DOM_ELEMENTS.registerForm) {
@@ -70,7 +70,7 @@ function bindInputEvents() {
     // 验证码输入框绑定
     if (DOM_ELEMENTS.smsCodeInput) {
         DOM_ELEMENTS.smsCodeInput.addEventListener('input', () => {
-            clearFieldError('verificationCode')
+            clearFieldError('vsmsCode')
             clearGenericError()
         })
     }
@@ -92,11 +92,11 @@ function validateForm(formData) {
     const errors = {}
     
     // 用户名格式验证 (2-20位)
-    if (!formData.name) {
+    if (!formData.adminName) {
         errors.adminName = '请输入用户名'
-    } else if (formData.name.length < 2 || formData.name.length > 20) {
+    } else if (formData.adminName.length < 2 || formData.adminName.length > 20) {
         errors.adminName = '用户名长度需为2-20位'
-    } else if (!/^[a-zA-Z0-9_\u4e00-\u9fa5]+$/.test(formData.name)) {
+    } else if (!/^[a-zA-Z0-9_\u4e00-\u9fa5]+$/.test(formData.adminName)) {
         errors.adminName = '用户名只能包含字母、数字、下划线和中文字符'
     }
 
@@ -175,7 +175,7 @@ async function handleRegisterSubmit(e) {
         
         // 准备提交数据（移除确认密码字段）
         const submitData = {
-            adminName: formData.adminName,
+            name: formData.adminName,
             password: formData.password,
             phone: formData.phone,
             smsCode: formData.smsCode || '000000'
@@ -254,25 +254,18 @@ function handleClose() {
 
 // ==================== 结果处理函数 ====================
 function handleRegisterSuccess(result) {
-    console.log('注册成功:', result);
+    console.log('注册成功:', result)
+    showSuccessMessage()
     
-    showSuccessMessage();
-    
-    // 保存token和管理员信息
-    const token = result.data?.token || result.token
-    
-    if (token) {
-        JWT_UTILS.setToken(token)
-        console.log('Token已保存')
-    }
-    
-    // 保存管理员信息
+    // 成功时返回id、name、createTime
     const adminInfo = {
-        adminName: result.adminName || result.data?.adminName,
-        phone: result.phone || result.data?.phone,
+        id: result.id || result.data?.id,
+        name: result.name || result.data?.name,
         registerTime: new Date().toISOString()
     }
     console.log('管理员信息已保存:', adminInfo)
+    
+    localStorage.setItem(API_CONFIG.storageKeys.adminInfo, JSON.stringify(adminInfo))
     
     // 标记为已注册
     localStorage.setItem(API_CONFIG.storageKeys.registeredAdmin, 'true')
