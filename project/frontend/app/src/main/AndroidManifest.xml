@@ -22,6 +22,10 @@
         </activity>
 
         <activity android:name=".MainActivity" />
+        <activity
+            android:name=".ProductDetailActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
 
     </application>
 
