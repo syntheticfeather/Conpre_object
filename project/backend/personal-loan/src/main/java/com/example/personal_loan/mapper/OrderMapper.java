@@ -1,4 +1,4 @@
-package com.example.personal_loan.dao;
+package com.example.personal_loan.mapper;
 
 import java.math.BigDecimal;
 import java.util.List;

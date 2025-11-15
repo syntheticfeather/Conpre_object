@@ -1,6 +1,6 @@
-<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.2.8 Chrome/140.0.7339.240 Electron/38.4.0 Safari/537.36" version="28.2.8">
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.2.5 Chrome/138.0.7204.251 Electron/37.6.1 Safari/537.36" version="28.2.5">
   <diagram id="Z7AZ5NOM8IHrbMHdXDCH" name="第 1 页">
-    <mxGraphModel dx="4651" dy="1544" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2000" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="6205" dy="2736" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2000" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -207,23 +207,350 @@
             <mxPoint x="589" y="390" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="G3BJdoJ-VfDOgWQwC8Hy-1" value="LoanProduct (贷款项目)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="G3BJdoJ-VfDOgWQwC8Hy-1" value="LoanProduct (贷款项目)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="770" y="590" width="430" height="230" as="geometry" />
         </mxCell>
-        <mxCell id="G3BJdoJ-VfDOgWQwC8Hy-2" value="&lt;div&gt;- productId : int&lt;/div&gt;&lt;div&gt;- productName : String&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;minTerm:int&amp;nbsp; &amp;nbsp;//还款期数&lt;/div&gt;&lt;div&gt;maxTerm:int&amp;nbsp;&amp;nbsp;&lt;/div&gt;&lt;div&gt;termStep:int&amp;nbsp;&amp;nbsp;&lt;/div&gt;&lt;div&gt;//还款金额，贷款年限&lt;/div&gt;&lt;div&gt;- promotionDetails : String&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;//优惠政策详情&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;createTime:int&lt;/div&gt;&lt;div&gt;updateTime:int&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="G3BJdoJ-VfDOgWQwC8Hy-1">
+        <mxCell id="G3BJdoJ-VfDOgWQwC8Hy-2" value="&lt;div&gt;- productId : int&lt;/div&gt;&lt;div&gt;- productName : String&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;minTerm:int&amp;nbsp; &amp;nbsp;//还款期数&lt;/div&gt;&lt;div&gt;maxTerm:int&amp;nbsp;&amp;nbsp;&lt;/div&gt;&lt;div&gt;termStep:int&amp;nbsp;&amp;nbsp;&lt;/div&gt;&lt;div&gt;//还款金额，贷款年限&lt;/div&gt;&lt;div&gt;- promotionDetails : String&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;//优惠政策详情&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;createTime:int&lt;/div&gt;&lt;div&gt;updateTime:int&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="G3BJdoJ-VfDOgWQwC8Hy-1" vertex="1">
           <mxGeometry y="26" width="430" height="204" as="geometry" />
         </mxCell>
-        <mxCell id="G3BJdoJ-VfDOgWQwC8Hy-5" value="LoanOption" style="swimlane;childLayout=stackLayout;horizontal=1;startSize=50;horizontalStack=0;rounded=1;fontSize=14;fontStyle=0;strokeWidth=2;resizeParent=0;resizeLast=1;shadow=0;dashed=0;align=center;arcSize=4;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="G3BJdoJ-VfDOgWQwC8Hy-5" value="LoanOption" style="swimlane;childLayout=stackLayout;horizontal=1;startSize=50;horizontalStack=0;rounded=1;fontSize=14;fontStyle=0;strokeWidth=2;resizeParent=0;resizeLast=1;shadow=0;dashed=0;align=center;arcSize=4;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="600" y="630" width="160" height="150" as="geometry" />
         </mxCell>
-        <mxCell id="G3BJdoJ-VfDOgWQwC8Hy-9" value="&lt;div style=&quot;text-align: left;&quot;&gt;productId:int&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;period:int&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;loanAmount:int&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;rapaidType:String&amp;nbsp; //枚举&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;interestRate : BigDecimal&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="G3BJdoJ-VfDOgWQwC8Hy-5">
+        <mxCell id="G3BJdoJ-VfDOgWQwC8Hy-9" value="&lt;div style=&quot;text-align: left;&quot;&gt;productId:int&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;period:int&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;loanAmount:int&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;rapaidType:String&amp;nbsp; //枚举&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;interestRate : BigDecimal&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" parent="G3BJdoJ-VfDOgWQwC8Hy-5" vertex="1">
           <mxGeometry y="50" width="160" height="100" as="geometry" />
         </mxCell>
-        <mxCell id="G3BJdoJ-VfDOgWQwC8Hy-12" value="&lt;span style=&quot;font-size: 12px; font-weight: 700;&quot;&gt;Loan（用户已贷款项目）&lt;/span&gt;" style="swimlane;childLayout=stackLayout;horizontal=1;startSize=50;horizontalStack=0;rounded=1;fontSize=14;fontStyle=0;strokeWidth=2;resizeParent=0;resizeLast=1;shadow=0;dashed=0;align=center;arcSize=4;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="G3BJdoJ-VfDOgWQwC8Hy-12" value="&lt;span style=&quot;font-size: 12px; font-weight: 700;&quot;&gt;Loan（用户已贷款项目）&lt;/span&gt;" style="swimlane;childLayout=stackLayout;horizontal=1;startSize=50;horizontalStack=0;rounded=1;fontSize=14;fontStyle=0;strokeWidth=2;resizeParent=0;resizeLast=1;shadow=0;dashed=0;align=center;arcSize=4;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="-460" y="570" width="350" height="310" as="geometry" />
         </mxCell>
-        <mxCell id="G3BJdoJ-VfDOgWQwC8Hy-13" value="&lt;br&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;- loanId : int&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;- userId : int&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;- loanProductId : int&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;- repaidAmount : BigDecimal&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;//未还金额&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;- outstandingAmount : BigDecimal&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; //已还金额&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;- interestRate:BigDecimal&amp;nbsp;&amp;nbsp;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;- repaidType:String&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;&amp;nbsp;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;- status : LoanStatus&lt;/font&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;- currentTerm : int&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; //当前期数&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;- overdueDays : int&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; //逾期时间&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;- startTime : LocalDate&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;- endTime : LocalDate&lt;/font&gt;&lt;/div&gt;&lt;/font&gt;&lt;/div&gt;&lt;/div&gt;" style="align=left;strokeColor=none;fillColor=none;spacingLeft=4;spacingRight=4;fontSize=12;verticalAlign=top;resizable=0;rotatable=0;part=1;html=1;whiteSpace=wrap;" vertex="1" parent="G3BJdoJ-VfDOgWQwC8Hy-12">
+        <mxCell id="G3BJdoJ-VfDOgWQwC8Hy-13" value="&lt;br&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;- loanId : int&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;- userId : int&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;- loanProductId : int&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;- repaidAmount : BigDecimal&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;//未还金额&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;- outstandingAmount : BigDecimal&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; //已还金额&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;- interestRate:BigDecimal&amp;nbsp;&amp;nbsp;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;- repaidType:String&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;&amp;nbsp;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;- status : LoanStatus&lt;/font&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;- currentTerm : int&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; //当前期数&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;- overdueDays : int&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; //逾期时间&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;- startTime : LocalDate&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;- endTime : LocalDate&lt;/font&gt;&lt;/div&gt;&lt;/font&gt;&lt;/div&gt;&lt;/div&gt;" style="align=left;strokeColor=none;fillColor=none;spacingLeft=4;spacingRight=4;fontSize=12;verticalAlign=top;resizable=0;rotatable=0;part=1;html=1;whiteSpace=wrap;" parent="G3BJdoJ-VfDOgWQwC8Hy-12" vertex="1">
           <mxGeometry y="50" width="350" height="260" as="geometry" />
+        </mxCell>
+        <mxCell id="aCcr_Hm88RFixHhdxZty-1" value="AuthService(认证服务层)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-320" y="1840" width="480" height="520" as="geometry" />
+        </mxCell>
+        <mxCell id="aCcr_Hm88RFixHhdxZty-2" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;UserMapper userMapper; // 用户认证信息类&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;ThirdSerivce thirdService; // 三方认证信息类&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;ManualApproveSendService m&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;anualApproveService ; // 人工审核服务类&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;ValuationService valuationSerivce // 计算贷款分数的机器学习模型API类&lt;/font&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="aCcr_Hm88RFixHhdxZty-1" vertex="1">
+          <mxGeometry y="26" width="480" height="154" as="geometry" />
+        </mxCell>
+        <mxCell id="aCcr_Hm88RFixHhdxZty-3" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="aCcr_Hm88RFixHhdxZty-1" vertex="1">
+          <mxGeometry y="180" width="480" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="aCcr_Hm88RFixHhdxZty-4" value="&lt;span style=&quot;text-align: center;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;AssetAuth() // (资产认证)&lt;/font&gt;&lt;/span&gt;&lt;div&gt;&lt;div style=&quot;text-align: center;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;text-align: center;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;BankAccountAuth() // (银行账户认证）&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;text-align: center;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;text-align: center;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;creditAuth() // 个人征信认证&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;text-align: center;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;text-align: center;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;OccupationAuth() // (工作认证）&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;text-align: center;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;text-align: center;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;ThirdPartyAuth() // (第三方信用分认证）&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;text-align: center;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;span style=&quot;text-align: center;&quot;&gt;int CalScore() // 计算贷款分数&lt;/span&gt;&lt;span style=&quot;text-align: center;&quot;&gt;&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;text-align: center;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;span style=&quot;text-align: center;&quot;&gt;Boolean approve() //&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;text-align: center; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;审核&lt;/span&gt;&lt;span style=&quot;text-align: center; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;贷款申请&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;text-align: center;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;text-align: center;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;void sendToManualApprove() // 转交人工审核&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;text-align: center;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="aCcr_Hm88RFixHhdxZty-1" vertex="1">
+          <mxGeometry y="188" width="480" height="332" as="geometry" />
+        </mxCell>
+        <mxCell id="aCcr_Hm88RFixHhdxZty-5" value="ApplicationService(用户贷款申请服务层)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-1000" y="3040" width="480" height="340" as="geometry" />
+        </mxCell>
+        <mxCell id="aCcr_Hm88RFixHhdxZty-6" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;UserService // 用户服务类&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;LoanProductService // 贷款项目类&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;AuthService authService&lt;/font&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="aCcr_Hm88RFixHhdxZty-5" vertex="1">
+          <mxGeometry y="26" width="480" height="114" as="geometry" />
+        </mxCell>
+        <mxCell id="aCcr_Hm88RFixHhdxZty-7" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="aCcr_Hm88RFixHhdxZty-5" vertex="1">
+          <mxGeometry y="140" width="480" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="aCcr_Hm88RFixHhdxZty-8" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;void add&lt;span style=&quot;text-align: center;&quot;&gt;Application&lt;/span&gt;(int userId, int proId)&amp;nbsp; // 添加订单&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;void delete&lt;span style=&quot;text-align: center; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Application(int userId, int proId) // 删除订单&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;void update&lt;span style=&quot;text-align: center; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Application(int userId, int proId) // 更新订单&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;Order getOrder(int userId, int proId) // 获取用户的单个订单&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;List&amp;lt;Order&amp;gt; getOrders(int userId) // 获取用户所有订单&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="aCcr_Hm88RFixHhdxZty-5" vertex="1">
+          <mxGeometry y="148" width="480" height="192" as="geometry" />
+        </mxCell>
+        <mxCell id="aCcr_Hm88RFixHhdxZty-9" value="UserService(用户服务层)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-1000" y="1840" width="480" height="520" as="geometry" />
+        </mxCell>
+        <mxCell id="aCcr_Hm88RFixHhdxZty-10" value="UserMapper // 用户数据层&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;AuthService authService // 验证认证信息&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="aCcr_Hm88RFixHhdxZty-9" vertex="1">
+          <mxGeometry y="26" width="480" height="94" as="geometry" />
+        </mxCell>
+        <mxCell id="aCcr_Hm88RFixHhdxZty-11" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="aCcr_Hm88RFixHhdxZty-9" vertex="1">
+          <mxGeometry y="120" width="480" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="aCcr_Hm88RFixHhdxZty-12" value="&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;div style=&quot;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;User addUser(User user); // 添加&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;span&gt;&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;&amp;nbsp; &amp;nbsp; &lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;span&gt;&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;void deleteUser(Long id); // 删除&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;span&gt;&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;&amp;nbsp; &amp;nbsp; &lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;span&gt;&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;User updateUser(Long id,User user); // 更新用户信息(要不要分?)&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;span&gt;&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;&amp;nbsp; &amp;nbsp; &lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;span&gt;&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;User getUserById(Long id); // 查询(查自己又怎么搞呢?)&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;span&gt;&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;&amp;nbsp; &amp;nbsp;&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;span&gt;&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;List&amp;lt;User&amp;gt; getAllUsers(); // 查询所有&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;span&gt;&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;void addToBlackList(); // 添加黑名单&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;void AddtoWhiteList(); // 添加白名单&lt;/div&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="aCcr_Hm88RFixHhdxZty-9" vertex="1">
+          <mxGeometry y="128" width="480" height="392" as="geometry" />
+        </mxCell>
+        <mxCell id="aCcr_Hm88RFixHhdxZty-13" value="LoanProductService(贷款项目服务层)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-1720" y="1842" width="520" height="318" as="geometry" />
+        </mxCell>
+        <mxCell id="aCcr_Hm88RFixHhdxZty-14" value="&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;span&gt;&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;private LoanProductMapper loanProductMapper; // 数据库交互层&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;span&gt;&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;span&gt;&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;private AuthService authService; // 权限检查类&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="aCcr_Hm88RFixHhdxZty-13" vertex="1">
+          <mxGeometry y="26" width="520" height="84" as="geometry" />
+        </mxCell>
+        <mxCell id="aCcr_Hm88RFixHhdxZty-15" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="aCcr_Hm88RFixHhdxZty-13" vertex="1">
+          <mxGeometry y="110" width="520" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="aCcr_Hm88RFixHhdxZty-16" value="&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;div style=&quot;&quot;&gt;&lt;span&gt;&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;&lt;span&gt;LoanProduct&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;createLoanProduct&lt;/span&gt;&lt;span&gt;(&lt;/span&gt;&lt;span&gt;LoanProduct &lt;/span&gt;&lt;span&gt;loanProduct&lt;/span&gt;&lt;span&gt;)&lt;/span&gt;&lt;span&gt;; // 新增&lt;/span&gt;&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;span&gt;&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;&lt;span&gt;&lt;br&gt;&lt;/span&gt;&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;span&gt;&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;&lt;span&gt;int&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;deleteLoanProduct&lt;/span&gt;&lt;span&gt;(&lt;/span&gt;&lt;span&gt;Long &lt;/span&gt;&lt;span&gt;id&lt;/span&gt;&lt;span&gt;)&lt;/span&gt;&lt;span&gt;; // 删除&lt;/span&gt;&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;span&gt;&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/span&gt;&lt;div style=&quot;&quot;&gt;&lt;span&gt;&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;&lt;span&gt;int&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;updateLoanProduct&lt;/span&gt;&lt;span&gt;(&lt;/span&gt;&lt;span&gt;Long &lt;/span&gt;&lt;span&gt;id&lt;/span&gt;&lt;span&gt;,&lt;/span&gt;&lt;span&gt;LoanProduct &lt;/span&gt;&lt;span&gt;loanProduct&lt;/span&gt;&lt;span&gt;)&lt;/span&gt;&lt;span&gt;; // 更新&lt;/span&gt;&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;span&gt;&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/span&gt;&lt;div style=&quot;&quot;&gt;&lt;span&gt;&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;&lt;span&gt;LoanProduct&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;getLoanProductById&lt;/span&gt;&lt;span&gt;(&lt;/span&gt;&lt;span&gt;Long &lt;/span&gt;&lt;span&gt;id&lt;/span&gt;&lt;span&gt;)&lt;/span&gt;&lt;span&gt;; // 查询&lt;/span&gt;&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;span&gt;&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/span&gt;&lt;div style=&quot;&quot;&gt;&lt;span&gt;&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;&lt;span&gt;List&lt;/span&gt;&lt;span&gt;&amp;lt;&lt;/span&gt;&lt;span&gt;LoanProduct&lt;/span&gt;&lt;span&gt;&amp;gt;&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;getAllLoanProducts&lt;/span&gt;&lt;span&gt;()&lt;/span&gt;&lt;span&gt;; // 查询所有&lt;/span&gt;&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="aCcr_Hm88RFixHhdxZty-13" vertex="1">
+          <mxGeometry y="118" width="520" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="aCcr_Hm88RFixHhdxZty-17" value="Security(身份验证注册类)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-2400" y="1842" width="480" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="aCcr_Hm88RFixHhdxZty-18" value="JwtUtils jwtUtils // jwt工具类&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="aCcr_Hm88RFixHhdxZty-17" vertex="1">
+          <mxGeometry y="26" width="480" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="aCcr_Hm88RFixHhdxZty-19" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="aCcr_Hm88RFixHhdxZty-17" vertex="1">
+          <mxGeometry y="90" width="480" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="aCcr_Hm88RFixHhdxZty-20" value="&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;div style=&quot;&quot;&gt;Boolean FilterChain()&lt;/div&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="aCcr_Hm88RFixHhdxZty-17" vertex="1">
+          <mxGeometry y="98" width="480" height="122" as="geometry" />
+        </mxCell>
+        <mxCell id="aCcr_Hm88RFixHhdxZty-21" value="OrderService(用户已贷款服务层)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-1720" y="3040" width="520" height="410" as="geometry" />
+        </mxCell>
+        <mxCell id="aCcr_Hm88RFixHhdxZty-22" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;UserService // 用户服务类&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;OrderMapper // 用户已贷款数据层&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;span style=&quot;text-align: center; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;LoanProductService&lt;/span&gt;&amp;nbsp;// 贷款项目服务类&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;PayService // 支付宝付款注册类&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;AuthService // 延期审核服务类&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="aCcr_Hm88RFixHhdxZty-21" vertex="1">
+          <mxGeometry y="26" width="520" height="184" as="geometry" />
+        </mxCell>
+        <mxCell id="aCcr_Hm88RFixHhdxZty-23" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="aCcr_Hm88RFixHhdxZty-21" vertex="1">
+          <mxGeometry y="210" width="520" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="aCcr_Hm88RFixHhdxZty-24" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;void getOrder(int userId, int orderId) // 获取用户的单个贷款项目&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;void getOrders(int userId) // 获取用户所有贷款项目&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;Order repay(int orderId)&amp;nbsp; // 还款&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;Boolean postpone(int orderId) // 延期(加1期的时间)(先默认给人工审核)&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="aCcr_Hm88RFixHhdxZty-21" vertex="1">
+          <mxGeometry y="218" width="520" height="192" as="geometry" />
+        </mxCell>
+        <mxCell id="aCcr_Hm88RFixHhdxZty-25" value="PayService(服务注册类)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-2440" y="2600" width="450" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="aCcr_Hm88RFixHhdxZty-26" value="&lt;div&gt;SDK&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="aCcr_Hm88RFixHhdxZty-25" vertex="1">
+          <mxGeometry y="26" width="450" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="aCcr_Hm88RFixHhdxZty-27" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="aCcr_Hm88RFixHhdxZty-25" vertex="1">
+          <mxGeometry y="100" width="450" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="aCcr_Hm88RFixHhdxZty-28" value="&lt;div&gt;SDK&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="aCcr_Hm88RFixHhdxZty-25" vertex="1">
+          <mxGeometry y="108" width="450" height="172" as="geometry" />
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-1" value="&lt;span style=&quot;font-weight: 400; text-align: left;&quot;&gt;ThirdAuthService(三方认证信息类)&lt;/span&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-2440" y="2960" width="440" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-2" value="&lt;div&gt;SDK&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="CILtH4HkwIWlJEUAXkLH-1" vertex="1">
+          <mxGeometry y="26" width="440" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-3" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="CILtH4HkwIWlJEUAXkLH-1" vertex="1">
+          <mxGeometry y="100" width="440" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-4" value="&lt;div&gt;SDK&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="CILtH4HkwIWlJEUAXkLH-1" vertex="1">
+          <mxGeometry y="108" width="440" height="172" as="geometry" />
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-8" value="&lt;span style=&quot;font-weight: 400; text-align: left;&quot;&gt;ValuationSystem(机器学习模型API类)&lt;/span&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-2440" y="3320" width="440" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-9" value="&lt;div&gt;SDK&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="CILtH4HkwIWlJEUAXkLH-8" vertex="1">
+          <mxGeometry y="26" width="440" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-10" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="CILtH4HkwIWlJEUAXkLH-8" vertex="1">
+          <mxGeometry y="100" width="440" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-11" value="&lt;div&gt;SDK&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="CILtH4HkwIWlJEUAXkLH-8" vertex="1">
+          <mxGeometry y="108" width="440" height="172" as="geometry" />
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-13" value="&lt;span style=&quot;font-weight: 400; text-align: left;&quot;&gt;ManualApproveSendService&lt;/span&gt;(主管级审核员人工审核服务层)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="362.5" y="2320" width="517.5" height="370" as="geometry" />
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-14" value="&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;ManualApproveMapper m&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;anualApproveMapper&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;// 人工审核申请数据层&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;UserMapper userMapper; // 需要提供筛选审核员的用户的功能&lt;/span&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="CILtH4HkwIWlJEUAXkLH-13" vertex="1">
+          <mxGeometry y="26" width="517.5" height="84" as="geometry" />
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-15" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="CILtH4HkwIWlJEUAXkLH-13" vertex="1">
+          <mxGeometry y="110" width="517.5" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-16" value="&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;div style=&quot;&quot;&gt;sendToManualApprove() // 保存待处理人工审核&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;getApproves() // 获得所有需审核申请&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;getApprove() // 获得单个审核申请详情&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;autoDistriApprove() // 自动向审核员发送&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;distriApprove() // 指定审核员发放&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;Boolean ManualCheck() // 返回审核结果？待定，先不写这个多层审核功能&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="CILtH4HkwIWlJEUAXkLH-13" vertex="1">
+          <mxGeometry y="118" width="517.5" height="252" as="geometry" />
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-17" value="&lt;span style=&quot;font-weight: 400; text-align: left;&quot;&gt;ManualApproveService&lt;/span&gt;(审核员审核服务层)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="355" y="2800" width="525" height="318" as="geometry" />
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-18" value="&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;ApproveMapper &lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;ApproveMapper&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;// 审核贷款数据层&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;AuthService authService&lt;/span&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="CILtH4HkwIWlJEUAXkLH-17" vertex="1">
+          <mxGeometry y="26" width="525" height="84" as="geometry" />
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-19" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="CILtH4HkwIWlJEUAXkLH-17" vertex="1">
+          <mxGeometry y="110" width="525" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-20" value="&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;div style=&quot;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;getApproves(int userId) // 获得本审核员所有需审核申请&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;getApprove(int ) // 获得本审核员单个审核申请详情&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;Boolean ManualCheck() // 返回审核结果&lt;/div&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="CILtH4HkwIWlJEUAXkLH-17" vertex="1">
+          <mxGeometry y="118" width="525" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-23" value="" style="edgeStyle=none;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=-0.001;entryY=0.116;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="aCcr_Hm88RFixHhdxZty-4" target="CILtH4HkwIWlJEUAXkLH-16" edge="1">
+          <mxGeometry width="100" relative="1" as="geometry">
+            <mxPoint x="-20" y="2220" as="sourcePoint" />
+            <mxPoint x="80" y="2220" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-24" value="依赖" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="CILtH4HkwIWlJEUAXkLH-23" vertex="1" connectable="0">
+          <mxGeometry x="0.0508" y="-1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-25" value="" style="edgeStyle=none;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;exitX=0.488;exitY=1.007;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.493;entryY=0.006;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="CILtH4HkwIWlJEUAXkLH-16" target="CILtH4HkwIWlJEUAXkLH-17" edge="1">
+          <mxGeometry width="100" relative="1" as="geometry">
+            <mxPoint x="40" y="2620" as="sourcePoint" />
+            <mxPoint x="400" y="2910" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-26" value="依赖" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="CILtH4HkwIWlJEUAXkLH-25" vertex="1" connectable="0">
+          <mxGeometry x="-0.1589" y="-2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-27" value="&lt;font style=&quot;font-size: 40px;&quot;&gt;一期不涉及的先不写&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="-2370" y="2490" width="380" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-28" value="" style="edgeStyle=none;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.943;entryY=0.993;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="aCcr_Hm88RFixHhdxZty-21" target="aCcr_Hm88RFixHhdxZty-12" edge="1">
+          <mxGeometry width="100" relative="1" as="geometry">
+            <mxPoint x="-820" y="2560" as="sourcePoint" />
+            <mxPoint x="-720" y="2560" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-29" value="依赖" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="CILtH4HkwIWlJEUAXkLH-28" vertex="1" connectable="0">
+          <mxGeometry x="0.0576" y="3" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-30" value="" style="edgeStyle=none;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;exitX=0.401;exitY=0.009;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.212;entryY=1.004;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="aCcr_Hm88RFixHhdxZty-5" target="aCcr_Hm88RFixHhdxZty-12" edge="1">
+          <mxGeometry width="100" relative="1" as="geometry">
+            <mxPoint x="-390" y="2580" as="sourcePoint" />
+            <mxPoint x="-290" y="2580" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-31" value="依赖" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="CILtH4HkwIWlJEUAXkLH-30" vertex="1" connectable="0">
+          <mxGeometry x="0.0422" y="-1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-32" value="" style="edgeStyle=none;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;exitX=0.847;exitY=-0.004;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.545;entryY=0.994;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="aCcr_Hm88RFixHhdxZty-21" target="aCcr_Hm88RFixHhdxZty-4" edge="1">
+          <mxGeometry width="100" relative="1" as="geometry">
+            <mxPoint x="-690" y="2560" as="sourcePoint" />
+            <mxPoint x="-590" y="2560" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-33" value="依赖" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="CILtH4HkwIWlJEUAXkLH-32" vertex="1" connectable="0">
+          <mxGeometry x="-0.133" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-34" value="" style="edgeStyle=none;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;entryX=0.241;entryY=1.024;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.115;exitY=-0.003;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="aCcr_Hm88RFixHhdxZty-5" target="aCcr_Hm88RFixHhdxZty-16" edge="1">
+          <mxGeometry width="100" relative="1" as="geometry">
+            <mxPoint x="-1220" y="2670" as="sourcePoint" />
+            <mxPoint x="-1120" y="2670" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-38" value="依赖" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="CILtH4HkwIWlJEUAXkLH-34" vertex="1" connectable="0">
+          <mxGeometry x="-0.0744" relative="1" as="geometry">
+            <mxPoint y="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-36" value="" style="edgeStyle=none;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;entryX=0.785;entryY=0.993;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.329;exitY=-0.006;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="aCcr_Hm88RFixHhdxZty-21" target="aCcr_Hm88RFixHhdxZty-16" edge="1">
+          <mxGeometry width="100" relative="1" as="geometry">
+            <mxPoint x="-1390" y="3110" as="sourcePoint" />
+            <mxPoint x="-1330" y="2370" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-37" value="依赖" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="CILtH4HkwIWlJEUAXkLH-36" vertex="1" connectable="0">
+          <mxGeometry x="-0.0864" y="-2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-39" value="&lt;span style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;RiskAssessService&lt;/span&gt;&lt;/span&gt;(贷中风险评估服务类)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-2440" y="3680" width="440" height="360" as="geometry" />
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-40" value="&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;br&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="CILtH4HkwIWlJEUAXkLH-39" vertex="1">
+          <mxGeometry y="26" width="440" height="84" as="geometry" />
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-41" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="CILtH4HkwIWlJEUAXkLH-39" vertex="1">
+          <mxGeometry y="110" width="440" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-42" value="&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;div style=&quot;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="CILtH4HkwIWlJEUAXkLH-39" vertex="1">
+          <mxGeometry y="118" width="440" height="242" as="geometry" />
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-43" value="" style="edgeStyle=none;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;exitX=0.902;exitY=-0.003;exitDx=0;exitDy=0;entryX=0.145;entryY=1.003;entryDx=0;entryDy=0;entryPerimeter=0;exitPerimeter=0;" parent="1" source="aCcr_Hm88RFixHhdxZty-5" target="aCcr_Hm88RFixHhdxZty-4" edge="1">
+          <mxGeometry width="100" relative="1" as="geometry">
+            <mxPoint x="-344" y="2943" as="sourcePoint" />
+            <mxPoint x="-860" y="2620" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-44" value="依赖" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="CILtH4HkwIWlJEUAXkLH-43" vertex="1" connectable="0">
+          <mxGeometry x="-0.0864" y="-2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-45" value="" style="edgeStyle=none;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;exitX=0.998;exitY=0.416;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.002;entryY=0.373;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="aCcr_Hm88RFixHhdxZty-12" target="aCcr_Hm88RFixHhdxZty-4" edge="1">
+          <mxGeometry width="100" relative="1" as="geometry">
+            <mxPoint x="-610" y="2170" as="sourcePoint" />
+            <mxPoint x="-510" y="2170" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-46" value="依赖" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="CILtH4HkwIWlJEUAXkLH-45" vertex="1" connectable="0">
+          <mxGeometry x="0.0026" y="2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-48" value="" style="edgeStyle=none;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0.25;exitY=0;exitDx=0;exitDy=0;" parent="1" source="aCcr_Hm88RFixHhdxZty-21" target="aCcr_Hm88RFixHhdxZty-28" edge="1">
+          <mxGeometry width="100" relative="1" as="geometry">
+            <mxPoint x="-1360" y="3380" as="sourcePoint" />
+            <mxPoint x="-1260" y="3380" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CILtH4HkwIWlJEUAXkLH-49" value="依赖" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="CILtH4HkwIWlJEUAXkLH-48" vertex="1" connectable="0">
+          <mxGeometry x="-0.7902" y="-2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="A5A90PffaEz84Lgx0g2x-2" value="&lt;span style=&quot;font-size: 14px; font-weight: 400; text-align: left;&quot;&gt;ValuationService&lt;/span&gt;(贷中风险评估服务类)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-2440" y="4120" width="440" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="A5A90PffaEz84Lgx0g2x-3" value="&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;br&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="A5A90PffaEz84Lgx0g2x-2">
+          <mxGeometry y="26" width="440" height="84" as="geometry" />
+        </mxCell>
+        <mxCell id="A5A90PffaEz84Lgx0g2x-4" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="A5A90PffaEz84Lgx0g2x-2">
+          <mxGeometry y="110" width="440" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="A5A90PffaEz84Lgx0g2x-5" value="&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;div style=&quot;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="A5A90PffaEz84Lgx0g2x-2">
+          <mxGeometry y="118" width="440" height="202" as="geometry" />
+        </mxCell>
+        <mxCell id="A5A90PffaEz84Lgx0g2x-6" value="&lt;span style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; font-weight: 400; text-align: left; white-space: pre;&quot;&gt;AIApproveService&lt;/span&gt;(AI自动审核服务类)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="355" y="1842" width="525" height="370" as="geometry" />
+        </mxCell>
+        <mxCell id="A5A90PffaEz84Lgx0g2x-7" value="&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;span style=&quot;font-family: Helvetica; font-size: 12px; font-weight: 700; text-align: center; white-space: normal;&quot;&gt;AuthService&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;span style=&quot;font-family: Helvetica; font-size: 12px; font-weight: 700; text-align: center; white-space: normal;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;ApproveMapper &lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); background-color: transparent;&quot;&gt;ApproveMapper&lt;/span&gt;&lt;span style=&quot;font-family: Helvetica; font-size: 12px; font-weight: 700; text-align: center; white-space: normal;&quot;&gt;&lt;/span&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="A5A90PffaEz84Lgx0g2x-6">
+          <mxGeometry y="26" width="525" height="84" as="geometry" />
+        </mxCell>
+        <mxCell id="A5A90PffaEz84Lgx0g2x-8" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="A5A90PffaEz84Lgx0g2x-6">
+          <mxGeometry y="110" width="525" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="A5A90PffaEz84Lgx0g2x-9" value="&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;div style=&quot;&quot;&gt;Boolean AICheck()&lt;/div&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="A5A90PffaEz84Lgx0g2x-6">
+          <mxGeometry y="118" width="525" height="252" as="geometry" />
+        </mxCell>
+        <mxCell id="A5A90PffaEz84Lgx0g2x-10" value="" style="edgeStyle=none;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;exitX=0;exitY=0.216;exitDx=0;exitDy=0;entryX=1.004;entryY=0.272;entryDx=0;entryDy=0;entryPerimeter=0;exitPerimeter=0;" edge="1" parent="1" source="A5A90PffaEz84Lgx0g2x-9" target="aCcr_Hm88RFixHhdxZty-4">
+          <mxGeometry width="100" relative="1" as="geometry">
+            <mxPoint x="290" y="2100" as="sourcePoint" />
+            <mxPoint x="429" y="2323" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="A5A90PffaEz84Lgx0g2x-11" value="依赖" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="A5A90PffaEz84Lgx0g2x-10">
+          <mxGeometry x="0.0508" y="-1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="A5A90PffaEz84Lgx0g2x-12" value="&lt;span style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;SmsService&lt;/span&gt;&lt;/span&gt;(短信服务类)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-3040" y="3680" width="400" height="360" as="geometry" />
+        </mxCell>
+        <mxCell id="A5A90PffaEz84Lgx0g2x-13" value="&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;br&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="A5A90PffaEz84Lgx0g2x-12">
+          <mxGeometry y="26" width="400" height="84" as="geometry" />
+        </mxCell>
+        <mxCell id="A5A90PffaEz84Lgx0g2x-14" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="A5A90PffaEz84Lgx0g2x-12">
+          <mxGeometry y="110" width="400" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="A5A90PffaEz84Lgx0g2x-15" value="&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;div style=&quot;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="A5A90PffaEz84Lgx0g2x-12">
+          <mxGeometry y="118" width="400" height="242" as="geometry" />
+        </mxCell>
+        <mxCell id="A5A90PffaEz84Lgx0g2x-16" value="&lt;span style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;SmsService&lt;/span&gt;&lt;/span&gt;(短信服务类)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-3040" y="4120" width="400" height="370" as="geometry" />
+        </mxCell>
+        <mxCell id="A5A90PffaEz84Lgx0g2x-17" value="&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;br&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="A5A90PffaEz84Lgx0g2x-16">
+          <mxGeometry y="26" width="400" height="84" as="geometry" />
+        </mxCell>
+        <mxCell id="A5A90PffaEz84Lgx0g2x-18" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="A5A90PffaEz84Lgx0g2x-16">
+          <mxGeometry y="110" width="400" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="A5A90PffaEz84Lgx0g2x-19" value="&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;div style=&quot;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="A5A90PffaEz84Lgx0g2x-16">
+          <mxGeometry y="118" width="400" height="252" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

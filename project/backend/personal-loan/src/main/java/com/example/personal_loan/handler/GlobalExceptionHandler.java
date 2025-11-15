@@ -1,4 +1,4 @@
-package com.example.personal_loan.exception;
+package com.example.personal_loan.handler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +12,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import com.example.personal_loan.exception.BusinessException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

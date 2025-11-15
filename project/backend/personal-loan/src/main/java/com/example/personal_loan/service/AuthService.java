@@ -25,9 +25,5 @@ public interface AuthService {
     // 审核贷款申请
     Boolean approve(); 
 
-    // AI审核
-    Boolean autoApprove(); 
 
-    // 转交人工审核
-    void sendToManualApprove(); 
 }
