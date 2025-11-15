@@ -2,7 +2,7 @@ package com.example.personal_loan.service.impl;
 
 import org.springframework.stereotype.Service;
 
-import com.example.personal_loan.dao.UserMapper;
+import com.example.personal_loan.mapper.UserMapper;
 import com.example.personal_loan.service.AuthService;
 
 // 还未实现

@@ -10,6 +10,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.personal_loan.entity.User;
+import com.example.personal_loan.mapper.UserMapper;
 
 @SpringBootTest
 @Transactional // 保证每个测试方法结束后自动回滚，避免脏数据

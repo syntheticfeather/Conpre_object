@@ -1,0 +1,57 @@
+# docker-compose-dev.yml
+services:
+  app:
+    build: .
+    container_name: my-app-dev
+    ports:
+      - "8080:8080"
+    # 关键：将本地代码目录“绑定挂载”到容器内，覆盖掉构建时复制的文件。
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      # mysql 配置
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/person-loan?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=1234 
+      # redis 配置  
+      - SPRING_REDIS_HOST=redis-cache  
+      - SPRING_REDIS_PASSWORD=
+      - SPRING_REDIS_PORT=6379
+    depends_on:
+      - mysql-db
+      - redis-cache
+
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-db-dev
+    environment:
+      MYSQL_ROOT_PASSWORD: my_strong_password
+      MYSQL_DATABASE: person-loan
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: 1234
+      # MYSQL_HOST: '%'
+    volumes:
+      - ./db-init:/docker-entrypoint-initdb.d  # 挂载初始化脚本目录
+      - mysql_data:/var/lib/mysql
+    # 映射端口：格式 - "宿主机端口:容器内端口"
+    ports:
+      - "3306:3306" # 可选，如果宿主机需要直接连接数据库才开放
+    # MySQL 8.x 的认证插件配置
+    command: 
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    restart: unless-stopped
+
+
+  redis-cache:
+    image: redis:6-alpine
+    container_name: redis-cache-dev
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379" # 暴露端口到本地
+    volumes:
+      - redis_data:/data
+
+volumes:
+  mysql_data:
+  redis_data:

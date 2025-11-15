@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.personal_loan.dao.OrderMapper;
+import com.example.personal_loan.mapper.OrderMapper;
 import com.example.personal_loan.entity.Order;
 import com.example.personal_loan.enums.OrderStatus;
 import com.example.personal_loan.exception.BusinessException;

@@ -9,12 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.personal_loan.dao.LoanOptionMapper;
-import com.example.personal_loan.dao.LoanProductMapper;
 import com.example.personal_loan.dto.ProductDto;
 import com.example.personal_loan.entity.LoanOption;
 import com.example.personal_loan.entity.LoanProduct;
 import com.example.personal_loan.exception.BusinessException;
+import com.example.personal_loan.mapper.LoanOptionMapper;
+import com.example.personal_loan.mapper.LoanProductMapper;
 import com.example.personal_loan.service.LoanProductService;
 import com.example.personal_loan.vo.LoanProductVO;
 

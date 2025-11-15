@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.example.personal_loan.exception.BusinessException;
+import com.example.personal_loan.exception.InvalidCredentialsException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
