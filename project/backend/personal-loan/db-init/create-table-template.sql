@@ -120,4 +120,5 @@ CREATE TABLE loan_applications(
     FOREIGN KEY (product_id) REFERENCES loan_products(id),
     FOREIGN KEY (user_id) REFERENCES users(id)
 )COMMENT '贷款申请表';
+
 // 管理员未设计
