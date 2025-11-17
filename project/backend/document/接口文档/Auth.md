@@ -32,8 +32,8 @@
 
 **postman测试结果：**
 
-![](AuthImgs/login.png "登录成功")
-![](AuthImgs/loginFail.png "登录失败，用户名或密码错误")
+![](../AuthImgs/login.png)
+![](../AuthImgs/loginFail.png "登录失败，用户名或密码错误")
 
 ## 注册
 
@@ -71,9 +71,9 @@
 
 **postman测试结果：**
 
-![](AuthImgs/register.png "注册成功")
-![](AuthImgs/registerNameFail.png "注册失败，用户名格式错误")
-![](AuthImgs/registerPasswordFail.png "注册失败，密码格式错误")
-![](AuthImgs/registerPhoneFail.png "注册失败，手机号码格式错误")
-![](AuthImgs/registerAllFail.png "多种格式错误")
-![](AuthImgs/registerFailPhoneExist.png "注册失败，该手机号已被注册")
+![](../AuthImgs/register.png "注册成功")
+![](../AuthImgs/registerNameFail.png "注册失败，用户名格式错误")
+![](../AuthImgs/registerPasswordFail.png "注册失败，密码格式错误")
+![](../AuthImgs/registerPhoneFail.png "注册失败，手机号码格式错误")
+![](../AuthImgs/registerAllFail.png "多种格式错误")
+![](../AuthImgs/registerFailPhoneExist.png "注册失败，该手机号已被注册")

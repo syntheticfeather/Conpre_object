@@ -35,11 +35,35 @@ public interface LoanOptionMapper {
             "repaid_type=#{repaidType}, interest_rate=#{interestRate} WHERE id=#{id}")
     int update(LoanOption option);
     
+    //删除单个选项
     @Delete("DELETE FROM loan_option WHERE id=#{id}")
     int deleteById(Long id);
+
+    //批量删除选项
+    @Delete({
+        "<script>",
+        "DELETE FROM loan_option WHERE id IN",
+        "<foreach collection='list' item='id' open='(' separator=',' close=')'>",
+        "#{id}",
+        "</foreach>",
+        "</script>"
+    })
+    int batchDeleteByIds(List<Long> optionIds);
     
+    // 删除某产品的所有选项
     @Delete("DELETE FROM loan_option WHERE product_id=#{productId}")
     int deleteByProductId(Long productId);
+
+    //删除多个产品的所有选项
+    @Delete({
+        "<script>",
+        "DELETE FROM loan_option WHERE product_id IN",
+        "<foreach collection='list' item='productId' open='(' separator=',' close=')'>",
+        "#{productId}",
+        "</foreach>",
+        "</script>"
+    })
+    int batchDeleteByProductIds(List<Long> productIds);
     
     @Select("SELECT * FROM loan_option WHERE id=#{id}")
     LoanOption selectById(Long id);

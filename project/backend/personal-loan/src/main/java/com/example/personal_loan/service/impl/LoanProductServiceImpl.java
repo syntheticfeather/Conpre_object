@@ -55,15 +55,53 @@ public class LoanProductServiceImpl implements LoanProductService{
 
     @Override
     @Transactional
+    public void batchCreateLoanOptions(Long productId, List<LoanOption> options){
+        if (loanProductMapper.findById(productId)==null) {
+            throw new BusinessException("404","该产品不存在，无法添加选项");
+        }
+    
+        for (LoanOption option : options) {
+            if (option == null) continue;
+            
+            option.setProductId(productId);
+        }
+
+        loanOptionMapper.insertBatch(options);
+        
+    }
+
+    // 删除产品某个选项
+    @Override
+    @Transactional
     public int deleteLoanOption(Long optionId) {
         return loanOptionMapper.deleteById(optionId);
     }
 
+    // 删除产品
     @Override
     @Transactional
     public int deleteLoanProduct(Long productId){
         loanOptionMapper.deleteByProductId(productId);  // 先删除该产品所有选项
         return loanProductMapper.delete(productId);
+    }
+
+    //批量删除产品
+    @Override
+    @Transactional
+    public void batchDeleteLoanProducts(List<Long> productIds){
+        loanOptionMapper.batchDeleteByProductIds(productIds);
+        // 再删除产品
+        loanProductMapper.batchDelete(productIds);
+    }
+
+    //批量删除选项
+    @Override
+    @Transactional
+    public void batchDeleteLoanOptionsByIds(List<Long> optionIds){
+        if (optionIds == null || optionIds.isEmpty()) {
+            return;
+        }
+        loanOptionMapper.batchDeleteByIds(optionIds);
     }
 
     @Override

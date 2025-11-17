@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import com.example.personal_loan.mapper.UserMapper;
 import com.example.personal_loan.service.AuthService;
 
-// 还未实现
 @Service
 public class AuthServiceImpl implements AuthService{
 

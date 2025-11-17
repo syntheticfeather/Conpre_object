@@ -54,7 +54,7 @@
 
 **postman测试：**
 
-![](loanOrderImgs/userGetAll.png "用户获取所有贷款产品，成功")
+![](../loanProductImgs/userGetAll.png "用户获取所有贷款产品，成功")
 
 ## 管理员功能
 
@@ -145,10 +145,66 @@
 
 **postman测试结果：**
 
-![](loanOrderImgs/create.png "增加贷款产品请求")
-![](loanOrderImgs/createResponse.png "成功相应")
+![](../loanProductImgs/create.png "增加贷款产品请求")
+![](../loanProductImgs/createResponse.png "成功相应")
 
-### 删除产品
+### 为指定产品批量增加选项
+
+**网址：** /api/loan-products/admin/options/batch-create
+
+**请求方式：** POST
+
+**请求参数：**
+
+|字段名|类型|是否必填|说明|示例值|
+|---|---|---|---|---|
+|productId|Integer|是|要添加方案的目标产品 ID，必须是已存在的产品|4|
+|options|Array[Object]|是|要创建的贷款方案列表，每个对象代表一个可选组合|[...]|
+
+**options 数组中参数说明：**
+
+|字段名|类型|是否必填|说明|示例值|
+|---|---|---|---|---|
+|loanPeriod|Integer|是|贷款期限（单位：月）|6, 12, 24|
+|loanAmount|Number|是|贷款额度（单位：元）|10000.00, 20000.00|
+|interestRate|Number|是|年化利率（小数形式），如 8% → 0.08|0.08, 0.075|
+|repaidType|String|是|还款方式|"等额本金"|
+
+**请求示例（请求体）：**
+
+``` json
+{
+  "productId": 4,
+  "options": [
+    {
+      "loanPeriod": 6,
+      "loanAmount": 10000,
+      "interestRate": 0.08,
+      "repaidType": "等额本金"
+    },
+    {
+      "loanPeriod": 12,
+      "loanAmount": 20000,
+      "interestRate": 0.075,
+      "repaidType": "等额本金"
+    },
+    {
+      "loanPeriod": 24,
+      "loanAmount": 50000,
+      "interestRate": 0.07,
+      "repaidType": "等额本金"
+    }
+  ]
+}
+```
+
+**返回数据（字符串）：** Batch create loan options success
+
+**postman测试结果：**
+
+![](../loanProductImgs/batchCreateOptions.png "批量插入指定产品的选项 成功")
+
+### 删除单个产品
 
 **网址：**/api/loan-products/admin/products/{productId}
 
@@ -167,9 +223,9 @@ Loan product delete success
 
 **postman测试结果：**
 
-![](loanOrderImgs/deleteProduct.png "删除产品成功")
+![](../loanProductImgs/deleteProduct.png "删除产品成功")
 
-### 删除指定产品的选项
+### 删除产品的单个选项
 
 **网址：**/api/loan-products/admin/options/{optionId}
 
@@ -187,7 +243,59 @@ Loan product delete success
 
 **postman测试结果：**
 
-![](loanOrderImgs/deleteOption.png "成功删除指定产品的选项")
+![](../loanProductImgs/deleteOption.png "成功删除指定产品的选项")
+
+### 批量删除产品的选项
+
+**网址：**/api/loan-products/admin/options/batch-delete
+
+**请求方式：** POST
+
+**请求参数：**
+
+|字段名|类型|是否必填|说明|示例值|
+|---|---|---|---|---|
+| ids | Array | 是 | 要删除的贷款方案 ID 列表 | [14, 15] |
+
+**请求示例（请求体）：**
+
+``` json
+{
+  "ids": [14, 15]
+}
+```
+
+**返回数据（字符串）：** Batch delete specific loan options success
+
+**postman测试结果：**
+
+![](../loanProductImgs/batchDeleteOptions.png "批量删除产品的选项成功")
+
+### 批量删除产品
+
+**网址：**/api/loan-products/admin/products/batch-delete
+
+**请求方式：** POST
+
+**请求参数：**
+
+|字段名|类型|是否必填|说明|示例值|
+|---|---|---|---|---|
+| ids | Array | 是 | 要删除的贷款产品 ID 列表 | [7, 8] |
+
+**请求示例（请求体）：**
+
+``` json
+{
+  "ids": [7,8]
+}
+```
+
+**返回数据（字符串）：** Batch delete loan products success
+
+**postman测试结果：**
+
+![](../loanProductImgs/batchDeleteProducts.png "批量删除产品成功")
 
 ### 修改产品信息
 
@@ -264,7 +372,7 @@ Loan product delete success
 
 **postman测试结果：**
 
-![](loanOrderImgs/update.png "更新产品信息成功")
+![](../loanProductImgs/update.png "更新产品信息成功")
 
 ### 获取所有产品
 
@@ -320,8 +428,8 @@ Loan product delete success
 
 **postman测试结果：**
 
-![](loanOrderImgs/adminGetAll_1.png "成功获取所有产品")
-![](loanOrderImgs/adminGetAll_2.png "接上图")
+![](../loanProductImgs/adminGetAll_1.png "成功获取所有产品")
+![](../loanProductImgs/adminGetAll_2.png "接上图")
 
 ### 获取指定产品
 
@@ -355,4 +463,4 @@ Loan product delete success
 
 **postman测试结果：**
 
-![](loanOrderImgs/adminGetById.png "根据获取指定产品成功")
+![](../loanProductImgs/adminGetById.png "根据获取指定产品成功")

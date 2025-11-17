@@ -12,6 +12,9 @@ import com.example.personal_loan.entity.User;
 public interface UserService {
         // 用户登录(手机号+密码)
         LoginResponse login(LoginRequest request);
+        
+        // 刷新token
+        String refreshToken(String refreshToken);
 
         // 用户注册
         RegisterResponse userRegister(RegisterRequest request);

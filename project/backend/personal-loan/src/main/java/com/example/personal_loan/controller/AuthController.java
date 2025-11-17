@@ -14,9 +14,11 @@ import com.example.personal_loan.controller.dto.RegisterResponse;
 import com.example.personal_loan.service.UserService;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/auth")
+@Slf4j
 public class AuthController {
 
     @Autowired
@@ -24,12 +26,14 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest request) {
+        log.info("login api success called");
         LoginResponse response = userService.login(request);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> userRegister(@RequestBody @Valid RegisterRequest request) {
+        log.info("register api success called");
         return ResponseEntity.ok(userService.userRegister(request));
     }
 

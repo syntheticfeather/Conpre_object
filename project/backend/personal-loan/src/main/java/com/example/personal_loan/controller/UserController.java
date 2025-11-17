@@ -1,6 +1,7 @@
 package com.example.personal_loan.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -52,6 +53,13 @@ public class UserController {
     @PostMapping
     public ResponseEntity<User> addUser(@RequestBody @Valid User user) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.addUser(user));
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<Map<String, String>> refreshToken(@RequestBody Map<String, String> request) {
+        String refreshToken = request.get("refresh_token");
+        String newAccessToken = userService.refreshToken(refreshToken);
+        return ResponseEntity.ok(Map.of("access_token", newAccessToken));
     }
 
     @PatchMapping("/{id}")

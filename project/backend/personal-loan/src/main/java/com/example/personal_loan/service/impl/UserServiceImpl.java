@@ -22,8 +22,15 @@ import com.example.personal_loan.mapper.UserMapper;
 import com.example.personal_loan.service.UserService;
 import com.example.personal_loan.utils.JwtUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
+
+
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
+
+
 
     @Autowired
     private UserMapper userMapper;
@@ -45,9 +52,29 @@ public class UserServiceImpl implements UserService {
             throw new InvalidCredentialsException("用户名或密码错误");
         }
 
-        String token = jwtUtil.generateToken(user.getPhone(), user.getId().toString());
+        String token = jwtUtil.generateAccessToken(user.getPhone(), user.getId().toString());
+
+        String refreshToken = jwtUtil.generateRefreshToken(user.getId().toString());
 
         return new LoginResponse(token);
+    
+    }
+
+    @Override
+    public String refreshToken(String refreshToken){
+        if (!jwtUtil.validateRefreshToken(refreshToken)) {
+            throw new InvalidCredentialsException("无效或已过期的 refresh token");
+        }
+
+        Long userId = jwtUtil.getUserIdFromRefreshToken(refreshToken);
+        User user = userMapper.findById(userId);
+        if (user == null) {
+            throw new BusinessException("404", "用户不存在");
+        }
+
+        // 可选：检查用户是否被禁用、加入黑名单等
+        // 生成新的 access token（不发新的 refresh token）
+        return jwtUtil.generateAccessToken(user.getPhone(), user.getId().toString());
     }
 
     @Override
