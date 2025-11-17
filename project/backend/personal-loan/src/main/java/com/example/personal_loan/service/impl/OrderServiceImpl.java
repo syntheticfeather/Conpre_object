@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.personal_loan.mapper.OrderMapper;
 import com.example.personal_loan.entity.Order;
 import com.example.personal_loan.enums.OrderStatus;
 import com.example.personal_loan.exception.BusinessException;
+import com.example.personal_loan.mapper.OrderMapper;
 import com.example.personal_loan.service.AuthService;
 import com.example.personal_loan.service.OrderService;
 import com.example.personal_loan.service.UserService;
@@ -121,13 +121,7 @@ public class OrderServiceImpl implements OrderService{
             throw new BusinessException("逾期订单无法申请延期");
         }
         
-        // 调用审核服务,进行延期审批
-        if (authService.approve(orderId)) {
-            orderMapper.updateForPostpone(orderId);
-            return true;
-        }else{
-            return false;
-        }
+        return true;
     }
     
     

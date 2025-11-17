@@ -16,54 +16,43 @@ public class AuthServiceImpl implements AuthService{
 
     // ValuationSystem valuationSystem; // 计算贷款分数的机器学习模型API类
 
-    // 贷款审核
-    @Override
-    public boolean approve(Long id) {
-        return true;
-    }
-
     // 资产认证
-    public void AssetAuth(){
+    @Override
+    public void assetAuth(){
         
     } 
 
-    // 银行账户认证
-    public void BankAccountAuth(){ 
+    @Override
+    public void bankAccountAuth(){ 
         
     }
 
     // 个人征信认证
+    @Override
     public void creditAuth(){ 
 
     }
 
     // 工作认证
-    public void OccupationAuth(){
+    @Override
+    public void occupationAuth(){
 
     }
 
     // 第三方信用分认证
-    public void ThirdPartyAuth(){
+    @Override
+    public void thirdPartyAuth(){
 
     }
 
     // 计算贷款分数
-    public int CalScore(){ 
+    @Override
+    public int calScore(){ 
         return 0;
     }
 
-    // 审核贷款申请
-    public Boolean approve(){ 
-        return true;
+    @Override
+    public int getScore(){ 
+        return 0;
     }
-
-    // AI审核
-    public Boolean autoApprove(){ 
-        return true;
-    } 
-
-    // 转交人工审核
-    public void sendToManualApprove(){ 
-
-    } 
 }

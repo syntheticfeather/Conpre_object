@@ -23,7 +23,7 @@ class UserMapperTest {
     // 创建用于测试的用户对象
     private User createTestUser() {
         User user = new User();
-        user.setName("张一");
+        user.setUserName("张一");
         user.setPassword("123456");
         user.setIdCard("110101199001011234");
         user.setPhone("13800138000");

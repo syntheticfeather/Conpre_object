@@ -1,8 +1,11 @@
 package com.example.personal_loan.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.personal_loan.entity.Order;
 import com.example.personal_loan.service.ApplicationService;
 import com.example.personal_loan.service.AuthService;
 import com.example.personal_loan.service.LoanProductService;
@@ -34,11 +37,11 @@ public class ApplicationServiceImpl implements ApplicationService{
 
     }
 
-    // public Order getOrder(Long userId, Long proId){
+    public Order getOrder(Long userId, Long proId){
+        return null;
+    }
 
-    // }
-
-    // public List<Order> getOrders(Long userId){
-        
-    // }
+    public List<Order> getOrders(Long userId){
+        return null;
+    }
 }

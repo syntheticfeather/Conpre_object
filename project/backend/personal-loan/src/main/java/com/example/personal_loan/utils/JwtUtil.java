@@ -21,7 +21,7 @@ public class JwtUtil {
     private long REFRESH_EXPIRATION_TIME;
 
     // 生成access token
-    public String generateToken(String userPhone, String userId) {
+    public String generateAccessToken(String userPhone, String userId) {
         return Jwts.builder()
                 .setSubject(userPhone) //主题：userPhone
                 .claim("userId", userId) // 声明：userId

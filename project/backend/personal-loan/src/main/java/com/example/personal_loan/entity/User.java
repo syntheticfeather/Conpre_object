@@ -17,7 +17,7 @@ public class User {
     private Long id;
 
     @Size(min=2,max=20,message="用户名长度必须在2-20之间")
-    private String name;
+    private String userName;
 
     private String avatar;
 
@@ -45,7 +45,7 @@ public class User {
     private LocalDateTime updateTime;
 
     public User(String name, String password, String idCard, String phone) {
-        this.name = name;
+        this.userName = name;
         this.password = password;
         this.idCard = idCard;
         this.phone = phone;

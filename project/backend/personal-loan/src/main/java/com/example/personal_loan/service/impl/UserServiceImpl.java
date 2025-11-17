@@ -55,6 +55,7 @@ public class UserServiceImpl implements UserService {
         String token = jwtUtil.generateAccessToken(user.getPhone(), user.getId().toString());
 
         String refreshToken = jwtUtil.generateRefreshToken(user.getId().toString());
+        // 后期使用，存储在redis中?
 
         return new LoginResponse(token);
     
@@ -83,7 +84,7 @@ public class UserServiceImpl implements UserService {
         User user = new User(request.getName(), request.getPassword(), null, request.getPhone());
         user.setRole(0);    // 用户的注册，默认权限为0
         User newUser = addUser(user);
-        return new RegisterResponse(newUser.getId(), newUser.getName(), newUser.getCreateTime());
+        return new RegisterResponse(newUser.getId(), newUser.getUserName(), newUser.getCreateTime());
     }
 
     @Override
@@ -92,7 +93,7 @@ public class UserServiceImpl implements UserService {
         User user = new User(request.getName(), request.getPassword(), null, request.getPhone());
         user.setRole(1);    // 管理员权限设为1
         User newUser = addUser(user);
-        return new RegisterResponse(newUser.getId(), newUser.getName(), newUser.getCreateTime());
+        return new RegisterResponse(newUser.getId(), newUser.getUserName(), newUser.getCreateTime());
     }
 
     @Override
@@ -155,8 +156,8 @@ public class UserServiceImpl implements UserService {
         if (user.getPassword() != null) {
             old.setPassword(passwordEncoder.encode(user.getPassword()));
         }
-        if (user.getName() != null) {
-            old.setName(user.getName());
+        if (user.getUserName() != null) {
+            old.setUserName(user.getUserName());
         }
         if (user.getRole() != null) {
             old.setRole(user.getRole());

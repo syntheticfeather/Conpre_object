@@ -1,29 +1,25 @@
 package com.example.personal_loan.service;
 
 public interface AuthService {
-    // 贷款审核
-    boolean approve(Long id);
 
     // 资产认证
-    void AssetAuth(); 
+    void assetAuth(); 
 
     // 银行账户认证
-    void BankAccountAuth(); 
+    void bankAccountAuth(); 
 
     // 个人征信认证
     void creditAuth(); 
 
     // 工作认证
-    void OccupationAuth();
+    void occupationAuth();
 
     // 第三方信用分认证
-    void ThirdPartyAuth();
+    void thirdPartyAuth();
 
-    // 计算贷款分数
-    int CalScore(); 
+    // 计算贷款认证分数
+    int calScore(); 
 
-    // 审核贷款申请
-    Boolean approve(); 
-
+    int getScore(); 
 
 }
