@@ -16,7 +16,6 @@ import com.example.personal_loan.dto.UserSearchDto;
 import com.example.personal_loan.entity.BlackUser;
 import com.example.personal_loan.entity.User;
 import com.example.personal_loan.exception.BusinessException;
-import com.example.personal_loan.exception.InvalidCredentialsException;
 import com.example.personal_loan.mapper.BlackListMapper;
 import com.example.personal_loan.mapper.UserMapper;
 import com.example.personal_loan.service.UserService;
@@ -49,7 +48,7 @@ public class UserServiceImpl implements UserService {
 
         User user = userMapper.findByPhone(request.getPhone());
         if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new InvalidCredentialsException("用户名或密码错误");
+            throw new BusinessException(400,"用户名或密码错误");
         }
 
         String token = jwtUtil.generateAccessToken(user.getPhone(), user.getId().toString());
@@ -64,13 +63,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public String refreshToken(String refreshToken){
         if (!jwtUtil.validateRefreshToken(refreshToken)) {
-            throw new InvalidCredentialsException("无效或已过期的 refresh token");
+            throw new BusinessException(401,"无效或已过期的 refresh token");
         }
 
         Long userId = jwtUtil.getUserIdFromRefreshToken(refreshToken);
         User user = userMapper.findById(userId);
         if (user == null) {
-            throw new BusinessException("404", "用户不存在");
+            throw new BusinessException(404, "用户不存在");
         }
 
         // 可选：检查用户是否被禁用、加入黑名单等
@@ -100,11 +99,11 @@ public class UserServiceImpl implements UserService {
     public User addUser(User user) {
 
         if (userMapper.findByPhone(user.getPhone()) != null) {
-            throw new BusinessException("400", "该手机号已被注册");
+            throw new BusinessException(400, "该手机号已被注册");
         }
 
         if (userMapper.findByIdCard(user.getIdCard()) != null) {
-            throw new BusinessException("400", "身份证号已被注册");
+            throw new BusinessException(400, "身份证号已被注册");
         }
 
         userMapper.insert(user);
@@ -139,7 +138,7 @@ public class UserServiceImpl implements UserService {
         // 如果手机号被修改，校验唯一性
         if (user.getPhone() != null && !user.getPhone().equals(old.getPhone())) {
             if (userMapper.findByPhone(user.getPhone()) != null) {
-                throw new BusinessException("400", "手机号已存在");
+                throw new BusinessException(400, "手机号已存在");
             } else {
                 old.setPhone(user.getPhone());   // 更新手机号
             }
@@ -147,7 +146,7 @@ public class UserServiceImpl implements UserService {
         // 校验身份证号唯一性
         if (user.getIdCard() != null && !user.getIdCard().equals(old.getIdCard())) {
             if (userMapper.findByIdCardExcludeId(user.getIdCard(), user.getId()) != 0) {
-                throw new BusinessException("400", "身份证号已存在");
+                throw new BusinessException(400, "身份证号已存在");
             } else {
                 old.setIdCard(user.getIdCard());  // 更新身份证号
             }
@@ -171,7 +170,7 @@ public class UserServiceImpl implements UserService {
     public User getUserById(Long id) {
         User user = userMapper.findById(id);
         if (user == null) {
-            throw new BusinessException("404", "该用户不存在");
+            throw new BusinessException(404, "该用户不存在");
         }
         return user;
     }
@@ -185,7 +184,7 @@ public class UserServiceImpl implements UserService {
     public List<UserSearchDto> searchUsersByCreditScore(String expr) {
         CreditExpr parsed = parseCreditExpression(expr.trim());
         if (parsed == null) {
-            throw new BusinessException("400", "无效的搜索");
+            throw new BusinessException(400, "无效的搜索");
         }
 
         return userMapper.selectUsersByCreditScore(parsed.operator, parsed.value);
@@ -195,12 +194,12 @@ public class UserServiceImpl implements UserService {
     public void addToBlackList(Long userId, int blackLevel) {
         User user = userMapper.findById(userId);
         if (user == null) {
-            throw new BusinessException("404", "用户不存在");
+            throw new BusinessException(404, "用户不存在");
         }
 
         // 检查是否已在黑名单
         if (blacklistMapper.selectByUserId(userId) != null) {
-            throw new BusinessException("400", "用户已在黑名单中");
+            throw new BusinessException(400, "用户已在黑名单中");
         }
 
         // 检查level范围 ？

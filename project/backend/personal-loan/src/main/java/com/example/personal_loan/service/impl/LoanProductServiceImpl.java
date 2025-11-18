@@ -1,6 +1,8 @@
 package com.example.personal_loan.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,14 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.personal_loan.dto.LoanOptionResponse;
 import com.example.personal_loan.dto.ProductDto;
+import com.example.personal_loan.dto.UserGetProductResponse;
 import com.example.personal_loan.entity.LoanOption;
 import com.example.personal_loan.entity.LoanProduct;
 import com.example.personal_loan.exception.BusinessException;
 import com.example.personal_loan.mapper.LoanOptionMapper;
 import com.example.personal_loan.mapper.LoanProductMapper;
 import com.example.personal_loan.service.LoanProductService;
-import com.example.personal_loan.vo.LoanProductVO;
 
 @Service
 public class LoanProductServiceImpl implements LoanProductService{
@@ -42,12 +45,20 @@ public class LoanProductServiceImpl implements LoanProductService{
         loanProductMapper.create(product); // MyBatis 会回填 id
         dto.setId(product.getId());
 
+        if (dto.getMinTerm() != null && dto.getMaxTerm() != null && dto.getMinTerm() > dto.getMaxTerm()) {
+            throw new BusinessException(400, "最短期数不能大于最长期数");
+        }
+
         // 批量插入选项
         if (dto.getOptions() != null && !dto.getOptions().isEmpty()) {
             for (LoanOption opt : dto.getOptions()) {
                 opt.setProductId(product.getId());
                 loanOptionMapper.insert(opt); 
+                opt.setCreateTime(LocalDateTime.now());
+                opt.setUpdateTime(LocalDateTime.now());
             }
+        }else{
+            throw new BusinessException(400, "贷款选项不能为空");
         }
 
         return dto;
@@ -57,7 +68,7 @@ public class LoanProductServiceImpl implements LoanProductService{
     @Transactional
     public void batchCreateLoanOptions(Long productId, List<LoanOption> options){
         if (loanProductMapper.findById(productId)==null) {
-            throw new BusinessException("404","该产品不存在，无法添加选项");
+            throw new BusinessException(404,"该产品不存在，无法添加选项");
         }
     
         for (LoanOption option : options) {
@@ -109,12 +120,18 @@ public class LoanProductServiceImpl implements LoanProductService{
 
         LoanProduct existing = loanProductMapper.findById(productId);
         if (existing == null) {
-            throw new BusinessException("404","该产品不存在");
+            throw new BusinessException(404,"该产品不存在");
         }
 
         // 只更新非空字段（避免覆盖为 null）
         if (dto.getProductName() != null) {
             existing.setProductName(dto.getProductName());
+        }
+        if (dto.getDescription() != null) {
+            existing.setDescription(dto.getDescription());
+        }
+        if (dto.getLoanUsage() != null) {
+            existing.setLoanUsage(dto.getLoanUsage());
         }
         if (dto.getMinTerm() != null) {
             existing.setMinTerm(dto.getMinTerm());
@@ -128,25 +145,42 @@ public class LoanProductServiceImpl implements LoanProductService{
         if (dto.getPromotionDetails() != null) {
             existing.setPromotionDetails(dto.getPromotionDetails());
         }
+        if (dto.getMinTerm() != null && dto.getMaxTerm() != null 
+            && dto.getMinTerm() > dto.getMaxTerm()) {
+            throw new BusinessException(400, "最短期数不能大于最长期数");
+        }
         existing.setUpdateTime(LocalDateTime.now());
 
         loanProductMapper.update(existing);
 
-        // 如果 options 字段存在（即前端明确提供了选项列表），才做替换
-        // 注意：这里假设传了 options 就是要完全替换；如果要支持选项的部分更新，需更复杂逻辑
+        // 处理 options：仅更新已存在的选项（带 id）
         if (dto.getOptions() != null) {
-            loanOptionMapper.deleteByProductId(productId);
-            if (!dto.getOptions().isEmpty()) {
-                for (LoanOption opt : dto.getOptions()) {
-                    opt.setProductId(productId);
+            for (LoanOption opt : dto.getOptions()) {
+                if (opt.getId() == null) {
+                    throw new BusinessException(400, "选项不存在");
                 }
-                loanOptionMapper.insertBatch(dto.getOptions());
+
+                // 校验选项归属
+                LoanOption dbOpt = loanOptionMapper.selectById(opt.getId());
+                if (dbOpt == null) {
+                    throw new BusinessException(400, "贷款选项不存在: " + opt.getId());
+                }
+                if (!productId.equals(dbOpt.getProductId())) {
+                    throw new BusinessException(400, "贷款选项不属于当前产品: " + opt.getId());
+                }
+
+                // 执行选择性更新（只更新非空字段）
+                opt.setProductId(productId); 
+                loanOptionMapper.update(opt);
+                opt.setUpdateTime(LocalDateTime.now());
             }
         }
-        ProductDto updatedDto = new ProductDto();
-        BeanUtils.copyProperties(existing, updatedDto);
-        updatedDto.setOptions(loanOptionMapper.selectByProductId(productId));
-        return updatedDto;
+
+        // 构建并返回更新后的完整 ProductDto
+        ProductDto result = new ProductDto();
+        BeanUtils.copyProperties(existing, result);
+        result.setOptions(loanOptionMapper.selectByProductId(productId));
+        return result;
     }
 
 
@@ -182,46 +216,85 @@ public class LoanProductServiceImpl implements LoanProductService{
      */
 
     @Override
-    public LoanProductVO getLoanProductById(Long id){
-        LoanProduct product = loanProductMapper.findById(id);
-        if (product == null) return null;
+    public List<UserGetProductResponse> searchProductsByName(String name){
+        if (name == null || name.trim().isEmpty()) {
+            return Collections.emptyList(); // 空关键词返回空列表
+        }
 
-        List<LoanOption> options = loanOptionMapper.selectByProductId(id);
-        List<LoanOption> optionVOs = options.stream().map(opt -> {
-            LoanOption vo = new LoanOption();
-            BeanUtils.copyProperties(opt, vo);
-            return vo;
-        }).collect(Collectors.toList());
+        // 1. 调用 Mapper 模糊查询
+        List<LoanProduct> products = loanProductMapper.findByProductNameLike(name.trim());
 
-        LoanProductVO vo = new LoanProductVO();
-        vo.setId(product.getId());
-        vo.setProductName(product.getProductName());
-        vo.setPromotionDetails(product.getPromotionDetails());
-        vo.setCreateTime(product.getCreateTime());
-        vo.setOptions(optionVOs);
-        return vo;
-    }
-
-    @Override
-    public List<LoanProductVO> getAllLoanProducts(){
-        List<LoanProduct> products = loanProductMapper.findAll();
+        // 2. 转换为 UserGetProductResponse 列表（复用之前的转换逻辑）
         return products.stream().map(product -> {
+            // 生成 terms
+            List<Integer> terms = new ArrayList<>();
+            if (product.getMinTerm() != null && product.getMaxTerm() != null && product.getTermStep() != null) {
+                for (int t = product.getMinTerm(); t <= product.getMaxTerm(); t += product.getTermStep()) {
+                    terms.add(t);
+                }
+            }
+
+            // 查询并转换 options
             List<LoanOption> options = loanOptionMapper.selectByProductId(product.getId());
-            List<LoanOption> optionVOs = options.stream()
+            List<LoanOptionResponse> optionResponses = options.stream()
                 .map(opt -> {
-                    LoanOption vo = new LoanOption();
-                    BeanUtils.copyProperties(opt, vo);
-                    return vo;
+                    LoanOptionResponse resp = new LoanOptionResponse();
+                    resp.setLoanAmount(opt.getLoanAmount());
+                    resp.setInterestRate(opt.getInterestRate());
+                    resp.setLoanPeriod(opt.getLoanPeriod());
+                    resp.setRepaidType(opt.getRepaidType());
+                    return resp;
                 })
                 .collect(Collectors.toList());
 
-            LoanProductVO vo = new LoanProductVO();
-            vo.setId(product.getId());
-            vo.setProductName(product.getProductName());
-            vo.setPromotionDetails(product.getPromotionDetails());
-            vo.setCreateTime(product.getCreateTime());
-            vo.setOptions(optionVOs);
-            return vo;
+            // 构建响应对象
+            UserGetProductResponse response = new UserGetProductResponse();
+            response.setProductName(product.getProductName());
+            response.setDescription(product.getDescription());
+            response.setLoanUsage(product.getLoanUsage());
+            response.setPromotionDetails(product.getPromotionDetails());
+            response.setTerms(terms);
+            response.setOptions(optionResponses);
+
+            return response;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserGetProductResponse> getAllLoanProducts(){
+        List<LoanProduct> products = loanProductMapper.findAll();
+        return products.stream().map(product -> {
+            // 生成 terms 列表
+            List<Integer> terms = new ArrayList<>();
+            if (product.getMinTerm() != null && product.getMaxTerm() != null && product.getTermStep() != null) {
+                for (int t = product.getMinTerm(); t <= product.getMaxTerm(); t += product.getTermStep()) {
+                    terms.add(t);
+                }
+            }
+
+            // 查询并转换贷款选项
+            List<LoanOption> options = loanOptionMapper.selectByProductId(product.getId());
+            List<LoanOptionResponse> optionResponses = options.stream()
+                .map(opt -> {
+                    LoanOptionResponse resp = new LoanOptionResponse();
+                    resp.setLoanAmount(opt.getLoanAmount());
+                    resp.setInterestRate(opt.getInterestRate());
+                    resp.setLoanPeriod(opt.getLoanPeriod());
+                    resp.setRepaidType(opt.getRepaidType());
+                    return resp;
+                })
+                .collect(Collectors.toList());
+
+            // 构建最终响应对象
+            UserGetProductResponse response = new UserGetProductResponse();
+            response.setProductName(product.getProductName());
+            response.setDescription(product.getDescription()); 
+            response.setLoanUsage(product.getLoanUsage()); 
+            response.setPromotionDetails(product.getPromotionDetails());
+            response.setTerms(terms);
+            response.setOptions(optionResponses);
+
+            return response;
         }).collect(Collectors.toList());
     }
 }

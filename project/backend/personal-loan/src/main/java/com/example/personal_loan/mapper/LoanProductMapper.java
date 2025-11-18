@@ -14,7 +14,8 @@ import com.example.personal_loan.entity.LoanProduct;
 @Mapper
 public interface LoanProductMapper {
 
-    @Insert("INSERT INTO loan_products (product_name, min_term, max_term, term_step, promotion_details) VALUES ( #{productName}, #{minTerm}, #{maxTerm}, #{termStep}, #{promotionDetails})")
+    // 增加
+    @Insert("INSERT INTO loan_products (product_name, description, loan_usage, min_term, max_term, term_step, promotion_details) VALUES ( #{productName}, #{description}, #{loanUsage}, #{minTerm}, #{maxTerm}, #{termStep}, #{promotionDetails})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int create(LoanProduct loanProduct);
 
@@ -33,13 +34,18 @@ public interface LoanProductMapper {
     })
     int batchDelete(List<Long> ids);
 
-    @Update("UPDATE loan_products SET product_name = #{productName}, min_term = #{minTerm}, max_term = #{maxTerm}, term_step = #{termStep}, promotion_details = #{promotionDetails} WHERE id = #{id}")
+    // 修改
+    @Update("UPDATE loan_products SET product_name = #{productName}, description = #{description}, loan_usage = #{loanUsage}, min_term = #{minTerm}, max_term = #{maxTerm}, term_step = #{termStep}, promotion_details = #{promotionDetails} WHERE id = #{id}")
     int update(LoanProduct loanProduct);
 
+    // 查询单个
     @Select("SELECT * FROM loan_products WHERE id = #{id}")
     LoanProduct findById(Long id);
     
+    // 查询所有
     @Select("SELECT * FROM loan_products")
     List<LoanProduct> findAll();
 
+    // 用productName搜索查询
+    List<LoanProduct> findByProductNameLike(String productName);
 }

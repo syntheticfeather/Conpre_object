@@ -2,7 +2,6 @@ package com.example.personal_loan.handler;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,8 +12,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.example.personal_loan.dto.ApiResponse;
 import com.example.personal_loan.exception.BusinessException;
-import com.example.personal_loan.exception.InvalidCredentialsException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -23,47 +22,21 @@ public class GlobalExceptionHandler {
 
     // 处理业务异常
     @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<Map<String, Object>> handleBusinessException(BusinessException e) {
-        log.warn("业务异常:code={}, message={}", e.getCode(), e.getMessage());
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("code", e.getCode());
-        response.put("message", e.getMessage());
-        
-        if(e.getCode().equals("404")){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        }
+    public ResponseEntity<ApiResponse<Void>> handleBusinessException(BusinessException ex) {
+        ApiResponse<Void> response = ApiResponse.fail(ex.getCode(), ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-    }
-
-    @ExceptionHandler(InvalidCredentialsException.class)
-    public ResponseEntity<Map<String, Object>> handleAuthError(InvalidCredentialsException e) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("code", 401);
-        body.put("message", "手机号或密码错误");
-        body.put("data", null); 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
     }
 
     // 处理参数校验异常
     @ExceptionHandler(MethodArgumentNotValidException.class)
-        public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException e) {
-            log.warn("参数校验失败：{}", e.getMessage());
-
-        // 构建字段错误详情 map
-        Map<String, String> fieldErrors = e.getBindingResult().getFieldErrors().stream()
-            .collect(Collectors.toMap(
-                FieldError::getField,
-                FieldError::getDefaultMessage,
-                (existing, replacement) -> existing // 如果同一字段有多个错误，保留第一个
-            ));
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("code", 400);
-        response.put("message", "请求参数校验失败");
-        response.put("data", fieldErrors); // ← 把所有错误放在这里！
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    public ResponseEntity<ApiResponse<Map<String, String>>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach(error -> {
+            String field = ((FieldError) error).getField();
+            String msg = error.getDefaultMessage();
+            errors.put(field, msg);
+        });
+        ApiResponse<Map<String, String>> response = ApiResponse.fail(400, errors, "请求参数校验失败");
+        return ResponseEntity.badRequest().body(response);
     }
-    
 }

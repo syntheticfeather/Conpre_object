@@ -7,7 +7,6 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
 
 import com.example.personal_loan.entity.LoanOption;
 
@@ -15,14 +14,14 @@ import com.example.personal_loan.entity.LoanOption;
 @Mapper
 public interface LoanOptionMapper {
     
-    @Insert("INSERT INTO loan_option(product_id, loan_period, loan_amount, repaid_type, interest_rate) " +
+    @Insert("INSERT INTO loan_options (product_id, loan_period, loan_amount, repaid_type, interest_rate) " +
             "VALUES(#{productId}, #{loanPeriod}, #{loanAmount}, #{repaidType}, #{interestRate})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(LoanOption option);
 
     @Insert({
         "<script>",
-        "INSERT INTO loan_option (product_id, loan_period, loan_amount, interest_rate, repaid_type)",
+        "INSERT INTO loan_options (product_id, loan_period, loan_amount, interest_rate, repaid_type)",
         "VALUES ",
         "<foreach collection='list' item='opt' separator=','>",
         "(#{opt.productId}, #{opt.loanPeriod}, #{opt.loanAmount}, #{opt.interestRate}, #{opt.repaidType})",
@@ -31,18 +30,21 @@ public interface LoanOptionMapper {
     })
     int insertBatch(List<LoanOption> list);
     
-    @Update("UPDATE loan_option SET loan_period=#{loanPeriod}, loan_amount=#{loanAmount}, " +
-            "repaid_type=#{repaidType}, interest_rate=#{interestRate} WHERE id=#{id}")
-    int update(LoanOption option);
+    // @Update("UPDATE loan_option SET loan_period=#{loanPeriod}, loan_amount=#{loanAmount}, " +
+    //         "repaid_type=#{repaidType}, interest_rate=#{interestRate} WHERE id=#{id}")
+    // int update(LoanOption option);
+
+    // 更新
+    void update(LoanOption option);
     
     //删除单个选项
-    @Delete("DELETE FROM loan_option WHERE id=#{id}")
+    @Delete("DELETE FROM loan_options WHERE id=#{id}")
     int deleteById(Long id);
 
     //批量删除选项
     @Delete({
         "<script>",
-        "DELETE FROM loan_option WHERE id IN",
+        "DELETE FROM loan_options WHERE id IN",
         "<foreach collection='list' item='id' open='(' separator=',' close=')'>",
         "#{id}",
         "</foreach>",
@@ -51,13 +53,13 @@ public interface LoanOptionMapper {
     int batchDeleteByIds(List<Long> optionIds);
     
     // 删除某产品的所有选项
-    @Delete("DELETE FROM loan_option WHERE product_id=#{productId}")
+    @Delete("DELETE FROM loan_options WHERE product_id=#{productId}")
     int deleteByProductId(Long productId);
 
     //删除多个产品的所有选项
     @Delete({
         "<script>",
-        "DELETE FROM loan_option WHERE product_id IN",
+        "DELETE FROM loan_options WHERE product_id IN",
         "<foreach collection='list' item='productId' open='(' separator=',' close=')'>",
         "#{productId}",
         "</foreach>",
@@ -65,10 +67,10 @@ public interface LoanOptionMapper {
     })
     int batchDeleteByProductIds(List<Long> productIds);
     
-    @Select("SELECT * FROM loan_option WHERE id=#{id}")
+    @Select("SELECT * FROM loan_options WHERE id=#{id}")
     LoanOption selectById(Long id);
     
-    @Select("SELECT * FROM loan_option WHERE product_id=#{productId}")
+    @Select("SELECT * FROM loan_options WHERE product_id=#{productId}")
     List<LoanOption> selectByProductId(Long productId);
     
 }

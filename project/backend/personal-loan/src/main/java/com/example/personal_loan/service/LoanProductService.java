@@ -3,8 +3,8 @@ package com.example.personal_loan.service;
 import java.util.List;
 
 import com.example.personal_loan.dto.ProductDto;
+import com.example.personal_loan.dto.UserGetProductResponse;
 import com.example.personal_loan.entity.LoanOption;
-import com.example.personal_loan.vo.LoanProductVO;
 
 public interface LoanProductService {
 
@@ -33,11 +33,13 @@ public interface LoanProductService {
     // 批量删除选项（不删产品本身）
     void batchDeleteLoanOptionsByIds(List<Long> optionIds);
 
+    // 修改
     ProductDto updateLoanProduct(Long id,ProductDto loanProductDto);
 
     // 根据productId查询产品及其选项
     ProductDto adminGetProductById(Long id);
 
+    // 查询
     List<ProductDto> adminGetAllProducts ();
 
 
@@ -46,6 +48,8 @@ public interface LoanProductService {
      * 用户使用
      */
 
-    LoanProductVO getLoanProductById(Long id);
-    List<LoanProductVO> getAllLoanProducts();
+    // 根据产品名称搜索产品
+    List<UserGetProductResponse> searchProductsByName(String name);
+    // 查询所有产品
+    List<UserGetProductResponse> getAllLoanProducts();
 }

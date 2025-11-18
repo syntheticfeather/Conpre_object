@@ -2,18 +2,18 @@
 
 ## 登录
 
-**网址：**http://localhost:8080/api/auth/login
+**网址**：http://localhost:8080/api/auth/login
 
-**请求方式：** POST
+**请求方式**：POST
 
-**请求参数：**
+**请求参数**：
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
 |phone|string|是|手机号|13545678901|
 |password|string|是|密码|Admin01!!|
 
-**请求实例（请求体）：**
+**请求实例（请求体）**：
 
 ``` json
 {
@@ -22,58 +22,76 @@
 }
 ```
 
-**返回数据:**
+**返回数据**：
 
 ``` json
 {
-    "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI4IiwiaWF0IjoxNzYyODUxMjExLCJleHAiOjE3NjI5Mzc2MTF9.fWRVaBcAEujJwfdFxgOaUBnOu9I_tF1g14D8EOAXcVY"
+    "code": 200,
+    "data": {
+        "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzU0NTY3ODkwMSIsInVzZXJJZCI6IjgiLCJpYXQiOjE3NjM0NDg1MjYsImV4cCI6MTc2MzUzNDkyNn0.FjIp4FZTe_Wur65rKrMV5KPN5t-HAJQaYweBLiVeKrg"
+    },
+    "message": "登录成功"
 }
 ```
 
-**postman测试结果：**
+**postman测试结果**：
 
-![](../AuthImgs/login.png)
+**成功**
+![](../AuthImgs/loginSuccess.png "登陆成功")
+
+**失败**
 ![](../AuthImgs/loginFail.png "登录失败，用户名或密码错误")
 
 ## 注册
 
-**网址：**/api/auth/register
+**网址**：/api/auth/register
 
-**请求方式：**POST
+**请求方式**：POST
 
-**请求参数：**
+**请求参数**：
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
-|name|string|是|姓名|李华|
-|phone|string|是|手机号|13912345678|
-|password|string|是|密码|lihuaPass123!|
+|name|string|是|姓名|Tom|
+|phone|string|是|手机号|13712345678|
+|password|string|是|密码|Tom12345!|
 
-**请求实例（请求体）：**
-
-``` json
-{
-    "name":"李华",
-    "phone":"13912345678",
-    "password":"lihuaPass123!"
-}
-```
-
-**返回数据:**
+**请求实例（请求体）**：
 
 ``` json
 {
-    "id": 5,
-    "name": "李华",
-    "createTime": "2025-11-11T16:08:50.1617295"
+    "name":"Tom",
+    "phone":"13712345678",
+    "password":"Tom12345!"
 }
 ```
 
-**postman测试结果：**
+**返回数据**：
 
-![](../AuthImgs/register.png "注册成功")
+``` json
+{
+    "code": 200,
+    "data": {
+        "id": 11,
+        "name": "Tom",
+        "createTime": "2025-11-18T14:47:41.9154566"
+    },
+    "message": "注册成功"
+}
+```
+
+**postman测试结果**：
+
+**成功**
+![](../AuthImgs/registerSuccess.png "注册成功")
+
+**失败**
 ![](../AuthImgs/registerNameFail.png "注册失败，用户名格式错误")
+
 ![](../AuthImgs/registerPasswordFail.png "注册失败，密码格式错误")
+
 ![](../AuthImgs/registerPhoneFail.png "注册失败，手机号码格式错误")
+
 ![](../AuthImgs/registerAllFail.png "多种格式错误")
-![](../AuthImgs/registerFailPhoneExist.png "注册失败，该手机号已被注册")
+
+![](../AuthImgs/registerPhoneExist.png "注册失败，该手机号已被注册")

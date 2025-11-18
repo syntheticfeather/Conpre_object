@@ -59,7 +59,7 @@ public class UserController {
     public ResponseEntity<Map<String, String>> refreshToken(@RequestBody Map<String, String> request) {
         String refreshToken = request.get("refresh_token");
         String newAccessToken = userService.refreshToken(refreshToken);
-        return ResponseEntity.ok(Map.of("access_token", newAccessToken));
+        return ResponseEntity.ok(Map.of("token", newAccessToken));
     }
 
     @PatchMapping("/{id}")

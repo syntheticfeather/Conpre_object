@@ -16,14 +16,14 @@ import com.example.personal_loan.entity.User;
 @Mapper
 public interface UserMapper {
 
-    @Insert("INSERT INTO users (user_name, password, id_card, phone, role) VALUES ( #{name}, #{password}, #{idCard},#{phone},#{role} )")
+    @Insert("INSERT INTO users (user_name, password, id_card, phone, role) VALUES ( #{userName}, #{password}, #{idCard},#{phone},#{role} )")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(User user);
 
     @Delete("DELETE FROM users WHERE id = #{id}")
     int delete(@Param("id") Long id);
 
-    @Update("UPDATE users SET user_name = #{name}, phone = #{phone}, id_card = #{idCard} ,password=#{password} WHERE id = #{id}")
+    @Update("UPDATE users SET user_name = #{userName}, phone = #{phone}, id_card = #{idCard} ,password=#{password} WHERE id = #{id}")
     int update(User user);
 
     List<UserSearchDto> selectUsersByCreditScore(@Param("operator") String operator, @Param("value") Integer value);

@@ -11,6 +11,7 @@ import com.example.personal_loan.controller.dto.LoginRequest;
 import com.example.personal_loan.controller.dto.LoginResponse;
 import com.example.personal_loan.controller.dto.RegisterRequest;
 import com.example.personal_loan.controller.dto.RegisterResponse;
+import com.example.personal_loan.dto.ApiResponse;
 import com.example.personal_loan.service.UserService;
 
 import jakarta.validation.Valid;
@@ -25,16 +26,16 @@ public class AuthController {
     private UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest request) {
+    public ResponseEntity<ApiResponse<LoginResponse>> login(@RequestBody @Valid LoginRequest request) {
         log.info("login api success called");
         LoginResponse response = userService.login(request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.success(response,"登录成功"));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<RegisterResponse> userRegister(@RequestBody @Valid RegisterRequest request) {
+    public ResponseEntity<ApiResponse<RegisterResponse>> userRegister(@RequestBody @Valid RegisterRequest request) {
         log.info("register api success called");
-        return ResponseEntity.ok(userService.userRegister(request));
+        return ResponseEntity.ok(ApiResponse.success(userService.userRegister(request),"注册成功"));
     }
 
     @PostMapping("/register/admin")
