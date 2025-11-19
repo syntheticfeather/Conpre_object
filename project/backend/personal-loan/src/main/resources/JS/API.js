@@ -15,11 +15,6 @@ AdminWeb.API_CONFIG = {
         register: '/api/auth/register',// 注册接口
         // 登录界面
         login: '/api/auth/login',// 登录接口
-        // passwordLogin: '/api/auth/password-login',// 密码登录接口
-        // smsLogin: '/api/auth/sms-login',
-        // sendSms: '/api/auth/send-sms',
-
-        // refreshToken: '/api/auth/refresh',// 刷新token接口
     },
     storageKeys: {
         token: 'admin_token',
@@ -63,10 +58,10 @@ AdminWeb.DOM_ELEMENTS = {
     passwordLoginForm: document.getElementById('passwordLoginForm'),  // 密码登录表单
     passwordLoadingSpinner: document.getElementById('passwordLoadingSpinner'), // 密码登录加载动画
     //验证码登录
-    smsLoginSubmitBtn: document.getElementById('smsLogin-submit-btn'), // 验证码登录提交按钮
-    smsLoginForm: document.getElementById('smsLoginForm'),  // 验证码登录表单
-    getSmsBtn: document.getElementById('getSmsBtn'), // 获取验证码按钮
-    smsLoadingSpinner: document.getElementById('smsLoadingSpinner'), // 验证码登录加载动画
+    // smsLoginSubmitBtn: document.getElementById('smsLogin-submit-btn'), // 验证码登录提交按钮
+    // smsLoginForm: document.getElementById('smsLoginForm'),  // 验证码登录表单
+    // getSmsBtn: document.getElementById('getSmsBtn'), // 获取验证码按钮
+    // smsLoadingSpinner: document.getElementById('smsLoadingSpinner'), // 验证码登录加载动画
 
     loginSuccessMessage: document.getElementById('successMessage'), // 登录成功提示信息
     // 输入字段
@@ -76,7 +71,7 @@ AdminWeb.DOM_ELEMENTS = {
     smsCodeInput: document.getElementById('smsCode'),
     agreeCheckbox: document.getElementById('agreeCheckbox'),
 }
-// ==================== API 请求封装/API客户端？ ====================
+// ==================== API 请求封装 ====================
 AdminWeb.API_CLIENT = {
     // 通用请求方法
     
@@ -135,8 +130,6 @@ AdminWeb.API_CLIENT = {
         const publicEndpoints = [
             AdminWeb.API_CONFIG.endpoints.login,
             AdminWeb.API_CONFIG.endpoints.register,
-            // AdminWeb.API_CONFIG.endpoints.smsLogin,
-            // AdminWeb.API_CONFIG.endpoints.sendSms
         ];
         return !publicEndpoints.includes(url);
     },
@@ -193,13 +186,7 @@ AdminWeb.API_CLIENT = {
         })
     },
 
-    // 专用方法 - 登录
-    // login: function (phone, password) {
-        // return this.post(AdminWeb.API_CONFIG.endpoints.login, {
-        //     phone: phone,
-        //     password: password
-        // })
-        // （修改错误处理）
+    // 专用方法 - 登录（修改错误处理）
     login: async function (phone, password) {
         try {
             const response = await fetch(`${this._getBaseUrl()}${AdminWeb.API_CONFIG.endpoints.login}`, {
@@ -260,84 +247,6 @@ AdminWeb.API_CLIENT = {
     //     })
     // }
 }
-// ==================== JWT 工具函数 ====================
-// AdminWeb.JWT_UTILS = {
-//     // 获取 token（返回带Bearer前缀的完整格式）
-//     getToken: function () {
-//         const token = localStorage.getItem(AdminWeb.JWT_CONFIG.tokenKey);
-//         return token ? `Bearer ${token}` : null;  //  确保包含 Bearer 前缀
-//     },
-
-//     // 获取认证头（确保包含Bearer前缀）
-//     getAuthHeader: function () {
-//         const token = this.getToken(); // 带Bearer前缀的
-//         return token ? { 'Authorization': token } : {};
-//     },
-
-//     // 保存 token 和过期时间
-//     setToken: function (token) {
-//         // 确保存储的token不包含Bearer前缀
-//         const cleanToken = token.replace(/^Bearer\s+/i, '');
-//         localStorage.setItem(AdminWeb.JWT_CONFIG.tokenKey, cleanToken);
-
-//         if (refreshToken) {
-//             const cleanRefreshToken = refreshToken.replace(/^Bearer\s+/i, '');
-//             localStorage.setItem(AdminWeb.JWT_CONFIG.refreshTokenKey, cleanRefreshToken);
-//         }
-
-//         // 设置过期时间（当前时间 + 3分钟）
-//         const expiryTime = Date.now() + AdminWeb.JWT_CONFIG.tokenExpiryTime;
-//         localStorage.setItem(AdminWeb.JWT_CONFIG.tokenExpiryKey, expiryTime.toString());
-//     },
-
-//     // 获取原始token（不带Bearer前缀）
-//     getRawToken: function () {
-//         return localStorage.getItem(AdminWeb.JWT_CONFIG.tokenKey);
-//     },
-
-//     // 获取 refresh token
-//     getRefreshToken: function () {
-//         return localStorage.getItem(AdminWeb.JWT_CONFIG.refreshTokenKey);
-//     },
-
-//     // 检查 token 是否有效（3分钟内）
-//     isTokenValid: function () {
-//         const token = this.getRawToken() // 使用原始token检查
-//         const expiry = localStorage.getItem(AdminWeb.JWT_CONFIG.tokenExpiryKey)
-
-//         if (!token) {
-//             console.log('Token 不存在')
-//             return false
-//         }
-
-//         if (expiry && Date.now() > parseInt(expiry)) {
-//             console.log('Token 已过期')
-//             return false;
-//         }
-
-//         console.log('Token 有效')
-//         return true
-//     },
-
-//     // 获取剩余有效时间（秒）
-//     getRemainingTime: function () {
-//         const expiry = localStorage.getItem(AdminWeb.JWT_CONFIG.tokenExpiryKey);
-//         if (!expiry) return 0;
-
-//         const remaining = parseInt(expiry) - Date.now();
-//         return Math.max(0, Math.floor(remaining / 1000));
-//     },
-
-//     // 清除所有 token
-//     clearTokens: function () {
-//         localStorage.removeItem(AdminWeb.JWT_CONFIG.tokenKey);
-//         localStorage.removeItem(AdminWeb.JWT_CONFIG.refreshTokenKey);
-//         localStorage.removeItem(AdminWeb.JWT_CONFIG.tokenExpiryKey);
-//         localStorage.removeItem('admin_is_logged');
-//         localStorage.removeItem('admin_info');
-//         localStorage.removeItem('phone');
-//     }
-// }
 // ==================== JWT 工具函数 ====================
 AdminWeb.JWT_UTILS = {
     // 获取 token（返回带Bearer前缀的完整格式）

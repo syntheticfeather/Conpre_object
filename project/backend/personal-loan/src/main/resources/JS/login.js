@@ -361,8 +361,7 @@ function handleLoginSuccess(result, phone) {
     showSuccessMessage()
     
     // 保存登录状态和token - 根据实际API响应调整
-    const token = result.token || result.data?.token
-    
+     const token = result.token
     if (!token) {
         console.error('登录响应中没有找到token')
         showErrorById('passwordError', '登录响应异常，请重试')

@@ -52,7 +52,7 @@ div .base-information {
     justify-content: center;
 }
 
-div .infor{
+.base-information .infor{
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
@@ -64,6 +64,24 @@ div .infor{
     height: 310px;
     background-color: #e2e7e6;
     border-radius: 10px;
+}
+
+.base-information .infor div {
+    display: flex;
+    justify-content: space-evenly;
+
+    margin-right: 15px;
+    padding-top: 4px;
+    padding-left: 30px;
+    width: 490px;
+    height: 310px;
+    background-color: #e2e7e6;
+    border-radius: 10px;
+}
+
+.iconfont {
+    font-size: 24px;
+    color: #2551e1;
 }
 
 /* 绑定手机号 */

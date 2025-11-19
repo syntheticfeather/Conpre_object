@@ -248,15 +248,13 @@
 
             <!-- 用户管理页面卡片 -->
             <div class="user-dashboard" id="user-management-content">
-                <!-- 低风险用户 -->
-                <div class="low-risk-user">
-                    <div class="table-header">
-                        <h2 class="table-title">低风险用户</h2>
-                        <button class="" data-modal="user-modal">批量管理</button>
+                <div class="table-header">
+                    <h2 class="table-title">用户列表</h2>
+                    <button class="batch-manage-btn" data-modal="user-modal">批量管理</button>
                     </div>
                     <hr>
-                    <div class="low-risk-table">
-                        <table>
+                <div class="table-body">
+                    <table>
                         <thead>
                             <tr>
                                 <th>序号</th>
@@ -425,37 +423,10 @@
                                 <td><button class="">标记为极高风险</button></td>
                                 <td><button class="">查看详情</button></td>
                             </tr>
-                        </tbody>
-                        </table>
-                    </div>
-                </div>
-                <hr>
-                <!-- 高风险用户 -->
-                <div class="high-risk-user">
-                    <div class="table-header">
-                        <h2 class="table-title">高风险用户</h2>
-                        <button class="" data-modal="user-modal">批量管理</button>
-                    </div>
-                    <hr>
-                    <div class="high-risk-table">
-                        <table>
-                        <thead>
-                            <tr>
-                                <th>序号</th>
-                                <th>用户名</th>
-                                <th>是否在线</th>
-                                <th>目前借贷情况</th>
-                                <th>总交易笔数</th>
-                                <th>总贷款金额</th>
-                                <th>总还款金额</th>
-                                <th colspan="4">操作</th>
-                            </tr>
-                        </thead>
-                        <tbody>
                             <tr>
                                 <td>1</td>  
                                 <td>张三</td>
-                                <td>是</td>
+                                <td>在线</td>
                                 <td>无借贷</td>
                                 <td>4</td>
                                 <td>1234</td>
@@ -608,8 +579,7 @@
                                 <td><button class="">查看详情</button></td>
                             </tr>
                         </tbody>
-                        </table>
-                    </div>
+                    </table>
                 </div>
             </div>
 
