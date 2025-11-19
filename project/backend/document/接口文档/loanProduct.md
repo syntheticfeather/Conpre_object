@@ -143,7 +143,7 @@
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
-|name|String|是|贷款产品名称|闪电贷|
+|name|string|是|贷款产品名称|闪电贷|
 
 **请求示例（网址）** /api/loan-products/user/search?name=闪电贷
 
@@ -206,21 +206,23 @@
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
-|productName|String|是|贷款产品名称|车贷1|
-|minTerm|Integer|是|最短借款期限（单位：月）| |
-|maxTerm|Integer|是|最长借款期限（单位：月）| |
-|termStep|Integer|是|期限递增步长（单位：月），例如每3个月一档|  |
-|promotionDetails|String|否|促销描述，用于展示给用户|   |
-|options|Array[Object]|是|可选方案列表，每个选项代表一种贷款组合|  |
+|  productName  |  string  |是|  贷款产品名称     |极速贷|
+|  description  |  string  |是|  产品描述         |  审批快，放贷快|
+|  loanUsage    |  string  |是|  产品用途         |   消费、装修、教育|
+|  minTerm      |  integer  |是|   最短借款期限（单位：月）  | 3|
+|  maxTerm      |  integer  |是|  最长借款期限（单位：月）  | 24 |
+|  termStep     |  integer  |是|   期限递增步长（单位：月）  | 3 |
+|  promotionDetails |  string |否|   促销描述，用于展示给用户  |无|
+|  options      |  array   |是|    可选方案列表，每个选项代表一种方案组合  |见下表|
 
 **options集合中的参数说明：**
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
-|loanPeriod|Integer|是|贷款期限（单位：月）|  |
-|loanAmount|BigDecimal|是|贷款额度（单位：元）|   |
-|interestRate|BigDecimal|是|年化利率（小数形式，如 0.045 表示 4.5%）|     |
-|repaidType|String|是|还款方式，目前支持："等额本金"、"等额本息" 、"一次性还本付息"|   |
+|  loanAmount | number | 是 | 贷款额度（单位：元）,最多12位数字，其中小数部分2位 | 10000.00 |
+|  loanPeriod | integer | 是 | 贷款期限（单位：月） | 12 |
+| interestRate | number | 是 | 年化利率,最多6位数字，其中小数部分4位 | 0.049 |
+|  repaidType | string | 是 | 还款方式，目前支持："等额本金"、"等额本息" 、"一次性还本付息" | "等额本息" |
 
 **请求示例（请求体）：**
 
@@ -301,17 +303,17 @@
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
-|productId|Integer|是|要添加方案的目标产品 ID，必须是已存在的产品|4|
-|options|Array[Object]|是|要创建的贷款方案列表，每个对象代表一个可选组合|[...]|
+|productId|integer|是|要添加方案的目标产品 ID，必须是已存在的产品|2|
+|options|array|是|要创建的贷款方案列表|见下表|
 
-**options 数组中参数说明**:
+**options 集合中参数说明**:
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
-|loanPeriod|Integer|是|贷款期限（单位：月）|6, 12, 24|
-|loanAmount|Number|是|贷款额度（单位：元）|10000.00, 20000.00|
-|interestRate|Number|是|年化利率（小数形式），如 8% → 0.08|0.08, 0.075|
-|repaidType|String|是|还款方式|"等额本金"|
+| loanAmount | number | 是 | 贷款额度（单位：元），最多12位数字，其中小数部分2位 | 20000.00, 50000.00 |
+| loanPeriod | integer | 是 | 贷款期限（单位：月）  | 18，24 |
+| interestRate | number | 是 | 年化利率，最多6位数字，其中小数部分4位 | 0.055, 0.06 |
+| repaidType | string | 是 | 还款方式 | "等额本金","先息后本" |
 
 **请求示例（请求体）**:
 
@@ -427,7 +429,7 @@
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
-| ids | Array | 是 | 要删除的贷款方案 ID 列表 | [3, 6] |
+| ids | array | 是 | 要删除的贷款方案 ID 列表 | [3, 6] |
 
 **请求示例（请求体）：**
 
@@ -503,21 +505,24 @@
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
-|productName|String|否| 产品名称 |    |
-|minTerm|Integer|否|最短借款期限（单位：月）|    |
-|maxTerm|Integer|否|最长借款期限（单位：月）|   |
-|termStep|Integer|否|期限递增步长（单位：月）|   |
-|promotionDetails|String|否|促销文案|   |
-|options|Array[Object]|否|可选方案列表|   |
+| productName | string | 否 | 产品名称 |极速贷 Pro（表示将该产品的名称改为极速贷 Pro）|
+| description | string | 否 | 产品描述 |  |
+| loanUsage | string | 否 | 产品用途 |   |
+| minTerm | integer | 否 | 最短借款期限（单位：月）|    |
+| maxTerm | integer | 否 | 最长借款期限（单位：月）|   |
+| termStep | integer | 否 | 期限递增步长（单位：月）|   |
+| promotionDetails | string | 否 | 促销文案 |   |
+| options | array | 否 | 可选方案列表 |   |
 
-**options 中的字段说明**:
+**options 中的字段说明（除id外可选）**:
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
-|loanPeriod|Integer|是|贷款期限（单位：月）|   |
-|loanAmount|Number|是|贷款额度（单位：元）|   |
-|interestRate|Number|是|年化利率（小数形式，如 0.039 表示 3.9%）|   |
-|repaidType|String|是|还款方式，"等额本金"、"等额本息"、"一次性还本付息"|  |
+| id  | integer | 是 | 该产品需要更改的选项id | 2 |
+| loanAmount | number | 否 | 贷款额度（单位：元）,最多12位数字，其中小数部分2位|   |
+| loanPeriod |integer | 否 | 贷款期限（单位：月）|   |
+| interestRate | number | 否 | 年化利率,最多6位数字，其中小数部分4位 | 0.045  |
+| repaidType | string | 否 | 还款方式，"等额本金"、"等额本息"、"一次性还本付息" |  |
 
 **请求示例（网址）** /api/loan-products/admin/products/2
 
@@ -735,7 +740,7 @@
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
-|productId|Long|是|产品Id|2|
+|productId|integer|是|产品Id|2|
 
 **请求示例（网址）** /api/loan-products/admin/2
 
