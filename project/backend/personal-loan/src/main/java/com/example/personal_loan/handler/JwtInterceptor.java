@@ -8,8 +8,10 @@ import com.example.personal_loan.utils.JwtUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class JwtInterceptor implements HandlerInterceptor {
 
     @Autowired
@@ -18,14 +20,16 @@ public class JwtInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String uri = request.getRequestURI();
-        System.out.println("【JwtInterceptor】正在拦截请求: " + uri);
+        log.info("【JwtInterceptor】请求路径: " + uri);
         String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            log.error("Missing or invalid Authorization header");
             sendUnauthorizedJson(response, 401, "Missing or invalid Authorization header");
             return false;
         }
         String token = authorizationHeader.substring(7);
         if (!jwtUtil.validateToken(token)) {
+            log.error("JWT 验证失败");
             sendUnauthorizedJson(response, 401, "JWT 验证失败");
             return false;
         }
@@ -36,12 +40,13 @@ public class JwtInterceptor implements HandlerInterceptor {
          */
         request.setAttribute("userId", userId);
         request.setAttribute("userPhone", userPhone);
+        log.info("【JwtInterceptor】请求成功，userId: " + userId + ", userPhone: " + userPhone);
         return true;
     }
 
     /**
      * 向前端返回统一的 JSON 错误响应，包含 HTTP 状态码和错误信息。 这里同时设置了一些常见的 CORS 头，方便前端在跨域场景下读取响应。
-         */
+     */
     private void sendUnauthorizedJson(HttpServletResponse response, int status, String message) {
         try {
             response.setStatus(status);

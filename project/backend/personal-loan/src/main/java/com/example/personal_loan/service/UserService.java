@@ -10,42 +10,42 @@ import com.example.personal_loan.dto.UserSearchDto;
 import com.example.personal_loan.entity.User;
 
 public interface UserService {
-        // 用户登录(手机号+密码)
-        LoginResponse login(LoginRequest request);
-        
-        // 刷新token
-        String refreshToken(String refreshToken);
+    // 用户登录(手机号+密码)
 
-        // 用户注册
-        RegisterResponse userRegister(RegisterRequest request);
+    LoginResponse login(LoginRequest request);
 
-        //管理员注册
-        RegisterResponse adminRegister(RegisterRequest request);
+    // 刷新token
+    String refreshToken(Long id);
 
-        // 添加用户
-        User addUser(User user);
-    
-        // 删除用户
-        void deleteUser(Long id);
+    // 用户注册
+    RegisterResponse userRegister(RegisterRequest request);
 
-        // 批量删除
-        void deleteUsers(List<Long> ids);
-    
-        // 更新用户
-        User updateUser(Long id,User user);
-    
-        // 根据ID获取用户
-        User getUserById(Long id);
-    
-        // 获取所有用户
-        List<User> getAllUsers();
+    //管理员注册
+    RegisterResponse adminRegister(RegisterRequest request);
 
-        // // 根据id，name搜索用户
-        // List<User> searchUsers(Long id, String name);
+    // 添加用户
+    User addUser(User user);
 
-        // 根据信誉分表达式搜索用户
-        List<UserSearchDto> searchUsersByCreditScore(String expr);
+    // 删除用户
+    void deleteUser(Long id);
 
-        // 添加黑名单
-        void addToBlackList(Long userId, int blackLevel);
+    // 批量删除
+    void deleteUsers(List<Long> ids);
+
+    // 更新用户
+    User updateUser(Long id, User user);
+
+    // 根据ID获取用户
+    User getUserById(Long id);
+
+    // 获取所有用户
+    List<User> getAllUsers();
+
+    // // 根据id，name搜索用户
+    // List<User> searchUsers(Long id, String name);
+    // 根据信誉分表达式搜索用户
+    List<UserSearchDto> searchUsersByCreditScore(String expr);
+
+    // 添加黑名单
+    void addToBlackList(Long userId, int blackLevel);
 }

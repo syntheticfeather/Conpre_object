@@ -1,4 +1,5 @@
 # docker-compose-dev.yml
+# cd project/backend/personal-loan
 services:
   app:
     build: .

@@ -16,20 +16,19 @@ import com.example.personal_loan.dto.UserSearchDto;
 import com.example.personal_loan.entity.BlackUser;
 import com.example.personal_loan.entity.User;
 import com.example.personal_loan.exception.BusinessException;
+import com.example.personal_loan.exception.InvalidCredentialsException;
 import com.example.personal_loan.mapper.BlackListMapper;
 import com.example.personal_loan.mapper.UserMapper;
 import com.example.personal_loan.service.UserService;
 import com.example.personal_loan.utils.JwtUtil;
+import com.example.personal_loan.utils.RedisUtil;
+import static com.example.personal_loan.utils.RedisUtil.JWT_REFRESH_CACHE_TOKEN_PREFIX_STRING;
 
 import lombok.extern.slf4j.Slf4j;
-
-
 
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
-
-
 
     @Autowired
     private UserMapper userMapper;
@@ -43,6 +42,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private RedisUtil RedisUtil;
+
     @Override
     public LoginResponse login(LoginRequest request) {
 
@@ -55,26 +57,26 @@ public class UserServiceImpl implements UserService {
 
         String refreshToken = jwtUtil.generateRefreshToken(user.getId().toString());
         // 后期使用，存储在redis中?
+        RedisUtil.set(RedisUtil.JWT_REFRESH_CACHE_TOKEN_PREFIX_STRING + user.getId(), refreshToken);
 
         return new LoginResponse(token);
-    
+
     }
 
     @Override
-    public String refreshToken(String refreshToken){
-        if (!jwtUtil.validateRefreshToken(refreshToken)) {
-            throw new BusinessException(401,"无效或已过期的 refresh token");
+    public String refreshToken(Long id) {
+        String refreshToken = RedisUtil.get(JWT_REFRESH_CACHE_TOKEN_PREFIX_STRING + id, String.class);
+        if (!jwtUtil.validateToken(refreshToken)) {
+            log.info("refresh token 无效, 需重新登录");
+            throw new InvalidCredentialsException("refresh token 无效, 需重新登录");
         }
-
-        Long userId = jwtUtil.getUserIdFromRefreshToken(refreshToken);
-        User user = userMapper.findById(userId);
-        if (user == null) {
-            throw new BusinessException(404, "用户不存在");
-        }
+        String phone = userMapper.findById(id).getPhone();
+        String newAccessToken = jwtUtil.generateAccessToken(phone, id.toString());
 
         // 可选：检查用户是否被禁用、加入黑名单等
         // 生成新的 access token（不发新的 refresh token）
-        return jwtUtil.generateAccessToken(user.getPhone(), user.getId().toString());
+        log.info("已刷新 access token" + newAccessToken);
+        return newAccessToken;
     }
 
     @Override

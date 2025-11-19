@@ -99,7 +99,15 @@ docker/welcome-to-docker   latest     c4d56c24da4f   3 months ago     22.2MB
 docker rmi personal-loan-app:latest
 docker rmi 16e6f275e117
 
+docker-compose up
+
+==================================
+|         还有另一种方式           |
+==================================
+
 # 重新build
+docker-compose build 
+# 重新启动
 docker-compose up
 
 ```
@@ -112,3 +120,7 @@ docker-compose down
 
 docker image prune -a
 ```
+
+## 很多时候，可能不想编译我们的项目，只是想用一下redis和sql的容器
+
+那就在docker-desktop上确认两个容器都是开启的，然后直接运行java项目，也行。

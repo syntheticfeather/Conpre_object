@@ -44,7 +44,6 @@ public class UserController {
     //                           @RequestParam(required = false) String name) {
     //     return userService.searchUsers(id, name);
     // }
-
     @GetMapping("/search-by-credit")
     public ResponseEntity<List<UserSearchDto>> searchByCreditScore(@RequestParam String expr) {
         return ResponseEntity.ok(userService.searchUsersByCreditScore(expr));
@@ -55,16 +54,19 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.addUser(user));
     }
 
+    /*
+     * 刷新token
+     * 需zff检测     
+     */
     @PostMapping("/refresh-token")
-    public ResponseEntity<Map<String, String>> refreshToken(@RequestBody Map<String, String> request) {
-        String refreshToken = request.get("refresh_token");
-        String newAccessToken = userService.refreshToken(refreshToken);
+    public ResponseEntity<Map<String, String>> refreshToken(@RequestBody Long id) {
+        String newAccessToken = userService.refreshToken(id);
         return ResponseEntity.ok(Map.of("token", newAccessToken));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id,@RequestBody @Valid User user) {
-        return ResponseEntity.ok(userService.updateUser(id,user));
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody @Valid User user) {
+        return ResponseEntity.ok(userService.updateUser(id, user));
     }
 
     @DeleteMapping("/{id}")

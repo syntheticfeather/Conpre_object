@@ -6,19 +6,22 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class JwtUtil {
 
     @Value("${jwt.secret}")
     private String SECRET_KEY;
     @Value("${jwt.expiration}")
-    private long ACCESS_EXPIRATION_TIME;
+    public long ACCESS_EXPIRATION_TIME;
     @Value("${jwt.refresh.expiration}") // refresh token 过期时间
-    private long REFRESH_EXPIRATION_TIME;
+    public long REFRESH_EXPIRATION_TIME;
 
     // 生成access token
     public String generateAccessToken(String userPhone, String userId) {
@@ -57,7 +60,14 @@ public class JwtUtil {
                     .build()
                     .parseClaimsJws(token);
             return true;
+        } catch (ExpiredJwtException e) {
+            log.info("token expired");
+            return false;
         } catch (SignatureException e) {
+            log.info("invalid signature");
+            return false;
+        } catch (Exception e) {
+            log.info("invalid token");
             return false;
         }
         // ... 其他异常处理?
@@ -71,11 +81,11 @@ public class JwtUtil {
     public Long getUserIdFromToken(String token) {
         Claims claims = getClaims(token);
         Object userIdObj = claims.get("userId");
-    
+
         if (userIdObj == null) {
             return null;
         }
-    
+
         String userIdStr = claims.get("userId", String.class);
         Long userId = Long.parseLong(userIdStr); // 安全地转回 Long
         return userId;
@@ -96,16 +106,13 @@ public class JwtUtil {
         }
     }
 
-    // 验证 refresh token 是否有效
-    public boolean validateRefreshToken(String refreshToken) {
-        try {
-            Jwts.parserBuilder()
-                    .setSigningKey(SECRET_KEY)
-                    .build()
-                    .parseClaimsJws(refreshToken);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+    // 生成refresh token
+    public String generateTestRefreshToken(String userId, long expirationTime) {
+        return Jwts.builder()
+                .setSubject(userId) //subject 是 userId
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .compact();
     }
 }
