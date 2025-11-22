@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import com.example.personal_loan.enums.OrderStatus;
+import com.example.personal_loan.enums.RepaidType;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,22 +17,19 @@ public class Order {
     private Long id;
     private Long userId;
     private Long productId;
-    private Long applicationId; // 关联申请
 
+    private OrderStatus status; // "NORMAL", "OVERDUE", "SETTLED"
     private BigDecimal repaidAmount;
-    private BigDecimal outstandingAmount;
+    private BigDecimal loanAmount;
     private BigDecimal interestRate;
 
-    private String repaidType;
-    private OrderStatus status; // "NORMAL", "OVERDUE", "SETTLED"
-
+    private RepaidType repaidType; // "等额本息"、"等额本金"、"先息后本"、"一次性还清"
+    private Integer loanPeriod;
+    private Integer term;
+    private Integer currentTerm;
     private String contract;  // 合同路径
 
-    private Integer loanPeriod;
-    private Integer currentTerm;
     private Integer overdueDays;
 
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
-
+    private LocalDateTime startTime;
 }

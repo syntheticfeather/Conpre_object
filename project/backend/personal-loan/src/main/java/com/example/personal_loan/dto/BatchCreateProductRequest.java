@@ -1,8 +1,6 @@
-package com.example.personal_loan.controller.dto;
+package com.example.personal_loan.dto;
 
 import java.util.List;
-
-import com.example.personal_loan.dto.ProductDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

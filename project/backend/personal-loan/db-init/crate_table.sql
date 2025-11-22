@@ -1,4 +1,5 @@
-@ -1,133 +0,0 @@
+
+USE `person-loan`;
 CREATE TABLE users(  
     id int NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT 'Primary Key',
     user_name VARCHAR(16),
@@ -81,7 +82,7 @@ CREATE TABLE loan_options(
     loan_amount DECIMAL(12,2) COMMENT '贷款金额',
     interest_rate DECIMAL(6,4) COMMENT '利率',
     loan_period INT COMMENT '年限',
-    repaid_type ENUM('等额本息', '等额本金', '先息后本', '一次性还本付息') COMMENT '还款方式',
+    repaid_type VARCHAR(50) COMMENT '还款方式,等额本息, 等额本金, 先息后本, 一次性还本付息',
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     FOREIGN KEY (product_id) REFERENCES loan_products(id)
@@ -95,11 +96,11 @@ CREATE TABLE orders(
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
     user_id INT NOT NULL COMMENT '用户ID',
     product_id INT NOT NULL COMMENT '产品ID',
-    status ENUM('NORMAL', 'OVERDUE', 'SETTLED') COMMENT '贷款状态',
+    status VARCHAR(50) COMMENT '贷款状态,NORMAL,OVERDUE,SETTLED',
     repaid_amount DECIMAL(12,2) COMMENT '已还金额',
     loan_amount DECIMAL(12,2) COMMENT '总贷款金额',
     interest_rate DECIMAL(6,4) COMMENT '利率',
-    repaid_type ENUM('等额本息', '等额本金', '先息后本', '一次性还本付息') NOT NULL,
+    repaid_type VARCHAR(50) NOT NULL,
     loan_period INT COMMENT '贷款期限',
     term INT COMMENT '实际贷款期数',
     current_term INT COMMENT '当前期数',
@@ -114,12 +115,12 @@ CREATE TABLE loan_applications(
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '申请ID',
     user_id INT NOT NULL COMMENT '用户id',
     product_id INT NOT NULL COMMENT '产品id',
-    status ENUM('PENDDING','APPROVED','AI_REJECTED','MANUAL_REJECTED','CANCELLED') COMMENT '申请状态',
+    status VARCHAR(50) COMMENT '申请状态,PENDING,APPROVED,AI_REJECTED,MANUAL_REJECTED,CANCELLED',
     loan_amount DECIMAL(12,2) NOT NULL COMMENT '申请金额',
     interest_rate DECIMAL(6,4) COMMENT '申请时的利率 (审核后填写)',
     loan_period INT NOT NULL COMMENT '年限',
     term INT COMMENT '实际贷款期数',
-    repaid_type ENUM('等额本息', '等额本金', '先息后本', '一次性还本付息') NOT NULL,
+    repaid_type VARCHAR(50) NOT NULL COMMENT '还款方式,等额本息, 等额本金, 先息后本, 一次性还本付息',
     reject_reason VARCHAR(255) COMMENT '拒绝原因',
     apply_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '申请时间',
     review_time DATETIME COMMENT '审核完成时间',

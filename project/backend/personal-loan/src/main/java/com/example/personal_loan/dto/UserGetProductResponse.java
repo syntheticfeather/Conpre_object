@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserGetProductResponse {
+    private Long productId;
 
     private String productName;
 

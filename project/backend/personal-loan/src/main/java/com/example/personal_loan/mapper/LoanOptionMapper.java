@@ -67,10 +67,28 @@ public interface LoanOptionMapper {
     })
     int batchDeleteByProductIds(List<Long> productIds);
     
-    @Select("SELECT * FROM loan_options WHERE id=#{id}")
+    @Select("SELECT " +
+        "id, " +
+        "product_id as productId, " +
+        "loan_period as loanPeriod, " +
+        "loan_amount as loanAmount, " +
+        "interest_rate as interestRate, " +
+        "repaid_type as repaidType, " +
+        "create_time as createTime, " +
+        "update_time as updateTime " +
+        "FROM loan_options WHERE id=#{id}")
     LoanOption selectById(Long id);
     
-    @Select("SELECT * FROM loan_options WHERE product_id=#{productId}")
+    @Select("SELECT " +
+        "id, " +
+        "product_id as productId, " +
+        "loan_period as loanPeriod, " +
+        "loan_amount as loanAmount, " +
+        "interest_rate as interestRate, " +
+        "repaid_type as repaidType, " +
+        "create_time as createTime, " +
+        "update_time as updateTime " +
+        "FROM loan_options WHERE product_id=#{productId}")
     List<LoanOption> selectByProductId(Long productId);
     
 }

@@ -39,11 +39,34 @@ public interface LoanProductMapper {
     int update(LoanProduct loanProduct);
 
     // 查询单个
-    @Select("SELECT * FROM loan_products WHERE id = #{id}")
+    @Select("SELECT " +
+        "id, " +
+        "product_name as productName, " +
+        "description, " +
+        "loan_usage as loanUsage, " +
+        "min_term as minTerm, " +
+        "max_term as maxTerm, " +
+        "term_step as termStep, " +
+        "promotion_details as promotionDetails, " +
+        "create_time as createTime, " +
+        "update_time as updateTime " +
+        "FROM loan_products" +
+        " WHERE id = #{id}")
     LoanProduct findById(Long id);
     
     // 查询所有
-    @Select("SELECT * FROM loan_products")
+    @Select("SELECT " +
+        "id, " +
+        "product_name as productName, " +
+        "description, " +
+        "loan_usage as loanUsage, " +
+        "min_term as minTerm, " +
+        "max_term as maxTerm, " +
+        "term_step as termStep, " +
+        "promotion_details as promotionDetails, " +
+        "create_time as createTime, " +
+        "update_time as updateTime " +
+        "FROM loan_products")
     List<LoanProduct> findAll();
 
     // 用productName搜索查询

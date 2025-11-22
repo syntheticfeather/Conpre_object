@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoanOptionResponse {
+    private Long optionId;
     private BigDecimal loanAmount;
     private BigDecimal interestRate;
     private Integer loanPeriod;

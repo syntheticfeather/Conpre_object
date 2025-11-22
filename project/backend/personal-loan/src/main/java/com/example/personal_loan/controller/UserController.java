@@ -16,8 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.personal_loan.dto.AdminUserListResponse;
+import com.example.personal_loan.dto.ApiResponse;
 import com.example.personal_loan.dto.UserSearchDto;
 import com.example.personal_loan.entity.User;
+import com.example.personal_loan.service.OrderService;
 import com.example.personal_loan.service.UserService;
 
 import jakarta.validation.Valid;
@@ -39,11 +42,17 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
+    @GetMapping("/admin/stats")
+    public ResponseEntity<ApiResponse<List<AdminUserListResponse>>> getAllUsersWithStats() {
+        List<AdminUserListResponse> userStatsList = userService.adminGetAllUsersWithStats();
+        return ResponseEntity.ok(ApiResponse.success(userStatsList));
+    }
     // @GetMapping("/search")
     // public List<User> searchUsers(@RequestParam(required = false) Long id,
     //                           @RequestParam(required = false) String name) {
     //     return userService.searchUsers(id, name);
     // }
+    
     @GetMapping("/search-by-credit")
     public ResponseEntity<List<UserSearchDto>> searchByCreditScore(@RequestParam String expr) {
         return ResponseEntity.ok(userService.searchUsersByCreditScore(expr));

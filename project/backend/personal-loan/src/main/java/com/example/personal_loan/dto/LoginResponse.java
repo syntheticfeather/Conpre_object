@@ -1,4 +1,4 @@
-package com.example.personal_loan.controller.dto;
+package com.example.personal_loan.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

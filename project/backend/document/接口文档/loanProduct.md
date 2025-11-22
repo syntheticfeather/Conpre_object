@@ -21,6 +21,7 @@
     "code": 200,
     "data": [
         {
+            "id":"",
             "productName": "极速贷 Pro",
             "description": "审批快，放款快",
             "loanUsage": "消费、装修、教育",
@@ -41,6 +42,7 @@
             ],
             "options": [
                 {
+                    "id":"",
                     "loanAmount": 10000.00,
                     "interestRate": 0.0450,
                     "loanPeriod": 12,

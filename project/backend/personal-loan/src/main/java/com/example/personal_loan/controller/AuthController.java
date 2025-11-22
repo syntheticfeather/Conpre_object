@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.personal_loan.controller.dto.LoginRequest;
-import com.example.personal_loan.controller.dto.LoginResponse;
-import com.example.personal_loan.controller.dto.RegisterRequest;
-import com.example.personal_loan.controller.dto.RegisterResponse;
 import com.example.personal_loan.dto.ApiResponse;
+import com.example.personal_loan.dto.LoginRequest;
+import com.example.personal_loan.dto.LoginResponse;
+import com.example.personal_loan.dto.RegisterRequest;
+import com.example.personal_loan.dto.RegisterResponse;
 import com.example.personal_loan.service.UserService;
 
 import jakarta.validation.Valid;

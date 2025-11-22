@@ -10,7 +10,7 @@ spring:
 
   # 数据库连接信息
   datasource:
-    url: jdbc:mysql://localhost:3306/person-loan?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/person-loan?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: admin
     password: 1234
@@ -28,7 +28,7 @@ spring:
   mybatis:
     configuration:
       map-underscore-to-camel-case: true
-    # mapper-locations: classpath*:mapper/*.xml  # 如需启用，取消注释
+      mapper-locations: classpath*:mapper/*.xml  # 如需启用，取消注释
 
   # Redis 配置
   redis:

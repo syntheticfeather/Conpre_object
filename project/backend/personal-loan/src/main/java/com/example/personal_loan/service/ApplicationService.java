@@ -2,17 +2,22 @@ package com.example.personal_loan.service;
 
 import java.util.List;
 
-import com.example.personal_loan.entity.Order;
+import com.example.personal_loan.dto.AdminGetAppResponse;
+import com.example.personal_loan.dto.ApplicationRequest;
+import com.example.personal_loan.dto.UserGetAppResponse;
 
 public interface ApplicationService {
-    void addApplication(Long userId, Long proId);  // 添加订单
+    void addApplication(Long userId, ApplicationRequest request);  // 添加申请
 
-    void deleteApplication(Long userId, Long proId); // 删除订单
+    void withdrawApplication(Long userId, Long applicationId); // 取消/撤回申请
 
-    void updateApplication(Long userId, Long proId); // 更新订单
+    // void updateApplication(Long userId, Long proId); //更新申请
 
-    Order getOrder(Long userId, Long proId); // 获取用户的单个订单
+    UserGetAppResponse userGetApplication(Long userId, Long applicationId); // 用户获取单个申请
 
-    List<Order> getOrders(Long userId); // 获取用户所有订单
+    AdminGetAppResponse adminGetApplication(Long applicationId);  // 管理员获取单个申请
 
+    List<UserGetAppResponse> userGetAllApplications(Long userId); // 用户获取所有申请
+
+    List<AdminGetAppResponse> adminGetAllApplications(Long userId); // 管理员获取所有申请
 }

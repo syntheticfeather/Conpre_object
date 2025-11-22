@@ -1,25 +1,31 @@
 package com.example.personal_loan.service.impl;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.personal_loan.controller.dto.LoginRequest;
-import com.example.personal_loan.controller.dto.LoginResponse;
-import com.example.personal_loan.controller.dto.RegisterRequest;
-import com.example.personal_loan.controller.dto.RegisterResponse;
+import com.example.personal_loan.dto.AdminUserListResponse;
+import com.example.personal_loan.dto.LoginRequest;
+import com.example.personal_loan.dto.LoginResponse;
+import com.example.personal_loan.dto.RegisterRequest;
+import com.example.personal_loan.dto.RegisterResponse;
 import com.example.personal_loan.dto.UserSearchDto;
 import com.example.personal_loan.entity.BlackUser;
+import com.example.personal_loan.entity.Order;
 import com.example.personal_loan.entity.User;
 import com.example.personal_loan.exception.BusinessException;
 import com.example.personal_loan.exception.InvalidCredentialsException;
 import com.example.personal_loan.mapper.BlackListMapper;
+import com.example.personal_loan.mapper.OrderMapper;
 import com.example.personal_loan.mapper.UserMapper;
 import com.example.personal_loan.service.UserService;
+import com.example.personal_loan.utils.CalculateUtil;
 import com.example.personal_loan.utils.JwtUtil;
 import com.example.personal_loan.utils.RedisUtil;
 import static com.example.personal_loan.utils.RedisUtil.JWT_REFRESH_CACHE_TOKEN_PREFIX_STRING;
@@ -35,6 +41,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private BlackListMapper blacklistMapper;
+
+    @Autowired
+    private OrderMapper orderMapper;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -190,6 +199,37 @@ public class UserServiceImpl implements UserService {
         }
 
         return userMapper.selectUsersByCreditScore(parsed.operator, parsed.value);
+    }
+
+    @Override
+    public List<AdminUserListResponse> adminGetAllUsersWithStats(){
+        // 1. 查询所有用户（带用户名）
+        List<User> users = userMapper.findAll(); 
+
+        // 2. 遍历每个用户，计算统计信息
+        return users.stream().map(user -> {
+            List<Order> orders = orderMapper.selectAllByUserId(user.getId());
+
+            Integer transactionCount = CalculateUtil.getTotalTransactionCount(orders);
+            BigDecimal totalLoanAmount = CalculateUtil.getTotalLoanAmount(orders);
+            BigDecimal totalRepaidAmount = CalculateUtil.getTotalRepaidAmount(orders);
+
+            // 判断用户有无借贷
+            String loanStatus;
+            if (orders.isEmpty()) {
+                loanStatus = "无借贷";
+            } else {
+                loanStatus = "有借贷";
+            }
+            return new AdminUserListResponse(
+                user.getId(),
+                user.getUserName(),
+                loanStatus,
+                transactionCount,
+                totalLoanAmount,
+                totalRepaidAmount
+            );
+        }).collect(Collectors.toList());
     }
 
     @Override

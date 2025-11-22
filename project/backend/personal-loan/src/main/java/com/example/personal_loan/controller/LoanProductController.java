@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.personal_loan.controller.dto.BatchCreateOptionRequest;
-import com.example.personal_loan.controller.dto.BatchDeleteRequest;
 import com.example.personal_loan.dto.ApiResponse;
+import com.example.personal_loan.dto.BatchCreateOptionRequest;
+import com.example.personal_loan.dto.BatchDeleteRequest;
 import com.example.personal_loan.dto.ProductDto;
 import com.example.personal_loan.dto.UserGetProductResponse;
 import com.example.personal_loan.service.LoanProductService;

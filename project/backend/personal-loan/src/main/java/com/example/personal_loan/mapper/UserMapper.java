@@ -29,19 +29,24 @@ public interface UserMapper {
     List<UserSearchDto> selectUsersByCreditScore(@Param("operator") String operator, @Param("value") Integer value);
 
     // 根据ID查询用户
-    @Select("SELECT * FROM users WHERE id = #{id}")
+    @Select("SELECT id, user_name as userName, avatar, password, id_card as idCard, "+
+        "phone, role, create_time as createTime, update_time as updateTime " +
+        "FROM users WHERE id = #{id}")
     User findById(@Param("id") Long id);
 
     // 根据手机号和密码查询用户
-    @Select("SELECT * FROM users WHERE phone = #{phone} AND password = #{password}")
+    @Select("SELECT id, user_name, avatar, password, id_card, phone, role, create_time, update_time " +
+        "FROM users WHERE phone = #{phone} AND password = #{password}")
     User findByPhoneAndPassword(@Param("phone") String phone, @Param("password") String password);
 
     // 查询所有用户
-    @Select("SELECT * FROM users")
+    @Select("SELECT id, user_name, avatar, password, id_card, phone, role, create_time, update_time " +
+        "FROM users")
     List<User> findAll();
 
     // 根据手机号查询用户
-    @Select("SELECT * FROM users WHERE phone = #{phone}")
+    @Select("SELECT id, user_name, avatar, password, id_card, phone, role, create_time, update_time " +
+        "FROM users WHERE phone = #{phone}")
     User findByPhone(@Param("phone") String phone);
 
     // 检查手机号是否已存在
@@ -53,6 +58,7 @@ public interface UserMapper {
     int findByIdCardExcludeId(@Param("id_card") String idCard, @Param("id") Long id);
 
     // 根据身份证号查询用户
-    @Select("SELECT * FROM users WHERE id_card = #{id_card}")
+    @Select("SELECT id, user_name, avatar, password, id_card, phone, role, create_time, update_time " +
+        "FROM users WHERE id_card = #{id_card}")
     User findByIdCard(@Param("id_card") String idCard);
 }
