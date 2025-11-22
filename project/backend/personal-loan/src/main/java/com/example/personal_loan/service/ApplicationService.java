@@ -15,9 +15,9 @@ public interface ApplicationService {
 
     UserGetAppResponse userGetApplication(Long userId, Long applicationId); // 用户获取单个申请
 
-    AdminGetAppResponse adminGetApplication(Long applicationId);  // 管理员获取单个申请
-
     List<UserGetAppResponse> userGetAllApplications(Long userId); // 用户获取所有申请
+    
+    AdminGetAppResponse adminGetApplication(Long applicationId);  // 管理员获取单个申请
 
     List<AdminGetAppResponse> adminGetAllApplications(Long userId); // 管理员获取所有申请
 }

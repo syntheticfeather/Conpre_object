@@ -13,7 +13,7 @@ public class AdminUserListResponse {
     private Long userId;
     private String userName;
     private String loanStatus;           // "正常" / "逾期" / "无借贷"
-    private Integer totalTransactionCount;
-    private BigDecimal totalLoanAmount;
-    private BigDecimal totalRepaidAmount;
+    private Integer totalTransactionCount; // 总交易次数
+    private BigDecimal totalLoanAmount;  // 总借贷金额
+    private BigDecimal totalRepaidAmount;  // 总还款金额
 }

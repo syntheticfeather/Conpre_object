@@ -2,17 +2,24 @@ package com.example.personal_loan.service;
 
 import java.util.List;
 
+import com.example.personal_loan.dto.AdminGetUserResponse;
 import com.example.personal_loan.dto.AdminUserListResponse;
 import com.example.personal_loan.dto.LoginRequest;
 import com.example.personal_loan.dto.LoginResponse;
 import com.example.personal_loan.dto.RegisterRequest;
 import com.example.personal_loan.dto.RegisterResponse;
 import com.example.personal_loan.dto.UserSearchDto;
+import com.example.personal_loan.dto.UserSelfResponse;
+import com.example.personal_loan.dto.UserUpdateRequest;
 import com.example.personal_loan.entity.User;
 
 public interface UserService {
-    // 用户登录(手机号+密码)
 
+    /*
+    * 用户认证（登录注册）
+    */
+
+    // 用户登录(手机号+密码)
     LoginResponse login(LoginRequest request);
 
     // 刷新token
@@ -21,35 +28,53 @@ public interface UserService {
     // 用户注册
     RegisterResponse userRegister(RegisterRequest request);
 
-    //管理员注册
-    RegisterResponse adminRegister(RegisterRequest request);
-
-    // 添加用户
+    // 添加用户（注册时使用）
     User addUser(User user);
 
-    // 删除用户
-    void deleteUser(Long id);
+    /*
+    * 用户使用
+    */
 
-    // 批量删除
-    void deleteUsers(List<Long> ids);
+    UserSelfResponse getUserSelfInfo(Long userId);
+    
+    UserSelfResponse updateUserSelfInfo(UserUpdateRequest request,Long id);
+    
+    /*
+    * 管理员使用
+    */
+   
+   // 管理获取用户贷款状态及金额统计信息
+   List<AdminUserListResponse> adminGetAllUsersWithStats();
+   
+   // 添加黑名单
+   void addToBlackList(Long userId, int blackLevel);
+   
+   // 获取单个用户信息
+    AdminGetUserResponse adminGetUser(Long userId);
 
-    // 更新用户
-    User updateUser(Long id, User user);
+   
+   List<UserSearchDto> searchUsersByCreditScore(String expr);
 
-    // 根据ID获取用户
-    User getUserById(Long id);
+    /*
+    * 未使用
+    */
 
-    // 获取所有用户
-    List<User> getAllUsers();
+   // 删除用户
+   void deleteUser(Long id);
+
+   // 批量删除
+   void deleteUsers(List<Long> ids);
+
+   // 更新用户
+   User updateUser(Long id, User user);
+
+   // 根据ID获取用户
+   User getUserById(Long id);
+
+   // 获取所有用户
+   List<User> getAllUsers();
 
     // // 根据id，name搜索用户
     // List<User> searchUsers(Long id, String name);
     // 根据信誉分表达式搜索用户
-    List<UserSearchDto> searchUsersByCreditScore(String expr);
-
-    // 管理获取用户
-    List<AdminUserListResponse> adminGetAllUsersWithStats();
-
-    // 添加黑名单
-    void addToBlackList(Long userId, int blackLevel);
 }

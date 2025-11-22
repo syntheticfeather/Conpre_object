@@ -37,9 +37,4 @@ public class AuthController {
         log.info("register api success called");
         return ResponseEntity.ok(ApiResponse.success(userService.userRegister(request),"注册成功"));
     }
-
-    @PostMapping("/register/admin")
-    public ResponseEntity<RegisterResponse> adminRegister(@RequestBody @Valid RegisterRequest request) {
-        return ResponseEntity.ok(userService.adminRegister(request));
-    }
 }

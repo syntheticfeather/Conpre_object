@@ -10,19 +10,25 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.personal_loan.dto.AdminGetUserResponse;
 import com.example.personal_loan.dto.AdminUserListResponse;
 import com.example.personal_loan.dto.LoginRequest;
 import com.example.personal_loan.dto.LoginResponse;
 import com.example.personal_loan.dto.RegisterRequest;
 import com.example.personal_loan.dto.RegisterResponse;
 import com.example.personal_loan.dto.UserSearchDto;
+import com.example.personal_loan.dto.UserSelfResponse;
+import com.example.personal_loan.dto.UserUpdateRequest;
 import com.example.personal_loan.entity.BlackUser;
 import com.example.personal_loan.entity.Order;
 import com.example.personal_loan.entity.User;
+import com.example.personal_loan.entity.UserCert;
+import com.example.personal_loan.enums.OrderStatus;
 import com.example.personal_loan.exception.BusinessException;
 import com.example.personal_loan.exception.InvalidCredentialsException;
 import com.example.personal_loan.mapper.BlackListMapper;
 import com.example.personal_loan.mapper.OrderMapper;
+import com.example.personal_loan.mapper.UserCertMapper;
 import com.example.personal_loan.mapper.UserMapper;
 import com.example.personal_loan.service.UserService;
 import com.example.personal_loan.utils.CalculateUtil;
@@ -46,6 +52,9 @@ public class UserServiceImpl implements UserService {
     private OrderMapper orderMapper;
 
     @Autowired
+    private UserCertMapper userCertMapper;
+
+    @Autowired
     private JwtUtil jwtUtil;
 
     @Autowired
@@ -54,6 +63,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private RedisUtil RedisUtil;
 
+    /*
+    * 用户认证（登录注册）
+     */
     @Override
     public LoginResponse login(LoginRequest request) {
 
@@ -93,15 +105,6 @@ public class UserServiceImpl implements UserService {
         request.setPassword(passwordEncoder.encode(request.getPassword()));
         User user = new User(request.getName(), request.getPassword(), null, request.getPhone());
         user.setRole(0);    // 用户的注册，默认权限为0
-        User newUser = addUser(user);
-        return new RegisterResponse(newUser.getId(), newUser.getUserName(), newUser.getCreateTime());
-    }
-
-    @Override
-    public RegisterResponse adminRegister(RegisterRequest request) {
-        request.setPassword(passwordEncoder.encode(request.getPassword()));
-        User user = new User(request.getName(), request.getPassword(), null, request.getPhone());
-        user.setRole(1);    // 管理员权限设为1
         User newUser = addUser(user);
         return new RegisterResponse(newUser.getId(), newUser.getUserName(), newUser.getCreateTime());
     }
@@ -191,6 +194,58 @@ public class UserServiceImpl implements UserService {
         return userMapper.findAll();
     }
 
+
+    /*
+    * 用户使用
+    */
+
+    @Override
+    @Transactional
+    public UserSelfResponse getUserSelfInfo(Long userId){
+        User user = userMapper.findById(userId);
+        if (user == null) {
+            throw new BusinessException(404,"用户不存在"); 
+        }
+
+        return new UserSelfResponse(
+                user.getId(),
+                user.getUserName(),
+                user.getAvatar()
+        );
+    }
+
+    @Override
+    @Transactional
+    public UserSelfResponse updateUserSelfInfo(UserUpdateRequest request,Long id){
+        User user = userMapper.findById(id);
+        if (user == null) {
+            throw new BusinessException(404,"用户不存在");
+        }
+        if(!id.equals(user.getId())){
+            throw new BusinessException(400,"只能更新自己的信息");
+        }
+        // 仅更新允许的字段,用户名和头像
+        if(request.getUserName()!=null){
+            user.setUserName(request.getUserName());
+        }
+        if(request.getAvatar()!=null){
+            user.setAvatar(request.getAvatar());
+        }
+
+        user.setUpdateTime(LocalDateTime.now());
+
+        userMapper.update(user);
+        return new UserSelfResponse(
+                id,
+                user.getUserName(),
+                user.getAvatar()
+        );
+    }
+   
+    /*
+    * 管理员使用
+    */
+
     @Override
     public List<UserSearchDto> searchUsersByCreditScore(String expr) {
         CreditExpr parsed = parseCreditExpression(expr.trim());
@@ -203,10 +258,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<AdminUserListResponse> adminGetAllUsersWithStats(){
-        // 1. 查询所有用户（带用户名）
+        // 查询所有用户（带用户名）
         List<User> users = userMapper.findAll(); 
 
-        // 2. 遍历每个用户，计算统计信息
+        // 遍历每个用户，计算统计信息
         return users.stream().map(user -> {
             List<Order> orders = orderMapper.selectAllByUserId(user.getId());
 
@@ -214,12 +269,14 @@ public class UserServiceImpl implements UserService {
             BigDecimal totalLoanAmount = CalculateUtil.getTotalLoanAmount(orders);
             BigDecimal totalRepaidAmount = CalculateUtil.getTotalRepaidAmount(orders);
 
-            // 判断用户有无借贷
+            // 判断用户有无借贷, 逾期状态
             String loanStatus;
             if (orders.isEmpty()) {
                 loanStatus = "无借贷";
-            } else {
-                loanStatus = "有借贷";
+            } else if(orders.stream().anyMatch(order -> OrderStatus.OVERDUE.equals(order.getStatus()))){
+                loanStatus = "逾期";
+            } else{
+                loanStatus = "正常";
             }
             return new AdminUserListResponse(
                 user.getId(),
@@ -250,6 +307,42 @@ public class UserServiceImpl implements UserService {
         blackUser.setBlackLevel(blackLevel);
         blacklistMapper.insert(blackUser);
     }
+
+    @Override
+    public AdminGetUserResponse adminGetUser(Long userId){
+        User user = userMapper.findById(userId);
+        if (user == null) {
+            throw new BusinessException(404, "用户不存在");
+        }
+
+        // 查询认证信息（含 creditScore）
+        UserCert cert = userCertMapper.selectByUserId(userId); 
+        Integer creditScore = (cert != null) ? cert.getCreditScore() : null;
+
+        // 查询黑名单等级
+        BlackUser blackUser = blacklistMapper.selectByUserId(userId);
+        int blackLevel = (blackUser != null) ? blackUser.getBlackLevel() : 0;
+
+
+        return new AdminGetUserResponse(
+            user.getId(),
+            user.getUserName(),
+            user.getAvatar(),
+            user.getPhone(),
+            user.getIdCard(),
+            user.getRole(),
+            creditScore,
+            blackLevel,
+            user.getCreateTime(),
+            user.getUpdateTime()
+        );
+    }
+
+
+
+
+
+
 
     // 内部类
     private static class CreditExpr {

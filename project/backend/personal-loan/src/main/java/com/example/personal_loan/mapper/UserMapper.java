@@ -23,7 +23,7 @@ public interface UserMapper {
     @Delete("DELETE FROM users WHERE id = #{id}")
     int delete(@Param("id") Long id);
 
-    @Update("UPDATE users SET user_name = #{userName}, phone = #{phone}, id_card = #{idCard} ,password=#{password} WHERE id = #{id}")
+    @Update("UPDATE users SET user_name = #{userName}, avatar = #{avatar}, phone = #{phone}, id_card = #{idCard} ,password=#{password} WHERE id = #{id}")
     int update(User user);
 
     List<UserSearchDto> selectUsersByCreditScore(@Param("operator") String operator, @Param("value") Integer value);
@@ -40,7 +40,8 @@ public interface UserMapper {
     User findByPhoneAndPassword(@Param("phone") String phone, @Param("password") String password);
 
     // 查询所有用户
-    @Select("SELECT id, user_name, avatar, password, id_card, phone, role, create_time, update_time " +
+    @Select("SELECT id, user_name as userName, avatar, password, id_card as idCard, "+
+        "phone, role, create_time as createTime, update_time as updateTime " +
         "FROM users")
     List<User> findAll();
 

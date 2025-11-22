@@ -16,63 +16,110 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.personal_loan.dto.AdminGetUserResponse;
 import com.example.personal_loan.dto.AdminUserListResponse;
 import com.example.personal_loan.dto.ApiResponse;
 import com.example.personal_loan.dto.UserSearchDto;
+import com.example.personal_loan.dto.UserSelfResponse;
+import com.example.personal_loan.dto.UserUpdateRequest;
 import com.example.personal_loan.entity.User;
-import com.example.personal_loan.service.OrderService;
 import com.example.personal_loan.service.UserService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/users")
+@Slf4j
 public class UserController {
 
     @Autowired
     private UserService userService;
 
-    @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
+    // ========== 用户接口 ==========
+
+    /**
+     * 用户查看自己的信息
+     */
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<UserSelfResponse>> getCurrentUserInfo(HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        log.info("/api/users/me success called for user {} to get his info", userId);
+        UserSelfResponse response = userService.getUserSelfInfo(userId);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.getUserById(id));
+    /**
+     * 用户更新自己的信息（仅限 userName 和 avatar）
+     */
+    @PatchMapping("/me")
+    public ResponseEntity<ApiResponse<UserSelfResponse>> updateCurrentUser(
+            HttpServletRequest request,
+            @RequestBody @Valid UserUpdateRequest userUpdateRequest) {
+        Long userId = (Long) request.getAttribute("userId");
+        log.info("/api/users/me success called for user {} to update his info", userId);
+
+        UserSelfResponse updated = userService.updateUserSelfInfo(userUpdateRequest,userId);
+        return ResponseEntity.ok(ApiResponse.success(updated));
     }
 
+    
+    // ========== 管理员接口 ==========
+    
+    // 用户管理列表，查看贷款状态和金额统计信息
     @GetMapping("/admin/stats")
     public ResponseEntity<ApiResponse<List<AdminUserListResponse>>> getAllUsersWithStats() {
+        log.info("/api/users/admin/stats success called for admin to get all users with stats");
         List<AdminUserListResponse> userStatsList = userService.adminGetAllUsersWithStats();
         return ResponseEntity.ok(ApiResponse.success(userStatsList));
     }
-    // @GetMapping("/search")
-    // public List<User> searchUsers(@RequestParam(required = false) Long id,
-    //                           @RequestParam(required = false) String name) {
-    //     return userService.searchUsers(id, name);
-    // }
+
+    /**
+     * 获取指定用户的详细信息（含黑名单等级、信誉分）
+     */
+    @GetMapping("/admin/{userId}")
+    public ResponseEntity<ApiResponse<AdminGetUserResponse>> getAdminUserDetail(
+            @PathVariable Long userId) {
+        
+        log.info("/api/users/admin/{} success called for admin to get user {} info", userId,userId);
+        
+        AdminGetUserResponse response = userService.adminGetUser(userId);
+        
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
     
     @GetMapping("/search-by-credit")
     public ResponseEntity<List<UserSearchDto>> searchByCreditScore(@RequestParam String expr) {
         return ResponseEntity.ok(userService.searchUsersByCreditScore(expr));
     }
+    
+    /*
+    * 刷新token
+    * 需zff检测     
+    */
+   @PostMapping("/refresh-token")
+   public ResponseEntity<Map<String, String>> refreshToken(@RequestBody Long id) {
+       String newAccessToken = userService.refreshToken(id);
+       return ResponseEntity.ok(Map.of("token", newAccessToken));
+    }
 
+    // 未使用
     @PostMapping
     public ResponseEntity<User> addUser(@RequestBody @Valid User user) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.addUser(user));
     }
-
-    /*
-     * 刷新token
-     * 需zff检测     
-     */
-    @PostMapping("/refresh-token")
-    public ResponseEntity<Map<String, String>> refreshToken(@RequestBody Long id) {
-        String newAccessToken = userService.refreshToken(id);
-        return ResponseEntity.ok(Map.of("token", newAccessToken));
+    
+    @GetMapping
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
     }
-
+ 
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUserById(id));
+    }
+    
     @PatchMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody @Valid User user) {
         return ResponseEntity.ok(userService.updateUser(id, user));
@@ -83,4 +130,10 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
+
+    // @GetMapping("/search")
+    // public List<User> searchUsers(@RequestParam(required = false) Long id,
+    //                           @RequestParam(required = false) String name) {
+    //     return userService.searchUsers(id, name);
+    // }
 }

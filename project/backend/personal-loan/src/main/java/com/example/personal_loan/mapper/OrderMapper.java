@@ -15,15 +15,24 @@ import com.example.personal_loan.entity.Order;
 @Mapper
 public interface OrderMapper {
     // 根据ID查询订单
-    @Select("SELECT * FROM orders WHERE id = #{id}")
+    @Select("SELECT id, user_id, product_id, status, repaid_amount, loan_amount, " +
+        "interest_rate, repaid_type, loan_period, term, current_term, contract, " +
+        "overdue_days, start_time " +
+        "FROM orders WHERE id = #{id}")
     Order selectById(Long id);
     
     // 根据订单ID和用户ID查询订单
-    @Select("SELECT * FROM orders WHERE id = #{orderId} AND user_id = #{userId}")
+    @Select("SELECT id, user_id, product_id, status, repaid_amount, loan_amount, " +
+        "interest_rate, repaid_type, loan_period, term, current_term, contract, " +
+        "overdue_days, start_time " +
+        "FROM orders WHERE id = #{orderId} AND user_id = #{userId}")
     Order selectByIdAndUserId(@Param("orderId") Long orderId, @Param("userId") Long userId);
     
     // 查询用户的所有订单
-    @Select("SELECT * FROM orders WHERE user_id = #{userId} ")
+    @Select("SELECT id, user_id, product_id, status, repaid_amount, loan_amount, " +
+        "interest_rate, repaid_type, loan_period, term, current_term, contract, " +
+        "overdue_days, start_time " +
+        "FROM orders WHERE user_id = #{userId}")
     List<Order> selectAllByUserId(Long userId);
     
     // 插入新订单

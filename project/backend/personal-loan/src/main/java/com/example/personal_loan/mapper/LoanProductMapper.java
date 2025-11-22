@@ -66,7 +66,8 @@ public interface LoanProductMapper {
         "promotion_details as promotionDetails, " +
         "create_time as createTime, " +
         "update_time as updateTime " +
-        "FROM loan_products")
+        "FROM loan_products "+
+        "ORDER BY update_time DESC, create_time DESC")
     List<LoanProduct> findAll();
 
     // 用productName搜索查询
