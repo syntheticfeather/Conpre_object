@@ -29,11 +29,17 @@ function bindEventListeners() {
         DOM_ELEMENTS.closeBtn.addEventListener('click', handleClose)
     }
     
-    // // 获取验证码按钮绑定
-    // if (DOM_ELEMENTS.getCodeBtn) {
-    //     DOM_ELEMENTS.getCodeBtn.addEventListener('click', handleGetCode)
-    // }
-    
+    // 绑定密码显示按钮
+    if (DOM_ELEMENTS.showPasswordBtn) {
+        DOM_ELEMENTS.showPasswordBtn.addEventListener('click', showPassword)
+        document.querySelector('#showPassword-btn .icon-eye-close').style.display = 'inline-block'
+    }
+    // 绑定确认密码显示按钮
+    if (DOM_ELEMENTS.showConfirmPasswordBtn) {
+        DOM_ELEMENTS.showConfirmPasswordBtn.addEventListener('click', showConfirmPassword)
+        document.querySelector('#showConfirmPassword-btn .icon-eye-close').style.display = 'inline-block'
+    }
+
     // 输入框事件绑定
     bindInputEvents()
 }
@@ -84,7 +90,7 @@ function getFormData() {
         password: DOM_ELEMENTS.passwordInput ? DOM_ELEMENTS.passwordInput.value.trim() : '',
         confirmPassword: DOM_ELEMENTS.confirmPasswordInput ? DOM_ELEMENTS.confirmPasswordInput.value.trim() : '',
         phone: DOM_ELEMENTS.phoneInput ? DOM_ELEMENTS.phoneInput.value.trim() : '',
-        smsCode: DOM_ELEMENTS.smsCodeInput ? DOM_ELEMENTS.smsCodeInput.value.trim() : ''
+        // smsCode: DOM_ELEMENTS.smsCodeInput ? DOM_ELEMENTS.smsCodeInput.value.trim() : ''
     }
 }
 // 验证表单数据
@@ -153,7 +159,44 @@ function validatePasswordComplexity(password) {
     
     return hasLowercase && hasUppercase && hasNumber && hasSpecialChar;
 }
+//密码显示函数
+function showPassword() {
+    const input = document.getElementById('password');
+    if (!input) return;
 
+    const close = document.querySelector('.icon-eye-close');
+    const show = document.querySelector('.icon-browse');
+    if (input.type === 'password') {
+        // 显示密码
+        input.type = 'text';
+        close.style.display = 'none';  
+        show.style.display = 'inline-block'; 
+    } else {
+        // 隐藏密码
+        input.type = 'password';
+        close.style.display = 'inline-block';  
+        show.style.display = 'none';  
+    }
+}
+//确认密码显示函数
+function showConfirmPassword() {
+    const input = document.getElementById('confirmPassword');
+    if (!input) return;
+
+    const close = document.querySelector('#showConfirmPassword-btn .icon-eye-close');
+    const show = document.querySelector('#showConfirmPassword-btn .icon-browse');
+    if (input.type === 'password') {
+        // 显示密码
+        input.type = 'text';
+        close.style.display = 'none';  
+        show.style.display = 'inline-block'; 
+    } else {
+        // 隐藏密码
+        input.type = 'password';
+        close.style.display = 'inline-block';  
+        show.style.display = 'none';  
+    }
+}
 // ==================== 注册处理函数 ====================
 // 注册表单提交处理函数
 async function handleRegisterSubmit(e) {
@@ -173,20 +216,17 @@ async function handleRegisterSubmit(e) {
     try {
         showLoading(true)
         
-        // 准备提交数据（移除确认密码字段）
-        const submitData = {
-            name: formData.adminName,
-            password: formData.password,
+        // 准备提交数据-待完善
+        const submitData = { 
+            name: formData.adminName,      // ✅ 字段名为 name
             phone: formData.phone,
-            smsCode: formData.smsCode || '000000'
-        }
-        
+            password: formData.password
+        }  
         console.log('提交注册数据:', submitData)
         
         // 调用API注册
         const result = await API_CLIENT.register(submitData)
         handleRegisterSuccess(result)
-        
     } catch (error) {
         console.error('注册过程发生错误:', error)
         handleRegisterError(error)
@@ -196,55 +236,56 @@ async function handleRegisterSubmit(e) {
 }
 
 // 获取验证码处理-待修改
-async function handleGetCode() {
-    const phone = DOM_ELEMENTS.phoneInput ? DOM_ELEMENTS.phoneInput.value.trim() : ''
+// async function handleGetCode() {
+//     const phone = DOM_ELEMENTS.phoneInput ? DOM_ELEMENTS.phoneInput.value.trim() : ''
     
-    // 验证手机号格式
-    if (!phone) {
-        showFieldError('phone', '请输入手机号码')
-        return
-    }
+//     // 验证手机号格式
+//     if (!phone) {
+//         showFieldError('phone', '请输入手机号码')
+//         return
+//     }
     
-    if (!/^1[3-9]\d{9}$/.test(phone)) {
-        showFieldError('phone', '请输入正确的手机号码')
-        return
-    }
+//     if (!/^1[3-9]\d{9}$/.test(phone)) {
+//         showFieldError('phone', '请输入正确的手机号码')
+//         return
+//     }
     
-    try {
-        // 禁用按钮，防止重复点击
-        DOM_ELEMENTS.getCodeBtn.disabled = true
-        DOM_ELEMENTS.getCodeBtn.textContent = '发送中...'
+//     try {
+//         // 禁用按钮，防止重复点击
+//         DOM_ELEMENTS.getCodeBtn.disabled = true
+//         DOM_ELEMENTS.getCodeBtn.textContent = '发送中...'
         
-        // 这里应该调用发送验证码的API
-        // await API_CLIENT.sendSms(phone)
+//         // 这里应该调用发送验证码的API
+//         // await API_CLIENT.sendSms(phone)
         
-        // 模拟发送成功
-        console.log('发送验证码到:', phone)
-        startCountdown()
+//         // 模拟发送成功
+//         console.log('发送验证码到:', phone)
+//         startCountdown()
         
-    } catch (error) {
-        console.error('发送验证码失败:', error)
-        showGenericError('发送验证码失败，请重试')
-        DOM_ELEMENTS.getCodeBtn.disabled = false
-        DOM_ELEMENTS.getCodeBtn.textContent = '获取验证码'
-    }
-}
+//     } catch (error) {
+//         console.error('发送验证码失败:', error)
+//         showGenericError('发送验证码失败，请重试')
+//         DOM_ELEMENTS.getCodeBtn.disabled = false
+//         DOM_ELEMENTS.getCodeBtn.textContent = '获取验证码'
+//     }
+// }
+
 // 倒计时函数-待修改
-function startCountdown() {
-    let countdown = 60
-    DOM_ELEMENTS.getCodeBtn.textContent = `${countdown}秒后重试`
+// function startCountdown() {
+//     let countdown = 60
+//     DOM_ELEMENTS.getCodeBtn.textContent = `${countdown}秒后重试`
     
-    const timer = setInterval(() => {
-        countdown--
-        DOM_ELEMENTS.getCodeBtn.textContent = `${countdown}秒后重试`
+//     const timer = setInterval(() => {
+//         countdown--
+//         DOM_ELEMENTS.getCodeBtn.textContent = `${countdown}秒后重试`
         
-        if (countdown <= 0) {
-            clearInterval(timer)
-            DOM_ELEMENTS.getCodeBtn.disabled = false
-            DOM_ELEMENTS.getCodeBtn.textContent = '获取验证码'
-        }
-    }, 1000)
-}
+//         if (countdown <= 0) {
+//             clearInterval(timer)
+//             DOM_ELEMENTS.getCodeBtn.disabled = false
+//             DOM_ELEMENTS.getCodeBtn.textContent = '获取验证码'
+//         }
+//     }, 1000)
+// }
 
 // 关闭注册页面
 function handleClose() {
@@ -259,9 +300,9 @@ function handleRegisterSuccess(result) {
     
     // 成功时返回id、name、createTime
     const adminInfo = {
-        id: result.id || result.data?.id,
-        name: result.name || result.data?.name,
-        registerTime: new Date().toISOString()
+        id: result.data?.id,
+        name: result.data?.name,
+        registerTime: result.data?.createTime || new Date().toISOString()
     }
     console.log('管理员信息已保存:', adminInfo)
     

@@ -248,6 +248,10 @@
 
             <!-- 用户管理页面卡片 -->
             <div class="user-dashboard" id="user-management-content">
+                <div class="credit-search">
+                    <input type="text" placeholder="请输入信誉分表达式，如: <100, >=80" id="creditExprInput">
+                    <button class="btn btn-primary" id="credit-search-btn">查询</button>
+                </div>
                 <div class="table-header">
                     <h2 class="table-title">用户列表</h2>
                     <button class="batch-manage-btn" data-modal="user-modal">批量管理</button>
@@ -276,10 +280,10 @@
                                 <td>4</td>
                                 <td>1234</td>
                                 <td>1234</td>
+                                <td><button class="">查看申请中贷款项目</button></td>
+                                <td><button class="">查看历史贷款项目</button></td>
                                 <td><button class="">加入黑名单</button></td>
-                                <td><button class="">标记为无风险</button></td>
-                                <td><button class="">标记为极高风险</button></td>
-                                <td><button class="">查看详情</button></td>
+                                <td><button class="">删除</button></td>
                             </tr>
                             <tr>
                                 <td>2</td>  
@@ -289,10 +293,10 @@
                                 <td>4</td>
                                 <td>1234</td>
                                 <td>1234</td>
+                                <td><button class="">查看申请中贷款项目</button></td>
+                                <td><button class="">查看历史贷款项目</button></td>
                                 <td><button class="">加入黑名单</button></td>
-                                <td><button class="">标记为无风险</button></td>
-                                <td><button class="">标记为极高风险</button></td>
-                                <td><button class="">查看详情</button></td>
+                                <td><button class="">删除</button></td>
                             </tr>
                             <tr>
                                 <td>3</td>  
@@ -302,10 +306,10 @@
                                 <td>4</td>
                                 <td>1234</td>
                                 <td>1234</td>
+                                <td><button class="">查看申请中贷款项目</button></td>
+                                <td><button class="">查看历史贷款项目</button></td>
                                 <td><button class="">加入黑名单</button></td>
-                                <td><button class="">标记为无风险</button></td>
-                                <td><button class="">标记为极高风险</button></td>
-                                <td><button class="">查看详情</button></td>
+                                <td><button class="">删除</button></td>
                             </tr>
                             <tr>
                                 <td>4</td>  
@@ -315,10 +319,10 @@
                                 <td>4</td>
                                 <td>1234</td>
                                 <td>1234</td>
+                                <td><button class="">查看申请中贷款项目</button></td>
+                                <td><button class="">查看历史贷款项目</button></td>
                                 <td><button class="">加入黑名单</button></td>
-                                <td><button class="">标记为无风险</button></td>
-                                <td><button class="">标记为极高风险</button></td>
-                                <td><button class="">查看详情</button></td>
+                                <td><button class="">删除</button></td>
                             </tr>
                             <tr>
                                 <td>5</td>  
@@ -328,10 +332,10 @@
                                 <td>4</td>
                                 <td>1234</td>
                                 <td>1234</td>
+                                <td><button class="">查看申请中贷款项目</button></td>
+                                <td><button class="">查看历史贷款项目</button></td>
                                 <td><button class="">加入黑名单</button></td>
-                                <td><button class="">标记为无风险</button></td>
-                                <td><button class="">标记为极高风险</button></td>
-                                <td><button class="">查看详情</button></td>
+                                <td><button class="">删除</button></td>
                             </tr>
                             <tr>
                                 <td>6</td>  
@@ -341,10 +345,10 @@
                                 <td>4</td>
                                 <td>1234</td>
                                 <td>1234</td>
+                                <td><button class="">查看申请中贷款项目</button></td>
+                                <td><button class="">查看历史贷款项目</button></td>
                                 <td><button class="">加入黑名单</button></td>
-                                <td><button class="">标记为无风险</button></td>
-                                <td><button class="">标记为极高风险</button></td> 
-                                <td><button class="">查看详情</button></td>
+                                <td><button class="">删除</button></td>
                             </tr>
                             <tr>
                                 <td>7</td>  
@@ -354,10 +358,10 @@
                                 <td>4</td>
                                 <td>1234</td>
                                 <td>1234</td>
+                                <td><button class="">查看申请中贷款项目</button></td>
+                                <td><button class="">查看历史贷款项目</button></td>
                                 <td><button class="">加入黑名单</button></td>
-                                <td><button class="">标记为无风险</button></td>
-                                <td><button class="">标记为极高风险</button></td>
-                                <td><button class="">查看详情</button></td>
+                                <td><button class="">删除</button></td>
                             </tr>
                             <tr>
                                 <td>8</td>  
@@ -367,10 +371,10 @@
                                 <td>4</td>
                                 <td>1234</td>
                                 <td>1234</td>
+                                <td><button class="">查看申请中贷款项目</button></td>
+                                <td><button class="">查看历史贷款项目</button></td>
                                 <td><button class="">加入黑名单</button></td>
-                                <td><button class="">标记为无风险</button></td>
-                                <td><button class="">标记为极高风险</button></td>
-                                <td><button class="">查看详情</button></td>
+                                <td><button class="">删除</button></td>
                             <tr>
                                 <td>9</td>  
                                 <td>王五</td>
@@ -776,84 +780,61 @@
         </div>
     </div>
 
-<!-- 贷款管理面板弹窗 -->
+    <!-- 贷款管理面板弹窗 -->
     <!-- 添加贷款项目弹窗 -->
     <div class="modal" id="add-new-product">
         <button class="iconfont icon-close close-btn"></button>
         <h2>新增贷款项目</h2>
-        <input type="text" name="产品名称" id="product-name" placeholder="请输入产品名称">
-        <input type="text" name="产品描述" id="product-desc" placeholder="请输入产品描述">
-        <input type="text" name="产品利率" id="product-rate" placeholder="请输入产品利率">
-        <input type="text" name="产品期限" id="product-term" placeholder="请输入产品期限">
-        <input type="text" name="产品用途" id="product-purpose" placeholder="请输入产品用途">
-        <button type="submit" class="btn btn-primary" id="add-loan-product">新增</button>
+        <div class="input-content">
+            <input type="text"  id="productName" placeholder="请输入产品名称">
+            <input type="text"  id="description" placeholder="请输入产品描述">
+            <input type="text"  id="loanUsage" placeholder="请输入产品用途">
+            <input type="text"  id="minTerm" placeholder="请输入最短借款期限（单位：月）">
+            <input type="text"  id="maxTerm" placeholder="请输入最长借款期限（单位：月）">
+            <input type="text" id="termStep" placeholder="请输入期限递增步长（单位：月）">
+            <input type="text"  id="promotionDetails" placeholder="请输入促销描述，用于展示给用户">
+        </div>
+        <div class="options">
+            <table id="option-table">
+                <tbody>
+                <tr>
+                    <th>贷款额度</th>
+                    <th>贷款期限</th>
+                    <th>年化利率</th>
+                    <th>还款方式</th>
+                    <th><button id="add-row-btn">增加</button></th>
+                </tr>
+                <tr>  
+                    <!-- 初始行 -->
+                    <td><input type="text" placeholder="请输入贷款额度"></td>
+                    <td><input type="text" placeholder="请输入贷款期限"></td>
+                    <td><input type="text" placeholder="请输入年化利率"></td>
+                    <td><input type="text" placeholder="请输入还款方式"></td>
+                    <td><button class="delete-btn">删除</button></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <button type="submit" class="btn btn-primary" id="add-loan-product">确认</button>
+    </div>
+    <!-- 用户管理面板弹窗 -->
+    <!-- 信誉分查询结果表格弹窗 -->
+    <div class="model" id="searchResultContainer">
+        <h3>查询结果</h3>
+        <table id="searchResultTable">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>用户名</th>
+                <th>手机号</th>
+                <th>信誉分</th>
+                <th>注册时间</th>
+            </tr>
+            </thead>
+            <tbody id="searchResultBody"></tbody>
+        </table>
     </div>
 
-<!-- 首页面板弹窗 -->
-    <!-- <div class="modal" id="user-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">用户信息管理</h3>
-                <button class="close-btn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p>这里可以管理用户实名认证、工作证明、用户等级和银行卡信息。</p>
-            </div>
-        </div>
-    </div> -->
-    
-    <!-- 风险管理弹窗 -->
-    <!-- <div class="modal" id="risk-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">AI智能审核管理</h3>
-                <button class="close-btn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p>这里可以配置AI审核规则、风险事件等级划分、规则效果分析和预警短信通知。</p>
-            </div>
-        </div>
-    </div> -->
-    
-    <!-- 催收管理弹窗 -->
-    <!-- <div class="modal" id="collection-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">催收系统管理</h3>
-                <button class="close-btn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p>这里可以管理催收事件等级划分、自动催收设置、人工催收管理和短信模板设置。</p>
-            </div>
-        </div>
-    </div> -->
-    
-    <!-- 数据统计弹窗 -->
-    <!-- <div class="modal" id="data-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">数据统计分析</h3>
-                <button class="close-btn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p>这里可以查看APP数据统计、用户行为分析、贷款项目数据和生成数据报表。</p>
-                
-            </div>
-        </div>
-    </div> -->
-    
-    <!-- 系统管理弹窗 -->
-    <!-- <div class="modal" id="system-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">系统管理</h3>
-                <button class="close-btn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p>这里可以进行管理员权限分配、操作日志审计、启用/禁用规则和规则版本管理。</p>
-            </div>
-        </div>
-    </div> -->
     <script src="../JS/indexApi.js"></script>
     <script src="../JS/index.js"></script>
 </body>

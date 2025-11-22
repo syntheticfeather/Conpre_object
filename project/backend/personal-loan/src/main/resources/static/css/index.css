@@ -338,9 +338,28 @@ body {
     border-radius: 8px;
     box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.2);
 }
-
 .user-dashboard hr {
     margin: 10px;
+}
+/* 按信誉分查询用户 */
+.credit-search {
+    margin:5px auto ;
+
+    width: 340px;
+    height: 40px;
+    align-items: center;
+}
+.credit-search input {
+    padding: 5px;
+    height: 40px;
+    font-size: 20px;
+    border: 2px solid #000;
+    border-radius: var(--border-radius);
+}
+.credit-search button {
+    height: 40px;
+    font-size: 18px;
+    line-height: 18px;
 }
 
 /* 表格标题样式 */
@@ -500,7 +519,7 @@ td:nth-child(3) {
     border-radius: 8px;
 }
 
-/* 增加新贷款产品 */
+/* --- 增加新贷款产品弹窗 --- */
 #add-new-product {
     display: none;
     flex-direction: column;
@@ -516,6 +535,7 @@ td:nth-child(3) {
     font-weight: 600;
     text-align: center;
 }
+/* 弹窗关闭按钮 */
 #add-new-product .icon-close {
     position: absolute;
     top: 0;
@@ -529,10 +549,22 @@ td:nth-child(3) {
     border: none;
     cursor: pointer;
 }
-#add-new-product input {
-    margin: 10px auto;
+/* 自由项输入框 */
+.input-content {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+    padding: 5px;
+
+    width: 550px;
+    height: 200px;
+    align-items: center;
+}
+.input-content input {
+    margin: 5px auto;
     padding: 10px;
-    width: 300px;
+    width: 250px;
 
     border: 1px solid #ccc;
     border-radius: var(--border-radius);
@@ -543,21 +575,58 @@ td:nth-child(3) {
 
     font-size: 20px;
 }
+/* 可选项输入表格 */
+#add-new-product .options {
+    margin-bottom: 10px;
+    width: 550px;
+    max-height: 270px; /*限高*/
+    overflow-y: auto; 
+}
+.options #option-table {
+    width: 100%; 
+    table-layout: fixed; 
+    border-collapse: collapse;
+    overflow: auto;
+}
+#option-table th {
+    font-size: 20px;
+}
+#option-table input {
+    width: 100px;
+    height: 28px;
 
-/* 未知关闭按钮 */
-/* .close-btn {
-    background: none;
+    font-size: 15px;
     border: none;
-    font-size: 1.5rem;
+}
+#option-table button {
+    width: 100px;
+    height: 26px;
+    background-color: #fff;
+
+    font-size: 20px;
+    line-height: 20px;
+    border: none;
+    border-radius: 5px;
     cursor: pointer;
-    color: #999;
-} */
+}
+#option-table button:hover {
+    background-color: #4155b8;
+    color: #fff;
+    text-decoration-line: underline;
+}
 
-/* .close-btn:hover {
-    color: var(--danger-color);
-} */
+/* --- 信誉分查询结果表格弹窗 --- */
+#searchResultContainer {
+    display:none;
+    margin-top:20px;
+}
+#searchResultTable {
+    width:100%; 
+    border-collapse:collapse; 
+    margin-top:10px;
+}
 
-/* 响应式设计 */
+/* 响应式设计-待完善 */
 @media (max-width: 768px) {
     .sidebar {
         width: 70px;

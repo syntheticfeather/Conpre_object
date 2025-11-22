@@ -6,6 +6,7 @@
     <title>登录界面</title>
     <link rel="stylesheet" href="../static/css/base.css">
     <link rel="stylesheet" href="../static/css/login.css">
+    <link rel="stylesheet" href="../static/iconfont/iconfont.css">
 </head>
 <body>
     <div>
@@ -25,7 +26,13 @@
                 <div class="error-message" id="phoneError">请输入手机号码</div>
                 <hr>
                 <br>
-                <input type="password" id="password" placeholder="请输入密码">
+                <div class="password-input">
+                    <input type="password" id="password" placeholder="请输入密码">
+                    <button type="button" id="showPassword-btn">
+                        <i class="iconfont icon-browse"></i>
+                        <i class="iconfont icon-eye-close"></i>
+                    </button>
+                </div>
                 <div class="error-message" id="passwordError">请输入密码</div>
                 <hr>
                 <br>

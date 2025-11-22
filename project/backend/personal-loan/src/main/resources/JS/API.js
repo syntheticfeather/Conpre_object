@@ -6,7 +6,6 @@ const AdminWeb = {
     API_CLIENT: {},
     JWT_UTILS: {}
 }
-
 // ==================== API配置信息 ====================
 AdminWeb.API_CONFIG = {
     baseUrl: 'http://localhost:8080',
@@ -38,38 +37,34 @@ AdminWeb.DOM_ELEMENTS = {
     registerForm: document.getElementById('registerForm'),
     registerBtn: document.querySelector('.register-btn'),
     closeBtn: document.querySelector('.close-btn'),
-    loadingSpinner: document.getElementById('loadingSpinner'),
-    registerSuccessMessage: document.getElementById('successMessage'),
-    adminNameInput: document.getElementById('adminName'),
-    registerPasswordInput: document.getElementById('password'),
-    confirmPasswordInput: document.getElementById('confirmPassword'),
-    networkError: document.getElementById('networkError'),
+    loadingSpinner: document.getElementById('loadingSpinner'), // 注册加载动画
     registerSuccessMessage: document.getElementById('successMessage'), // 注册成功提示信息
-    // 输入字段
+    networkError: document.getElementById('networkError'), // 网络错误提示信息
+    showConfirmPasswordBtn: document.getElementById('showConfirmPassword-btn'), // 显示确认密码按钮
+
+    // 登录页面
+    passwordLoginForm: document.getElementById('passwordLoginForm'),
+    passwordLoginSubmitBtn: document.getElementById('passwordLogin-submit-btn'), // 密码登录提交按钮
+    passwordLoadingSpinner: document.getElementById('passwordLoadingSpinner'), // 密码登录加载动画
+    loginSuccessMessage: document.getElementById('successMessage'), // 登录成功提示信息
+
+    // 公共输入字段（注册 + 登录共用）
     adminNameInput: document.getElementById('adminName'),
     passwordInput: document.getElementById('password'),
     confirmPasswordInput: document.getElementById('confirmPassword'),
     phoneInput: document.getElementById('phone'),
-    smsCodeInput: document.getElementById('smsCode'),
+    smsCodeInput: document.getElementById('smsCode'), // 虽未启用，保留占位
+    agreeCheckbox: document.getElementById('agreeCheckbox'),
+
+    // 公共按钮（注册 + 登录共用）
+    showPasswordBtn: document.getElementById('showPassword-btn'), // 显示密码按钮
 
     // 登录页面
-    // 密码登录
-    passwordLoginSubmitBtn: document.getElementById('passwordLogin-submit-btn'), // 密码登录提交按钮
-    passwordLoginForm: document.getElementById('passwordLoginForm'),  // 密码登录表单
-    passwordLoadingSpinner: document.getElementById('passwordLoadingSpinner'), // 密码登录加载动画
     //验证码登录
     // smsLoginSubmitBtn: document.getElementById('smsLogin-submit-btn'), // 验证码登录提交按钮
     // smsLoginForm: document.getElementById('smsLoginForm'),  // 验证码登录表单
     // getSmsBtn: document.getElementById('getSmsBtn'), // 获取验证码按钮
     // smsLoadingSpinner: document.getElementById('smsLoadingSpinner'), // 验证码登录加载动画
-
-    loginSuccessMessage: document.getElementById('successMessage'), // 登录成功提示信息
-    // 输入字段
-    phoneInput: document.getElementById('phone'),
-    passwordInput: document.getElementById('password'),
-    smsPhoneInput: document.getElementById('smsPhone'),
-    smsCodeInput: document.getElementById('smsCode'),
-    agreeCheckbox: document.getElementById('agreeCheckbox'),
 }
 // ==================== API 请求封装 ====================
 AdminWeb.API_CLIENT = {
@@ -186,39 +181,30 @@ AdminWeb.API_CLIENT = {
         })
     },
 
-    // 专用方法 - 登录（修改错误处理）
+    // 专用方法 - 登录
     login: async function (phone, password) {
         try {
             const response = await fetch(`${this._getBaseUrl()}${AdminWeb.API_CONFIG.endpoints.login}`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    phone: phone,
-                    password: password
-                })
-            });
-
-            if (!response.ok) {
-                // 处理登录失败
-                const errorText = await response.text();
-                let errorMessage = '登录失败';
-                
-                if (response.status === 401) {
-                    errorMessage = '手机号码或密码错误';
-                } else if (response.status === 400) {
-                    errorMessage = '请求参数错误';
-                }
-                
-                throw new Error(errorMessage);
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone, password })
+            })
+            let result
+            try {
+                result = await response.json()
+                } catch (e) {
+                throw new Error('服务器返回格式异常')
             }
 
-            const result = await response.json();
-            return result;
+            if (response.ok && result.code === 200) {
+                return result; // { code: 200, data: { token: '...' }, message: '...' }
+            } else {
+                const errorMsg = result.message || result.msg || '登录失败'
+                throw new Error(errorMsg)
+            }
         } catch (error) {
-            console.error('登录请求失败:', error);
-            throw error;
+            console.error('登录请求失败:', error)
+            throw error
         }
     },
 
@@ -231,21 +217,6 @@ AdminWeb.API_CLIENT = {
     register: function (adminData) {
         return this.post(AdminWeb.API_CONFIG.endpoints.register, adminData)
     }
-
-    // // 专用方法 - 验证码登录
-    // smsLogin: function (phone, smsCode) {
-    //     return this.post(AdminWeb.API_CONFIG.endpoints.smsLogin, {
-    //         phone: phone,
-    //         smsCode: smsCode
-    //     });
-    // },
-
-    // // 专用方法 - 发送验证码
-    // sendSms: function (phone) {
-    //     return this.post(AdminWeb.API_CONFIG.endpoints.sendSms, {
-    //         phone: phone
-    //     })
-    // }
 }
 // ==================== JWT 工具函数 ====================
 AdminWeb.JWT_UTILS = {

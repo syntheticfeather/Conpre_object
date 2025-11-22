@@ -68,6 +68,7 @@ body {
 #change-passwordLogin-btn
 ,#change-smsLogin-btn {
     margin: 0;
+    margin-bottom: 20px;
     background-color: #fff;
 
     font-size: 20px;
@@ -84,6 +85,8 @@ body {
 
 /* 信息填写框 */
 .main input {
+    padding: 0 10px;
+
     font-size: 22px;
     line-height: 24px;
     color: #9ea3a4;
@@ -91,12 +94,33 @@ body {
     outline: none;
 }
 
-.main input[type="text"] {
-    margin-top: 20px;
+/* 密码填写框与显示按钮 */
+.password-input {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
 }
 
-.main input[type="password"] {
-    margin-top: 40px;
+.main #showPassword-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+
+  width: 30px;
+  height: 20px;
+  background-color: rgba(27, 83, 241, 0);
+  
+  border: none;
+  cursor: pointer;
+}
+#showPassword-btn .icon-eye-close {
+    display: none;
+    font-size: 24px;
+}
+#showPassword-btn .icon-browse { 
+    display: none;
+    font-size: 24px;
 }
 
 hr {

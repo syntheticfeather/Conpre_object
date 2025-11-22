@@ -68,20 +68,67 @@ div .base-information {
 
 .base-information .infor div {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-between;
 
     margin-right: 15px;
     padding-top: 4px;
-    padding-left: 30px;
-    width: 490px;
-    height: 310px;
+    width: 400px;
     background-color: #e2e7e6;
     border-radius: 10px;
 }
 
-.iconfont {
+/* 密码填写框与显示按钮 */
+.password-input {
+    display: flex;
+    justify-content: space-between;
+}
+/* 密码显示按钮 */
+.password-input #showPassword-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  margin-top: 6px;
+
+  width: 30px;
+  background-color: rgba(27, 83, 241, 0);
+  
+  border: none;
+  cursor: pointer;
+}
+#showPassword-btn .icon-eye-close {
+    display: none;
     font-size: 24px;
-    color: #2551e1;
+    color: #000;
+}
+#showPassword-btn .icon-browse { 
+    display: none;
+    font-size: 24px;
+    color: #000;
+}
+/* 确认密码显示按钮 */
+.password-input #showConfirmPassword-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    margin-top: 6px;
+
+    width: 30px;
+    background-color: rgba(27, 83, 241, 0);
+    
+    border: none;
+    cursor: pointer;
+}
+#showConfirmPassword-btn .icon-eye-close {
+    display: none;
+    font-size: 24px;
+    color: #000;
+}
+#showConfirmPassword-btn .icon-browse { 
+    display: none;
+    font-size: 24px;
+    color: #000;
 }
 
 /* 绑定手机号 */
@@ -123,20 +170,19 @@ input {
 
 /* 输入错误提醒 */
 .input-error {
+    width: 150px;
     border-color: red;
 }
 
 /* 错误提示样式 */
 .error-message {
-    margin-bottom: 10px;
     display: none; 
-    text-align: center;
-
-    color: red;
-    font-size: 14px;
+    margin-bottom: 10px;
     margin-top: 5px;
-
-     
+    
+    font-size: 14px;
+    color: red;
+    text-align: center;
 }
 
 /* 获取验证码按钮  */
@@ -155,11 +201,6 @@ input {
     border: none;
 }
 
-/* .get-code-btn:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-} */
-
 /* 注册按钮  */
 .main .register-btn {
     margin-left: 640px;
@@ -175,11 +216,6 @@ input {
     color: #fff;
     border: none;
 }
-
-/* .main .register-btn:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-} */
 
 /* 关闭按钮  */
 .main .close-btn {

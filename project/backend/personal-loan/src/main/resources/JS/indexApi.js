@@ -45,7 +45,7 @@ AdminWeb.DOM_ELEMENTS = {
     // 数据统计与系统管理
     dataAndSystemManagementContent: document.getElementById('dataAndSystem-management-content')
 }
-// ==================== API 请求封装/API客户端？ ====================
+// ==================== API 请求封装 ====================
 AdminWeb.API_CLIENT = {
     // 通用请求方法
     
@@ -161,13 +161,19 @@ AdminWeb.API_CLIENT = {
             body: JSON.stringify(data)
         })
     },
-    // 新增贷款产品
-    addLoanProduct: function (productData) {
-        return this.post(AdminWeb.API_CONFIG.endpoints.addLoanProduct, productData);
-    },
+    
     // 添加基础URL获取方法
     _getBaseUrl: function() {
-        return AdminWeb.API_CONFIG.baseUrl;
+        return AdminWeb.API_CONFIG.baseUrl
+    },
+    // 新增贷款产品
+    addLoanProduct: function (productData) {
+        return this.post(AdminWeb.API_CONFIG.endpoints.addLoanProduct, productData)
+    },
+    // 根据信誉分表达式查询用户
+    searchUsersByCredit: function(expr) {
+        const url = `/api/users/search-by-credit?expr=${encodeURIComponent(expr)}`
+    return this.get(url)
     }
 }
 // ==================== JWT 工具函数 ====================
