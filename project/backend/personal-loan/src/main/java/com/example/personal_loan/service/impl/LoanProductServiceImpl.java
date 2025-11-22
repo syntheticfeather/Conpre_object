@@ -240,6 +240,7 @@ public class LoanProductServiceImpl implements LoanProductService{
             List<LoanOptionResponse> optionResponses = options.stream()
                 .map(opt -> {
                     LoanOptionResponse resp = new LoanOptionResponse();
+                    resp.setOptionId(opt.getId());
                     resp.setLoanAmount(opt.getLoanAmount());
                     resp.setInterestRate(opt.getInterestRate());
                     resp.setLoanPeriod(opt.getLoanPeriod());
@@ -250,6 +251,7 @@ public class LoanProductServiceImpl implements LoanProductService{
 
             // 构建响应对象
             UserGetProductResponse response = new UserGetProductResponse();
+            response.setProductId(product.getId());
             response.setProductName(product.getProductName());
             response.setDescription(product.getDescription());
             response.setLoanUsage(product.getLoanUsage());
@@ -266,10 +268,6 @@ public class LoanProductServiceImpl implements LoanProductService{
         List<LoanProduct> products = loanProductMapper.findAll();
         return products.stream().map(product -> {
             // 生成 terms 列表
-            System.out.println("Product ID: " + product.getId() +
-            ", minTerm=" + product.getMinTerm() +
-            ", maxTerm=" + product.getMaxTerm() +
-            ", termStep=" + product.getTermStep());
             List<Integer> terms = new ArrayList<>();
             if (product.getMinTerm() != null && product.getMaxTerm() != null && product.getTermStep() != null) {
                 for (int t = product.getMinTerm(); t <= product.getMaxTerm(); t += product.getTermStep()) {

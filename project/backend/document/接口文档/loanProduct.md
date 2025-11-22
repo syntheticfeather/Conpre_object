@@ -21,52 +21,11 @@
     "code": 200,
     "data": [
         {
-            "id":"",
-            "productName": "极速贷 Pro",
-            "description": "审批快，放款快",
-            "loanUsage": "消费、装修、教育",
-            "promotionDetails": "无",
-            "terms": [
-                3,
-                6,
-                9,
-                12,
-                15,
-                18,
-                21,
-                24,
-                27,
-                30,
-                33,
-                36
-            ],
-            "options": [
-                {
-                    "id":"",
-                    "loanAmount": 10000.00,
-                    "interestRate": 0.0450,
-                    "loanPeriod": 12,
-                    "repaidType": "等额本息"
-                },
-                {
-                    "loanAmount": 20000.00,
-                    "interestRate": 0.0550,
-                    "loanPeriod": 18,
-                    "repaidType": "等额本金"
-                },
-                {
-                    "loanAmount": 50000.00,
-                    "interestRate": 0.0600,
-                    "loanPeriod": 24,
-                    "repaidType": "先息后本"
-                }
-            ]
-        },
-        {
-            "productName": "安心贷",
-            "description": "低利率，适合长期资金需求",
-            "loanUsage": "购房、装修、大额消费",
-            "promotionDetails": "前3期免息",
+            "productId": 1,
+            "productName": "优享贷",
+            "description": "专为信用良好用户定制，利率优惠，期限灵活",
+            "loanUsage": "教育、购车、旅游、大额消费",
+            "promotionDetails": "首年利率85折",
             "terms": [
                 6,
                 12,
@@ -81,44 +40,63 @@
             ],
             "options": [
                 {
-                    "loanAmount": 50000.00,
-                    "interestRate": 0.0380,
+                    "optionId": 1,
+                    "loanAmount": 30000.00,
+                    "interestRate": 0.0390,
                     "loanPeriod": 24,
                     "repaidType": "等额本息"
                 },
                 {
-                    "loanAmount": 100000.00,
-                    "interestRate": 0.0420,
+                    "optionId": 2,
+                    "loanAmount": 80000.00,
+                    "interestRate": 0.0410,
                     "loanPeriod": 36,
                     "repaidType": "等额本金"
+                },
+                {
+                    "optionId": 3,
+                    "loanAmount": 150000.00,
+                    "interestRate": 0.0430,
+                    "loanPeriod": 60,
+                    "repaidType": "等额本息"
                 }
             ]
         },
         {
-            "productName": "闪电贷",
-            "description": "最快10分钟放款",
-            "loanUsage": "应急周转、医疗支出",
-            "promotionDetails": "新用户首笔免手续费",
+            "productId": 2,
+            "productName": "极速贷",
+            "description": "专为信用良好用户定制，利率优惠，期限灵活",
+            "loanUsage": "教育、购车、旅游、大额消费",
+            "promotionDetails": "首年利率85折",
             "terms": [
-                1,
-                2,
-                3,
-                4,
-                5,
                 6,
-                7,
-                8,
-                9,
-                10,
-                11,
-                12
+                12,
+                18,
+                24,
+                30,
+                36
             ],
             "options": [
                 {
-                    "loanAmount": 5000.00,
-                    "interestRate": 0.0990,
-                    "loanPeriod": 6,
-                    "repaidType": "先息后本"
+                    "optionId": 4,
+                    "loanAmount": 30000.00,
+                    "interestRate": 0.0390,
+                    "loanPeriod": 24,
+                    "repaidType": "等额本息"
+                },
+                {
+                    "optionId": 5,
+                    "loanAmount": 80000.00,
+                    "interestRate": 0.0410,
+                    "loanPeriod": 36,
+                    "repaidType": "等额本金"
+                },
+                {
+                    "optionId": 6,
+                    "loanAmount": 150000.00,
+                    "interestRate": 0.0430,
+                    "loanPeriod": 60,
+                    "repaidType": "等额本息"
                 }
             ]
         }
@@ -145,9 +123,9 @@
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
-|name|string|是|贷款产品名称|闪电贷|
+|name|string|是|贷款产品名称|优享贷|
 
-**请求示例（网址）** /api/loan-products/user/search?name=闪电贷
+**请求示例（网址）** /api/loan-products/user/search?name=优享贷
 
 **返回数据**：
 
@@ -156,30 +134,44 @@
     "code": 200,
     "data": [
         {
-            "productName": "闪电贷",
-            "description": "最快10分钟放款",
-            "loanUsage": "应急周转、医疗支出",
-            "promotionDetails": "新用户首笔免手续费",
+            "productId": 1,
+            "productName": "优享贷",
+            "description": "专为信用良好用户定制，利率优惠，期限灵活",
+            "loanUsage": "教育、购车、旅游、大额消费",
+            "promotionDetails": "首年利率85折",
             "terms": [
-                1,
-                2,
-                3,
-                4,
-                5,
                 6,
-                7,
-                8,
-                9,
-                10,
-                11,
-                12
+                12,
+                18,
+                24,
+                30,
+                36,
+                42,
+                48,
+                54,
+                60
             ],
             "options": [
                 {
-                    "loanAmount": 5000.00,
-                    "interestRate": 0.0990,
-                    "loanPeriod": 6,
-                    "repaidType": "先息后本"
+                    "optionId": 1,
+                    "loanAmount": 30000.00,
+                    "interestRate": 0.0390,
+                    "loanPeriod": 24,
+                    "repaidType": "等额本息"
+                },
+                {
+                    "optionId": 2,
+                    "loanAmount": 80000.00,
+                    "interestRate": 0.0410,
+                    "loanPeriod": 36,
+                    "repaidType": "等额本金"
+                },
+                {
+                    "optionId": 3,
+                    "loanAmount": 150000.00,
+                    "interestRate": 0.0430,
+                    "loanPeriod": 60,
+                    "repaidType": "等额本息"
                 }
             ]
         }

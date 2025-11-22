@@ -70,5 +70,10 @@ public interface LoanProductMapper {
     List<LoanProduct> findAll();
 
     // 用productName搜索查询
+    @Select("SELECT id, product_name as productName, description, loan_usage as loanUsage, "+
+        "min_term as minTerm, max_term as maxTerm, term_step as termStep, " +
+        "promotion_details as promotionDetails, create_time as createTime, update_time as updateTime " +
+        "FROM loan_products " +
+        "WHERE product_name LIKE CONCAT('%', #{keyword}, '%')")
     List<LoanProduct> findByProductNameLike(String productName);
 }
