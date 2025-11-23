@@ -12,7 +12,7 @@ AdminWeb.API_CONFIG = {
     baseUrl: 'http://localhost:8080',
     endpoints: {
         logout: '/api/auth/logout', // 退出接口
-        addLoanProduct: '/api/loan-products/admin', // ← 新增
+        addLoanProduct: '/api/loan-products/admin', // 新增贷款产品接口
     },
     storageKeys: {
         token: 'admin_token',
@@ -168,6 +168,7 @@ AdminWeb.API_CLIENT = {
     },
     // 新增贷款产品
     addLoanProduct: function (productData) {
+        // 调用API
         return this.post(AdminWeb.API_CONFIG.endpoints.addLoanProduct, productData)
     },
     // 根据信誉分表达式查询用户

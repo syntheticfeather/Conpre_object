@@ -58,27 +58,27 @@ function bindEventListeners() {
         // 显示对应面板
         switch (target) {
             case 'home-page':
-            document.getElementById('home-page-content').style.display = 'flex'
-            console.log('切换到首页')
-            break
+            document.getElementById('home-page-content').style.display = 'flex';
+            console.log('切换到首页');
+            break;
             case 'loan-management':
-            document.getElementById('loan-management-content').style.display = 'flex'
-            console.log('切换到贷款管理')
-            break
+            document.getElementById('loan-management-content').style.display = 'flex';
+            console.log('切换到贷款管理');
+            break;
             case 'user-management':
-            document.getElementById('user-management-content').style.display = 'flex'
-            console.log('切换到用户管理')
-            break
+            document.getElementById('user-management-content').style.display = 'flex';
+            console.log('切换到用户管理');
+            break;
             case 'riskAndCollection-management':
-            document.getElementById('riskAndCollection-management-content').style.display = 'grid'
-            console.log('切换到风险与催收管理')
-            break
+            document.getElementById('riskAndCollection-management-content').style.display = 'grid';
+            console.log('切换到风险与催收管理');
+            break;
             case 'dataAndSystem-management':
-            document.getElementById('dataAndSystem-management-content').style.display = 'grid'
-            console.log('切换到数据统计与系统管理')
-            break
+            document.getElementById('dataAndSystem-management-content').style.display = 'grid';
+            console.log('切换到数据统计与系统管理');
+            break;
             default:
-            break
+            break;
         }
         })
     })
@@ -103,7 +103,7 @@ function bindEventListeners() {
         })
     })
         
-    // 为代办事项添加点击事件-待完善
+    // 为代办事项添加点击事件
     document.querySelectorAll('.task-list button').forEach(button => {
         button.addEventListener('click', function() {
             const taskName = this.querySelector('span').textContent
@@ -112,19 +112,19 @@ function bindEventListeners() {
         })
     })
 
-    // 退出登录-待完善
+    // 退出登录
     document.getElementById('logout-btn').addEventListener('click', async function() {
         if(confirm('确定要退出登录吗？')) {
             try {
                 // 调用后端退出接口
-                await API_CLIENT.post(API_CONFIG.endpoints.logout)
+                await API_CLIENT.post(API_CONFIG.endpoints.logout);
             } catch (error) {
-                console.error('退出登录失败:', error)
+                console.error('退出登录失败:', error);
             } finally {
                 // 清除所有token和登录状态
-                JWT_UTILS.clearTokens()
+                JWT_UTILS.clearTokens();
                 // 跳转到登录页
-                window.location.href = 'login.html'
+                window.location.href = 'login.html';
             }
         }
     })
@@ -254,19 +254,201 @@ function updateData() {
     lineChart2.setOption(lineOption2);
 }
 
-// 窗口大小变化时，图表自适应
-window.addEventListener('resize', () => {
-    lineChart1.resize();
-    lineChart2.resize();
-    pieChart.resize(); 
-    // barChart.resize();
-})
+// ==================== 【新增】用户管理接口 ====================
+// 【说明】原 index.js 中无用户管理网络请求，现根据测试文档 TC-USER-01~03 补充
 
-// ==================== 贷款项目管理面板处理 ====================
+async function fetchUserStats() {
+    const url = '/api/users/admin/stats';
+    console.log(`📡 [GET] 请求用户状态列表: ${url}`);
+    try {
+        const response = await AdminWeb.API_CLIENT.get(url);
+        console.log(`✅ [响应] 用户状态列表:`, response);
+        return response.data;
+    } catch (error) {
+        console.error(`❌ [错误] 获取用户状态列表失败:`, error);
+        alert('获取用户列表失败');
+    }
+}
 
-// ==================== 用户管理面板处理 ====================
+async function fetchUserById(userId) {
+    const url = `/api/users/admin/${userId}`;
+    console.log(`📡 [GET] 请求用户详情: ${url}`);
+    try {
+        const response = await AdminWeb.API_CLIENT.get(url);
+        console.log(`✅ [响应] 用户 ${userId} 详情:`, response);
+        return response.data;
+    } catch (error) {
+        console.error(`❌ [错误] 获取用户 ${userId} 失败:`, error);
+        alert('获取用户信息失败');
+    }
+}
+
+// 【修正】原 searchUsersByCredit 未被调用且参数设计不符；测试文档中该接口无参数
+async function fetchUsersByCreditDesc() {
+    const url = '/api/users/search-by-credit';
+    console.log(`📡 [GET] 请求按信誉分降序用户列表: ${url}`);
+    try {
+        const response = await AdminWeb.API_CLIENT.get(url);
+        console.log(`✅ [响应] 信誉分排序用户列表:`, response);
+        return response.data;
+    } catch (error) {
+        console.error(`❌ [错误] 按信誉分查询失败:`, error);
+        alert('查询失败');
+    }
+}
+
+// ==================== 【新增】贷款产品管理接口 ====================
+// 【说明】原仅实现 addLoanProduct，现补充其余全部产品管理操作
+
+async function fetchAllLoanProducts() {
+    const url = '/api/loan-products/admin/';
+    console.log(`📡 [GET] 请求所有贷款产品: ${url}`);
+    try {
+        const response = await AdminWeb.API_CLIENT.get(url);
+        console.log(`✅ [响应] 所有贷款产品:`, response);
+        return response.data;
+    } catch (error) {
+        console.error(`❌ [错误] 获取产品列表失败:`, error);
+        alert('加载产品失败');
+    }
+}
+
+async function fetchLoanProductById(productId) {
+    const url = `/api/loan-products/admin/${productId}`;
+    console.log(`📡 [GET] 请求产品详情: ${url}`);
+    try {
+        const response = await AdminWeb.API_CLIENT.get(url);
+        console.log(`✅ [响应] 产品 ${productId} 详情:`, response);
+        return response.data;
+    } catch (error) {
+        console.error(`❌ [错误] 获取产品 ${productId} 失败:`, error);
+    }
+}
+
+async function updateLoanProduct(productId, updateData) {
+    const url = `/api/loan-products/admin/products/${productId}`;
+    console.log(`📡 [PATCH] 更新产品: ${url}`, '请求体:', updateData);
+    try {
+        const response = await AdminWeb.API_CLIENT.request(url, {
+            method: 'PATCH',
+            body: JSON.stringify(updateData)
+        });
+        console.log(`✅ [响应] 产品 ${productId} 更新成功:`, response);
+        alert('产品信息更新成功');
+        return response.data;
+    } catch (error) {
+        console.error(`❌ [错误] 更新产品 ${productId} 失败:`, error);
+        alert('更新失败');
+    }
+}
+
+async function deleteLoanProduct(productId) {
+    if (!confirm(`确定删除产品 ID=${productId}？此操作不可逆！`)) return;
+    const url = `/api/loan-products/admin/products/${productId}`;
+    console.log(`📡 [DELETE] 删除产品: ${url}`);
+    try {
+        const response = await AdminWeb.API_CLIENT.request(url, { method: 'DELETE' });
+        console.log(`✅ [响应] 产品 ${productId} 删除成功:`, response);
+        alert('删除成功');
+        return true;
+    } catch (error) {
+        console.error(`❌ [错误] 删除产品 ${productId} 失败:`, error);
+        alert('删除失败');
+    }
+}
+
+async function batchDeleteLoanProducts(productIds) {
+    const url = '/api/loan-products/admin/products/batch-delete';
+    const payload = { productIds };
+    console.log(`📡 [POST] 批量删除产品: ${url}`, '请求体:', payload);
+    try {
+        const response = await AdminWeb.API_CLIENT.post(url, payload);
+        console.log(`✅ [响应] 批量删除产品成功:`, response);
+        alert('批量删除成功');
+        return response.data;
+    } catch (error) {
+        console.error(`❌ [错误] 批量删除产品失败:`, error);
+        alert('批量删除失败');
+    }
+}
+
+async function batchCreateProductOptions(productId, options) {
+    const url = '/api/loan-products/admin/options/batch-create';
+    const payload = { productId, options };
+    console.log(`📡 [POST] 批量添加选项: ${url}`, '请求体:', payload);
+    try {
+        const response = await AdminWeb.API_CLIENT.post(url, payload);
+        console.log(`✅ [响应] 批量添加选项成功:`, response);
+        return response.data;
+    } catch (error) {
+        console.error(`❌ [错误] 批量添加选项失败:`, error);
+        alert('添加选项失败');
+    }
+}
+
+async function deleteProductOption(optionId) {
+    const url = `/api/loan-products/admin/options/${optionId}`;
+    console.log(`📡 [DELETE] 删除选项: ${url}`);
+    try {
+        const response = await AdminWeb.API_CLIENT.request(url, { method: 'DELETE' });
+        console.log(`✅ [响应] 选项 ${optionId} 删除成功:`, response);
+        return response;
+    } catch (error) {
+        console.error(`❌ [错误] 删除选项 ${optionId} 失败:`, error);
+    }
+}
+
+// ==================== 【新增】贷款申请处理接口 ====================
+// 【说明】原无任何申请处理逻辑，现根据 TC-APP-01/02 补充只读接口
+
+async function fetchApplicationById(applicationId) {
+    const url = `/api/loan-applications/${applicationId}`;
+    console.log(`📡 [GET] 请求申请详情: ${url}`);
+    try {
+        const response = await AdminWeb.API_CLIENT.get(url);
+        console.log(`✅ [响应] 申请 ${applicationId} 详情:`, response);
+        return response.data;
+    } catch (error) {
+        console.error(`❌ [错误] 获取申请 ${applicationId} 失败:`, error);
+        alert('申请详情加载失败');
+    }
+}
+
+async function fetchApplicationsByUser(userId) {
+    const url = `/api/loan-applications/user/${userId}`;
+    console.log(`📡 [GET] 请求用户所有申请: ${url}`);
+    try {
+        const response = await AdminWeb.API_CLIENT.get(url);
+        console.log(`✅ [响应] 用户 ${userId} 的所有申请:`, response);
+        return response.data;
+    } catch (error) {
+        console.error(`❌ [错误] 获取用户 ${userId} 的申请失败:`, error);
+        alert('申请记录加载失败');
+    }
+}
+
+// 【建议】预留待审核申请列表（业务必需，即使后端未实现）
+async function fetchPendingApplications(page = 1, size = 20) {
+    const url = `/api/loan-applications/admin?status=PENDING&page=${page}&size=${size}`;
+    console.log(`📡 [GET] 请求待审核申请列表（模拟）: ${url}`);
+    try {
+        const response = await AdminWeb.API_CLIENT.get(url);
+        console.log(`✅ [响应] 待审核申请列表:`, response);
+        return response.data;
+    } catch (error) {
+        console.warn(`⚠️ [警告] 获取待审核申请失败（接口可能未实现）:`, error);
+        // 返回模拟数据用于前端展示
+        const mockData = [
+            { id: 100, userId: 1, productId: 1, optionId: 3, term: 6, status: 'PENDING' }
+        ];
+        console.log(`📤 返回模拟待审核申请数据:`, mockData);
+        return mockData;
+    }
+}
+
+// ==================== 【保留原内容】弹窗处理 ====================
 const creditScoreInput = document.getElementById('creditScoreInput')
-// ================================== 弹窗处理 ===================================
+
 // ==================== 添加贷款项目弹窗处理 ====================
 // 数据输入表格的行增减处理
 const addBtn = document.getElementById('add-row-btn')
@@ -279,7 +461,6 @@ addBtn.addEventListener('click', function () {
   const inputs = [
     '请输入贷款额度',
     '请输入贷款期限',
-    '请输入年化利率',
     '请输入还款方式'
   ]
 

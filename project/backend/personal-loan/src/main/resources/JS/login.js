@@ -217,7 +217,7 @@ function handleLoginSuccess(result, phone) {
     showSuccessMessage()
     
     // 保存登录状态和token 
-    const token = result.data?.token || result.token
+    const token = result.data.token
     if (!token) {
         console.error('登录响应中没有找到token')
         showErrorById('passwordError', '登录响应异常，请重试')
@@ -230,9 +230,9 @@ function handleLoginSuccess(result, phone) {
     
     // 保存管理员信息
     const adminInfo = {
-        id: result.data?.id,
-        name: result.data?.name,
-        registerTime: result.data?.createTime || new Date().toISOString()
+        // id: result.data.id,
+        // name: result.data.name,
+        registerTime: result.data.createTime || new Date().toISOString()
     }
     localStorage.setItem(API_CONFIG.storageKeys.adminInfo, JSON.stringify(adminInfo))
     localStorage.setItem(API_CONFIG.storageKeys.isLogged, 'true')
