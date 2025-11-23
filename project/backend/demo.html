@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>贷款管理系统 - 管理员界面</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", Arial, sans-serif;
+            background-color: #f5f7fa;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 0 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: bold;
+            color: #409EFF;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .nav-menu .el-menu-item {
+            font-size: 16px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-info .el-avatar {
+            margin-right: 10px;
+        }
+
+        .container {
+            display: flex;
+            margin-top: 60px;
+            min-height: calc(100vh - 60px);
+        }
+
+        .sidebar {
+            width: 200px;
+            background-color: #fff;
+            box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 60px;
+            bottom: 0;
+            left: 0;
+            overflow-y: auto;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 200px;
+            padding: 20px;
+        }
+
+        .table-container {
+            background-color: #fff;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .search-bar {
+            display: flex;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .search-bar .el-input {
+            width: 200px;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .detail-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ebeef5;
+            border-radius: 4px;
+        }
+
+        .detail-section h3 {
+            margin-bottom: 15px;
+            color: #409EFF;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .detail-label {
+            width: 120px;
+            color: #606266;
+            font-weight: bold;
+        }
+
+        .detail-value {
+            flex: 1;
+        }
+
+        .auth-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .auth-item {
+            padding: 10px;
+            border: 1px solid #ebeef5;
+            border-radius: 4px;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .el-table .cell {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .el-table .description-cell {
+            max-width: 200px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <!-- 顶部导航栏 -->
+        <div class="header">
+            <div class="logo">
+                <img src="https://via.placeholder.com/40" alt="Logo">
+                <span class="logo-text">金融贷款系统</span>
+            </div>
+            <div class="nav-menu">
+                <el-menu :default-active="activeNav" mode="horizontal" @select="handleNavSelect">
+                    <el-menu-item index="todo">代办审核</el-menu-item>
+                    <el-menu-item index="loan">贷款管理</el-menu-item>
+                    <el-menu-item index="user">用户管理</el-menu-item>
+                    <el-menu-item index="collection">催收管理</el-menu-item>
+                    <el-menu-item index="risk">风控管理</el-menu-item>
+                </el-menu>
+            </div>
+            <div class="user-info">
+                <el-avatar icon="el-icon-user-solid"></el-avatar>
+                <span>管理员</span>
+                <el-button type="text" @click="logout" style="margin-left: 10px;">退出</el-button>
+            </div>
+        </div>
+
+        <!-- 主体内容 -->
+        <div class="container">
+            <!-- 左侧子功能导航 -->
+            <div class="sidebar">
+                <el-menu :default-active="activeSubNav" @select="handleSubNavSelect">
+                    <template v-if="activeNav === 'todo'">
+                        <el-menu-item index="todo">代办审核</el-menu-item>
+                    </template>
+                    <template v-else-if="activeNav === 'loan'">
+                        <el-menu-item index="loan">贷款管理</el-menu-item>
+                    </template>
+                    <template v-else-if="activeNav === 'user'">
+                        <el-menu-item index="user">用户管理</el-menu-item>
+                        <el-menu-item index="blacklist">黑名单管理</el-menu-item>
+                    </template>
+                </el-menu>
+            </div>
+
+            <!-- 主内容区 -->
+            <div class="main-content">
+                <!-- 代办审核页面 -->
+                <div v-if="activeNav === 'todo' && activeSubNav === 'todo'">
+                    <h2>代办审核</h2>
+                    <div class="table-container">
+                        <el-table :data="todoList" style="width: 100%" @row-click="handleTodoRowClick">
+                            <el-table-column prop="name" label="贷款人姓名" width="120"></el-table-column>
+                            <el-table-column prop="loanProduct" label="贷款项目" width="150"></el-table-column>
+                            <el-table-column prop="amount" label="贷款金额" width="120">
+                                <template slot-scope="scope">
+                                    {{ formatCurrency(scope.row.amount) }}
+                                </template>
+                            </el-table-column>
+                            <el-table-column prop="years" label="贷款年限" width="100"></el-table-column>
+                            <el-table-column prop="periods" label="贷款期数" width="100"></el-table-column>
+                            <el-table-column prop="applyTime" label="申请时间" width="180"></el-table-column>
+                        </el-table>
+                    </div>
+
+                    <!-- 代办审核详情页 -->
+                    <div v-if="selectedTodo" class="table-container">
+                        <h2>审核详情</h2>
+
+                        <div class="detail-section">
+                            <h3>用户基本信息</h3>
+                            <div class="detail-row">
+                                <div class="detail-label">真实姓名：</div>
+                                <div class="detail-value">{{ selectedTodo.name }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">手机号：</div>
+                                <div class="detail-value">{{ selectedTodo.phone }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">注册时间：</div>
+                                <div class="detail-value">{{ selectedTodo.registerTime }}</div>
+                            </div>
+
+                            <h3 style="margin-top: 20px;">认证材料</h3>
+                            <div class="auth-grid">
+                                <div class="auth-item">
+                                    <strong>银行卡</strong>
+                                    <p>已上传：{{ selectedTodo.auth.bankCard ? '是' : '否' }}</p>
+                                </div>
+                                <div class="auth-item">
+                                    <strong>工作证明</strong>
+                                    <p>已上传：{{ selectedTodo.auth.workProof ? '是' : '否' }}</p>
+                                </div>
+                                <div class="auth-item">
+                                    <strong>三方认证</strong>
+                                    <p>已上传：{{ selectedTodo.auth.thirdAuth ? '是' : '否' }}</p>
+                                </div>
+                                <div class="auth-item">
+                                    <strong>不动产认证</strong>
+                                    <p>已上传：{{ selectedTodo.auth.propertyAuth ? '是' : '否' }}</p>
+                                </div>
+                            </div>
+
+                            <div class="detail-row" style="margin-top: 15px;">
+                                <div class="detail-label">信誉分：</div>
+                                <div class="detail-value">{{ selectedTodo.creditScore }}</div>
+                            </div>
+                        </div>
+
+                        <div class="detail-section">
+                            <h3>贷款申请信息</h3>
+                            <div class="detail-row">
+                                <div class="detail-label">贷款项目：</div>
+                                <div class="detail-value">{{ selectedTodo.loanProduct }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">申请金额：</div>
+                                <div class="detail-value">{{ formatCurrency(selectedTodo.amount) }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">贷款年限：</div>
+                                <div class="detail-value">{{ selectedTodo.years }}年</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">贷款期数：</div>
+                                <div class="detail-value">{{ selectedTodo.periods }}期</div>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <el-button type="primary" size="large" @click="approveApplication">通过</el-button>
+                            <el-button type="danger" size="large" @click="rejectApplication">不通过</el-button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 贷款管理页面 -->
+                <div v-if="activeNav === 'loan' && activeSubNav === 'loan'">
+                    <div class="table-header">
+                        <h2>贷款管理</h2>
+                        <el-button type="primary" @click="addLoanProduct">新增贷款产品</el-button>
+                    </div>
+
+                    <div class="search-bar">
+                        <el-input placeholder="贷款项目名" v-model="loanSearch.name"></el-input>
+                        <el-input placeholder="贷款金额" v-model="loanSearch.amount"></el-input>
+                        <el-date-picker v-model="loanSearch.updateTime" type="daterange" range-separator="至"
+                            start-placeholder="更新开始日期" end-placeholder="更新结束日期">
+                        </el-date-picker>
+                        <el-date-picker v-model="loanSearch.createTime" type="daterange" range-separator="至"
+                            start-placeholder="创建开始日期" end-placeholder="创建结束日期">
+                        </el-date-picker>
+                        <el-button type="primary" @click="searchLoan">搜索</el-button>
+                    </div>
+
+                    <div class="table-container">
+                        <el-table :data="loanProducts" style="width: 100%" @row-click="handleLoanRowClick">
+                            <el-table-column prop="productName" label="贷款名" width="150"></el-table-column>
+                            <el-table-column prop="description" label="贷款描述" width="200">
+                                <template slot-scope="scope">
+                                    <div class="description-cell">{{ scope.row.description }}</div>
+                                </template>
+                            </el-table-column>
+                            <el-table-column prop="loanUsage" label="贷款用途" width="150"></el-table-column>
+                            <el-table-column prop="updateTime" label="更新时间" width="180"></el-table-column>
+                            <el-table-column prop="createTime" label="创建时间" width="180"></el-table-column>
+                            <el-table-column label="操作" width="120">
+                                <template slot-scope="scope">
+                                    <el-button type="text" @click.stop="editLoanProduct(scope.row)">更改</el-button>
+                                    <el-button type="text" @click.stop="deleteLoanProduct(scope.row)">删除</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </div>
+
+                    <!-- 贷款产品详情页 -->
+                    <div v-if="selectedLoan" class="table-container">
+                        <h2>贷款产品详情</h2>
+
+                        <div class="detail-section">
+                            <h3>基本信息</h3>
+                            <div class="detail-row">
+                                <div class="detail-label">贷款名：</div>
+                                <div class="detail-value">
+                                    <el-input v-model="selectedLoan.productName" placeholder="请输入贷款名"></el-input>
+                                </div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">贷款描述：</div>
+                                <div class="detail-value">
+                                    <el-input v-model="selectedLoan.description" placeholder="请输入贷款描述"></el-input>
+                                </div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">贷款用途：</div>
+                                <div class="detail-value">
+                                    <el-input v-model="selectedLoan.loanUsage" placeholder="请输入贷款用途"></el-input>
+                                </div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">贷款期数：</div>
+                                <div class="detail-value">
+                                    <el-input v-model="selectedLoan.terms" placeholder="请输入贷款期数"></el-input>
+                                </div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">更新时间：</div>
+                                <div class="detail-value">{{ selectedLoan.updateTime }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">创建时间：</div>
+                                <div class="detail-value">{{ selectedLoan.createTime }}</div>
+                            </div>
+                        </div>
+
+                        <div class="detail-section">
+                            <h3>贷款方案</h3>
+                            <el-table :data="selectedLoan.options" style="width: 100%">
+                                <el-table-column prop="loanPeriod" label="贷款期限(月)" width="120"></el-table-column>
+                                <el-table-column prop="loanAmount" label="贷款额度(元)" width="120">
+                                    <template slot-scope="scope">
+                                        {{ formatCurrency(scope.row.loanAmount) }}
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="interestRate" label="年化利率" width="120">
+                                    <template slot-scope="scope">
+                                        {{ (scope.row.interestRate * 100).toFixed(2) }}%
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="repaidType" label="还款方式" width="120"></el-table-column>
+                                <el-table-column label="操作" width="120">
+                                    <template slot-scope="scope">
+                                        <el-button type="text" @click="editLoanOption(scope.row)">更改</el-button>
+                                        <el-button type="text" @click="deleteLoanOption(scope.row)">删除</el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                            <el-button type="primary" style="margin-top: 15px;" @click="addLoanOption">新增方案</el-button>
+                        </div>
+
+                        <div class="action-buttons">
+                            <el-button type="primary" size="large" @click="saveLoanProduct">保存</el-button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 用户管理页面 -->
+                <div v-if="activeNav === 'user'">
+                    <!-- 用户管理 -->
+                    <div v-if="activeSubNav === 'user'">
+                        <div class="table-header">
+                            <h2>用户管理</h2>
+                            <el-button type="primary" @click="addUser">新增用户</el-button>
+                        </div>
+
+                        <div class="search-bar">
+                            <el-input placeholder="用户名" v-model="userSearch.username"></el-input>
+                            <el-input placeholder="手机号" v-model="userSearch.phone"></el-input>
+                            <el-date-picker v-model="userSearch.registerTime" type="daterange" range-separator="至"
+                                start-placeholder="注册开始日期" end-placeholder="注册结束日期">
+                            </el-date-picker>
+                            <el-date-picker v-model="userSearch.updateTime" type="daterange" range-separator="至"
+                                start-placeholder="更新开始日期" end-placeholder="更新结束日期">
+                            </el-date-picker>
+                            <el-button type="primary" @click="searchUser">搜索</el-button>
+                        </div>
+
+                        <div class="table-container">
+                            <el-table :data="users" style="width: 100%" @row-click="handleUserRowClick">
+                                <el-table-column prop="username" label="用户名" width="120"></el-table-column>
+                                <el-table-column prop="name" label="真实姓名" width="120"></el-table-column>
+                                <el-table-column prop="phone" label="手机号" width="150"></el-table-column>
+                                <el-table-column prop="registerTime" label="注册时间" width="180"></el-table-column>
+                                <el-table-column prop="updateTime" label="更新时间" width="180"></el-table-column>
+                                <el-table-column label="操作" width="120">
+                                    <template slot-scope="scope">
+                                        <el-button type="text" @click.stop="editUser(scope.row)">更改</el-button>
+                                        <el-button type="text" @click.stop="deleteUser(scope.row)">删除</el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </div>
+
+                        <!-- 用户详情页 -->
+                        <div v-if="selectedUser" class="table-container">
+                            <h2>用户详情</h2>
+
+                            <div class="detail-section">
+                                <h3>基础信息</h3>
+                                <div class="detail-row">
+                                    <div class="detail-label">用户名：</div>
+                                    <div class="detail-value">{{ selectedUser.username }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">头像：</div>
+                                    <div class="detail-value">
+                                        <el-avatar :src="selectedUser.avatar"></el-avatar>
+                                    </div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">真实姓名：</div>
+                                    <div class="detail-value">{{ selectedUser.name }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">手机号：</div>
+                                    <div class="detail-value">{{ selectedUser.phone }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">注册时间：</div>
+                                    <div class="detail-value">{{ selectedUser.registerTime }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">更新时间：</div>
+                                    <div class="detail-value">{{ selectedUser.updateTime }}</div>
+                                </div>
+                            </div>
+
+                            <div class="detail-section">
+                                <h3>认证信息</h3>
+                                <div class="auth-grid">
+                                    <div class="auth-item">
+                                        <strong>银行卡</strong>
+                                        <p>已认证：{{ selectedUser.auth.bankCard ? '是' : '否' }}</p>
+                                    </div>
+                                    <div class="auth-item">
+                                        <strong>工作证明</strong>
+                                        <p>已认证：{{ selectedUser.auth.workProof ? '是' : '否' }}</p>
+                                    </div>
+                                    <div class="auth-item">
+                                        <strong>三方认证</strong>
+                                        <p>已认证：{{ selectedUser.auth.thirdAuth ? '是' : '否' }}</p>
+                                    </div>
+                                    <div class="auth-item">
+                                        <strong>不动产认证</strong>
+                                        <p>已认证：{{ selectedUser.auth.propertyAuth ? '是' : '否' }}</p>
+                                    </div>
+                                </div>
+                                <div class="detail-row" style="margin-top: 15px;">
+                                    <div class="detail-label">信誉分：</div>
+                                    <div class="detail-value">{{ selectedUser.creditScore }}</div>
+                                </div>
+                            </div>
+
+                            <div class="detail-section">
+                                <h3>贷款申请</h3>
+                                <el-table :data="selectedUser.loanApplications" style="width: 100%">
+                                    <el-table-column prop="productName" label="贷款名" width="150"></el-table-column>
+                                    <el-table-column prop="description" label="贷款描述" width="200"></el-table-column>
+                                    <el-table-column prop="loanUsage" label="贷款用途" width="150"></el-table-column>
+                                    <el-table-column prop="loanPeriod" label="贷款期数" width="100"></el-table-column>
+                                    <el-table-column prop="loanAmount" label="贷款金额" width="120">
+                                        <template slot-scope="scope">
+                                            {{ formatCurrency(scope.row.loanAmount) }}
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column prop="years" label="贷款年限" width="100"></el-table-column>
+                                    <el-table-column prop="applyTime" label="申请时间" width="180"></el-table-column>
+                                </el-table>
+                            </div>
+
+                            <div class="detail-section">
+                                <h3>还款项目</h3>
+                                <el-table :data="selectedUser.repayments" style="width: 100%">
+                                    <el-table-column prop="orderId" label="订单号" width="150"></el-table-column>
+                                    <el-table-column prop="productName" label="贷款产品" width="150"></el-table-column>
+                                    <el-table-column prop="amount" label="还款金额" width="120">
+                                        <template slot-scope="scope">
+                                            {{ formatCurrency(scope.row.amount) }}
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column prop="dueDate" label="应还日期" width="150"></el-table-column>
+                                    <el-table-column prop="status" label="状态" width="100">
+                                        <template slot-scope="scope">
+                                            <el-tag :type="scope.row.status === '已还' ? 'success' : 'danger'">
+                                                {{ scope.row.status }}
+                                            </el-tag>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                            </div>
+
+                            <div class="detail-section">
+                                <h3>逾期/延期项目</h3>
+                                <el-table :data="selectedUser.overdueItems" style="width: 100%">
+                                    <el-table-column prop="orderId" label="订单号" width="150"></el-table-column>
+                                    <el-table-column prop="productName" label="贷款产品" width="150"></el-table-column>
+                                    <el-table-column prop="overdueDays" label="逾期天数" width="100"></el-table-column>
+                                    <el-table-column prop="overdueAmount" label="逾期金额" width="120">
+                                        <template slot-scope="scope">
+                                            {{ formatCurrency(scope.row.overdueAmount) }}
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column prop="applyTime" label="申请时间" width="180"></el-table-column>
+                                </el-table>
+                            </div>
+
+                            <div class="action-buttons">
+                                <el-button :type="selectedUser.blacklisted ? 'success' : 'danger'" size="large"
+                                    @click="toggleBlacklist">
+                                    {{ selectedUser.blacklisted ? '解除黑名单' : '加入黑名单' }}
+                                </el-button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 黑名单管理 -->
+                    <div v-if="activeSubNav === 'blacklist'">
+                        <div class="table-header">
+                            <h2>黑名单管理</h2>
+                            <el-button type="primary" @click="addBlacklist">新增黑名单</el-button>
+                        </div>
+
+                        <div class="search-bar">
+                            <el-input placeholder="用户名" v-model="blacklistSearch.username"></el-input>
+                            <el-input placeholder="手机号" v-model="blacklistSearch.phone"></el-input>
+                            <el-date-picker v-model="blacklistSearch.addTime" type="daterange" range-separator="至"
+                                start-placeholder="加入开始日期" end-placeholder="加入结束日期">
+                            </el-date-picker>
+                            <el-date-picker v-model="blacklistSearch.removeTime" type="daterange" range-separator="至"
+                                start-placeholder="解除开始日期" end-placeholder="解除结束日期">
+                            </el-date-picker>
+                            <el-button type="primary" @click="searchBlacklist">搜索</el-button>
+                        </div>
+
+                        <div class="table-container">
+                            <el-table :data="blacklist" style="width: 100%" @row-click="handleBlacklistRowClick">
+                                <el-table-column prop="username" label="用户名" width="120"></el-table-column>
+                                <el-table-column prop="name" label="真实姓名" width="120"></el-table-column>
+                                <el-table-column prop="phone" label="手机号" width="150"></el-table-column>
+                                <el-table-column prop="addTime" label="加入黑名单时间" width="180"></el-table-column>
+                                <el-table-column prop="removeTime" label="解除黑名单时间" width="180"></el-table-column>
+                                <el-table-column label="操作" width="100">
+                                    <template slot-scope="scope">
+                                        <el-button type="text" @click.stop="deleteBlacklist(scope.row)">删除</el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    activeNav: 'todo',
+                    activeSubNav: 'todo',
+
+                    // 代办审核数据
+                    todoList: [
+                        {
+                            id: 1,
+                            name: '张三',
+                            loanProduct: '极速贷 Pro',
+                            amount: 10000,
+                            years: 1,
+                            periods: 12,
+                            applyTime: '2023-10-15 14:30:25',
+                            phone: '13800138000',
+                            registerTime: '2022-05-10 09:15:30',
+                            auth: {
+                                bankCard: true,
+                                workProof: true,
+                                thirdAuth: false,
+                                propertyAuth: true
+                            },
+                            creditScore: 85
+                        },
+                        {
+                            id: 2,
+                            name: '李四',
+                            loanProduct: '安心贷',
+                            amount: 50000,
+                            years: 3,
+                            periods: 36,
+                            applyTime: '2023-10-16 10:20:15',
+                            phone: '13912345678',
+                            registerTime: '2021-12-05 16:45:20',
+                            auth: {
+                                bankCard: true,
+                                workProof: true,
+                                thirdAuth: true,
+                                propertyAuth: false
+                            },
+                            creditScore: 92
+                        }
+                    ],
+                    selectedTodo: null,
+
+                    // 贷款管理数据
+                    loanProducts: [
+                        {
+                            id: 1,
+                            productName: '极速贷 Pro',
+                            description: '审批快，放款快，适合急需资金的用户',
+                            loanUsage: '消费、装修、教育',
+                            updateTime: '2023-10-15 14:30:25',
+                            createTime: '2023-09-10 09:15:30',
+                            terms: [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36],
+                            options: [
+                                {
+                                    loanPeriod: 12,
+                                    loanAmount: 10000.00,
+                                    interestRate: 0.0450,
+                                    repaidType: '等额本息'
+                                },
+                                {
+                                    loanPeriod: 18,
+                                    loanAmount: 20000.00,
+                                    interestRate: 0.0550,
+                                    repaidType: '等额本金'
+                                }
+                            ]
+                        },
+                        {
+                            id: 2,
+                            productName: '安心贷',
+                            description: '低利率，适合长期资金需求',
+                            loanUsage: '购房、装修、大额消费',
+                            updateTime: '2023-10-10 11:20:35',
+                            createTime: '2023-08-15 14:25:40',
+                            terms: [6, 12, 18, 24, 30, 36, 42, 48, 54, 60],
+                            options: [
+                                {
+                                    loanPeriod: 24,
+                                    loanAmount: 50000.00,
+                                    interestRate: 0.0380,
+                                    repaidType: '等额本息'
+                                },
+                                {
+                                    loanPeriod: 36,
+                                    loanAmount: 100000.00,
+                                    interestRate: 0.0420,
+                                    repaidType: '等额本金'
+                                }
+                            ]
+                        }
+                    ],
+                    selectedLoan: null,
+                    loanSearch: {
+                        name: '',
+                        amount: '',
+                        updateTime: '',
+                        createTime: ''
+                    },
+
+                    // 用户管理数据
+                    users: [
+                        {
+                            id: 1,
+                            username: 'zhangsan',
+                            name: '张三',
+                            phone: '13800138000',
+                            registerTime: '2022-05-10 09:15:30',
+                            updateTime: '2023-09-15 14:30:25',
+                            avatar: 'https://via.placeholder.com/40',
+                            auth: {
+                                bankCard: true,
+                                workProof: true,
+                                thirdAuth: false,
+                                propertyAuth: true
+                            },
+                            creditScore: 85,
+                            loanApplications: [
+                                {
+                                    productName: '极速贷 Pro',
+                                    description: '审批快，放款快',
+                                    loanUsage: '消费、装修、教育',
+                                    loanPeriod: 12,
+                                    loanAmount: 10000,
+                                    years: 1,
+                                    applyTime: '2023-10-15 14:30:25'
+                                }
+                            ],
+                            repayments: [
+                                {
+                                    orderId: 'ORD20231015001',
+                                    productName: '极速贷 Pro',
+                                    amount: 1000,
+                                    dueDate: '2023-11-15',
+                                    status: '已还'
+                                },
+                                {
+                                    orderId: 'ORD20231015002',
+                                    productName: '极速贷 Pro',
+                                    amount: 1000,
+                                    dueDate: '2023-12-15',
+                                    status: '未还'
+                                }
+                            ],
+                            overdueItems: [
+                                {
+                                    orderId: 'ORD20230815001',
+                                    productName: '安心贷',
+                                    overdueDays: 15,
+                                    overdueAmount: 150,
+                                    applyTime: '2023-10-01 10:20:30'
+                                }
+                            ],
+                            blacklisted: false
+                        },
+                        {
+                            id: 2,
+                            username: 'lisi',
+                            name: '李四',
+                            phone: '13912345678',
+                            registerTime: '2021-12-05 16:45:20',
+                            updateTime: '2023-10-10 11:20:35',
+                            avatar: 'https://via.placeholder.com/40',
+                            auth: {
+                                bankCard: true,
+                                workProof: true,
+                                thirdAuth: true,
+                                propertyAuth: false
+                            },
+                            creditScore: 92,
+                            loanApplications: [
+                                {
+                                    productName: '安心贷',
+                                    description: '低利率，适合长期资金需求',
+                                    loanUsage: '购房、装修、大额消费',
+                                    loanPeriod: 36,
+                                    loanAmount: 100000,
+                                    years: 3,
+                                    applyTime: '2023-10-16 10:20:15'
+                                }
+                            ],
+                            repayments: [],
+                            overdueItems: [],
+                            blacklisted: true
+                        }
+                    ],
+                    selectedUser: null,
+                    userSearch: {
+                        username: '',
+                        phone: '',
+                        registerTime: '',
+                        updateTime: ''
+                    },
+
+                    // 黑名单数据
+                    blacklist: [
+                        {
+                            id: 2,
+                            username: 'lisi',
+                            name: '李四',
+                            phone: '13912345678',
+                            addTime: '2023-09-20 14:30:25',
+                            removeTime: ''
+                        },
+                        {
+                            id: 3,
+                            username: 'wangwu',
+                            name: '王五',
+                            phone: '13678901234',
+                            addTime: '2023-08-15 10:20:30',
+                            removeTime: '2023-10-05 16:45:20'
+                        }
+                    ],
+                    blacklistSearch: {
+                        username: '',
+                        phone: '',
+                        addTime: '',
+                        removeTime: ''
+                    }
+                }
+            },
+            methods: {
+                handleNavSelect(key) {
+                    this.activeNav = key;
+                    // 设置默认子导航
+                    if (key === 'todo') {
+                        this.activeSubNav = 'todo';
+                    } else if (key === 'loan') {
+                        this.activeSubNav = 'loan';
+                    } else if (key === 'user') {
+                        this.activeSubNav = 'user';
+                    }
+                    // 清空选中的行
+                    this.selectedTodo = null;
+                    this.selectedLoan = null;
+                    this.selectedUser = null;
+                },
+
+                handleSubNavSelect(key) {
+                    this.activeSubNav = key;
+                    // 清空选中的行
+                    this.selectedTodo = null;
+                    this.selectedLoan = null;
+                    this.selectedUser = null;
+                },
+
+                logout() {
+                    this.$confirm('确定要退出登录吗?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.$message({
+                            type: 'success',
+                            message: '退出成功!'
+                        });
+                        // 实际应用中这里应该跳转到登录页
+                    });
+                },
+
+                // 代办审核相关方法
+                handleTodoRowClick(row) {
+                    this.selectedTodo = row;
+                },
+
+                approveApplication() {
+                    this.$confirm('确定要通过此贷款申请吗?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.$message({
+                            type: 'success',
+                            message: '审核通过!'
+                        });
+                        // 从待办列表中移除
+                        this.todoList = this.todoList.filter(item => item.id !== this.selectedTodo.id);
+                        this.selectedTodo = null;
+                    });
+                },
+
+                rejectApplication() {
+                    this.$confirm('确定不通过此贷款申请吗?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.$message({
+                            type: 'success',
+                            message: '审核不通过!'
+                        });
+                        // 从待办列表中移除
+                        this.todoList = this.todoList.filter(item => item.id !== this.selectedTodo.id);
+                        this.selectedTodo = null;
+                    });
+                },
+
+                // 贷款管理相关方法
+                handleLoanRowClick(row) {
+                    this.selectedLoan = JSON.parse(JSON.stringify(row));
+                },
+
+                addLoanProduct() {
+                    this.$message.info('新增贷款产品功能待实现');
+                },
+
+                editLoanProduct(row) {
+                    this.selectedLoan = JSON.parse(JSON.stringify(row));
+                },
+
+                deleteLoanProduct(row) {
+                    this.$confirm('确定要删除此贷款产品吗?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.loanProducts = this.loanProducts.filter(item => item.id !== row.id);
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功!'
+                        });
+                    });
+                },
+
+                searchLoan() {
+                    this.$message.info('搜索贷款产品功能待实现');
+                },
+
+                editLoanOption(option) {
+                    this.$message.info('编辑贷款方案功能待实现');
+                },
+
+                deleteLoanOption(option) {
+                    this.$confirm('确定要删除此贷款方案吗?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.selectedLoan.options = this.selectedLoan.options.filter(item =>
+                            !(item.loanPeriod === option.loanPeriod &&
+                                item.loanAmount === option.loanAmount &&
+                                item.interestRate === option.interestRate &&
+                                item.repaidType === option.repaidType)
+                        );
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功!'
+                        });
+                    });
+                },
+
+                addLoanOption() {
+                    this.$message.info('新增贷款方案功能待实现');
+                },
+
+                saveLoanProduct() {
+                    this.$confirm('确定要保存对此贷款产品的修改吗?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        // 更新贷款产品列表
+                        const index = this.loanProducts.findIndex(item => item.id === this.selectedLoan.id);
+                        if (index !== -1) {
+                            this.loanProducts.splice(index, 1, this.selectedLoan);
+                        }
+
+                        this.$message({
+                            type: 'success',
+                            message: '保存成功!'
+                        });
+                        this.selectedLoan = null;
+                    });
+                },
+
+                // 用户管理相关方法
+                handleUserRowClick(row) {
+                    this.selectedUser = JSON.parse(JSON.stringify(row));
+                },
+
+                addUser() {
+                    this.$message.info('新增用户功能待实现');
+                },
+
+                editUser(row) {
+                    this.selectedUser = JSON.parse(JSON.stringify(row));
+                },
+
+                deleteUser(row) {
+                    this.$confirm('确定要删除此用户吗?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.users = this.users.filter(item => item.id !== row.id);
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功!'
+                        });
+                    });
+                },
+
+                searchUser() {
+                    this.$message.info('搜索用户功能待实现');
+                },
+
+                toggleBlacklist() {
+                    const action = this.selectedUser.blacklisted ? '解除黑名单' : '加入黑名单';
+                    this.$confirm(`确定要${action}此用户吗?`, '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.selectedUser.blacklisted = !this.selectedUser.blacklisted;
+
+                        // 更新黑名单列表
+                        if (this.selectedUser.blacklisted) {
+                            // 加入黑名单
+                            this.blacklist.push({
+                                id: this.selectedUser.id,
+                                username: this.selectedUser.username,
+                                name: this.selectedUser.name,
+                                phone: this.selectedUser.phone,
+                                addTime: new Date().toLocaleString(),
+                                removeTime: ''
+                            });
+                        } else {
+                            // 从黑名单中移除
+                            const index = this.blacklist.findIndex(item => item.id === this.selectedUser.id);
+                            if (index !== -1) {
+                                this.blacklist[index].removeTime = new Date().toLocaleString();
+                            }
+                        }
+
+                        this.$message({
+                            type: 'success',
+                            message: `${action}成功!`
+                        });
+                    });
+                },
+
+                // 黑名单管理相关方法
+                handleBlacklistRowClick(row) {
+                    // 跳转到用户详情页
+                    const user = this.users.find(item => item.id === row.id);
+                    if (user) {
+                        this.activeSubNav = 'user';
+                        this.selectedUser = JSON.parse(JSON.stringify(user));
+                    }
+                },
+
+                addBlacklist() {
+                    this.$message.info('新增黑名单功能待实现');
+                },
+
+                deleteBlacklist(row) {
+                    this.$confirm('确定要删除此黑名单记录吗?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.blacklist = this.blacklist.filter(item => item.id !== row.id);
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功!'
+                        });
+                    });
+                },
+
+                searchBlacklist() {
+                    this.$message.info('搜索黑名单功能待实现');
+                },
+
+                // 工具方法
+                formatCurrency(value) {
+                    return '¥' + value.toLocaleString();
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

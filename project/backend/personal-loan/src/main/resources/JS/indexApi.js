@@ -48,7 +48,7 @@ AdminWeb.DOM_ELEMENTS = {
 // ==================== API 请求封装 ====================
 AdminWeb.API_CLIENT = {
     // 通用请求方法
-    
+
     request: async function (url, options = {}) {
         // 网络申请日志
         console.log(`🔄 API请求: ${options.method || 'GET'} ${url}`, {
@@ -161,9 +161,9 @@ AdminWeb.API_CLIENT = {
             body: JSON.stringify(data)
         })
     },
-    
+
     // 添加基础URL获取方法
-    _getBaseUrl: function() {
+    _getBaseUrl: function () {
         return AdminWeb.API_CONFIG.baseUrl
     },
     // 新增贷款产品
@@ -172,9 +172,9 @@ AdminWeb.API_CLIENT = {
         return this.post(AdminWeb.API_CONFIG.endpoints.addLoanProduct, productData)
     },
     // 根据信誉分表达式查询用户
-    searchUsersByCredit: function(expr) {
+    searchUsersByCredit: function (expr) {
         const url = `/api/users/search-by-credit?expr=${encodeURIComponent(expr)}`
-    return this.get(url)
+        return this.get(url)
     }
 }
 // ==================== JWT 工具函数 ====================
@@ -200,7 +200,7 @@ AdminWeb.JWT_UTILS = {
         // 设置过期时间（当前时间 + 24小时，根据jwt.expiration=86400000）
         const expiryTime = Date.now() + (24 * 60 * 60 * 1000); // 24小时
         localStorage.setItem(AdminWeb.JWT_CONFIG.tokenExpiryKey, expiryTime.toString());
-        
+
         console.log('Token保存成功，过期时间:', new Date(expiryTime).toLocaleString());
     },
 

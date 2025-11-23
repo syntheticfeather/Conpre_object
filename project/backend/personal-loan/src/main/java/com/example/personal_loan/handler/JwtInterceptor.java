@@ -21,6 +21,10 @@ public class JwtInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String uri = request.getRequestURI();
         log.info("【JwtInterceptor】请求路径: " + uri);
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            log.info("【JwtInterceptor】OPTIONS 请求，不做任何校验");
+            return true; // 不做任何校验
+        }
         String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             log.error("Missing or invalid Authorization header");

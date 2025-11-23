@@ -71,13 +71,14 @@ public class UserServiceImpl implements UserService {
 
         User user = userMapper.findByPhone(request.getPhone());
         if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new BusinessException(400,"用户名或密码错误");
+            throw new BusinessException(400, "用户名或密码错误");
         }
 
         String token = jwtUtil.generateAccessToken(user.getPhone(), user.getId().toString());
 
         String refreshToken = jwtUtil.generateRefreshToken(user.getId().toString());
         // 后期使用，存储在redis中?
+        log.info("token:" + token);
         RedisUtil.set(RedisUtil.JWT_REFRESH_CACHE_TOKEN_PREFIX_STRING + user.getId(), refreshToken);
 
         return new LoginResponse(token);
@@ -87,7 +88,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public String refreshToken(Long id) {
         String refreshToken = RedisUtil.get(JWT_REFRESH_CACHE_TOKEN_PREFIX_STRING + id, String.class);
-        if (!jwtUtil.validateToken(refreshToken)) {
+        if (refreshToken == null || !jwtUtil.validateToken(refreshToken)) {
             log.info("refresh token 无效, 需重新登录");
             throw new InvalidCredentialsException("refresh token 无效, 需重新登录");
         }
@@ -197,14 +198,13 @@ public class UserServiceImpl implements UserService {
 
     /*
     * 用户使用
-    */
-
+     */
     @Override
     @Transactional
-    public UserSelfResponse getUserSelfInfo(Long userId){
+    public UserSelfResponse getUserSelfInfo(Long userId) {
         User user = userMapper.findById(userId);
         if (user == null) {
-            throw new BusinessException(404,"用户不存在"); 
+            throw new BusinessException(404, "用户不存在");
         }
 
         return new UserSelfResponse(
@@ -216,19 +216,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserSelfResponse updateUserSelfInfo(UserUpdateRequest request,Long id){
+    public UserSelfResponse updateUserSelfInfo(UserUpdateRequest request, Long id) {
         User user = userMapper.findById(id);
         if (user == null) {
-            throw new BusinessException(404,"用户不存在");
+            throw new BusinessException(404, "用户不存在");
         }
-        if(!id.equals(user.getId())){
-            throw new BusinessException(400,"只能更新自己的信息");
+        if (!id.equals(user.getId())) {
+            throw new BusinessException(400, "只能更新自己的信息");
         }
         // 仅更新允许的字段,用户名和头像
-        if(request.getUserName()!=null){
+        if (request.getUserName() != null) {
             user.setUserName(request.getUserName());
         }
-        if(request.getAvatar()!=null){
+        if (request.getAvatar() != null) {
             user.setAvatar(request.getAvatar());
         }
 
@@ -241,11 +241,10 @@ public class UserServiceImpl implements UserService {
                 user.getAvatar()
         );
     }
-   
+
     /*
     * 管理员使用
-    */
-
+     */
     @Override
     public List<UserSearchDto> searchUsersByCreditScore(String expr) {
         CreditExpr parsed = parseCreditExpression(expr.trim());
@@ -257,9 +256,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<AdminUserListResponse> adminGetAllUsersWithStats(){
+    public List<AdminUserListResponse> adminGetAllUsersWithStats() {
         // 查询所有用户（带用户名）
-        List<User> users = userMapper.findAll(); 
+        List<User> users = userMapper.findAll();
 
         // 遍历每个用户，计算统计信息
         return users.stream().map(user -> {
@@ -273,18 +272,18 @@ public class UserServiceImpl implements UserService {
             String loanStatus;
             if (orders.isEmpty()) {
                 loanStatus = "无借贷";
-            } else if(orders.stream().anyMatch(order -> OrderStatus.OVERDUE.equals(order.getStatus()))){
+            } else if (orders.stream().anyMatch(order -> OrderStatus.OVERDUE.equals(order.getStatus()))) {
                 loanStatus = "逾期";
-            } else{
+            } else {
                 loanStatus = "正常";
             }
             return new AdminUserListResponse(
-                user.getId(),
-                user.getUserName(),
-                loanStatus,
-                transactionCount,
-                totalLoanAmount,
-                totalRepaidAmount
+                    user.getId(),
+                    user.getUserName(),
+                    loanStatus,
+                    transactionCount,
+                    totalLoanAmount,
+                    totalRepaidAmount
             );
         }).collect(Collectors.toList());
     }
@@ -309,40 +308,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AdminGetUserResponse adminGetUser(Long userId){
+    public AdminGetUserResponse adminGetUser(Long userId) {
         User user = userMapper.findById(userId);
         if (user == null) {
             throw new BusinessException(404, "用户不存在");
         }
 
         // 查询认证信息（含 creditScore）
-        UserCert cert = userCertMapper.selectByUserId(userId); 
+        UserCert cert = userCertMapper.selectByUserId(userId);
         Integer creditScore = (cert != null) ? cert.getCreditScore() : null;
 
         // 查询黑名单等级
         BlackUser blackUser = blacklistMapper.selectByUserId(userId);
         int blackLevel = (blackUser != null) ? blackUser.getBlackLevel() : 0;
 
-
         return new AdminGetUserResponse(
-            user.getId(),
-            user.getUserName(),
-            user.getAvatar(),
-            user.getPhone(),
-            user.getIdCard(),
-            user.getRole(),
-            creditScore,
-            blackLevel,
-            user.getCreateTime(),
-            user.getUpdateTime()
+                user.getId(),
+                user.getUserName(),
+                user.getAvatar(),
+                user.getPhone(),
+                user.getIdCard(),
+                user.getRole(),
+                creditScore,
+                blackLevel,
+                user.getCreateTime(),
+                user.getUpdateTime()
         );
     }
-
-
-
-
-
-
 
     // 内部类
     private static class CreditExpr {
