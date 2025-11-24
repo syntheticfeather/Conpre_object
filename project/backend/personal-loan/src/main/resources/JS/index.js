@@ -34,12 +34,12 @@ function init() {
 // ==================== 事件绑定函数 ====================
 function bindEventListeners() {
     // 导航菜单切换
-    document.querySelectorAll('.nav-link').forEach(link => {
+    document.querySelectorAll('.dashboard').forEach(link => {
         link.addEventListener('click', function(e) {
         e.preventDefault()
         
         // 移除所有活动状态
-        document.querySelectorAll('.nav-link').forEach(item => {
+        document.querySelectorAll('.dashboard').forEach(item => {
             item.classList.remove('active')
         })
         
@@ -262,12 +262,38 @@ window.addEventListener('resize', () => {
     // barChart.resize();
 })
 
+// ====================== 贷款申请处理面板 =====================
+// 通过申请ID获取申请详情
+async function fetchApplicationById(applicationId) {
+    const url = `/api/loan-applications/${applicationId}`;
+    console.log(`📡 [GET] 请求申请详情: ${url}`);
+    try {
+        const response = await AdminWeb.API_CLIENT.get(url);
+        console.log(`✅ [响应] 申请 ${applicationId} 详情:`, response);
+        return response.data;
+    } catch (error) {
+        console.error(`❌ [错误] 获取申请 ${applicationId} 失败:`, error);
+        alert('申请详情加载失败');
+    }
+}
+// 通过用户ID获取用户所有申请
+async function fetchApplicationsByUser(userId) {
+    const url = `/api/loan-applications/user/${userId}`;
+    console.log(`📡 [GET] 请求用户所有申请: ${url}`);
+    try {
+        const response = await AdminWeb.API_CLIENT.get(url);
+        console.log(`✅ [响应] 用户 ${userId} 的所有申请:`, response);
+        return response.data;
+    } catch (error) {
+        console.error(`❌ [错误] 获取用户 ${userId} 的申请失败:`, error);
+        alert('申请记录加载失败');
+    }
+}
+
+
 // ==================== 贷款项目管理面板处理 ====================
 
-// ==================== 用户管理面板处理 ====================
-const creditScoreInput = document.getElementById('creditScoreInput')
-// ================================== 弹窗处理 ===================================
-// ==================== 添加贷款项目弹窗处理 ====================
+// ============== 添加贷款项目弹窗处理 ===============
 // 数据输入表格的行增减处理
 const addBtn = document.getElementById('add-row-btn')
 const table = document.getElementById('option-table')
@@ -310,7 +336,7 @@ document.querySelectorAll('.delete-btn').forEach(btn => {
     this.closest('tr').remove()
   })
 })
-// =============== 添加贷款产品功能实现函数 ==============
+// ============= 添加贷款产品功能实现函数 =============
 // 获取弹窗中的表单数据
 function handleNewLoanProductData() {
     // 获取基础信息
@@ -411,11 +437,138 @@ function resetAddLoanProductForm() {
         })
     })
 }
+// 获取所有贷款产品
+async function fetchAllLoanProducts() {
+    const url = '/api/loan-products/admin/';
+    console.log(`📡 [GET] 请求所有贷款产品: ${url}`);
+    try {
+        const response = await AdminWeb.API_CLIENT.get(url);
+        console.log(`✅ [响应] 所有贷款产品:`, response);
+        return response.data;
+    } catch (error) {
+        console.error(`❌ [错误] 获取产品列表失败:`, error);
+        alert('加载产品失败');
+    }
+}
+// 获取单个贷款产品详情
+async function fetchLoanProductById(productId) {
+    const url = `/api/loan-products/admin/${productId}`;
+    console.log(`📡 [GET] 请求产品详情: ${url}`);
+    try {
+        const response = await AdminWeb.API_CLIENT.get(url);
+        console.log(`✅ [响应] 产品 ${productId} 详情:`, response);
+        return response.data;
+    } catch (error) {
+        console.error(`❌ [错误] 获取产品 ${productId} 失败:`, error);
+    }
+}
+// 更新单个贷款产品
+async function updateLoanProduct(productId, updateData) {
+    const url = `/api/loan-products/admin/products/${productId}`;
+    console.log(`📡 [PATCH] 更新产品: ${url}`, '请求体:', updateData);
+    try {
+        const response = await AdminWeb.API_CLIENT.request(url, {
+            method: 'PATCH',
+            body: JSON.stringify(updateData)
+        });
+        console.log(`✅ [响应] 产品 ${productId} 更新成功:`, response);
+        alert('产品信息更新成功');
+        return response.data;
+    } catch (error) {
+        console.error(`❌ [错误] 更新产品 ${productId} 失败:`, error);
+        alert('更新失败');
+    }
+}
+// 删除单个贷款产品
+async function deleteLoanProduct(productId) {
+    if (!confirm(`确定删除产品 ID=${productId}？此操作不可逆！`)) return;
+    const url = `/api/loan-products/admin/products/${productId}`;
+    console.log(`📡 [DELETE] 删除产品: ${url}`);
+    try {
+        const response = await AdminWeb.API_CLIENT.request(url, { method: 'DELETE' });
+        console.log(`✅ [响应] 产品 ${productId} 删除成功:`, response);
+        alert('删除成功');
+        return true;
+    } catch (error) {
+        console.error(`❌ [错误] 删除产品 ${productId} 失败:`, error);
+        alert('删除失败');
+    }
+}
+// 批量删除贷款产品
+async function batchDeleteLoanProducts(productIds) {
+    const url = '/api/loan-products/admin/products/batch-delete';
+    const payload = { productIds };
+    console.log(`📡 [POST] 批量删除产品: ${url}`, '请求体:', payload);
+    try {
+        const response = await AdminWeb.API_CLIENT.post(url, payload);
+        console.log(`✅ [响应] 批量删除产品成功:`, response);
+        alert('批量删除成功');
+        return response.data;
+    } catch (error) {
+        console.error(`❌ [错误] 批量删除产品失败:`, error);
+        alert('批量删除失败');
+    }
+}
+// 批量创建产品选项
+async function batchCreateProductOptions(productId, options) {
+    const url = '/api/loan-products/admin/options/batch-create';
+    const payload = { productId, options };
+    console.log(`📡 [POST] 批量添加选项: ${url}`, '请求体:', payload);
+    try {
+        const response = await AdminWeb.API_CLIENT.post(url, payload);
+        console.log(`✅ [响应] 批量添加选项成功:`, response);
+        return response.data;
+    } catch (error) {
+        console.error(`❌ [错误] 批量添加选项失败:`, error);
+        alert('添加选项失败');
+    }
+}
+// 批量更新产品选项
+async function deleteProductOption(optionId) {
+    const url = `/api/loan-products/admin/options/${optionId}`;
+    console.log(`📡 [DELETE] 删除选项: ${url}`);
+    try {
+        const response = await AdminWeb.API_CLIENT.request(url, { method: 'DELETE' });
+        console.log(`✅ [响应] 选项 ${optionId} 删除成功:`, response);
+        return response;
+    } catch (error) {
+        console.error(`❌ [错误] 删除选项 ${optionId} 失败:`, error);
+    }
+}
 
-// ============== 根据信用分查询用户实现函数 ==========
+
+// ==================== 用户管理面板处理 ====================
+
+// 获取用户列表
+async function fetchUserStats() {
+    const url = '/api/users/admin/stats'
+    console.log(`📡 [GET] 请求用户状态列表: ${url}`)
+    try {
+        const response = await AdminWeb.API_CLIENT.get(url)
+        console.log(`✅ [响应] 用户状态列表:`, response)
+        return response.data
+    } catch (error) {
+        console.error(`❌ [错误] 获取用户状态列表失败:`, error)
+        alert('获取用户列表失败')
+    }
+}
+// 通过用户ID获取单个用户详情
+async function fetchUserById(userId) {
+    const url = `/api/users/admin/${userId}`
+    console.log(`📡 [GET] 请求用户详情: ${url}`)
+    try {
+        const response = await AdminWeb.API_CLIENT.get(url)
+        console.log(`✅ [响应] 用户 ${userId} 详情:`, response)
+        return response.data;
+    } catch (error) {
+        console.error(`❌ [错误] 获取用户 ${userId} 失败:`, error)
+        alert('获取用户信息失败');
+    }
+}
+// 根据信用分查询用户 
 // 绑定信誉分查询按钮事件
 document.getElementById('credit-search-btn').addEventListener('click', async function() {
-    console.log('开始根据信用分查询用户')
+    console.log(`📡 [GET] 请求按信誉分降序用户列表: ${url}`);
     const expr = document.getElementById('creditExprInput').value.trim()
     if (!expr) {
         alert('请输入信誉分查询表达式，例如：<100 或 >=80')
@@ -423,12 +576,13 @@ document.getElementById('credit-search-btn').addEventListener('click', async fun
     }
     try {
         const users = await API_CLIENT.searchUsersByCredit(expr)
+        console.log(`✅ [响应] 信誉分排序用户列表:`, response)
         const tbody = document.getElementById('searchResultBody')
         const container = document.getElementById('searchResultContainer')
         // 清空旧结果
         tbody.innerHTML = ''
         if (users.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">未找到符合条件的用户</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">未找到符合条件的用户</td></tr>`
         } else {
             users.forEach(user => {
                 const tr = document.createElement('tr')
@@ -448,7 +602,7 @@ document.getElementById('credit-search-btn').addEventListener('click', async fun
     } catch (error) {
         console.error('查询用户失败:', error)
         alert('查询失败：' + (error.message || '请检查表达式格式'))
-        document.getElementById('searchResultContainer').style.display = 'none';
+        document.getElementById('searchResultContainer').style.display = 'none'
     }
 })
 
@@ -457,3 +611,67 @@ document.getElementById('credit-search-btn').addEventListener('click', async fun
 document.addEventListener('DOMContentLoaded', function() {
     init()
 })
+
+
+
+// ==================== 待办审核面板处理 ====================
+// 分页实现-待完善
+let currentPage = 1;
+const pageSize = 10;
+
+// 假设这是你的原始数据
+// const data = [
+//   { id: 1, name: "张三", ... },
+//   { id: 2, name: "李四", ... },
+//   // ... 共 100 条
+// ];
+
+function renderTable() {
+  const start = (currentPage - 1) * pageSize;
+  const end = start + pageSize;
+  const pageData = data.slice(start, end);
+
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = '';
+
+  pageData.forEach(item => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${item.id}</td>
+      <td>${item.name}</td>
+      <td>${item.productName}</td>
+      <td>${item.amount}</td>
+      <td>${item.rate}</td>
+      <td>${item.duration}</td>
+      <td>${item.periods}</td>
+      <td>${item.repayType}</td>
+      <td>${item.status}</td>
+      <td>${item.applyTime}</td>
+      <td>
+        <button onclick="viewDetail(${item.id})">查看详情</button>
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function nextPage() {
+  if (currentPage < totalPages) {
+    currentPage++;
+    renderTable();
+    updatePaginationInfo();
+  }
+}
+
+function prevPage() {
+  if (currentPage > 1) {
+    currentPage--;
+    renderTable();
+    updatePaginationInfo();
+  }
+}
+
+function updatePaginationInfo() {
+  document.getElementById('current-page').textContent = currentPage;
+  document.getElementById('total-pages').textContent = totalPages;
+}
