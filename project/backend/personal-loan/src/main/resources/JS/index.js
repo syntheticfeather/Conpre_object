@@ -8,80 +8,91 @@ const JWT_UTILS = AdminWeb.JWT_UTILS
 function init() {
     console.log('开始初始化...')
     
-    // 检查令牌时效
-    // checkLoginStatus()
+    try {
+        // 检查令牌时效
+        // checkLoginStatus()
 
-    // 显示首页面板
-    DOM_ELEMENTS.homePageContent.style.display = 'flex'
-    
-    // 绑定事件监听
-    bindEventListeners()
-    
-    // 初始化所有数据
-    updateData()
-    // updateLoanApplications()
-    
-    // 强制图表重新渲染,待优化
-    setTimeout(function() {
-        if (pieChart) pieChart.resize();
-        if (lineChart1) lineChart1.resize();
-        if (lineChart2) lineChart2.resize();
-    }, 200);
-    
-    console.log('初始化完成')
+        // 默认显示待办审核面板
+        switchToPanel('loan-apply')
+        
+        // 绑定事件监听
+        bindEventListeners()
+        
+        // 初始化图表
+        initCharts()
+        
+        // 初始化所有数据
+        // updateData()
+
+        console.log('初始化完成')
+    } catch (error) {
+        console.error('初始化失败:', error)
+        alert('页面初始化失败，请刷新页面重试')
+    }
+}
+
+// 初始化图表（单独函数，便于错误处理）
+function initCharts() {
+    try {
+        // 检查echarts是否加载
+        if (typeof echarts === 'undefined') {
+            console.warn('echarts未加载，跳过图表初始化');
+            return;
+        }
+        
+        // 饼图初始化
+        const pieDom = document.getElementById('pie-chart');
+        if (pieDom) {
+            const pieChart = echarts.init(pieDom);
+            const pieOption = {
+                title: { text: '用户等级分布' },
+                series: [{
+                    type: 'pie',
+                    data: [
+                        { name: '等级A', value: 2500 },
+                        { name: '等级B', value: 2800 },
+                        { name: '等级C', value: 3000 },
+                        { name: '等级D', value: 1100 }
+                    ]
+                }]
+            };
+            pieChart.setOption(pieOption);
+            window.pieChart = pieChart; // 保存到全局以便后续使用
+        }
+        
+        // 其他图表初始化...
+        
+    } catch (error) {
+        console.error('图表初始化失败:', error);
+    }
 }
 
 // ==================== 事件绑定函数 ====================
 function bindEventListeners() {
     // 导航菜单切换
-    document.querySelectorAll('.dashboard').forEach(link => {
-        link.addEventListener('click', function(e) {
-        e.preventDefault()
-        
-        // 移除所有活动状态
-        document.querySelectorAll('.dashboard').forEach(item => {
-            item.classList.remove('active')
-        })
-        
-        // 添加当前活动状态
-        this.classList.add('active')
-        
-        // 更新页面标题
-        const target = this.getAttribute('data-target')
-        document.querySelector('.header h2').textContent = this.querySelector('span').textContent
-        
-        // 隐藏所有面板
-        document.querySelectorAll('.home-dashboard, .loan-dashboard, .user-dashboard, .risk-dashboard, .data-dashboard').forEach(panel => {
-            panel.style.display = 'none'
-        })
-        
-        // 显示对应面板
-        switch (target) {
-            case 'home-page':
-            document.getElementById('home-page-content').style.display = 'flex'
-            console.log('切换到首页')
-            break
-            case 'loan-management':
-            document.getElementById('loan-management-content').style.display = 'flex'
-            console.log('切换到贷款管理')
-            break
-            case 'user-management':
-            document.getElementById('user-management-content').style.display = 'flex'
-            console.log('切换到用户管理')
-            break
-            case 'riskAndCollection-management':
-            document.getElementById('riskAndCollection-management-content').style.display = 'grid'
-            console.log('切换到风险与催收管理')
-            break
-            case 'dataAndSystem-management':
-            document.getElementById('dataAndSystem-management-content').style.display = 'grid'
-            console.log('切换到数据统计与系统管理')
-            break
-            default:
-            break
+    console.log('绑定事件监听器...')
+
+    // 顶部导航菜单切换 - 使用事件委托
+    document.querySelector('.nav-menu').addEventListener('click', function(e) {
+        if (e.target.closest('.nav-link')) {
+            const link = e.target.closest('.nav-link')
+            const target = link.getAttribute('data-target')
+            if (target) {
+                switchToPanel(target)
+            }
         }
+    })
+
+    // 侧边栏导航切换
+    document.querySelectorAll('.side-link').forEach(button => {
+        button.addEventListener('click', function() {
+            const target = this.getAttribute('data-target')
+            if (target) {
+                switchToPanel(target)
+            }
         })
     })
+
     // 弹窗控制
     document.querySelectorAll('[data-modal]').forEach(button => {
         button.addEventListener('click', function() {
@@ -128,171 +139,198 @@ function bindEventListeners() {
             }
         }
     })
-
 }
 
-// ==================== 首页面板处理 ====================
-// 饼图
-const pieDom = document.getElementById('pie-chart')
-const pieChart = echarts.init(pieDom, null, {
-  width: 450, // 强制饼图canvas宽度
-  height: 225 // 强制饼图canvas高度
-})
-const pieOption = {
-    title: { text: '' },
-    series: [
-    {
-        type: 'pie',
-        data: [
-        { name: '等级A', value: 2500 },
-        { name: '等级B', value: 2800 },
-        { name: '等级C', value: 3000 },
-        { name: '等级D', value: 1100 }
-        ]
+// 显示面板
+function switchToPanel(target) {
+    console.log('切换到面板:', target)
+    
+// 隐藏所有面板
+    document.querySelectorAll('.dashboard').forEach(panel => {
+        panel.style.display = 'none'
+        panel.classList.remove('active') // 移除active类
+    })
+    
+    // 更新导航激活状态
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active')
+    })
+    
+    // 激活当前导航按钮
+    const activeNav = document.querySelector(`.nav-link[data-target="${target}"]`)
+    if (activeNav) {
+        activeNav.classList.add('active')
     }
-    ]
-}
-pieChart.setOption(pieOption)
-
-// 月度交易次数折线图 
-const lineDom1 = document.getElementById('line-chart-1')
-const lineChart1 = echarts.init(lineDom1)
-const lineOption1 = {
-    title: { text: '月度交易次数趋势（折线图）' },
-    legend: { data: ['交易次数'] }, // 
-    xAxis: { 
-        type: 'category', 
-        data: ['1-3号', '4-6号', '7-9号', '10-12号', '13-15号', '16-18号', '19-21号', '22-24号', '25-27号', '28-30号'], // 修复笔误：22-14号 → 22-24号
-        axisLabel: { interval: 0, rotate: 30 } // 
-    },
-    yAxis: { type: 'value', name: '交易次数' }, // 补充y轴名称
-    series: [{ 
-        name: '交易次数', 
-        type: 'line', 
-        data: [7000, 6000, 3700, 5000, 7600, 9000, 5900, 7500, 3500, 5500],
-        smooth: true, 
-        lineStyle: { width: 3 },  
-        itemStyle: { color: '#1890ff' }
-    }]
-}
-lineChart1.setOption(lineOption1)
-
-// 月度贷款与还款总额折线图
-const lineDom2 = document.getElementById('line-chart-2')
-const lineChart2 = echarts.init(lineDom2)
-const lineOption2 = {
-    title: { text: '月度贷款与还款总额趋势（折线图）' },
-    legend: { data: ['贷款总额', '还款总额'] }, 
-    xAxis: { 
-        type: 'category', 
-        data: ['1-3号', '4-6号', '7-9号', '10-12号', '13-15号', '16-18号', '19-21号', '22-24号', '25-27号', '28-30号'], // 修复笔误+统一x轴数据长度
-        axisLabel: { interval: 0, rotate: 30 }
-    },
-    yAxis: { type: 'value', name: '金额（元）' }, 
-    series: [
-        { 
-            name: '贷款总额',
-            type: 'line', 
-            data: [7000, 6000, 3700, 5000, 7600, 9000, 5900, 7500, 3500, 5500],
-            smooth: true,
-            lineStyle: { width: 3 },
-            itemStyle: { color: '#ff4d4f' }, 
-            areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(255,77,79,0.3)' }, { offset: 1, color: 'rgba(255,77,79,0)' }]) }
-        },
-        { 
-            name: '还款总额', 
-            type: 'line', 
-            data: [5000, 4500, 2800, 3800, 6000, 7200, 4800, 6200, 2700, 4200], 
-            smooth: true,
-            lineStyle: { width: 3 },
-            itemStyle: { color: '#52c41a' }, 
-            areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(82,196,26,0.3)' }, { offset: 1, color: 'rgba(82,196,26,0)' }]) }
+    
+    // 显示目标面板
+    const targetPanel = document.getElementById(`${target}-content`)
+    if (targetPanel) {
+        // 根据面板类型设置显示方式
+        let displayStyle = 'flex'
+        
+        // 特殊面板类型处理
+        if (target === 'riskAndCollection-management' || target === 'dataAndSystem-management') {
+            displayStyle = 'grid'
         }
-    ]
-}
-lineChart2.setOption(lineOption2)
-
-// 实时更新数据的函数
-function updateData() {
-    // -------------- 首页数据更新 ----------
-    // 更新用户概览数据
-    const newTotal = Math.floor(Math.random() * 5000) + 2000; // 总用户数随机
-    const newNewUser = Math.floor(Math.random() * 200); // 新增用户随机
-    const newOnline = Math.floor(Math.random() * 2000) + 1000; // 在线用户随机
-    const newVisitor = Math.floor(Math.random() * 500); // 游客数量随机
-    // 修改文本内容
-    // totalUserLi.textContent = `总用户数:${newTotal}`;
-    // newUserLi.textContent = `新增用户:${newNewUser}`;
-    // onlineUserLi.textContent = `在线用户:${newOnline}`;
-    // visitorLi.textContent = `游客数量:${newVisitor}`;
-
-    // 用户等级分布饼图数据更新
-    // 生成随机数据
-    const randomPieData = [
-    { name: '等级A', value: Math.floor(Math.random() * 3000) + 1000 },
-    { name: '等级B', value: Math.floor(Math.random() * 2500) + 1000 },
-    { name: '等级C', value: Math.floor(Math.random() * 2000) + 1000 },
-    { name: '等级D', value: Math.floor(Math.random() * 1500) + 1000 }
-    ]
-
-    // 1. 生成折线图1（交易次数）的随机数据（
-    const randomLine1Data = lineOption1.series[0].data.map(() => Math.floor(Math.random() * 6000) + 3000);
-    // 2. 生成折线图2（贷款总额+还款总额）的随机数据
-    const randomLoanData = lineOption2.series[0].data.map(() => Math.floor(Math.random() * 6000) + 3000);
-    const randomRepayData = randomLoanData.map(num => Math.floor(num * 0.7) + 1000); // 还款总额 = 贷款总额的70% + 基础值
-    
-    // 更新饼图数据
-    pieOption.series[0].data = randomPieData;
-    pieChart.setOption(pieOption);
-    // 更新折线图1数据
-    lineOption1.series[0].data = randomLine1Data;
-    lineChart1.setOption(lineOption1);
-    
-    // 更新折线图2数据
-    lineOption2.series[0].data = randomLoanData; // 贷款总额
-    lineOption2.series[1].data = randomRepayData; // 还款总额
-    lineChart2.setOption(lineOption2);
-}
-
-// 窗口大小变化时，图表自适应
-window.addEventListener('resize', () => {
-    lineChart1.resize();
-    lineChart2.resize();
-    pieChart.resize(); 
-    // barChart.resize();
-})
-
-// ====================== 贷款申请处理面板 =====================
-// 通过申请ID获取申请详情
-async function fetchApplicationById(applicationId) {
-    const url = `/api/loan-applications/${applicationId}`;
-    console.log(`📡 [GET] 请求申请详情: ${url}`);
-    try {
-        const response = await AdminWeb.API_CLIENT.get(url);
-        console.log(`✅ [响应] 申请 ${applicationId} 详情:`, response);
-        return response.data;
-    } catch (error) {
-        console.error(`❌ [错误] 获取申请 ${applicationId} 失败:`, error);
-        alert('申请详情加载失败');
-    }
-}
-// 通过用户ID获取用户所有申请
-async function fetchApplicationsByUser(userId) {
-    const url = `/api/loan-applications/user/${userId}`;
-    console.log(`📡 [GET] 请求用户所有申请: ${url}`);
-    try {
-        const response = await AdminWeb.API_CLIENT.get(url);
-        console.log(`✅ [响应] 用户 ${userId} 的所有申请:`, response);
-        return response.data;
-    } catch (error) {
-        console.error(`❌ [错误] 获取用户 ${userId} 的申请失败:`, error);
-        alert('申请记录加载失败');
+        
+        targetPanel.style.display = displayStyle
+        targetPanel.classList.add('active')
+        console.log(`成功显示 ${target} 面板`)
+        
+        // 面板显示后调整图表大小
+        setTimeout(() => {
+            resizeCharts()
+        }, 100)
+    } else {
+        console.error('未找到目标面板:', `${target}-content`)
+        // 调试信息：列出所有可用的面板
+        const allPanels = document.querySelectorAll('.dashboard')
+        console.log('可用面板:', Array.from(allPanels).map(panel => panel.id))
     }
 }
 
+// 图表调整大小函数
+function resizeCharts() {
+    if (window.pieChart) window.pieChart.resize()
+    if (window.lineChart1) window.lineChart1.resize()
+    if (window.lineChart2) window.lineChart2.resize()
+}
 
-// ==================== 贷款项目管理面板处理 ====================
+// // ==================== 首页面板处理 ====================
+// // 饼图
+// const pieDom = document.getElementById('pie-chart')
+// const pieChart = echarts.init(pieDom, null, {
+//   width: 450, // 强制饼图canvas宽度
+//   height: 225 // 强制饼图canvas高度
+// })
+// const pieOption = {
+//     title: { text: '' },
+//     series: [
+//     {
+//         type: 'pie',
+//         data: [
+//         { name: '等级A', value: 2500 },
+//         { name: '等级B', value: 2800 },
+//         { name: '等级C', value: 3000 },
+//         { name: '等级D', value: 1100 }
+//         ]
+//     }
+//     ]
+// }
+// pieChart.setOption(pieOption)
 
+// // 月度交易次数折线图 
+// const lineDom1 = document.getElementById('line-chart-1')
+// const lineChart1 = echarts.init(lineDom1)
+// const lineOption1 = {
+//     title: { text: '月度交易次数趋势（折线图）' },
+//     legend: { data: ['交易次数'] }, // 
+//     xAxis: { 
+//         type: 'category', 
+//         data: ['1-3号', '4-6号', '7-9号', '10-12号', '13-15号', '16-18号', '19-21号', '22-24号', '25-27号', '28-30号'], // 修复笔误：22-14号 → 22-24号
+//         axisLabel: { interval: 0, rotate: 30 } // 
+//     },
+//     yAxis: { type: 'value', name: '交易次数' }, // 补充y轴名称
+//     series: [{ 
+//         name: '交易次数', 
+//         type: 'line', 
+//         data: [7000, 6000, 3700, 5000, 7600, 9000, 5900, 7500, 3500, 5500],
+//         smooth: true, 
+//         lineStyle: { width: 3 },  
+//         itemStyle: { color: '#1890ff' }
+//     }]
+// }
+// lineChart1.setOption(lineOption1)
+
+// // 月度贷款与还款总额折线图
+// const lineDom2 = document.getElementById('line-chart-2')
+// const lineChart2 = echarts.init(lineDom2)
+// const lineOption2 = {
+//     title: { text: '月度贷款与还款总额趋势（折线图）' },
+//     legend: { data: ['贷款总额', '还款总额'] }, 
+//     xAxis: { 
+//         type: 'category', 
+//         data: ['1-3号', '4-6号', '7-9号', '10-12号', '13-15号', '16-18号', '19-21号', '22-24号', '25-27号', '28-30号'], // 修复笔误+统一x轴数据长度
+//         axisLabel: { interval: 0, rotate: 30 }
+//     },
+//     yAxis: { type: 'value', name: '金额（元）' }, 
+//     series: [
+//         { 
+//             name: '贷款总额',
+//             type: 'line', 
+//             data: [7000, 6000, 3700, 5000, 7600, 9000, 5900, 7500, 3500, 5500],
+//             smooth: true,
+//             lineStyle: { width: 3 },
+//             itemStyle: { color: '#ff4d4f' }, 
+//             areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(255,77,79,0.3)' }, { offset: 1, color: 'rgba(255,77,79,0)' }]) }
+//         },
+//         { 
+//             name: '还款总额', 
+//             type: 'line', 
+//             data: [5000, 4500, 2800, 3800, 6000, 7200, 4800, 6200, 2700, 4200], 
+//             smooth: true,
+//             lineStyle: { width: 3 },
+//             itemStyle: { color: '#52c41a' }, 
+//             areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(82,196,26,0.3)' }, { offset: 1, color: 'rgba(82,196,26,0)' }]) }
+//         }
+//     ]
+// }
+// lineChart2.setOption(lineOption2)
+
+// // 实时更新数据的函数
+// function updateData() {
+//     // -------------- 首页数据更新 ----------
+//     // 更新用户概览数据
+//     const newTotal = Math.floor(Math.random() * 5000) + 2000; // 总用户数随机
+//     const newNewUser = Math.floor(Math.random() * 200); // 新增用户随机
+//     const newOnline = Math.floor(Math.random() * 2000) + 1000; // 在线用户随机
+//     const newVisitor = Math.floor(Math.random() * 500); // 游客数量随机
+//     // 修改文本内容
+//     // totalUserLi.textContent = `总用户数:${newTotal}`;
+//     // newUserLi.textContent = `新增用户:${newNewUser}`;
+//     // onlineUserLi.textContent = `在线用户:${newOnline}`;
+//     // visitorLi.textContent = `游客数量:${newVisitor}`;
+
+//     // 用户等级分布饼图数据更新
+//     // 生成随机数据
+//     const randomPieData = [
+//     { name: '等级A', value: Math.floor(Math.random() * 3000) + 1000 },
+//     { name: '等级B', value: Math.floor(Math.random() * 2500) + 1000 },
+//     { name: '等级C', value: Math.floor(Math.random() * 2000) + 1000 },
+//     { name: '等级D', value: Math.floor(Math.random() * 1500) + 1000 }
+//     ]
+
+//     // 1. 生成折线图1（交易次数）的随机数据（
+//     const randomLine1Data = lineOption1.series[0].data.map(() => Math.floor(Math.random() * 6000) + 3000);
+//     // 2. 生成折线图2（贷款总额+还款总额）的随机数据
+//     const randomLoanData = lineOption2.series[0].data.map(() => Math.floor(Math.random() * 6000) + 3000);
+//     const randomRepayData = randomLoanData.map(num => Math.floor(num * 0.7) + 1000); // 还款总额 = 贷款总额的70% + 基础值
+    
+//     // 更新饼图数据
+//     pieOption.series[0].data = randomPieData;
+//     pieChart.setOption(pieOption);
+//     // 更新折线图1数据
+//     lineOption1.series[0].data = randomLine1Data;
+//     lineChart1.setOption(lineOption1);
+    
+//     // 更新折线图2数据
+//     lineOption2.series[0].data = randomLoanData; // 贷款总额
+//     lineOption2.series[1].data = randomRepayData; // 还款总额
+//     lineChart2.setOption(lineOption2);
+// }
+
+// // 窗口大小变化时，图表自适应
+// window.addEventListener('resize', () => {
+//     lineChart1.resize();
+//     lineChart2.resize();
+//     pieChart.resize(); 
+//     // barChart.resize();
+// })
+
+
+/*
+*==================== 贷款项目管理面板处理 ====================
+*/ 
 // ============== 添加贷款项目弹窗处理 ===============
 // 数据输入表格的行增减处理
 const addBtn = document.getElementById('add-row-btn')
@@ -336,7 +374,7 @@ document.querySelectorAll('.delete-btn').forEach(btn => {
     this.closest('tr').remove()
   })
 })
-// ============= 添加贷款产品功能实现函数 =============
+// ============= 添加贷款项目功能实现函数 =============
 // 获取弹窗中的表单数据
 function handleNewLoanProductData() {
     // 获取基础信息
@@ -349,7 +387,7 @@ function handleNewLoanProductData() {
     const promotionDetails = document.getElementById('promotionDetails').value.trim()
 
     // 获取选项表格数据
-    const options = [];
+    const options = []
     const tableRows = document.querySelectorAll('#option-table tbody tr')
     
     tableRows.forEach(row => {
@@ -375,7 +413,7 @@ function handleNewLoanProductData() {
         promotionDetails,
         options
     }
-    return productData;
+    return productData
 }
 //表单提交按钮事件绑定
 document.getElementById('add-loan-product').addEventListener('click', async function() {
@@ -394,7 +432,7 @@ document.getElementById('add-loan-product').addEventListener('click', async func
         // 获取并验证数据
         const productData = handleNewLoanProductData()
         // 调用API客户端提交数据
-        const response = await AdminWeb.API_CLIENT.addLoanProduct(productData)
+        const response = await API_CLIENT.addLoanProduct(productData)
         console.log('新增贷款产品请求数据:', productData)
         alert('新增贷款产品请求数据:', productData)
         console.log('新增贷款产品成功:', response)
@@ -437,241 +475,299 @@ function resetAddLoanProductForm() {
         })
     })
 }
-// 获取所有贷款产品
-async function fetchAllLoanProducts() {
-    const url = '/api/loan-products/admin/';
-    console.log(`📡 [GET] 请求所有贷款产品: ${url}`);
-    try {
-        const response = await AdminWeb.API_CLIENT.get(url);
-        console.log(`✅ [响应] 所有贷款产品:`, response);
-        return response.data;
-    } catch (error) {
-        console.error(`❌ [错误] 获取产品列表失败:`, error);
-        alert('加载产品失败');
-    }
-}
-// 获取单个贷款产品详情
-async function fetchLoanProductById(productId) {
-    const url = `/api/loan-products/admin/${productId}`;
-    console.log(`📡 [GET] 请求产品详情: ${url}`);
-    try {
-        const response = await AdminWeb.API_CLIENT.get(url);
-        console.log(`✅ [响应] 产品 ${productId} 详情:`, response);
-        return response.data;
-    } catch (error) {
-        console.error(`❌ [错误] 获取产品 ${productId} 失败:`, error);
-    }
-}
-// 更新单个贷款产品
-async function updateLoanProduct(productId, updateData) {
-    const url = `/api/loan-products/admin/products/${productId}`;
-    console.log(`📡 [PATCH] 更新产品: ${url}`, '请求体:', updateData);
-    try {
-        const response = await AdminWeb.API_CLIENT.request(url, {
-            method: 'PATCH',
-            body: JSON.stringify(updateData)
-        });
-        console.log(`✅ [响应] 产品 ${productId} 更新成功:`, response);
-        alert('产品信息更新成功');
-        return response.data;
-    } catch (error) {
-        console.error(`❌ [错误] 更新产品 ${productId} 失败:`, error);
-        alert('更新失败');
-    }
-}
-// 删除单个贷款产品
-async function deleteLoanProduct(productId) {
-    if (!confirm(`确定删除产品 ID=${productId}？此操作不可逆！`)) return;
-    const url = `/api/loan-products/admin/products/${productId}`;
-    console.log(`📡 [DELETE] 删除产品: ${url}`);
-    try {
-        const response = await AdminWeb.API_CLIENT.request(url, { method: 'DELETE' });
-        console.log(`✅ [响应] 产品 ${productId} 删除成功:`, response);
-        alert('删除成功');
-        return true;
-    } catch (error) {
-        console.error(`❌ [错误] 删除产品 ${productId} 失败:`, error);
-        alert('删除失败');
-    }
-}
-// 批量删除贷款产品
-async function batchDeleteLoanProducts(productIds) {
-    const url = '/api/loan-products/admin/products/batch-delete';
-    const payload = { productIds };
-    console.log(`📡 [POST] 批量删除产品: ${url}`, '请求体:', payload);
-    try {
-        const response = await AdminWeb.API_CLIENT.post(url, payload);
-        console.log(`✅ [响应] 批量删除产品成功:`, response);
-        alert('批量删除成功');
-        return response.data;
-    } catch (error) {
-        console.error(`❌ [错误] 批量删除产品失败:`, error);
-        alert('批量删除失败');
-    }
-}
-// 批量创建产品选项
-async function batchCreateProductOptions(productId, options) {
-    const url = '/api/loan-products/admin/options/batch-create';
-    const payload = { productId, options };
-    console.log(`📡 [POST] 批量添加选项: ${url}`, '请求体:', payload);
-    try {
-        const response = await AdminWeb.API_CLIENT.post(url, payload);
-        console.log(`✅ [响应] 批量添加选项成功:`, response);
-        return response.data;
-    } catch (error) {
-        console.error(`❌ [错误] 批量添加选项失败:`, error);
-        alert('添加选项失败');
-    }
-}
-// 批量更新产品选项
-async function deleteProductOption(optionId) {
-    const url = `/api/loan-products/admin/options/${optionId}`;
-    console.log(`📡 [DELETE] 删除选项: ${url}`);
-    try {
-        const response = await AdminWeb.API_CLIENT.request(url, { method: 'DELETE' });
-        console.log(`✅ [响应] 选项 ${optionId} 删除成功:`, response);
-        return response;
-    } catch (error) {
-        console.error(`❌ [错误] 删除选项 ${optionId} 失败:`, error);
-    }
-}
+
+// // 获取所有贷款产品
+// async function fetchAllLoanProducts() {
+//     const url = '/api/loan-products/admin/';
+//     console.log(`📡 [GET] 请求所有贷款产品: ${url}`);
+//     try {
+//         const response = await AdminWeb.API_CLIENT.get(url);
+//         console.log(`✅ [响应] 所有贷款产品:`, response);
+//         return response.data;
+//     } catch (error) {
+//         console.error(`❌ [错误] 获取产品列表失败:`, error);
+//         alert('加载产品失败');
+//     }
+// }
+// // 获取单个贷款产品详情
+// async function fetchLoanProductById(productId) {
+//     const url = `/api/loan-products/admin/${productId}`;
+//     console.log(`📡 [GET] 请求产品详情: ${url}`);
+//     try {
+//         const response = await AdminWeb.API_CLIENT.get(url);
+//         console.log(`✅ [响应] 产品 ${productId} 详情:`, response);
+//         return response.data;
+//     } catch (error) {
+//         console.error(`❌ [错误] 获取产品 ${productId} 失败:`, error);
+//     }
+// }
+// // 更新单个贷款产品
+// async function updateLoanProduct(productId, updateData) {
+//     const url = `/api/loan-products/admin/products/${productId}`;
+//     console.log(`📡 [PATCH] 更新产品: ${url}`, '请求体:', updateData);
+//     try {
+//         const response = await AdminWeb.API_CLIENT.request(url, {
+//             method: 'PATCH',
+//             body: JSON.stringify(updateData)
+//         });
+//         console.log(`✅ [响应] 产品 ${productId} 更新成功:`, response);
+//         alert('产品信息更新成功');
+//         return response.data;
+//     } catch (error) {
+//         console.error(`❌ [错误] 更新产品 ${productId} 失败:`, error);
+//         alert('更新失败');
+//     }
+// }
+// // 删除单个贷款产品
+// async function deleteLoanProduct(productId) {
+//     if (!confirm(`确定删除产品 ID=${productId}？此操作不可逆！`)) return;
+//     const url = `/api/loan-products/admin/products/${productId}`;
+//     console.log(`📡 [DELETE] 删除产品: ${url}`);
+//     try {
+//         const response = await AdminWeb.API_CLIENT.request(url, { method: 'DELETE' });
+//         console.log(`✅ [响应] 产品 ${productId} 删除成功:`, response);
+//         alert('删除成功');
+//         return true;
+//     } catch (error) {
+//         console.error(`❌ [错误] 删除产品 ${productId} 失败:`, error);
+//         alert('删除失败');
+//     }
+// }
+// // 批量删除贷款产品
+// async function batchDeleteLoanProducts(productIds) {
+//     const url = '/api/loan-products/admin/products/batch-delete';
+//     const payload = { productIds };
+//     console.log(`📡 [POST] 批量删除产品: ${url}`, '请求体:', payload);
+//     try {
+//         const response = await AdminWeb.API_CLIENT.post(url, payload);
+//         console.log(`✅ [响应] 批量删除产品成功:`, response);
+//         alert('批量删除成功');
+//         return response.data;
+//     } catch (error) {
+//         console.error(`❌ [错误] 批量删除产品失败:`, error);
+//         alert('批量删除失败');
+//     }
+// }
+// // 批量创建产品选项
+// async function batchCreateProductOptions(productId, options) {
+//     const url = '/api/loan-products/admin/options/batch-create';
+//     const payload = { productId, options };
+//     console.log(`📡 [POST] 批量添加选项: ${url}`, '请求体:', payload);
+//     try {
+//         const response = await AdminWeb.API_CLIENT.post(url, payload);
+//         console.log(`✅ [响应] 批量添加选项成功:`, response);
+//         return response.data;
+//     } catch (error) {
+//         console.error(`❌ [错误] 批量添加选项失败:`, error);
+//         alert('添加选项失败');
+//     }
+// }
+// // 批量更新产品选项
+// async function deleteProductOption(optionId) {
+//     const url = `/api/loan-products/admin/options/${optionId}`;
+//     console.log(`📡 [DELETE] 删除选项: ${url}`);
+//     try {
+//         const response = await AdminWeb.API_CLIENT.request(url, { method: 'DELETE' });
+//         console.log(`✅ [响应] 选项 ${optionId} 删除成功:`, response);
+//         return response;
+//     } catch (error) {
+//         console.error(`❌ [错误] 删除选项 ${optionId} 失败:`, error);
+//     }
+// }
 
 
-// ==================== 用户管理面板处理 ====================
+// // ==================== 用户管理面板处理 ====================
 
-// 获取用户列表
-async function fetchUserStats() {
-    const url = '/api/users/admin/stats'
-    console.log(`📡 [GET] 请求用户状态列表: ${url}`)
-    try {
-        const response = await AdminWeb.API_CLIENT.get(url)
-        console.log(`✅ [响应] 用户状态列表:`, response)
-        return response.data
-    } catch (error) {
-        console.error(`❌ [错误] 获取用户状态列表失败:`, error)
-        alert('获取用户列表失败')
-    }
-}
-// 通过用户ID获取单个用户详情
-async function fetchUserById(userId) {
-    const url = `/api/users/admin/${userId}`
-    console.log(`📡 [GET] 请求用户详情: ${url}`)
-    try {
-        const response = await AdminWeb.API_CLIENT.get(url)
-        console.log(`✅ [响应] 用户 ${userId} 详情:`, response)
-        return response.data;
-    } catch (error) {
-        console.error(`❌ [错误] 获取用户 ${userId} 失败:`, error)
-        alert('获取用户信息失败');
-    }
-}
-// 根据信用分查询用户 
-// 绑定信誉分查询按钮事件
-document.getElementById('credit-search-btn').addEventListener('click', async function() {
-    console.log(`📡 [GET] 请求按信誉分降序用户列表: ${url}`);
-    const expr = document.getElementById('creditExprInput').value.trim()
-    if (!expr) {
-        alert('请输入信誉分查询表达式，例如：<100 或 >=80')
-        return
-    }
-    try {
-        const users = await API_CLIENT.searchUsersByCredit(expr)
-        console.log(`✅ [响应] 信誉分排序用户列表:`, response)
-        const tbody = document.getElementById('searchResultBody')
-        const container = document.getElementById('searchResultContainer')
-        // 清空旧结果
-        tbody.innerHTML = ''
-        if (users.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">未找到符合条件的用户</td></tr>`
-        } else {
-            users.forEach(user => {
-                const tr = document.createElement('tr')
-                // 格式化时间
-                const createTime = new Date(user.createTime).toLocaleString()
-                tr.innerHTML = `
-                <td>${user.id}</td>
-                <td>${user.name}</td>
-                <td>${user.phone}</td>
-                <td>${user.creditScore}</td>
-                <td>${createTime}</td>
-                `
-                tbody.appendChild(tr)
-            })
-        }
-        container.style.display = 'block'
-    } catch (error) {
-        console.error('查询用户失败:', error)
-        alert('查询失败：' + (error.message || '请检查表达式格式'))
-        document.getElementById('searchResultContainer').style.display = 'none'
-    }
-})
+// // 获取用户列表
+// async function fetchUserStats() {
+//     const url = '/api/users/admin/stats'
+//     console.log(`📡 [GET] 请求用户状态列表: ${url}`)
+//     try {
+//         const response = await AdminWeb.API_CLIENT.get(url)
+//         console.log(`✅ [响应] 用户状态列表:`, response)
+//         return response.data
+//     } catch (error) {
+//         console.error(`❌ [错误] 获取用户状态列表失败:`, error)
+//         alert('获取用户列表失败')
+//     }
+// }
+// // 通过用户ID获取单个用户详情
+// async function fetchUserById(userId) {
+//     const url = `/api/users/admin/${userId}`
+//     console.log(`📡 [GET] 请求用户详情: ${url}`)
+//     try {
+//         const response = await AdminWeb.API_CLIENT.get(url)
+//         console.log(`✅ [响应] 用户 ${userId} 详情:`, response)
+//         return response.data;
+//     } catch (error) {
+//         console.error(`❌ [错误] 获取用户 ${userId} 失败:`, error)
+//         alert('获取用户信息失败');
+//     }
+// }
+// // 根据信用分查询用户 
+// // 绑定信誉分查询按钮事件
+// document.getElementById('credit-search-btn').addEventListener('click', async function() {
+//     console.log(`📡 [GET] 请求按信誉分降序用户列表: ${url}`);
+//     const expr = document.getElementById('creditExprInput').value.trim()
+//     if (!expr) {
+//         alert('请输入信誉分查询表达式，例如：<100 或 >=80')
+//         return
+//     }
+//     try {
+//         const users = await API_CLIENT.searchUsersByCredit(expr)
+//         console.log(`✅ [响应] 信誉分排序用户列表:`, response)
+//         const tbody = document.getElementById('searchResultBody')
+//         const container = document.getElementById('searchResultContainer')
+//         // 清空旧结果
+//         tbody.innerHTML = ''
+//         if (users.length === 0) {
+//             tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">未找到符合条件的用户</td></tr>`
+//         } else {
+//             users.forEach(user => {
+//                 const tr = document.createElement('tr')
+//                 // 格式化时间
+//                 const createTime = new Date(user.createTime).toLocaleString()
+//                 tr.innerHTML = `
+//                 <td>${user.id}</td>
+//                 <td>${user.name}</td>
+//                 <td>${user.phone}</td>
+//                 <td>${user.creditScore}</td>
+//                 <td>${createTime}</td>
+//                 `
+//                 tbody.appendChild(tr)
+//             })
+//         }
+//         container.style.display = 'block'
+//     } catch (error) {
+//         console.error('查询用户失败:', error)
+//         alert('查询失败：' + (error.message || '请检查表达式格式'))
+//         document.getElementById('searchResultContainer').style.display = 'none'
+//     }
+// })
+// // ==================== 待办审核面板处理 ====================
+// // 分页实现-待完善
+// let currentPage = 1;
+// const pageSize = 10;
+
+// // 假设这是你的原始数据
+// // const data = [
+// //   { id: 1, name: "张三", ... },
+// //   { id: 2, name: "李四", ... },
+// //   // ... 共 100 条
+// // ];
+
+// function renderTable() {
+//   const start = (currentPage - 1) * pageSize;
+//   const end = start + pageSize;
+//   const pageData = data.slice(start, end);
+
+//   const tbody = document.getElementById('table-body');
+//   tbody.innerHTML = '';
+
+//   pageData.forEach(item => {
+//     const row = document.createElement('tr');
+//     row.innerHTML = `
+//       <td>${item.id}</td>
+//       <td>${item.name}</td>
+//       <td>${item.productName}</td>
+//       <td>${item.amount}</td>
+//       <td>${item.rate}</td>
+//       <td>${item.duration}</td>
+//       <td>${item.periods}</td>
+//       <td>${item.repayType}</td>
+//       <td>${item.status}</td>
+//       <td>${item.applyTime}</td>
+//       <td>
+//         <button onclick="viewDetail(${item.id})">查看详情</button>
+//       </td>
+//     `;
+//     tbody.appendChild(row);
+//   });
+// }
+
+// function nextPage() {
+//   if (currentPage < totalPages) {
+//     currentPage++;
+//     renderTable();
+//     updatePaginationInfo();
+//   }
+// }
+
+// function prevPage() {
+//   if (currentPage > 1) {
+//     currentPage--;
+//     renderTable();
+//     updatePaginationInfo();
+//   }
+// }
+
+// function updatePaginationInfo() {
+//   document.getElementById('current-page').textContent = currentPage;
+//   document.getElementById('total-pages').textContent = totalPages;
+// }
+
+// // ====================== 贷款申请处理面板 =====================
+// // 通过申请ID获取申请详情
+// async function fetchApplicationById(applicationId) {
+//     const url = `/api/loan-applications/${applicationId}`;
+//     console.log(`📡 [GET] 请求申请详情: ${url}`);
+//     try {
+//         const response = await AdminWeb.API_CLIENT.get(url);
+//         console.log(`✅ [响应] 申请 ${applicationId} 详情:`, response);
+//         return response.data;
+//     } catch (error) {
+//         console.error(`❌ [错误] 获取申请 ${applicationId} 失败:`, error);
+//         alert('申请详情加载失败');
+//     }
+// }
+// // 通过用户ID获取用户所有申请
+// async function fetchApplicationsByUser(userId) {
+//     const url = `/api/loan-applications/user/${userId}`;
+//     console.log(`📡 [GET] 请求用户所有申请: ${url}`);
+//     try {
+//         const response = await AdminWeb.API_CLIENT.get(url);
+//         console.log(`✅ [响应] 用户 ${userId} 的所有申请:`, response);
+//         return response.data;
+//     } catch (error) {
+//         console.error(`❌ [错误] 获取用户 ${userId} 的申请失败:`, error);
+//         alert('申请记录加载失败');
+//     }
+// }
 
 
-// 页面加载完成后初始化
+
+// =========================页面加载完成后初始化=========================
 document.addEventListener('DOMContentLoaded', function() {
     init()
+    
+    // 在页面加载完成后添加调试信息
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM加载完成，开始初始化...')
+        
+        // 检查所有面板是否存在
+        const panels = [
+            'loan-apply-content',
+            'home-page-content', 
+            'loan-management-content',
+            'user-management-content',
+            'riskAndCollection-management-content',
+            'dataAndSystem-management-content'
+        ]
+        
+        panels.forEach(panelId => {
+            const panel = document.getElementById(panelId)
+            console.log(`面板 ${panelId}:`, panel ? '存在' : '不存在')
+        })
+        
+        // 检查导航按钮
+        const navButtons = document.querySelectorAll('.nav-link')
+        console.log(`找到 ${navButtons.length} 个导航按钮`)
+        
+        navButtons.forEach(button => {
+            const target = button.getAttribute('data-target')
+            console.log(`导航按钮: ${target}`, document.getElementById(`${target}-content`) ? '✓' : '✗')
+        })
+        
+        init()
+    })
 })
-
-
-
-// ==================== 待办审核面板处理 ====================
-// 分页实现-待完善
-let currentPage = 1;
-const pageSize = 10;
-
-// 假设这是你的原始数据
-// const data = [
-//   { id: 1, name: "张三", ... },
-//   { id: 2, name: "李四", ... },
-//   // ... 共 100 条
-// ];
-
-function renderTable() {
-  const start = (currentPage - 1) * pageSize;
-  const end = start + pageSize;
-  const pageData = data.slice(start, end);
-
-  const tbody = document.getElementById('table-body');
-  tbody.innerHTML = '';
-
-  pageData.forEach(item => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${item.id}</td>
-      <td>${item.name}</td>
-      <td>${item.productName}</td>
-      <td>${item.amount}</td>
-      <td>${item.rate}</td>
-      <td>${item.duration}</td>
-      <td>${item.periods}</td>
-      <td>${item.repayType}</td>
-      <td>${item.status}</td>
-      <td>${item.applyTime}</td>
-      <td>
-        <button onclick="viewDetail(${item.id})">查看详情</button>
-      </td>
-    `;
-    tbody.appendChild(row);
-  });
-}
-
-function nextPage() {
-  if (currentPage < totalPages) {
-    currentPage++;
-    renderTable();
-    updatePaginationInfo();
-  }
-}
-
-function prevPage() {
-  if (currentPage > 1) {
-    currentPage--;
-    renderTable();
-    updatePaginationInfo();
-  }
-}
-
-function updatePaginationInfo() {
-  document.getElementById('current-page').textContent = currentPage;
-  document.getElementById('total-pages').textContent = totalPages;
-}

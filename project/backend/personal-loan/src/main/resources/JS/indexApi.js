@@ -6,7 +6,6 @@ const AdminWeb = {
     API_CLIENT: {},
     JWT_UTILS: {}
 }
-
 // ==================== API配置信息 ====================
 AdminWeb.API_CONFIG = {
     baseUrl: 'http://localhost:8080',
@@ -30,10 +29,11 @@ AdminWeb.JWT_CONFIG = {
     tokenExpiryKey: 'admin_token_expiry',
     tokenExpiryTime: 3 * 60 * 1000
 }
-
 // ==================== DOM元素引用 ====================
 AdminWeb.DOM_ELEMENTS = {
-    // 五个控制面板
+    // 五？个控制面板
+    //待办申请
+    loanApplyContent: document.getElementById('loan-apply-content'),
     // 首页
     homePageContent: document.getElementById('home-page-content'),
     // 贷款管理
