@@ -9,6 +9,8 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import com.example.personal_loan.dto.ApplicationDetailResponse;
+import com.example.personal_loan.dto.PendingApprovalResponse;
 import com.example.personal_loan.entity.LoanApplication;
 
 @Mapper
@@ -59,17 +61,6 @@ public interface ApplicationMapper {
         "FROM loan_applications WHERE user_id = #{userId} ORDER BY apply_time DESC")
     List<LoanApplication> selectByUserId(@Param("userId") Long userId);
  
-    /**
-     * 根据产品ID查询所有相关申请（管理员视角，二期可能用到）
-     */
-    @Select("SELECT * FROM loan_applications WHERE product_id = #{productId} ORDER BY apply_time DESC")
-    List<LoanApplication> findByProductId(@Param("productId") Long productId);
-
-    /**
-     * （可选）根据状态查询申请（如 PENDDING, APPROVED）
-     */
-    @Select("SELECT * FROM loan_applications WHERE status = #{status} ORDER BY apply_time DESC")
-    List<LoanApplication> findByStatus(@Param("status") String status);
 
     /**
      * 更新申请状态
@@ -84,4 +75,59 @@ public interface ApplicationMapper {
         "</script>"
     })
     void updateStatus(LoanApplication application);
+
+    @Update({
+        "UPDATE loan_applications",
+        "SET user_id = #{userId},",
+        "    product_id = #{productId},",
+        "    status = #{status},",
+        "    loan_amount = #{loanAmount},",
+        "    interest_rate = #{interestRate},",
+        "    loan_period = #{loanPeriod},",
+        "    term = #{term},",
+        "    repaid_type = #{repaidType},",
+        "    reject_reason = #{rejectReason},",
+        "    review_time = #{reviewTime}",
+        "WHERE id = #{id}"
+    })
+    int update(LoanApplication application);
+
+    @Select({
+        "SELECT",
+        "  la.id AS applicationId,",
+        "  u.user_name AS userName,",
+        "  lp.product_name AS productName,",
+        "  la.loan_amount AS loanAmount,",
+        "  la.loan_period AS loanPeriod,",
+        "  la.term AS term,",
+        "  la.apply_time AS applyTime",
+        "FROM loan_applications la",
+        "JOIN users u ON la.user_id = u.id",
+        "JOIN loan_products lp ON la.product_id = lp.id",
+        "WHERE la.status IN ('PENDING', 'AI_REJECTED')",
+        "ORDER BY la.apply_time DESC"
+    })
+    List<PendingApprovalResponse> listPendingApprovals();
+
+    @Select({
+        "SELECT",
+        "  u.user_name AS userName,",
+        "  u.phone,",
+        "  u.create_time AS createTime,",
+        "  uc.id_card AS idCard,",      
+        "  uc.work_cert_id AS workCertId,",  
+        "  uc.tri_cert_id AS triCertId,",
+        "  uc.immovable_cert_id AS immovableCertId,",
+        "  uc.credit_score AS creditScore,",
+        "  lp.product_name AS productName,",
+        "  la.loan_amount AS loanAmount,",
+        "  la.loan_period AS loanPeriod,",
+        "  la.term AS term",
+        "FROM loan_applications la",
+        "JOIN users u ON la.user_id = u.id",
+        "LEFT JOIN user_certification uc ON u.id = uc.user_id", 
+        "JOIN loan_products lp ON la.product_id = lp.id",
+        "WHERE la.id = #{loanApplicationId}"
+    })
+    ApplicationDetailResponse getApplicationDetail(@Param("loanApplicationId") Long loanApplicationId);
 }

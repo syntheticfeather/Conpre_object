@@ -51,3 +51,7 @@ jwt:
   expiration: 86400000        # 24小时（毫秒）
   refresh:
     expiration: 604800000    # 7天（毫秒）
+
+logging:
+  charset:
+    console: UTF-8
