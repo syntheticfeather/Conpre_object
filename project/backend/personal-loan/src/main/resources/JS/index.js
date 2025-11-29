@@ -5,9 +5,8 @@ const API_CLIENT = AdminWeb.API_CLIENT
 const JWT_UTILS = AdminWeb.JWT_UTILS
 
 // ==================== 初始化函数 ====================
-function init() {
+async function init() {
     console.log('开始初始化...')
-    
     try {
         // 检查令牌时效
         // checkLoginStatus()
@@ -23,6 +22,8 @@ function init() {
         
         // 初始化所有数据
         // updateData()
+        // 加载待审核列表
+        await loadPendingApplications(1)
 
         console.log('初始化完成')
     } catch (error) {
@@ -66,6 +67,7 @@ function initCharts() {
         console.error('图表初始化失败:', error);
     }
 }
+
 
 // ==================== 事件绑定函数 ====================
 function bindEventListeners() {
@@ -196,137 +198,192 @@ function resizeCharts() {
     if (window.lineChart2) window.lineChart2.resize()
 }
 
-// // ==================== 首页面板处理 ====================
-// // 饼图
-// const pieDom = document.getElementById('pie-chart')
-// const pieChart = echarts.init(pieDom, null, {
-//   width: 450, // 强制饼图canvas宽度
-//   height: 225 // 强制饼图canvas高度
-// })
-// const pieOption = {
-//     title: { text: '' },
-//     series: [
-//     {
-//         type: 'pie',
-//         data: [
-//         { name: '等级A', value: 2500 },
-//         { name: '等级B', value: 2800 },
-//         { name: '等级C', value: 3000 },
-//         { name: '等级D', value: 1100 }
-//         ]
-//     }
-//     ]
-// }
-// pieChart.setOption(pieOption)
 
-// // 月度交易次数折线图 
-// const lineDom1 = document.getElementById('line-chart-1')
-// const lineChart1 = echarts.init(lineDom1)
-// const lineOption1 = {
-//     title: { text: '月度交易次数趋势（折线图）' },
-//     legend: { data: ['交易次数'] }, // 
-//     xAxis: { 
-//         type: 'category', 
-//         data: ['1-3号', '4-6号', '7-9号', '10-12号', '13-15号', '16-18号', '19-21号', '22-24号', '25-27号', '28-30号'], // 修复笔误：22-14号 → 22-24号
-//         axisLabel: { interval: 0, rotate: 30 } // 
-//     },
-//     yAxis: { type: 'value', name: '交易次数' }, // 补充y轴名称
-//     series: [{ 
-//         name: '交易次数', 
-//         type: 'line', 
-//         data: [7000, 6000, 3700, 5000, 7600, 9000, 5900, 7500, 3500, 5500],
-//         smooth: true, 
-//         lineStyle: { width: 3 },  
-//         itemStyle: { color: '#1890ff' }
-//     }]
-// }
-// lineChart1.setOption(lineOption1)
+/*
+*==================== 待办审核面板处理 ====================
+*/ 
+// ============== 面板初始化 ===============
+// 加载待审核申请列表
+async function loadPendingApplications(page) {
+    try {
+        const response = await AdminWeb.API_CLIENT.getPendingApplications(page, 10)
+        if (response.code === 200 && response.data) {
+            renderApplicationTable(response.data.records)
+        }
+    } catch (error) {
+        console.error('加载待审核列表失败:', error)
+        document.getElementById('apply-table-body').innerHTML = '<tr><td colspan="6">加载失败</td></tr>'
+    }
+}
+// 渲染申请列表（只显示关键字段）
+function renderApplicationTable(applications) {
+    const tbody = document.getElementById('apply-table-body')
+    tbody.innerHTML = ''
 
-// // 月度贷款与还款总额折线图
-// const lineDom2 = document.getElementById('line-chart-2')
-// const lineChart2 = echarts.init(lineDom2)
-// const lineOption2 = {
-//     title: { text: '月度贷款与还款总额趋势（折线图）' },
-//     legend: { data: ['贷款总额', '还款总额'] }, 
-//     xAxis: { 
-//         type: 'category', 
-//         data: ['1-3号', '4-6号', '7-9号', '10-12号', '13-15号', '16-18号', '19-21号', '22-24号', '25-27号', '28-30号'], // 修复笔误+统一x轴数据长度
-//         axisLabel: { interval: 0, rotate: 30 }
-//     },
-//     yAxis: { type: 'value', name: '金额（元）' }, 
-//     series: [
-//         { 
-//             name: '贷款总额',
-//             type: 'line', 
-//             data: [7000, 6000, 3700, 5000, 7600, 9000, 5900, 7500, 3500, 5500],
-//             smooth: true,
-//             lineStyle: { width: 3 },
-//             itemStyle: { color: '#ff4d4f' }, 
-//             areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(255,77,79,0.3)' }, { offset: 1, color: 'rgba(255,77,79,0)' }]) }
-//         },
-//         { 
-//             name: '还款总额', 
-//             type: 'line', 
-//             data: [5000, 4500, 2800, 3800, 6000, 7200, 4800, 6200, 2700, 4200], 
-//             smooth: true,
-//             lineStyle: { width: 3 },
-//             itemStyle: { color: '#52c41a' }, 
-//             areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(82,196,26,0.3)' }, { offset: 1, color: 'rgba(82,196,26,0)' }]) }
-//         }
-//     ]
-// }
-// lineChart2.setOption(lineOption2)
+    applications.forEach(app => {
+        const row = document.createElement('tr')
+        row.setAttribute('data-application-id', app.id) // 关键：绑定申请ID
+        row.innerHTML = `
+            <td>${app.userName || '未知'}</td>
+            <td>${app.productName || '未命名产品'}</td>
+            <td>¥${Number(app.loanAmount).toLocaleString()}</td>
+            <td>${app.loanPeriod || 0}</td>
+            <td>${app.term || 0}</td>
+            <td>${new Date(app.applyTime).toLocaleString()}</td>
+        `
+        tbody.appendChild(row)
 
-// // 实时更新数据的函数
-// function updateData() {
-//     // -------------- 首页数据更新 ----------
-//     // 更新用户概览数据
-//     const newTotal = Math.floor(Math.random() * 5000) + 2000; // 总用户数随机
-//     const newNewUser = Math.floor(Math.random() * 200); // 新增用户随机
-//     const newOnline = Math.floor(Math.random() * 2000) + 1000; // 在线用户随机
-//     const newVisitor = Math.floor(Math.random() * 500); // 游客数量随机
-//     // 修改文本内容
-//     // totalUserLi.textContent = `总用户数:${newTotal}`;
-//     // newUserLi.textContent = `新增用户:${newNewUser}`;
-//     // onlineUserLi.textContent = `在线用户:${newOnline}`;
-//     // visitorLi.textContent = `游客数量:${newVisitor}`;
+        // 绑定点击事件
+        row.addEventListener('click', () => showApplicationDetail(app.id));
+    })
+}
+// 显示申请详情
+async function showApplicationDetail(applicationId) {
+    try {
+        const detail = await AdminWeb.API_CLIENT.getApplicationDetail(applicationId)
+        if (detail.code !== 200) throw new Error(detail.message || '获取详情失败')
 
-//     // 用户等级分布饼图数据更新
-//     // 生成随机数据
-//     const randomPieData = [
-//     { name: '等级A', value: Math.floor(Math.random() * 3000) + 1000 },
-//     { name: '等级B', value: Math.floor(Math.random() * 2500) + 1000 },
-//     { name: '等级C', value: Math.floor(Math.random() * 2000) + 1000 },
-//     { name: '等级D', value: Math.floor(Math.random() * 1500) + 1000 }
-//     ]
+        const data = detail.data;
 
-//     // 1. 生成折线图1（交易次数）的随机数据（
-//     const randomLine1Data = lineOption1.series[0].data.map(() => Math.floor(Math.random() * 6000) + 3000);
-//     // 2. 生成折线图2（贷款总额+还款总额）的随机数据
-//     const randomLoanData = lineOption2.series[0].data.map(() => Math.floor(Math.random() * 6000) + 3000);
-//     const randomRepayData = randomLoanData.map(num => Math.floor(num * 0.7) + 1000); // 还款总额 = 贷款总额的70% + 基础值
-    
-//     // 更新饼图数据
-//     pieOption.series[0].data = randomPieData;
-//     pieChart.setOption(pieOption);
-//     // 更新折线图1数据
-//     lineOption1.series[0].data = randomLine1Data;
-//     lineChart1.setOption(lineOption1);
-    
-//     // 更新折线图2数据
-//     lineOption2.series[0].data = randomLoanData; // 贷款总额
-//     lineOption2.series[1].data = randomRepayData; // 还款总额
-//     lineChart2.setOption(lineOption2);
-// }
+        // 显示详情容器
+        document.getElementById('audition-detail').style.display = 'block';
 
-// // 窗口大小变化时，图表自适应
-// window.addEventListener('resize', () => {
-//     lineChart1.resize();
-//     lineChart2.resize();
-//     pieChart.resize(); 
-//     // barChart.resize();
-// })
+        // 填充用户信息
+        document.getElementById('real-name').textContent = data.user.realName || '—';
+        document.getElementById('phone').textContent = data.user.phoneNumber || '—';
+        document.getElementById('register-time').textContent = 
+            new Date(data.user.registerTime).toLocaleString() || '—';
+        document.getElementById('credit-score').textContent = data.user.creditScore || '—';
 
+        // 渲染认证材料
+        const materialsContainer = document.getElementById('materials-container');
+        const materialMap = {
+            bankCard: '银行卡',
+            workProof: '工作证明',
+            thirdPartyAuth: '三方认证',
+            propertyCert: '不动产认证'
+        };
+        let html = '';
+        for (const key in data.materials) {
+            const uploaded = data.materials[key];
+            const label = materialMap[key] || key;
+            const color = uploaded ? '#27ae60' : '#e74c3c';
+            html += `<div class="material-item"><span>${label}</span><span style="color:${color}">${uploaded ? '已上传' : '未上传'}</span></div>`;
+        }
+        materialsContainer.innerHTML = html;
+
+        // 填充贷款信息
+        document.getElementById('product-name').textContent = data.productName;
+        document.getElementById('loan-amount').textContent = `¥${Number(data.loanAmount).toLocaleString()}`;
+        document.getElementById('loan-term').textContent = data.loanPeriod;
+        document.getElementById('term-period').textContent = data.term;
+
+        // 绑定按钮
+        document.getElementById('btn-pass').onclick = () => submitReview(applicationId, 'APPROVED')
+        document.getElementById('btn-reject').onclick = () => submitReview(applicationId, 'REJECTED')
+
+    } catch (error) {
+        console.error('获取申请详情失败:', error)
+        alert('获取详情失败：' + (error.message || '请重试'))
+    }
+}
+function showDetail(id) {
+  const data = mockData[id]
+  if (!data) return
+
+  // 显示详情容器
+  document.getElementById('audition-detail').style.display = 'block'
+
+  // 填充用户基本信息
+  document.getElementById('real-name').textContent = data.realName
+  document.getElementById('phone').textContent = data.phone
+  document.getElementById('register-time').textContent = data.registerTime
+  document.getElementById('credit-score').textContent = data.creditScore
+
+  // 渲染认证材料
+  const materialsContainer = document.getElementById('materials-container')
+  const materialMap = {
+    bankCard: '银行卡',
+    workProof: '工作证明',
+    thirdPartyAuth: '三方认证',
+    propertyCert: '不动产认证'
+  }
+
+  let materialsHtml = ''
+  for (const key in data.materials) {
+    const uploaded = data.materials[key]
+    const label = materialMap[key] || key
+    const statusText = uploaded ? '已上传' : '未上传'
+    const statusColor = uploaded ? '#27ae60' : '#e74c3c'
+
+    materialsHtml += `
+      <div class="material-item">
+        <span>${label}</span>
+        <span style="color: ${statusColor}; font-weight: bold;">${statusText}</span>
+      </div>
+    `
+  }
+  materialsContainer.innerHTML = materialsHtml
+
+  // 填充贷款申请信息
+  const app = data.loanApplication
+  document.getElementById('product-name').textContent = app.productName;
+  document.getElementById('loan-amount').textContent = app.loanAmount;
+  document.getElementById('loan-term').textContent = app.loanTerm;
+  document.getElementById('term-period').textContent = app.termPeriod;
+
+  // 绑定按钮事件（可选）
+  document.getElementById('btn-pass').onclick = () => handleReview(id, 'APPROVED')
+  document.getElementById('btn-reject').onclick = () => handleReview(id, 'REJECTED')
+}
+// 提交审核结果
+async function submitReview(applicationId, status) {
+    let rejectReason = null
+    if (status === 'REJECTED') {
+        rejectReason = prompt('请输入拒绝理由：')
+        if (!rejectReason) return
+    }
+
+    try {
+        await AdminWeb.API_CLIENT.submitReview(applicationId, status, rejectReason)
+        alert(`审核成功！状态：${status === 'APPROVED' ? '通过' : '拒绝'}`)
+        // 刷新列表
+        await loadPendingApplications(1)
+        // 隐藏详情
+        document.getElementById('audition-detail').style.display = 'none'
+    } catch (error) {
+        console.error('提交审核失败:', error)
+        alert('提交失败：' + (error.message || '请重试'))
+    }
+}
+
+// ====================== 贷款申请处理面板 =====================
+// 通过申请ID获取申请详情
+async function fetchApplicationById(applicationId) {
+    const url = `/api/loan-applications/${applicationId}`;
+    console.log(`📡 [GET] 请求申请详情: ${url}`);
+    try {
+        const response = await AdminWeb.API_CLIENT.get(url);
+        console.log(`✅ [响应] 申请 ${applicationId} 详情:`, response);
+        return response.data;
+    } catch (error) {
+        console.error(`❌ [错误] 获取申请 ${applicationId} 失败:`, error);
+        alert('申请详情加载失败');
+    }
+}
+// 通过用户ID获取用户所有申请
+async function fetchApplicationsByUser(userId) {
+    const url = `/api/loan-applications/user/${userId}`;
+    console.log(`📡 [GET] 请求用户所有申请: ${url}`);
+    try {
+        const response = await AdminWeb.API_CLIENT.get(url);
+        console.log(`✅ [响应] 用户 ${userId} 的所有申请:`, response);
+        return response.data;
+    } catch (error) {
+        console.error(`❌ [错误] 获取用户 ${userId} 的申请失败:`, error);
+        alert('申请记录加载失败');
+    }
+}
 
 /*
 *==================== 贷款项目管理面板处理 ====================
@@ -706,40 +763,144 @@ function resetAddLoanProductForm() {
 //   document.getElementById('total-pages').textContent = totalPages;
 // }
 
-// // ====================== 贷款申请处理面板 =====================
-// // 通过申请ID获取申请详情
-// async function fetchApplicationById(applicationId) {
-//     const url = `/api/loan-applications/${applicationId}`;
-//     console.log(`📡 [GET] 请求申请详情: ${url}`);
-//     try {
-//         const response = await AdminWeb.API_CLIENT.get(url);
-//         console.log(`✅ [响应] 申请 ${applicationId} 详情:`, response);
-//         return response.data;
-//     } catch (error) {
-//         console.error(`❌ [错误] 获取申请 ${applicationId} 失败:`, error);
-//         alert('申请详情加载失败');
-//     }
-// }
-// // 通过用户ID获取用户所有申请
-// async function fetchApplicationsByUser(userId) {
-//     const url = `/api/loan-applications/user/${userId}`;
-//     console.log(`📡 [GET] 请求用户所有申请: ${url}`);
-//     try {
-//         const response = await AdminWeb.API_CLIENT.get(url);
-//         console.log(`✅ [响应] 用户 ${userId} 的所有申请:`, response);
-//         return response.data;
-//     } catch (error) {
-//         console.error(`❌ [错误] 获取用户 ${userId} 的申请失败:`, error);
-//         alert('申请记录加载失败');
-//     }
-// }
+
+// ==================== 数据统计与系统管理面板处理 ====================
+// 饼图
+const pieDom = document.getElementById('pie-chart')
+const pieChart = echarts.init(pieDom, null, {
+  width: 450, // 强制饼图canvas宽度
+  height: 225 // 强制饼图canvas高度
+})
+const pieOption = {
+    title: { text: '' },
+    series: [
+    {
+        type: 'pie',
+        data: [
+        { name: '等级A', value: 2500 },
+        { name: '等级B', value: 2800 },
+        { name: '等级C', value: 3000 },
+        { name: '等级D', value: 1100 }
+        ]
+    }
+    ]
+}
+pieChart.setOption(pieOption)
+
+// 月度交易次数折线图 
+const lineDom1 = document.getElementById('line-chart-1')
+const lineChart1 = echarts.init(lineDom1)
+const lineOption1 = {
+    title: { text: '月度交易次数趋势（折线图）' },
+    legend: { data: ['交易次数'] }, // 
+    xAxis: { 
+        type: 'category', 
+        data: ['1-3号', '4-6号', '7-9号', '10-12号', '13-15号', '16-18号', '19-21号', '22-24号', '25-27号', '28-30号'], // 修复笔误：22-14号 → 22-24号
+        axisLabel: { interval: 0, rotate: 30 } // 
+    },
+    yAxis: { type: 'value', name: '交易次数' }, // 补充y轴名称
+    series: [{ 
+        name: '交易次数', 
+        type: 'line', 
+        data: [7000, 6000, 3700, 5000, 7600, 9000, 5900, 7500, 3500, 5500],
+        smooth: true, 
+        lineStyle: { width: 3 },  
+        itemStyle: { color: '#1890ff' }
+    }]
+}
+lineChart1.setOption(lineOption1)
+
+// 月度贷款与还款总额折线图
+const lineDom2 = document.getElementById('line-chart-2')
+const lineChart2 = echarts.init(lineDom2)
+const lineOption2 = {
+    title: { text: '月度贷款与还款总额趋势（折线图）' },
+    legend: { data: ['贷款总额', '还款总额'] }, 
+    xAxis: { 
+        type: 'category', 
+        data: ['1-3号', '4-6号', '7-9号', '10-12号', '13-15号', '16-18号', '19-21号', '22-24号', '25-27号', '28-30号'], // 修复笔误+统一x轴数据长度
+        axisLabel: { interval: 0, rotate: 30 }
+    },
+    yAxis: { type: 'value', name: '金额（元）' }, 
+    series: [
+        { 
+            name: '贷款总额',
+            type: 'line', 
+            data: [7000, 6000, 3700, 5000, 7600, 9000, 5900, 7500, 3500, 5500],
+            smooth: true,
+            lineStyle: { width: 3 },
+            itemStyle: { color: '#ff4d4f' }, 
+            areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(255,77,79,0.3)' }, { offset: 1, color: 'rgba(255,77,79,0)' }]) }
+        },
+        { 
+            name: '还款总额', 
+            type: 'line', 
+            data: [5000, 4500, 2800, 3800, 6000, 7200, 4800, 6200, 2700, 4200], 
+            smooth: true,
+            lineStyle: { width: 3 },
+            itemStyle: { color: '#52c41a' }, 
+            areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(82,196,26,0.3)' }, { offset: 1, color: 'rgba(82,196,26,0)' }]) }
+        }
+    ]
+}
+lineChart2.setOption(lineOption2)
+
+// 实时更新数据的函数
+function updateData() {
+    // -------------- 首页数据更新 ----------
+    // 更新用户概览数据
+    const newTotal = Math.floor(Math.random() * 5000) + 2000; // 总用户数随机
+    const newNewUser = Math.floor(Math.random() * 200); // 新增用户随机
+    const newOnline = Math.floor(Math.random() * 2000) + 1000; // 在线用户随机
+    const newVisitor = Math.floor(Math.random() * 500); // 游客数量随机
+    // 修改文本内容
+    // totalUserLi.textContent = `总用户数:${newTotal}`;
+    // newUserLi.textContent = `新增用户:${newNewUser}`;
+    // onlineUserLi.textContent = `在线用户:${newOnline}`;
+    // visitorLi.textContent = `游客数量:${newVisitor}`;
+
+    // 用户等级分布饼图数据更新
+    // 生成随机数据
+    const randomPieData = [
+    { name: '等级A', value: Math.floor(Math.random() * 3000) + 1000 },
+    { name: '等级B', value: Math.floor(Math.random() * 2500) + 1000 },
+    { name: '等级C', value: Math.floor(Math.random() * 2000) + 1000 },
+    { name: '等级D', value: Math.floor(Math.random() * 1500) + 1000 }
+    ]
+
+    // 1. 生成折线图1（交易次数）的随机数据（
+    const randomLine1Data = lineOption1.series[0].data.map(() => Math.floor(Math.random() * 6000) + 3000);
+    // 2. 生成折线图2（贷款总额+还款总额）的随机数据
+    const randomLoanData = lineOption2.series[0].data.map(() => Math.floor(Math.random() * 6000) + 3000);
+    const randomRepayData = randomLoanData.map(num => Math.floor(num * 0.7) + 1000); // 还款总额 = 贷款总额的70% + 基础值
+    
+    // 更新饼图数据
+    pieOption.series[0].data = randomPieData;
+    pieChart.setOption(pieOption);
+    // 更新折线图1数据
+    lineOption1.series[0].data = randomLine1Data;
+    lineChart1.setOption(lineOption1);
+    
+    // 更新折线图2数据
+    lineOption2.series[0].data = randomLoanData; // 贷款总额
+    lineOption2.series[1].data = randomRepayData; // 还款总额
+    lineChart2.setOption(lineOption2);
+}
+
+// 窗口大小变化时，图表自适应
+window.addEventListener('resize', () => {
+    lineChart1.resize();
+    lineChart2.resize();
+    pieChart.resize(); 
+    // barChart.resize();
+})
 
 
 
 // =========================页面加载完成后初始化=========================
 document.addEventListener('DOMContentLoaded', function() {
     init()
-    
+    new DateRangePicker('start-date', 'end-date')
     // 在页面加载完成后添加调试信息
     document.addEventListener('DOMContentLoaded', function() {
         console.log('DOM加载完成，开始初始化...')

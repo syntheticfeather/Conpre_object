@@ -8,7 +8,6 @@ const AdminWeb = {
 }
 // ==================== API配置信息 ====================
 AdminWeb.API_CONFIG = {
-    baseUrl: 'http://localhost:8080',
     endpoints: {
         // 注册界面
         register: '/api/auth/register',// 注册接口
@@ -91,7 +90,7 @@ AdminWeb.API_CLIENT = {
         };
 
         try {
-            const response = await fetch(`${AdminWeb.API_CONFIG.baseUrl}${url}`, {
+            const response = await fetch(url, {
                 ...options,
                 headers
             });
@@ -148,7 +147,7 @@ AdminWeb.API_CLIENT = {
         }
 
         try {
-            const response = await fetch(`${AdminWeb.API_CONFIG.baseUrl}${AdminWeb.API_CONFIG.endpoints.refreshToken}`, {
+            const response = await fetch(`${AdminWeb.API_CONFIG.endpoints.refreshToken}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -184,7 +183,7 @@ AdminWeb.API_CLIENT = {
     // 专用方法 - 登录
     login: async function (phone, password) {
         try {
-            const response = await fetch(`${this._getBaseUrl()}${AdminWeb.API_CONFIG.endpoints.login}`, {
+            const response = await fetch(`${AdminWeb.API_CONFIG.endpoints.login}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ phone, password })
@@ -206,11 +205,6 @@ AdminWeb.API_CLIENT = {
             console.error('登录请求失败:', error)
             throw error
         }
-    },
-
-    // 添加基础URL获取方法
-    _getBaseUrl: function() {
-        return AdminWeb.API_CONFIG.baseUrl;
     },
 
     // 专用方法 - 注册

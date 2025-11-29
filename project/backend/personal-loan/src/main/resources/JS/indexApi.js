@@ -8,10 +8,13 @@ const AdminWeb = {
 }
 // ==================== API配置信息 ====================
 AdminWeb.API_CONFIG = {
-    baseUrl: 'http://localhost:8080',
     endpoints: {
         logout: '/api/auth/logout', // 退出接口
-        addLoanProduct: '/api/loan-products/admin', // 新增贷款产品接口
+        addLoanProduct: '/api/loan-products/admin', // 获取所有贷款产品接口
+        getOneProduct: '/api/loan-applications/{applicationId}',// 获取指定贷款产品详情接口
+        getUserLoans: '/api/loan-applications/user/{userId}', // 用户贷款列表接口
+        batchCreateOptions: '/api/loan-products/admin/options/batch-create', //为指定产品批量增加选项接口
+
     },
     storageKeys: {
         token: 'admin_token',
@@ -70,7 +73,7 @@ AdminWeb.API_CLIENT = {
         };
 
         try {
-            const response = await fetch(`${AdminWeb.API_CONFIG.baseUrl}${url}`, {
+            const response = await fetch(url, {
                 ...options,
                 headers
             });
@@ -104,9 +107,7 @@ AdminWeb.API_CLIENT = {
         const publicEndpoints = [
             AdminWeb.API_CONFIG.endpoints.login,
             AdminWeb.API_CONFIG.endpoints.register,
-            // AdminWeb.API_CONFIG.endpoints.smsLogin,
-            // AdminWeb.API_CONFIG.endpoints.sendSms
-        ];
+        ]
         return !publicEndpoints.includes(url);
     },
 
@@ -150,7 +151,7 @@ AdminWeb.API_CLIENT = {
         return false
     },
 
-    // 快捷方法
+    // 基础快捷方法
     get: function (url) {
         return this.request(url)
     },
@@ -162,15 +163,41 @@ AdminWeb.API_CLIENT = {
         })
     },
 
-    // 添加基础URL获取方法
+    // 基础URL获取方法
     _getBaseUrl: function () {
         return AdminWeb.API_CONFIG.baseUrl
     },
+
+    
+    // ==================== 待办审核面板快捷请求 ====================
+    // 获取所有待审核贷款申请（列表）
+    getPendingApplications: function(page = 1, size = 10) {
+        const url = `/api/loan-applications/pending?page=${page}&size=${size}`;
+        return this.get(url);
+    },
+
+    // 根据申请ID获取完整详情
+    getApplicationDetail: function(applicationId) {
+        const url = `/api/loan-applications/${applicationId}`;
+        return this.get(url);
+    },
+
+    // 提交审核结果
+    submitReview: function(applicationId, status, rejectReason = null) {
+        const url = `/api/loan-applications/${applicationId}/review`;
+        return this.post(url, { status, rejectReason });
+    },
+
+
+    // ==================== 贷款管理面板快捷请求 ====================
     // 新增贷款产品
     addLoanProduct: function (productData) {
         // 调用API
         return this.post(AdminWeb.API_CONFIG.endpoints.addLoanProduct, productData)
     },
+
+
+    // ==================== 用户管理面板快捷请求 ====================
     // 根据信誉分表达式查询用户
     searchUsersByCredit: function (expr) {
         const url = `/api/users/search-by-credit?expr=${encodeURIComponent(expr)}`
