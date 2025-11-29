@@ -18,6 +18,7 @@ CREATE Table black_list(
     black_level TINYINT COMMENT '黑名单等级',
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    remove_time DATETIME COMMENT '移除时间',
     FOREIGN KEY (user_id) REFERENCES users(id)
 )COMMENT '黑名单表';
 

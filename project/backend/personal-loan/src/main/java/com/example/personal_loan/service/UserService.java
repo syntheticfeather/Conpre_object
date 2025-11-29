@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.example.personal_loan.dto.AdminGetUserResponse;
 import com.example.personal_loan.dto.AdminUserListResponse;
+import com.example.personal_loan.dto.BlackListDto;
 import com.example.personal_loan.dto.LoginRequest;
 import com.example.personal_loan.dto.LoginResponse;
 import com.example.personal_loan.dto.RegisterRequest;
@@ -43,20 +44,26 @@ public interface UserService {
     * 管理员使用
     */
    
-   // 管理获取用户贷款状态及金额统计信息
-   List<AdminUserListResponse> adminGetAllUsersWithStats();
+    // 管理获取用户贷款状态及金额统计信息
+    List<AdminUserListResponse> adminGetAllUsersWithStats();
    
-   // 添加黑名单
-   void addToBlackList(Long userId, int blackLevel);
+    // 添加黑名单
+    void addToBlackList(Long userId, int blackLevel);
+
+    // 解除黑名单
+    void removeFromBlackList(Long userId);
+
+    // 获取黑名单列表
+    List<BlackListDto> getBlackList();
    
-   // 获取单个用户信息
+    // 获取单个用户信息
     AdminGetUserResponse adminGetUser(Long userId);
 
    
-   List<UserSearchDto> searchUsersByCreditScore(String expr);
+    List<UserSearchDto> searchUsersByCreditScore(String expr);
 
     /*
-    * 未使用
+    * 其他
     */
 
    // 删除用户

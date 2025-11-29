@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.personal_loan.dto.AdminGetUserResponse;
 import com.example.personal_loan.dto.AdminUserListResponse;
+import com.example.personal_loan.dto.BlackListDto;
 import com.example.personal_loan.dto.LoginRequest;
 import com.example.personal_loan.dto.LoginResponse;
 import com.example.personal_loan.dto.RegisterRequest;
@@ -46,7 +47,7 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Autowired
-    private BlackListMapper blacklistMapper;
+    private BlackListMapper blackListMapper;
 
     @Autowired
     private OrderMapper orderMapper;
@@ -71,7 +72,7 @@ public class UserServiceImpl implements UserService {
 
         User user = userMapper.findByPhone(request.getPhone());
         if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new BusinessException(400, "用户名或密码错误");
+            throw new BusinessException(400, "手机号或密码错误");
         }
 
         String token = jwtUtil.generateAccessToken(user.getPhone(), user.getId().toString());
@@ -296,7 +297,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // 检查是否已在黑名单
-        if (blacklistMapper.selectByUserId(userId) != null) {
+        if (blackListMapper.selectActiveByUserId(userId) != null) {
             throw new BusinessException(400, "用户已在黑名单中");
         }
 
@@ -304,7 +305,27 @@ public class UserServiceImpl implements UserService {
         BlackUser blackUser = new BlackUser();
         blackUser.setUserId(userId);
         blackUser.setBlackLevel(blackLevel);
-        blacklistMapper.insert(blackUser);
+        blackUser.setCreateTime(LocalDateTime.now());
+        blackUser.setUpdateTime(LocalDateTime.now());
+        blackUser.setRemoveTime(null);
+        blackListMapper.insert(blackUser);
+    }
+
+    @Override
+    public void removeFromBlackList(Long userId){
+        BlackUser blackUser = blackListMapper.selectByUserId(userId);
+        if (blackUser == null) {
+            throw new BusinessException(404,"用户不在黑名单中");
+        }
+        blackUser.setRemoveTime(LocalDateTime.now());
+        blackUser.setUpdateTime(LocalDateTime.now());
+        blackListMapper.update(blackUser);
+    }
+
+    @Override
+    public List<BlackListDto> getBlackList() {
+        List<BlackListDto> blackUsers = blackListMapper.selectAll();
+        return blackUsers;
     }
 
     @Override
@@ -319,7 +340,7 @@ public class UserServiceImpl implements UserService {
         Integer creditScore = (cert != null) ? cert.getCreditScore() : null;
 
         // 查询黑名单等级
-        BlackUser blackUser = blacklistMapper.selectByUserId(userId);
+        BlackUser blackUser = blackListMapper.selectByUserId(userId);
         int blackLevel = (blackUser != null) ? blackUser.getBlackLevel() : 0;
 
         return new AdminGetUserResponse(

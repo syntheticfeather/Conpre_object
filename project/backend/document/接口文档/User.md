@@ -81,6 +81,115 @@
 
 ## 管理员使用
 
+### 添加黑名单
+
+**网址** /api/users/blacklist/add
+
+**请求方式** POST
+
+**请求参数**
+
+|字段名|类型|是否必填|说明|示例值|
+|---|---|---|---|---|
+| userId | integer | 是 | 用户id | 7 |
+| blackLevel | integer | 是 | 黑名单等级 | 1 |
+
+**请求示例（请求体）**
+
+``` json
+{
+    "userId":7,
+    "blackLevel":1
+}
+```
+
+**返回数据**
+
+``` json
+{
+    "code": 200,
+    "data": null,
+    "message": "用户已加入黑名单"
+}
+```
+
+**postman测试结果**
+
+![](../UserImgs/addBlackList.png "添加用户进黑名单成功")
+
+**日志**
+
+![](../UserImgs/logAddBlackList.png)
+
+### 解除黑名单
+
+**网址** /api/users/blacklist/remove
+
+**请求方式** POST
+
+**请求参数**
+
+|字段名|类型|是否必填|说明|示例值|
+|---|---|---|---|---|
+| userId | integer | 是 | 用户id | 7 |
+
+**请求示例（请求头）** Content-Type: application/x-www-form-urlencoded
+
+**请求示例（参数）** userId=7
+
+**返回数据**
+
+``` json
+{
+    "code": 200,
+    "data": null,
+    "message": "用户已解除黑名单"
+}
+```
+
+**postman测试结果**
+
+![](../UserImgs/removeBlackList.png "解除黑名单成功")
+
+**日志**
+
+![](../UserImgs/logRemove.png)
+
+### 获取黑名单列表
+
+**网址** /api/users/blacklist/list
+
+**请求方式** GET
+
+**返回数据**
+
+``` json
+{
+    "code": 200,
+    "data": [
+        {
+            "id": 1,
+            "userId": 7,
+            "userName": "lihua",
+            "phone": "13500135000",
+            "blackLevel": 1,
+            "createTime": "2025-11-29T12:50:37",
+            "updateTime": "2025-11-29T20:52:51",
+            "removeTime": "2025-11-29T20:52:51"
+        }
+    ],
+    "message": "操作成功"
+}
+```
+
+**postman测试结果**
+
+![](../UserImgs/blacklist.png "黑名单列表")
+
+**日志**
+
+![](../UserImgs/logBlacklist.png)
+
 ### 查询用户状态列表
 
 **网址** /api/users/admin/stats

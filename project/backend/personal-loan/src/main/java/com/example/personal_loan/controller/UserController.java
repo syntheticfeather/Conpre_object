@@ -16,9 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.personal_loan.dto.AddToBlackListRequest;
 import com.example.personal_loan.dto.AdminGetUserResponse;
 import com.example.personal_loan.dto.AdminUserListResponse;
 import com.example.personal_loan.dto.ApiResponse;
+import com.example.personal_loan.dto.BlackListDto;
 import com.example.personal_loan.dto.UserSearchDto;
 import com.example.personal_loan.dto.UserSelfResponse;
 import com.example.personal_loan.dto.UserUpdateRequest;
@@ -66,6 +68,36 @@ public class UserController {
 
     
     // ========== 管理员接口 ==========
+
+    /**
+     * 加入黑名单
+     */
+    @PostMapping("/blacklist/add")
+    public ResponseEntity<ApiResponse<String>> addToBlackList(@RequestBody AddToBlackListRequest request) {
+        log.info("/api/users/blacklist/add success called for admin to add user {} to black list", request.getUserId());
+        userService.addToBlackList(request.getUserId(), request.getBlackLevel());
+        return ResponseEntity.ok(ApiResponse.success(null,"用户已加入黑名单"));
+    }
+
+    /**
+     * 解除黑名单
+     */
+    @PostMapping("/blacklist/remove")
+    public ResponseEntity<ApiResponse<String>> removeFromBlackList(@RequestParam Long userId) {
+        log.info("/api/users/blacklist/remove success called for admin to remove user {} from black list", userId);
+        userService.removeFromBlackList(userId);
+        return ResponseEntity.ok(ApiResponse.success(null,"用户已解除黑名单"));
+    }
+
+    /**
+     * 获取当前黑名单列表
+     */
+    @GetMapping("/blacklist/list")
+    public ResponseEntity<ApiResponse<List<BlackListDto>>> getBlackList() {
+        log.info("/api/users/blacklist/list success called for admin to get black list");
+        List<BlackListDto> list = userService.getBlackList();
+        return ResponseEntity.ok(ApiResponse.success(list));
+    }
     
     // 用户管理列表，查看贷款状态和金额统计信息
     @GetMapping("/admin/stats")
