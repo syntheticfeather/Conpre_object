@@ -8,13 +8,40 @@ const AdminWeb = {
 }
 // ==================== API配置信息 ====================
 AdminWeb.API_CONFIG = {
+    baseUrl: 'http://localhost:8080',
     endpoints: {
         logout: '/api/auth/logout', // 退出接口
-        addLoanProduct: '/api/loan-products/admin', // 获取所有贷款产品接口
-        getOneProduct: '/api/loan-applications/{applicationId}',// 获取指定贷款产品详情接口
+        getOneProduct: '/api/loan-applications/{applicationId}',
         getUserLoans: '/api/loan-applications/user/{userId}', // 用户贷款列表接口
         batchCreateOptions: '/api/loan-products/admin/options/batch-create', //为指定产品批量增加选项接口
 
+        // 用户管理相关接口
+        getBlacklist: '/api/users/blacklist/list',//获取黑名单列表
+        addToBlacklist: '/api/users/blacklist/add',//添加黑名单
+        removeFromBlacklist: '/api/users/blacklist/remove',//解除黑名单
+        getUserStats: '/api/users/admin/stats',//查询用户状态列表
+        getUserDetail: '/api/users/admin/{userId}',//查看单个用户详细信息
+        searchUsersByCredit: '/api/users/search-by-credit',//据信誉分从高到低查询用
+        
+        // 贷款产品管理接口
+        adminGetAllProducts: '/api/loan-products/admin',// 获取所有贷款产品接口
+        adminGetProduct: '/api/loan-products/admin/{productId}', // 获取指定贷款产品详情接口
+        addLoanProduct: '/api/loan-products/admin', // 增加贷款产品接口
+        updateLoanProduct: '/api/loan-products/admin/products/{productId}', // 修改产品信息
+        deleteLoanProduct: '/api/loan-products/admin/products/{productId}', // 删除贷款产品接口
+        batchDeleteProducts: '/api/loan-products/admin/products/batch-delete',//批量删除产品
+        batchCreateOptions: '/api/loan-products/admin/options/batch-create',//批量增加产品选项
+        deleteOption: '/api/loan-products/admin/options/{optionId}',//删除产品的单个选项
+        batchDeleteOptions: '/api/loan-products/admin/options/batch-delete',//批量删除产品选项
+        
+        // 贷款申请相关接口
+        adminGetApplication: '/api/loan-applications/{applicationId}',// 获取任意用户的单个贷款申请详情
+        adminGetUserApplications: '/api/loan-applications/user/{userId}',// 获取指定用户的所有贷款申请详情
+        
+        // 人工审核相关接口
+        getPendingApprovals: '/api/approval/pending', // 查看代办审核列表
+        getApprovalDetail: '/api/approval/detail/{loanApplicationId}',//查看单个代办审核申请详情
+        submitApproval: '/api/approval/check' // 返回审核结果
     },
     storageKeys: {
         token: 'admin_token',
@@ -34,11 +61,9 @@ AdminWeb.JWT_CONFIG = {
 }
 // ==================== DOM元素引用 ====================
 AdminWeb.DOM_ELEMENTS = {
-    // 五？个控制面板
+    //控制面板
     //待办申请
     loanApplyContent: document.getElementById('loan-apply-content'),
-    // 首页
-    homePageContent: document.getElementById('home-page-content'),
     // 贷款管理
     loanManagementContent: document.getElementById('loan-management-content'),
     // 用户管理
@@ -50,11 +75,15 @@ AdminWeb.DOM_ELEMENTS = {
 }
 // ==================== API 请求封装 ====================
 AdminWeb.API_CLIENT = {
-    // 通用请求方法
-
+    /**
+     * 通用API请求方法
+     * @param {string} url - 请求URL
+     * @param {Object} options - 请求选项
+     * @returns {Promise} - 返回Promise对象
+     */
     request: async function (url, options = {}) {
         // 网络申请日志
-        console.log(`🔄 API请求: ${options.method || 'GET'} ${url}`, {
+        console.log(`发出API请求: ${options.method || 'GET'} ${url}`, {
             requiresAuth: this._requiresAuth(url),
             hasToken: !!AdminWeb.JWT_UTILS.getRawToken(),
             data: options.body ? JSON.parse(options.body) : null
@@ -79,7 +108,7 @@ AdminWeb.API_CLIENT = {
             });
 
             // Token 过期，尝试刷新
-            if (response.status === 401 && this._requiresAuth(url)) {
+            if (response.status === 401 && this._requiresAuth(`${AdminWeb.API_CONFIG.baseUrl}${url}`)) {
                 const refreshed = await this.refreshToken();
                 if (refreshed) {
                     // 重试原始请求
@@ -117,7 +146,7 @@ AdminWeb.API_CLIENT = {
         // 如果是登录页面，不清除，否则跳转到登录页
         if (!window.location.href.includes('login.html')) {
             alert('登录已过期，请重新登录');
-            window.location.href = 'login.html';
+            // window.location.href = 'login.html';
         }
     },
 
@@ -151,16 +180,21 @@ AdminWeb.API_CLIENT = {
         return false
     },
 
-    // 基础快捷方法
+    // 基础HTTP方法封装
     get: function (url) {
-        return this.request(url)
+        return this.request(url);
     },
 
     post: function (url, data) {
-        return this.request(url, {
-            method: 'POST',
-            body: JSON.stringify(data)
-        })
+        return this.request(url, { method: 'POST', body: JSON.stringify(data) });
+    },
+
+    patch: function (url, data) {
+        return this.request(url, { method: 'PATCH', body: JSON.stringify(data) });
+    },
+
+    delete: function (url) {
+        return this.request(url, { method: 'DELETE' });
     },
 
     // 基础URL获取方法

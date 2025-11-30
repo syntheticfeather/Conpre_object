@@ -334,26 +334,25 @@
         <!--  -->
 
         <!-- 日历弹窗 -->
-        <!-- <div id="calendar" class="calendar">
+        <div id="calendar" class="calendar">
             <div class="calendar-header">
-            <button class="prev-month">&lt;&lt;</button>
-            <span class="month-year">2025年11月</span>
-            <button class="next-month">&gt;&gt;</button>
+                <button class="prev-month">&lt;&lt;</button>
+                <span class="month-year">2025年11月</span>
+                <button class="next-month">&gt;&gt;</button>
             </div>
             <div class="calendar-body">
-            <div class="month">
-                11月 -->
-                <!-- <div class="weekdays">日 一 二 三 四 五 六</div>
-                <div class="days"></div>
+                <div class="month">
+                    11月
+                    <div class="weekdays">日 一 二 三 四 五 六</div>
+                    <div class="days"></div>
+                </div>
+                <div class="month">
+                    12月
+                    <div class="weekdays">日 一 二 三 四 五 六</div>
+                    <div class="days"></div>
+                </div>
             </div>
-            <div class="month">
-                12月 -->
-                <!-- <div class="weekdays">日 一 二 三 四 五 六</div>
-                <div class="days"></div>
-            </div>
-            </div>
-            </div>
-        </div> -->
+        </div>
 
 
         <!-- 用户管理面板 -->
@@ -380,13 +379,8 @@
                 <div class="searchByCredit">
                     <div class="credit-search">
                         <input type="text" placeholder="请输入信誉分表达式，如: <100, >=80" id="creditExprInput">
-                        <button class="btn btn-primary" id="credit-search-btn">查询</button>
+                        <button class="btn" id="credit-search-btn">查询</button>
                     </div>
-                    <div class="table-header">
-                        <h2 class="table-title">用户列表</h2>
-                        <button class="batch-manage-btn" data-modal="user-modal">批量管理</button>
-                    </div>
-                    <hr>
                     <div class="table-body">
                         <table>
                             <thead>
@@ -724,7 +718,364 @@
                 </div>
             </div>
         </div>
-
+        <!-- 黑名单管理弹窗 -->
+        <div class="black-dashboard dashboard" id="black-management-content">
+            <!-- 左侧子导航栏 -->
+            <div class="side-bar">
+                <ul>
+                    <li class="side-item">
+                        <button class="side-link active" data-target="loan-apply">用户管理</button>
+                        <i class="iconfont icon-jinru"></i>
+                    </li>
+                    <li class="side-item">
+                        <button class="side-link" data-target="home-page">黑名单管理</button>
+                        <i class="iconfont icon-jinru"></i>
+                    </li>
+                </ul>
+            </div>
+            <!-- 右侧内容面板 -->
+            <div class="main-content">
+                <div class="header">
+                    <h2 class="title">黑名单管理</h2>
+                </div>
+                <div class="searchByCredit">
+                    <div class="table-body">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>序号</th>
+                                    <th>用户名</th>
+                                    <th>是否在线</th>
+                                    <th>目前借贷情况</th>
+                                    <th>总交易笔数</th>
+                                    <th>总贷款金额</th>
+                                    <th>总还款金额</th>
+                                    <th colspan="4">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>  
+                                    <td>张三</td>
+                                    <td>在线</td>
+                                    <td>无借贷</td>
+                                    <td>4</td>
+                                    <td>1234</td>
+                                    <td>1234</td>
+                                    <td><button class="">查看申请中贷款项目</button></td>
+                                    <td><button class="">查看历史贷款项目</button></td>
+                                    <td><button class="">加入黑名单</button></td>
+                                    <td><button class="">删除</button></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>  
+                                    <td>李四</td>
+                                    <td>是</td>
+                                    <td>无借贷</td>
+                                    <td>4</td>
+                                    <td>1234</td>
+                                    <td>1234</td>
+                                    <td><button class="">查看申请中贷款项目</button></td>
+                                    <td><button class="">查看历史贷款项目</button></td>
+                                    <td><button class="">加入黑名单</button></td>
+                                    <td><button class="">删除</button></td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>  
+                                    <td>王五</td>
+                                    <td>是</td>
+                                    <td>无借贷</td>
+                                    <td>4</td>
+                                    <td>1234</td>
+                                    <td>1234</td>
+                                    <td><button class="">查看申请中贷款项目</button></td>
+                                    <td><button class="">查看历史贷款项目</button></td>
+                                    <td><button class="">加入黑名单</button></td>
+                                    <td><button class="">删除</button></td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>  
+                                    <td>张三</td>
+                                    <td>是</td>
+                                    <td>无借贷</td>
+                                    <td>4</td>
+                                    <td>1234</td>
+                                    <td>1234</td>
+                                    <td><button class="">查看申请中贷款项目</button></td>
+                                    <td><button class="">查看历史贷款项目</button></td>
+                                    <td><button class="">加入黑名单</button></td>
+                                    <td><button class="">删除</button></td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>  
+                                    <td>李四</td>
+                                    <td>是</td>
+                                    <td>无借贷</td>
+                                    <td>4</td>
+                                    <td>1234</td>
+                                    <td>1234</td>
+                                    <td><button class="">查看申请中贷款项目</button></td>
+                                    <td><button class="">查看历史贷款项目</button></td>
+                                    <td><button class="">加入黑名单</button></td>
+                                    <td><button class="">删除</button></td>
+                                </tr>
+                                <tr>
+                                    <td>6</td>  
+                                    <td>王五</td>
+                                    <td>是</td>
+                                    <td>无借贷</td>
+                                    <td>4</td>
+                                    <td>1234</td>
+                                    <td>1234</td>
+                                    <td><button class="">查看申请中贷款项目</button></td>
+                                    <td><button class="">查看历史贷款项目</button></td>
+                                    <td><button class="">加入黑名单</button></td>
+                                    <td><button class="">删除</button></td>
+                                </tr>
+                                <tr>
+                                    <td>7</td>  
+                                    <td>张三</td>
+                                    <td>是</td>
+                                    <td>无借贷</td>
+                                    <td>4</td>
+                                    <td>1234</td>
+                                    <td>1234</td>
+                                    <td><button class="">查看申请中贷款项目</button></td>
+                                    <td><button class="">查看历史贷款项目</button></td>
+                                    <td><button class="">加入黑名单</button></td>
+                                    <td><button class="">删除</button></td>
+                                </tr>
+                                <tr>
+                                    <td>8</td>  
+                                    <td>李四</td>
+                                    <td>是</td>
+                                    <td>无借贷</td>
+                                    <td>4</td>
+                                    <td>1234</td>
+                                    <td>1234</td>
+                                    <td><button class="">查看申请中贷款项目</button></td>
+                                    <td><button class="">查看历史贷款项目</button></td>
+                                    <td><button class="">加入黑名单</button></td>
+                                    <td><button class="">删除</button></td>
+                                <tr>
+                                    <td>9</td>  
+                                    <td>王五</td>
+                                    <td>是</td>
+                                    <td>无借贷</td>
+                                    <td>4</td>
+                                    <td>1234</td>
+                                    <td>1234</td>
+                                    <td><button class="">加入黑名单</button></td>
+                                    <td><button class="">标记为无风险</button></td>
+                                    <td><button class="">标记为极高风险</button></td>
+                                    <td><button class="">查看详情</button></td>
+                                </tr>
+                                <tr>
+                                    <td>10</td>  
+                                    <td>张三</td>
+                                    <td>是</td>
+                                    <td>无借贷</td>
+                                    <td>4</td>
+                                    <td>1234</td>
+                                    <td>1234</td>
+                                    <td><button class="">加入黑名单</button></td>
+                                    <td><button class="">标记为无风险</button></td>
+                                    <td><button class="">标记为极高风险</button></td>
+                                    <td><button class="">查看详情</button></td>
+                                </tr>
+                                <tr>
+                                    <td>11</td>  
+                                    <td>李四</td>
+                                    <td>是</td>
+                                    <td>无借贷</td>
+                                    <td>4</td>
+                                    <td>1234</td>
+                                    <td>1234</td>
+                                    <td><button class="">加入黑名单</button></td>
+                                    <td><button class="">标记为无风险</button></td>
+                                    <td><button class="">标记为极高风险</button></td>
+                                    <td><button class="">查看详情</button></td>
+                                </tr>
+                                <tr>
+                                    <td>12</td>  
+                                    <td>王五</td>
+                                    <td>是</td>
+                                    <td>无借贷</td>
+                                    <td>4</td>
+                                    <td>1234</td>
+                                    <td>1234</td>
+                                    <td><button class="">加入黑名单</button></td>
+                                    <td><button class="">标记为无风险</button></td>
+                                    <td><button class="">标记为极高风险</button></td>
+                                    <td><button class="">查看详情</button></td>
+                                </tr>
+                                <tr>
+                                    <td>1</td>  
+                                    <td>张三</td>
+                                    <td>在线</td>
+                                    <td>无借贷</td>
+                                    <td>4</td>
+                                    <td>1234</td>
+                                    <td>1234</td>
+                                    <td><button class="">加入黑名单</button></td>
+                                    <td><button class="">标记为无风险</button></td>
+                                    <td><button class="">标记为极高风险</button></td>
+                                    <td><button class="">查看详情</button></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>  
+                                    <td>李四</td>
+                                    <td>是</td>
+                                    <td>无借贷</td>
+                                    <td>4</td>
+                                    <td>1234</td>
+                                    <td>1234</td>
+                                    <td><button class="">加入黑名单</button></td>
+                                    <td><button class="">标记为无风险</button></td>
+                                    <td><button class="">标记为极高风险</button></td>
+                                    <td><button class="">查看详情</button></td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>  
+                                    <td>王五</td>
+                                    <td>是</td>
+                                    <td>无借贷</td>
+                                    <td>4</td>
+                                    <td>1234</td>
+                                    <td>1234</td>
+                                    <td><button class="">加入黑名单</button></td>
+                                    <td><button class="">标记为无风险</button></td>
+                                    <td><button class="">标记为极高风险</button></td>
+                                    <td><button class="">查看详情</button></td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>  
+                                    <td>张三</td>
+                                    <td>是</td>
+                                    <td>无借贷</td>
+                                    <td>4</td>
+                                    <td>1234</td>
+                                    <td>1234</td>
+                                    <td><button class="">加入黑名单</button></td>
+                                    <td><button class="">标记为无风险</button></td>
+                                    <td><button class="">标记为极高风险</button></td>
+                                    <td><button class="">查看详情</button></td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>  
+                                    <td>李四</td>
+                                    <td>是</td>
+                                    <td>无借贷</td>
+                                    <td>4</td>
+                                    <td>1234</td>
+                                    <td>1234</td>
+                                    <td><button class="">加入黑名单</button></td>
+                                    <td><button class="">标记为无风险</button></td>
+                                    <td><button class="">标记为极高风险</button></td>
+                                    <td><button class="">查看详情</button></td>
+                                </tr>
+                                <tr>
+                                    <td>6</td>  
+                                    <td>王五</td>
+                                    <td>是</td>
+                                    <td>无借贷</td>
+                                    <td>4</td>
+                                    <td>1234</td>
+                                    <td>1234</td>
+                                    <td><button class="">加入黑名单</button></td>
+                                    <td><button class="">标记为无风险</button></td>
+                                    <td><button class="">标记为极高风险</button></td> 
+                                    <td><button class="">查看详情</button></td>
+                                </tr>
+                                <tr>
+                                    <td>7</td>  
+                                    <td>张三</td>
+                                    <td>是</td>
+                                    <td>无借贷</td>
+                                    <td>4</td>
+                                    <td>1234</td>
+                                    <td>1234</td>
+                                    <td><button class="">加入黑名单</button></td>
+                                    <td><button class="">标记为无风险</button></td>
+                                    <td><button class="">标记为极高风险</button></td>
+                                    <td><button class="">查看详情</button></td>
+                                </tr>
+                                <tr>
+                                    <td>8</td>  
+                                    <td>李四</td>
+                                    <td>是</td>
+                                    <td>无借贷</td>
+                                    <td>4</td>
+                                    <td>1234</td>
+                                    <td>1234</td>
+                                    <td><button class="">加入黑名单</button></td>
+                                    <td><button class="">标记为无风险</button></td>
+                                    <td><button class="">标记为极高风险</button></td>
+                                    <td><button class="">查看详情</button></td>
+                                <tr>
+                                    <td>9</td>  
+                                    <td>王五</td>
+                                    <td>是</td>
+                                    <td>无借贷</td>
+                                    <td>4</td>
+                                    <td>1234</td>
+                                    <td>1234</td>
+                                    <td><button class="">加入黑名单</button></td>
+                                    <td><button class="">标记为无风险</button></td>
+                                    <td><button class="">标记为极高风险</button></td>
+                                    <td><button class="">查看详情</button></td>
+                                </tr>
+                                <tr>
+                                    <td>10</td>  
+                                    <td>张三</td>
+                                    <td>是</td>
+                                    <td>无借贷</td>
+                                    <td>4</td>
+                                    <td>1234</td>
+                                    <td>1234</td>
+                                    <td><button class="">加入黑名单</button></td>
+                                    <td><button class="">标记为无风险</button></td>
+                                    <td><button class="">标记为极高风险</button></td>
+                                    <td><button class="">查看详情</button></td>
+                                </tr>
+                                <tr>
+                                    <td>11</td>  
+                                    <td>李四</td>
+                                    <td>是</td>
+                                    <td>无借贷</td>
+                                    <td>4</td>
+                                    <td>1234</td>
+                                    <td>1234</td>
+                                    <td><button class="">加入黑名单</button></td>
+                                    <td><button class="">标记为无风险</button></td>
+                                    <td><button class="">标记为极高风险</button></td>
+                                    <td><button class="">查看详情</button></td>
+                                </tr>
+                                <tr>
+                                    <td>12</td>  
+                                    <td>王五</td>
+                                    <td>是</td>
+                                    <td>无借贷</td>
+                                    <td>4</td>
+                                    <td>1234</td>
+                                    <td>1234</td>
+                                    <td><button class="">加入黑名单</button></td>
+                                    <td><button class="">标记为无风险</button></td>
+                                    <td><button class="">标记为极高风险</button></td>
+                                    <td><button class="">查看详情</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- 分页控件 -->
+                    <div class="pagination">
+                        <button onclick="prevPage()">上一页</button>
+                        <span id="page-info">第 <span id="current-page">1</span> 页，共 <span id="total-pages">10</span> 页</span>
+                        <button onclick="nextPage()">下一页</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- 风险与催收管理面板 -->
         <div class="risk-dashboard dashboard" id="riskAndCollection-management-content">

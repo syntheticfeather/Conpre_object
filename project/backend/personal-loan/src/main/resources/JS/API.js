@@ -8,6 +8,7 @@ const AdminWeb = {
 }
 // ==================== API配置信息 ====================
 AdminWeb.API_CONFIG = {
+    baseUrl: 'http://localhost:8080',
     endpoints: {
         // 注册界面
         register: '/api/auth/register',// 注册接口
@@ -35,7 +36,9 @@ AdminWeb.DOM_ELEMENTS = {
     // 注册页面
     registerForm: document.getElementById('registerForm'),
     registerBtn: document.querySelector('.register-btn'),
-    closeBtn: document.querySelector('.close-btn'),
+    loginBtn: document.querySelector('.login-btn'), // 跳转登录按钮
+    confirmBtn: document.querySelector('.confirm-btn'), // 确认注册信息，弹出验证弹窗
+    closeBtn: document.querySelector('.close-btn'), // 关闭验证弹窗
     loadingSpinner: document.getElementById('loadingSpinner'), // 注册加载动画
     registerSuccessMessage: document.getElementById('successMessage'), // 注册成功提示信息
     networkError: document.getElementById('networkError'), // 网络错误提示信息
@@ -90,7 +93,7 @@ AdminWeb.API_CLIENT = {
         };
 
         try {
-            const response = await fetch(url, {
+            const response = await fetch(`${AdminWeb.API_CONFIG.baseUrl}${url}`, {
                 ...options,
                 headers
             });
@@ -147,7 +150,7 @@ AdminWeb.API_CLIENT = {
         }
 
         try {
-            const response = await fetch(`${AdminWeb.API_CONFIG.endpoints.refreshToken}`, {
+            const response = await fetch(`${AdminWeb.API_CONFIG.baseUrl}${AdminWeb.API_CONFIG.endpoints.refreshToken}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -183,7 +186,7 @@ AdminWeb.API_CLIENT = {
     // 专用方法 - 登录
     login: async function (phone, password) {
         try {
-            const response = await fetch(`${AdminWeb.API_CONFIG.endpoints.login}`, {
+            const response = await fetch(`${this._getBaseUrl()}${AdminWeb.API_CONFIG.endpoints.login}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ phone, password })
@@ -205,6 +208,11 @@ AdminWeb.API_CLIENT = {
             console.error('登录请求失败:', error)
             throw error
         }
+    },
+
+    // 添加基础URL获取方法
+    _getBaseUrl: function() {
+        return AdminWeb.API_CONFIG.baseUrl;
     },
 
     // 专用方法 - 注册

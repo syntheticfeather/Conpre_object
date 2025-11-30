@@ -24,7 +24,17 @@ function bindEventListeners() {
         DOM_ELEMENTS.registerForm.addEventListener('submit', handleRegisterSubmit)
     }
     
-    //关闭注册页面按钮绑定
+    //跳转登录页面按钮绑定
+    if (DOM_ELEMENTS.loginBtn) {
+        DOM_ELEMENTS.loginBtn.addEventListener('click', handleLogin)
+    }
+
+    //关闭验证弹窗按钮绑定
+    if (DOM_ELEMENTS.confirmBtn) {
+        DOM_ELEMENTS.confirmBtn.addEventListener('click', handleConfirm)
+    }
+
+    //关闭验证弹窗按钮绑定
     if (DOM_ELEMENTS.closeBtn) {
         DOM_ELEMENTS.closeBtn.addEventListener('click', handleClose)
     }
@@ -287,10 +297,17 @@ async function handleRegisterSubmit(e) {
 //     }, 1000)
 // }
 
-// 关闭注册页面
-function handleClose() {
+// 跳转登录页面
+function handleLogin() {
     console.log('关闭注册页面，返回登录页')
     window.location.href = 'login.html'
+}
+function handleConfirm() {
+    document.getElementById('authentication').style.display = 'flex'
+}
+// 跳转登录页面
+function handleClose() {
+    document.getElementById('authentication').style.display = 'none'
 }
 
 // ==================== 结果处理函数 ====================

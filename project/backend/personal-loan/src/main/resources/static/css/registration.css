@@ -1,79 +1,116 @@
+/* 按钮基础样式 */
+.btn {
+    padding: 5px 10px;
+
+    height: 35px;
+    background-color: #409EFF;
+
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 17px;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.btn:hover {
+    background-color: #2a88e6;
+}
+/* 提示信息统一样式 */
+p {
+    font-size: 20px;
+    line-height: 40px;
+    color: #fff;
+}
+i {
+    color: red;
+}
+/* 输入框统一样式 */
+input {
+    padding: 7px 5px;
+    width: 307px;
+    height: 33px;
+    
+    font-size: 18px;
+    color: #aaadad;
+    border: none;
+    border-radius: 5px 0 0 5px;
+    outline: none;
+}
+
 /* 首页样式 */
 /* 版心 */
 .wrapper {
     margin: 0 auto;
     width: 1200px;
 }
-
 body {
-    background-image: url(../images/bgi.jpg);
+    height: 400px;
+    background: #282a37;
     background-size: cover;
-}
-
-/* 信息注册 */
-.title {
-    margin: 110px 0 12px 262px;
-
-    font-size: 32px;
-    line-height: 30px;
-    font-weight: 600;
-    color: #000c14;
 }
 
 /* 主体部分 */
 .main {
-    margin-bottom: 197px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    margin-top: 100px;
     padding: 0 20px 24px 20px;
-    width: 1050px;
-    height: 450px;
-    background-color: #fff;
 
-    border-radius: 35px;
+    width: 565px;
+    height: 460px;
+    background: #3e404d;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 20px;
 }
-
-.part_title {
-    display: flex;
-    justify-content: space-around;
-
-    padding: 0 15px;
+.main:hover {
+    box-shadow: 0 0 40px rgba(255,255,255,0.5);
+    background: #46474e;
 }
-
+/* 标题 */
 .main h2 {
-    margin-right: 100px;
-
+    margin-top: 10px;
     font-size: 24px;
-    line-height: 54px;
-    color: #2551e1;
+    line-height: 34px;
+    color: #ffffff;
 }
 
-/* 输入账户信息 */
-div .base-information {
+/***************** 输入账户信息 ****************/
+.base-information {
     display: flex;
-    justify-content: center;
-}
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
 
+    padding: 10px 20px;
+}
 .base-information .infor{
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
 
-    margin-right: 15px;
+    margin-right: -65px;
     padding-top: 4px;
     padding-left: 30px;
+
     width: 490px;
     height: 310px;
-    background-color: #e2e7e6;
+
     border-radius: 10px;
 }
-
+.base-information .infor p {
+    color: #fff;
+}
 .base-information .infor div {
     display: flex;
     justify-content: space-between;
 
-    margin-right: 15px;
+    margin-right: 25px;
     padding-top: 4px;
-    width: 400px;
-    background-color: #e2e7e6;
+    width: 350px;
     border-radius: 10px;
 }
 
@@ -82,42 +119,51 @@ div .base-information {
     display: flex;
     justify-content: space-between;
 }
+.decration {
+    margin-right: 10px;
+
+    width: 33px;
+    background-color: rgba(255, 255, 255, 1);
+
+    border-radius:0 5px 5px 0 ;
+}
 /* 密码显示按钮 */
 .password-input #showPassword-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 10px;
-  margin-top: 6px;
 
-  width: 30px;
-  background-color: rgba(27, 83, 241, 0);
+  width: 33px;
+  background-color: rgba(255, 255, 255, 1);
   
   border: none;
+  border-radius:0 5px 5px 0 ;
   cursor: pointer;
 }
-#showPassword-btn .icon-eye-close {
+#showPassword-btn .icon-browse {
     display: none;
     font-size: 24px;
     color: #000;
 }
-#showPassword-btn .icon-browse { 
+#showPassword-btn .icon-eye-close{
     display: none;
     font-size: 24px;
     color: #000;
 }
+
 /* 确认密码显示按钮 */
 .password-input #showConfirmPassword-btn {
     display: flex;
     align-items: center;
     justify-content: center;
     margin-right: 10px;
-    margin-top: 6px;
 
-    width: 30px;
-    background-color: rgba(27, 83, 241, 0);
+    width: 33px;
+    background-color: rgba(255, 255, 255, 1);
     
     border: none;
+    border-radius:0 5px 5px 0;
     cursor: pointer;
 }
 #showConfirmPassword-btn .icon-eye-close {
@@ -131,49 +177,91 @@ div .base-information {
     color: #000;
 }
 
-/* 绑定手机号 */
-div .authentication {
+/*用户信息区按钮*/
+.infor-btn {
     display: flex;
+    justify-content:space-around;
+}
+/* 注册按钮  */
+.main .login-btn,
+.confirm-btn  {
+    margin-left: 10px;
+    width: 119px;
+    height: 45px;
+
+    font-size: 24px;
+    line-height: 24px;
+    font-weight: 600;
+    color: #fff;
+    border: none;
+}
+
+/***************** 输入验证信息 ****************/
+/* 绑定手机号 */
+#authentication {
+    display: none;
     flex-direction: column;
     align-content: center;
+ 
+    position: fixed;
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%);
+    z-index: 1000;
 
-    margin-right: 5px;
-    padding-top: 4px;
-    padding-left: 60px;
-    width: 480px;
-    height: 310px;
-    background-color: #e2e7e6;
+    padding: 10px 20px;
+    width: 390px;
+    background: #3e404d;
+    border: 2px solid rgba(255, 255, 255, 0.5);
     border-radius: 10px;
 }
-
-p {
-    font-size: 20px;
-    line-height: 40px;
-    color: #000;
-}
-
-i {
-    color: red;
-}
-
-input {
-    padding: 7px 5px;
-    width: 360px;
-    height: 33px;
-    
-    font-size: 18px;
-    color: #aaadad;
-    border: none;
+#authentication input,p {
+    margin-left: 15px;
     border-radius: 5px;
-    outline: none;
+}
+/* 获取验证码按钮  */
+.get-code-btn {
+    margin-left: 190px;
+    margin-top: 6px;
+    margin-bottom: 12px;
+
+    width: 127px;
+    height: 33px;
+
+    font-size: 20px;
+    line-height: 20px;
+    font-weight: 600;
+    color: #fff;
+    border: none;
+}
+/* 关闭按钮  */
+.close-btn {
+    margin-left: 340px;
+    margin-top: -13px;
+
+    width: 30px;
+    height: 30px;
+    background-color: rgba(0, 0, 0, 0);
+
+    font-size: 24px;
+    font-weight: 600;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+/* 注册按钮 */
+.register-btn {
+    margin: 0 auto;
+    margin-bottom: 10px;
+    width: 300px;
 }
 
 /* 输入错误提醒 */
 .input-error {
+    display: none;
     width: 150px;
     border-color: red;
 }
-
 /* 错误提示样式 */
 .error-message {
     display: none; 
@@ -185,54 +273,6 @@ input {
     text-align: center;
 }
 
-/* 获取验证码按钮  */
-.get-code-btn {
-    margin-left: 190px;
-    margin-top: 50px;
-
-    width: 119px;
-    height: 33px;
-    background-color: #165eff;
-
-    font-size: 20px;
-    line-height: 33px;
-    font-weight: 600;
-    color: #fff;
-    border: none;
-}
-
-/* 注册按钮  */
-.main .register-btn {
-    margin-left: 640px;
-    margin-top: 22px;
-
-    width: 119px;
-    height: 45px;
-    background-color: #165eff;
-
-    font-size: 24px;
-    line-height: 45px;
-    font-weight: 600;
-    color: #fff;
-    border: none;
-}
-
-/* 关闭按钮  */
-.main .close-btn {
-    margin-left: 58px;
-    margin-top: 22px;
-
-    width: 119px;
-    height: 45px;
-    background-color: #165eff;
-
-    font-size: 24px;
-    line-height: 45px;
-    font-weight: 600;
-    color: #fff;
-    border: none;
-}
-
 /* 加载动画 */
 .loading {
     text-align: center;
@@ -240,7 +280,6 @@ input {
     font-weight: bold;
     margin: 10px 0;
 }
-
 #successMessage {
     display: none;
 }

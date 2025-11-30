@@ -14,7 +14,7 @@
             <h1>借贷APP管理员控制系统</h1> 
         </div>
         <div class="main wrapper">
-            <h2>————欢迎登录————</h2>
+            <h2>———Login———</h2>
             <div class="login-type">
                 <button type="button" class="active" id="change-passwordLogin-btn">密码登录</button>
                 <button type="button" id="change-smsLogin-btn">验证码登录</button>
@@ -22,20 +22,19 @@
             
             <!-- 密码登录表单 -->
             <form class="login-form" id="passwordLoginForm">
-                <input type="text" id="phone" placeholder="请输入手机号码">
-                <div class="error-message" id="phoneError">请输入手机号码</div>
-                <hr>
-                <br>
-                <div class="password-input">
-                    <input type="password" id="password" placeholder="请输入密码">
-                    <button type="button" id="showPassword-btn">
-                        <i class="iconfont icon-browse"></i>
-                        <i class="iconfont icon-eye-close"></i>
-                    </button>
-                </div>
-                <div class="error-message" id="passwordError">请输入密码</div>
-                <hr>
-                <br>
+                  <input type="text" id="phone" placeholder="请输入手机号码">
+                  <div class="error-message" id="phoneError">请输入手机号码</div>
+
+                  <div class="password-input">
+                      <input type="password" id="password" placeholder="请输入密码">
+                      <button type="button" id="showPassword-btn">
+                          <i class="iconfont icon-browse"></i>
+                          <i class="iconfont icon-eye-close"></i>
+                      </button>
+                  </div>
+                  <div class="error-message" id="passwordError">请输入密码</div>
+
+
                 <button type="submit" id="passwordLogin-submit-btn">登录</button>
                 <div class="loading" id="passwordLoadingSpinner"></div>
                 <div class="success-message" id="successMessage">登录成功！正在跳转...</div>
@@ -59,10 +58,10 @@
                 <div class="success-message" id="successMessage">登录成功！正在跳转...</div>
             </form>
             
-            <span>还没有账号？<a href="registration.html">注册</a></span>
-            <a href="#" class="forget-password">忘记密码?</a>
-            <br>
-            
+            <div class="other">
+               <span>还没有账号？<a href="registration.html">注册</a></span>
+              <a href="#" class="forget-password">忘记密码?</a>
+            </div>
             <!-- 同意协议 -->
             <label>
                 <input type="checkbox" id="agreeCheckbox">
@@ -72,6 +71,6 @@
         </div>
     </div>
     <script src="../JS/API.js"></script>
-<script src="../JS/login.js"></script>
+    <script src="../JS/login.js"></script>
 </body>
 </html>
