@@ -34,7 +34,6 @@ public class ManualApproveServiceImpl implements ManualApproveService{
         if (!admin.getRole().equals(1)) {
             throw new BusinessException(403, "无权限查看代办审核列表");
         }
-
         return applicationMapper.listPendingApprovals();
     }
 

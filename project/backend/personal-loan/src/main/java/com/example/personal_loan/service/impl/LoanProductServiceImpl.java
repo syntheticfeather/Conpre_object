@@ -35,8 +35,12 @@ public class LoanProductServiceImpl implements LoanProductService{
     /*
      * 管理员使用
      */
-    
+
     // 新增产品
+
+    /*
+     * 创建产品
+     */
     @Override
     @Transactional
     public ProductDto createLoanProduct(ProductDto dto) {
@@ -97,6 +101,9 @@ public class LoanProductServiceImpl implements LoanProductService{
         }
     }
 
+    /*
+     * 批量创建产品选项
+     */
     @Override
     @Transactional
     public void batchCreateLoanOptions(Long productId, List<LoanOption> options){
@@ -148,6 +155,9 @@ public class LoanProductServiceImpl implements LoanProductService{
         loanOptionMapper.batchDeleteByIds(optionIds);
     }
 
+    /*
+     * 更新产品
+     */
     @Override
     public ProductDto updateLoanProduct(Long productId,ProductDto dto){
 
@@ -216,7 +226,9 @@ public class LoanProductServiceImpl implements LoanProductService{
         return result;
     }
 
-
+    /*
+     * 管理员获取产品详情
+     */
     @Override
     @Transactional
     public ProductDto adminGetProductById(Long id){
@@ -231,6 +243,9 @@ public class LoanProductServiceImpl implements LoanProductService{
         return dto;
     }
 
+    /*
+     * 管理员获取所有产品列表
+     */
     @Override
     @Transactional
     public List<ListProductResponse> adminGetAllProducts (){
@@ -240,9 +255,9 @@ public class LoanProductServiceImpl implements LoanProductService{
             response.setProductId(product.getId());
             response.setProductName(product.getProductName());
             response.setDescription(product.getDescription());
-            response.setUsage(product.getLoanUsage()); 
+            response.setUsage(product.getLoanUsage());
             response.setStatus(product.getStatus());
-            response.setCreateTime(product.getCreateTime()); 
+            response.setCreateTime(product.getCreateTime());
             response.setUpdateTime(product.getUpdateTime());
 
             return response;
@@ -253,7 +268,9 @@ public class LoanProductServiceImpl implements LoanProductService{
     /*
      * 用户使用
      */
-
+    /*
+     * 用户获取贷款产品
+     */
     @Override
     public List<UserGetProductResponse> searchProductsByName(String name){
         if (name == null || name.trim().isEmpty()) {
@@ -301,6 +318,9 @@ public class LoanProductServiceImpl implements LoanProductService{
         }).collect(Collectors.toList());
     }
 
+    /*
+     * 用户获得所有贷款产品
+     */
     @Override
     public List<UserGetProductResponse> getAllLoanProducts(){
         List<LoanProduct> products = loanProductMapper.findAllActive();

@@ -1,66 +1,87 @@
 package com.example.personal_loan.config;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.QueueBuilder;
+import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMQConfig {
+    // ========== Topic Exchange ==========
+    public static final String LOAN_EXCHANGE = "loan.exchange";
 
-    // 交换机名称
-    public static final String REVIEW_EXCHANGE = "pend.exchange";
+    // ========== Queue ==========
+    public static final String LOAN_APPLICATION_QUEUE = "loan.application.queue";
 
-    // ai审核列队
-    public static final String AI_REVIEW_QUEUE = "ai.pend.queue";
+    // ========== Routing Key ==========
+    public static final String LOAN_APPLICATION_ROUTING_KEY = "loan.application.submitted";
 
-    // 贷款资金发送列队
-    public static final String MANUAL_REVIEW_QUEUE = "loan.send.queue";
 
-    // Routing Key
-    public static final String ROUTING_KEY_AI = "ai";
-    public static final String ROUTING_KEY_MANUAL = "loan";
+    public static final String DLQ = "order.dlq"; // 死信队列
+    public static final String DLX = "dlx"; // 死信交换机
 
-    // ====== 声明交换机 ======
+    /**
+     * 声明 Topic Exchange（持久化）
+     */
     @Bean
-    public DirectExchange reviewExchange() {
-        return new DirectExchange(REVIEW_EXCHANGE, true, false); // durable=true
+    public TopicExchange loanExchange() {
+        return new TopicExchange(LOAN_EXCHANGE, true, false); // durable=true, autoDelete=false
     }
 
-    // ====== 声明 AI 审核队列 ======
+    /**
+     * 声明队列（持久化）
+     */
     @Bean
-    public Queue aiReviewQueue() {
-        return QueueBuilder.durable(AI_REVIEW_QUEUE).build();
+    public Queue loanApplicationQueue() {
+        return QueueBuilder.durable(LOAN_APPLICATION_QUEUE)
+                .build();
     }
 
-    // // ====== 声明贷款金额发送队列 ======
+    /**
+     * 将队列绑定到 Exchange + Routing Key
+     */
     @Bean
-    public Queue manualReviewQueue() {
-        return QueueBuilder.durable(MANUAL_REVIEW_QUEUE).build();
+    public Binding bindLoanApplicationQueue() {
+        return BindingBuilder.bind(loanApplicationQueue())
+                .to(loanExchange())
+                .with(LOAN_APPLICATION_ROUTING_KEY);
     }
 
-    // ====== 绑定 AI 队列 ======
+    /**
+     * 使用 Jackson 自动序列化/反序列化 JSON
+     */
     @Bean
-    public Binding bindAiQueue(Queue aiReviewQueue, DirectExchange reviewExchange) {
-        return BindingBuilder.bind(aiReviewQueue)
-                .to(reviewExchange)
-                .with(ROUTING_KEY_AI);
+    public MessageConverter jsonMessageConverter() {
+        return new Jackson2JsonMessageConverter();
     }
 
-    // // ====== 绑定金额发送队列 ======
+    /*
+     * 定义死信队列dlq()和死信交换机dlx()
+     * 并进行DLQ路由键的绑定
+     */
     @Bean
-    public Binding bindManualQueue(Queue manualReviewQueue, DirectExchange reviewExchange) {
-        return BindingBuilder.bind(manualReviewQueue)
-                .to(reviewExchange)
-                .with(ROUTING_KEY_MANUAL);
+    public Queue dlq() {
+        // 定义一个持久化的死信队列
+        return QueueBuilder
+                .durable(DLQ)
+                .build();
     }
 
-    // ====== 配置 JSON 消息转换器======
     @Bean
-    public org.springframework.amqp.support.converter.MessageConverter jsonMessageConverter() {
-        return new org.springframework.amqp.support.converter.Jackson2JsonMessageConverter();
+    public DirectExchange dlx() {
+        // 定义死信交换机
+        return new DirectExchange(DLX);
     }
+
+    @Bean
+    public Binding dlqBinding() {
+        // 凡是死信交换机dlx()中的路由键为DLQ的消息，都将被转移到死信队列dlq()中
+        return BindingBuilder.bind(dlq()) // 死信列队
+                .to(dlx()) // 死信交换机
+                .with(DLQ); // 路由键
+    }
+
 }

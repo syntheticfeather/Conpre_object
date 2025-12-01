@@ -24,11 +24,6 @@ spring:
       hibernate:
         format_sql: true
 
-  # MyBatis 配置
-  mybatis:
-    configuration:
-      map-underscore-to-camel-case: true
-      mapper-locations: classpath*:mapper/*.xml  # 如需启用，取消注释
 
   # Redis 配置
   data:
@@ -45,6 +40,30 @@ spring:
           min-idle: 0
           max-wait: -1ms
 
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: admin123
+    virtual-host: /
+    # 开启手动 ACK（推荐用于人工审核）
+    listener:
+      simple:
+        acknowledge-mode: manual  # 手动确认
+        concurrency: 3            # 消费者最小并发数
+        max-concurrency: 10       # 最大并发数
+
+  # Thymeleaf 配置（可选，但建议显式写出）
+  thymeleaf:
+    enabled: true
+    prefix: classpath:/templates/      # 模板文件位置
+    suffix: .html                      # 模板后缀
+    mode: HTML                         # HTML5 模式
+    encoding: UTF-8
+    cache: false                       # 开发时关闭缓存，修改页面立即生效
+    servlet:
+      content-type: text/html
+
 # JWT 配置（注意：YAML 中自定义属性需放在 spring 外层）
 jwt:
   secret: 5H6fK9pL2mN8qR4sT7vW1xY3zA0bC2dE4fG6hJ8kL0nM2oP4qR6sT8uV0wX2yZ4
@@ -55,3 +74,8 @@ jwt:
 logging:
   charset:
     console: UTF-8
+# MyBatis 配置
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    mapper-locations: classpath*:mapper/*.xml  # 如需启用，取消注释

@@ -37,6 +37,10 @@ CREATE TABLE user_certification(
 * 工作证明和第三方证明，和不动产证明一样，建表，然后路径部分，说清楚，存图片的本地文件路径
 * 二期工程
 */
+/*
+ 以库的xxx_cert中的xxx作为文件夹名
+ 以{业务前缀}_{用户ID或业务ID}_{时间戳(YYYYMMDD)}_{随机字符串}.{原始扩展名}作为文件名
+ */
 CREATE TABLE work_cert(
     work_cert_id INT PRIMARY KEY COMMENT '工作证明ID',
     employment_cert_path VARCHAR(255) COMMENT '在职证明图片路径',
@@ -130,8 +134,24 @@ CREATE TABLE loan_applications(
     FOREIGN KEY (user_id) REFERENCES users(id)
 )COMMENT '贷款申请表';
 
-CREATE TABLE loan_applications_manual(
-    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
-    application_id INT NOT NULL COMMENT '申请ID',
-    FOREIGN KEY (application_id) REFERENCES loan_applications(id)
-)COMMENT '人工审核表';
+CREATE TABLE outbox_message (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '自增主键',
+    message_id VARCHAR(64) NOT NULL UNIQUE COMMENT '全局唯一ID，如 UUID 或 loan_app_123_1712345678901',
+    business_type VARCHAR(50) NOT NULL COMMENT '业务类型，如 LOAN_APPLICATION',
+    business_id BIGINT NOT NULL COMMENT '关联的业务主键，如 loan_application.id',
+    topic VARCHAR(255) NOT NULL COMMENT 'RabbitMQ routing key，如 loan.application.submitted',
+    payload JSON NOT NULL COMMENT '消息体，通常是 LoanApplication 的 JSON 表示',
+    status VARCHAR(20) NOT NULL DEFAULT 'PENDING' COMMENT '状态: PENDING(待发送), SENT(已发送), FAILED(发送失败)',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    sent_at DATETIME NULL COMMENT '实际发送时间',
+    INDEX idx_status_created (status, created_at),
+    INDEX idx_business (business_type, business_id),
+    INDEX idx_message_id (message_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='本地消息表（Outbox Pattern）';
+
+CREATE TABLE processed_message (
+   message_id VARCHAR(64) PRIMARY KEY,
+   business_type VARCHAR(50) NOT NULL,
+   business_id BIGINT NOT NULL,
+   processed_at DATETIME DEFAULT CURRENT_TIMESTAMP
+) COMMENT '幂等性记录表';

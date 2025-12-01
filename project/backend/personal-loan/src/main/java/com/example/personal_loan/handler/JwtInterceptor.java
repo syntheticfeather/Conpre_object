@@ -56,10 +56,6 @@ public class JwtInterceptor implements HandlerInterceptor {
             response.setStatus(status);
             response.setContentType("application/json;charset=UTF-8");
             response.setCharacterEncoding("UTF-8");
-            // 常用的 CORS 头（如果你已经在全局配置 CORS，可以去掉这些）
-            response.setHeader("Access-Control-Allow-Origin", "*");
-            response.setHeader("Access-Control-Allow-Credentials", "true");
-            response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
 
             String json = String.format("{\"code\": %d, \"message\": \"%s\"}", status, escapeJson(message));
             response.getWriter().write(json);
