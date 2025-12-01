@@ -76,7 +76,6 @@
             <div class="main-content">
                 <div class="header">
                     <h2 class="title">待办审核</h2>
-                    <button class="batch-manage-btn" data-modal="loan-apply-modal">批量管理</button>
                 </div>
                 <!-- 待审核申请列表 -->
                 <div class="apply-content">
@@ -93,70 +92,38 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr data-id="1" onclick="showDetail(1)">
-                                    <td>张三</td>
-                                    <td>极速贷 Pro</td>
-                                    <td>¥10,000</td>
-                                    <td>1</td>
-                                    <td>12</td>
-                                    <td>2023-10-15 14:30:25</td>
-                                </tr>
-                                <tr data-id="2" onclick="showDetail(2)">
-                                    <td>李四</td>
-                                    <td>安心贷</td>
-                                    <td>¥50,000</td>
-                                    <td>3</td>
-                                    <td>36</td>
-                                    <td>2023-10-16 10:20:15</td>
-                                </tr>
-                                <tr data-id="3" onclick="showDetail(3)">
-                                    <td>张三</td>
-                                    <td>极速贷 Pro</td>
-                                    <td>¥10,000</td>
-                                    <td>1</td>
-                                    <td>12</td>
-                                    <td>2023-10-15 14:30:25</td>
-                                </tr>
-                                <tr data-id="4" onclick="showDetail(4)">
-                                    <td>李四</td>
-                                    <td>安心贷</td>
-                                    <td>¥50,000</td>
-                                    <td>3</td>
-                                    <td>36</td>
-                                    <td>2023-10-16 10:20:15</td>
-                                </tr>
-                                <tr data-id="5" onclick="showDetail(5)">
-                                    <td>张三</td>
-                                    <td>极速贷 Pro</td>
-                                    <td>¥10,000</td>
-                                    <td>1</td>
-                                    <td>12</td>
-                                    <td>2023-10-15 14:30:25</td>
-                                </tr>
+                                <!-- JS填充 -->
                             </tbody>
                         </table>
                     </div>
                     <!-- 分页控件 -->
-                    <div class="pagination">
-                        <button onclick="prevPage()">上一页</button>
-                        <span id="page-info">第 <span id="current-page">1</span> 页，共 <span id="total-pages">10</span> 页</span>
-                        <button onclick="nextPage()">下一页</button>
+                    <div id="pending-pagination" style="text-align: center; margin-top: 16px;">
+                        <button class="prev-page">上一页</button>
+                        <span class="page-info">加载中...</span>
+                        <button class="next-page">下一页</button>
                     </div>
                 </div>
                 <!-- 审核详情区域（默认隐藏） -->
                 <div class="detail-container" id="audition-detail">
                     <h2>申请详情</h2>
-                    <!-- 用户信息区 -->
+                    <!-- 用户基本信息 -->
                     <div id="user-info-section" class="detail-section">
                         <h3>用户基本信息</h3>
-                        <p><strong>真实姓名：</strong><span id="real-name"></span></p>
+                        <p><strong>真实姓名：</strong><span id="realName"></span></p>
                         <p><strong>手机号：</strong><span id="phone"></span></p>
                         <p><strong>注册时间：</strong><span id="register-time"></span></p>
+                        
                         <h4>认证材料</h4>
-                        <div id="materials-container"></div>
-                        <p><strong>信誉分：</strong><span id="credit-score"></span></p>
+                        <div id="materials-container">
+                            <p><strong>身份证：</strong><span id="idCard">—</span></p>
+                            <p><strong>工作证明：</strong><span id="workCert">—</span></p>
+                            <p><strong>三证合一：</strong><span id="triCert">—</span></p>
+                            <p><strong>不动产证明：</strong><span id="immovableCert">—</span></p>
+                        </div>
+
+                        <p><strong>信誉分：</strong><span id="credit-score">—</span></p>
                     </div>
-                    <!-- 贷款申请区 -->
+                    <!-- 贷款申请信息 -->
                     <div id="loan-info-section" class="detail-section">
                         <h3>贷款申请信息</h3>
                         <p><strong>贷款项目：</strong><span id="product-name"></span></p>

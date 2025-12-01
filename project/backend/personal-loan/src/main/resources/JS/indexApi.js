@@ -10,10 +10,7 @@ const AdminWeb = {
 AdminWeb.API_CONFIG = {
     baseUrl: 'http://localhost:8080',
     endpoints: {
-        logout: '/api/auth/logout', // 退出接口
-        getOneProduct: '/api/loan-applications/{applicationId}',
-        getUserLoans: '/api/loan-applications/user/{userId}', // 用户贷款列表接口
-        batchCreateOptions: '/api/loan-products/admin/options/batch-create', //为指定产品批量增加选项接口
+        logout: '/api/auth/logout', // 退出接口-未实现？
 
         // 用户管理相关接口
         getBlacklist: '/api/users/blacklist/list',//获取黑名单列表
@@ -82,77 +79,94 @@ AdminWeb.API_CLIENT = {
      * @returns {Promise} - 返回Promise对象
      */
     request: async function (url, options = {}) {
+        const baseUrl = AdminWeb.API_CONFIG.baseUrl
+        const fullUrl = url.startsWith('http') ? url : baseUrl + url
         // 网络申请日志
-        console.log(`发出API请求: ${options.method || 'GET'} ${url}`, {
-            requiresAuth: this._requiresAuth(url),
+        console.log(`🔄 API请求: ${options.method || 'GET'} ${fullUrl}`, {
+            requiresAuth: this._requiresAuth(fullUrl),
             hasToken: !!AdminWeb.JWT_UTILS.getRawToken(),
             data: options.body ? JSON.parse(options.body) : null
         })
+        
         // 检查token是否有效（只在需要认证的请求中检查）
-        if (this._requiresAuth(url) && !AdminWeb.JWT_UTILS.isTokenValid()) {
-            this.handleUnauthorized();
-            throw new Error('登录已过期，请重新登录');
+        if (this._requiresAuth(fullUrl) && !AdminWeb.JWT_UTILS.isTokenValid()) {
+            this.handleUnauthorized()
+            throw new Error('登录已过期，请重新登录')
         }
 
         // 添加认证头（如果需要认证）
         const headers = {
             'Content-Type': 'application/json',
-            ...(this._requiresAuth(url) ? AdminWeb.JWT_UTILS.getAuthHeader() : {}),
+            ...(this._requiresAuth(fullUrl) ? AdminWeb.JWT_UTILS.getAuthHeader() : {}),
             ...options.headers
-        };
+        }
 
         try {
-            const response = await fetch(url, {
+            const response = await fetch(fullUrl, {
                 ...options,
                 headers
-            });
+            })
 
-            // Token 过期，尝试刷新
-            if (response.status === 401 && this._requiresAuth(`${AdminWeb.API_CONFIG.baseUrl}${url}`)) {
-                const refreshed = await this.refreshToken();
+            // 处理401未授权错误(Token 过期，尝试刷新)
+            if (response.status === 401 && this._requiresAuth(fullUrl)) {
+                const refreshed = await this.refreshToken()
                 if (refreshed) {
                     // 重试原始请求
-                    return this.request(url, options);
+                    return this.request(url, options)
                 } else {
-                    this.handleUnauthorized();
-                    throw new Error('认证失败，请重新登录');
+                    this.handleUnauthorized()
+                    throw new Error('认证失败，请重新登录')
                 }
             }
 
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || `请求失败（状态码：${response.status}）`);
+                const errorData = await response.json().catch(() => ({}))
+                throw new Error(errorData.message || `请求失败（状态码：${response.status}）`)
             }
 
-            return await response.json();
+            // 输出返回体
+            const responseData = await response.json()
+            console.log(`✅ API响应: ${options.method || 'GET'} ${fullUrl}`, responseData)
+            return responseData
+
+            return await response.json()
         } catch (error) {
-            console.error('API请求失败:', error);
-            throw error;
+            console.error('API请求失败:', error)
+            throw error
         }
     },
 
-    // 判断请求是否需要认证
+    /**
+     * 判断URL是否需要认证
+     * @param {string} url - 请求URL
+     * @returns {boolean} - 是否需要认证
+     */
     _requiresAuth: function (url) {
         const publicEndpoints = [
-            AdminWeb.API_CONFIG.endpoints.login,
-            AdminWeb.API_CONFIG.endpoints.register,
+            `${AdminWeb.API_CONFIG.baseUrl}${AdminWeb.API_CONFIG.endpoints.login}`,
+            `${AdminWeb.API_CONFIG.baseUrl}${AdminWeb.API_CONFIG.endpoints.register}`
         ]
-        return !publicEndpoints.includes(url);
+        return !publicEndpoints.includes(url)
     },
 
-    // 处理未授权
+    /**
+     * 处理未授权情况
+     */
     handleUnauthorized: function () {
         AdminWeb.JWT_UTILS.clearTokens();
         // 如果是登录页面，不清除，否则跳转到登录页
         if (!window.location.href.includes('login.html')) {
             alert('登录已过期，请重新登录');
-            // window.location.href = 'login.html';
+            window.location.href = 'login.html'
         }
     },
 
-    // 刷新 token
+    /**
+     * 刷新Token
+     * @returns {Promise<boolean>} - 是否刷新成功
+     */
     refreshToken: async function () {
-        const refreshToken = AdminWeb.JWT_UTILS.getRefreshToken();
+        const refreshToken = AdminWeb.JWT_UTILS.getRefreshToken()
         if (!refreshToken) {
             console.log('没有刷新token')
             return false
@@ -182,62 +196,136 @@ AdminWeb.API_CLIENT = {
 
     // 基础HTTP方法封装
     get: function (url) {
-        return this.request(url);
+        return this.request(url)
     },
 
     post: function (url, data) {
-        return this.request(url, { method: 'POST', body: JSON.stringify(data) });
+        return this.request(url, { method: 'POST', body: JSON.stringify(data) })
     },
 
     patch: function (url, data) {
-        return this.request(url, { method: 'PATCH', body: JSON.stringify(data) });
+        return this.request(url, { method: 'PATCH', body: JSON.stringify(data) })
     },
 
     delete: function (url) {
-        return this.request(url, { method: 'DELETE' });
+        return this.request(url, { method: 'DELETE' })
     },
 
-    // 基础URL获取方法
+    // 基础URL获取方法-待处理？
     _getBaseUrl: function () {
         return AdminWeb.API_CONFIG.baseUrl
     },
-
     
     // ==================== 待办审核面板快捷请求 ====================
     // 获取所有待审核贷款申请（列表）
-    getPendingApplications: function(page = 1, size = 10) {
-        const url = `/api/loan-applications/pending?page=${page}&size=${size}`;
-        return this.get(url);
+    getPendingApplications: function() {
+        const url = AdminWeb.API_CONFIG.baseUrl + AdminWeb.API_CONFIG.endpoints.getPendingApprovals
+        return this.get(url)
     },
 
     // 根据申请ID获取完整详情
-    getApplicationDetail: function(applicationId) {
-        const url = `/api/loan-applications/${applicationId}`;
-        return this.get(url);
+    getApprovalDetail: function(applicationId) {
+        const url = `/api/approval/detail/${applicationId}`
+        return this.get(url)
     },
 
     // 提交审核结果
-    submitReview: function(applicationId, status, rejectReason = null) {
-        const url = `/api/loan-applications/${applicationId}/review`;
-        return this.post(url, { status, rejectReason });
+    submitReview: function(loanApplicationId, approved) {
+        const url = AdminWeb.API_CONFIG.endpoints.submitApproval
+        // approved 必须是字符串 "true" 或 "false"
+        const payload = {
+            loanApplicationId: loanApplicationId,
+            approved: approved ? "true" : "false"  // 布尔转字符串
+        }
+        return this.post(url, payload)
     },
-
 
     // ==================== 贷款管理面板快捷请求 ====================
-    // 新增贷款产品
-    addLoanProduct: function (productData) {
-        // 调用API
-        return this.post(AdminWeb.API_CONFIG.endpoints.addLoanProduct, productData)
+        getAllLoanProducts: function() {
+        return this.get('/api/loan-products/admin');
     },
 
+    getLoanProductById: function(productId) {
+        return this.get(`/api/loan-products/admin/${productId}`);
+    },
+
+    addLoanProduct: function(productData) {
+        return this.post('/api/loan-products/admin', productData);
+    },
+
+    updateLoanProduct: function(productId, productData) {
+        return this.patch(`/api/loan-products/admin/products/${productId}`, productData);
+    },
+
+    deleteLoanProduct: function(productId) {
+        return this.delete(`/api/loan-products/admin/products/${productId}`);
+    },
+
+    batchDeleteLoanProducts: function(ids) {
+        return this.post('/api/loan-products/admin/products/batch-delete', { ids });
+    },
+
+    batchCreateOptions: function(productId, options) {
+        return this.post('/api/loan-products/admin/options/batch-create', { productId, options });
+    },
+
+    deleteOption: function(optionId) {
+        return this.delete(`/api/loan-products/admin/options/${optionId}`);
+    },
+
+    batchDeleteOptions: function(ids) {
+        return this.post('/api/loan-products/admin/options/batch-delete', { ids });
+    },
+    // 新增贷款产品
+    addLoanProduct: function (productData) {
+    const url = AdminWeb.API_CONFIG.baseUrl + AdminWeb.API_CONFIG.endpoints.addLoanProduct;
+    return this.post(url, productData);
+    },
 
     // ==================== 用户管理面板快捷请求 ====================
+        getUserStats: function() {
+        return this.get('/api/users/admin/stats');
+    },
+
+    getUserDetail: function(userId) {
+        return this.get(`/api/users/admin/${userId}`);
+    },
+
+    searchUsersByCredit: function(expr) {
+        return this.get(`/api/users/search-by-credit?expr=${encodeURIComponent(expr)}`);
+    },
+
+    addToBlacklist: function(userId, blackLevel) {
+        return this.post('/api/users/blacklist/add', { userId, blackLevel });
+    },
+
+    removeFromBlacklist: function(userId) {
+        return this.post('/api/users/blacklist/remove', null, {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `userId=${userId}`
+        });
+    },
+
+    getBlacklist: function() {
+        return this.get('/api/users/blacklist/list');
+    },
+
     // 根据信誉分表达式查询用户
     searchUsersByCredit: function (expr) {
         const url = `/api/users/search-by-credit?expr=${encodeURIComponent(expr)}`
         return this.get(url)
+    },
+
+    // ==================== 贷款申请相关 ====================
+    getUserApplications: function(userId) {
+        return this.get(`/api/loan-applications/user/${userId}`);
+    },
+
+    getApplicationById: function(applicationId) {
+        return this.get(`/api/loan-applications/${applicationId}`);
     }
 }
+
 // ==================== JWT 工具函数 ====================
 AdminWeb.JWT_UTILS = {
     // 获取 token（返回带Bearer前缀的完整格式）

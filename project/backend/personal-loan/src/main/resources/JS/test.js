@@ -96,7 +96,7 @@ AdminWeb.API_CLIENT = {
             requiresAuth: this._requiresAuth(fullUrl),
             hasToken: !!AdminWeb.JWT_UTILS.getRawToken(),
             data: options.body ? JSON.parse(options.body) : null
-        });
+        })
 
         // 检查是否需要认证且token有效
         if (this._requiresAuth(fullUrl) && !AdminWeb.JWT_UTILS.isTokenValid()) {
@@ -145,18 +145,18 @@ AdminWeb.API_CLIENT = {
         const publicEndpoints = [
             `${AdminWeb.API_CONFIG.baseUrl}${AdminWeb.API_CONFIG.endpoints.login}`,
             `${AdminWeb.API_CONFIG.baseUrl}${AdminWeb.API_CONFIG.endpoints.register}`
-        ];
-        return !publicEndpoints.includes(url);
+        ]
+        return !publicEndpoints.includes(url)
     },
 
     /**
      * 处理未授权情况
      */
     handleUnauthorized: function () {
-        AdminWeb.JWT_UTILS.clearTokens();
+        AdminWeb.JWT_UTILS.clearTokens()
         if (!window.location.href.includes('login.html')) {
-            alert('登录已过期，请重新登录');
-            window.location.href = 'login.html';
+            alert('登录已过期，请重新登录')
+            window.location.href = 'login.html'
         }
     },
 

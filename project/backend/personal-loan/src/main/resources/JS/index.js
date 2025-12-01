@@ -23,7 +23,7 @@ async function init() {
         // 初始化所有数据
         // updateData()
         // 加载待审核列表
-        await loadPendingApplications(1)
+        await fetchAndRenderPendingList()
 
         console.log('初始化完成')
     } catch (error) {
@@ -67,7 +67,6 @@ function initCharts() {
         console.error('图表初始化失败:', error);
     }
 }
-
 
 // ==================== 事件绑定函数 ====================
 function bindEventListeners() {
@@ -204,43 +203,115 @@ function resizeCharts() {
 */ 
 // ============== 面板初始化 ===============
 // 加载待审核申请列表
-async function loadPendingApplications(page) {
+let _allPendingApps = [] // 全量数据
+let _currentPage = 1
+const PENDING_PAGE_SIZE = 5
+
+// 加载全部待办申请
+async function fetchAndRenderPendingList() {
     try {
-        const response = await AdminWeb.API_CLIENT.getPendingApplications(page, 10)
-        if (response.code === 200 && response.data) {
-            renderApplicationTable(response.data.records)
+        const response = await AdminWeb.API_CLIENT.getPendingApplications()
+
+        if (response.code === 200 && Array.isArray(response.data)) {
+            _allPendingApps = response.data;
+            _currentPage = 1;
+            renderPendingApplications()
+            setupPendingPagination()
+        } else {
+            throw new Error(response.message || '数据格式异常');
         }
     } catch (error) {
-        console.error('加载待审核列表失败:', error)
-        document.getElementById('apply-table-body').innerHTML = '<tr><td colspan="6">加载失败</td></tr>'
+        console.error('获取待办列表失败:', error);
+        document.getElementById('apply-table').querySelector('tbody').innerHTML = 
+            '<tr><td colspan="6" style="text-align:center;color:#e74c3c;">加载失败</td></tr>';
+        document.querySelector('#pending-pagination .page-info').textContent = '加载失败';
     }
 }
-// 渲染申请列表（只显示关键字段）
-function renderApplicationTable(applications) {
-    const tbody = document.getElementById('apply-table-body')
-    tbody.innerHTML = ''
 
-    applications.forEach(app => {
+// 渲染当前页表格
+function renderPendingApplications() {
+    const start = (_currentPage - 1) * PENDING_PAGE_SIZE
+    const pageData = _allPendingApps.slice(start, start + PENDING_PAGE_SIZE)
+    const tbody = document.getElementById('apply-table').querySelector('tbody')
+    tbody.innerHTML = '' // 清空旧内容
+
+    if (pageData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">暂无待审核申请</td></tr>'
+        return
+    }
+
+    pageData.forEach(app => {
         const row = document.createElement('tr')
-        row.setAttribute('data-application-id', app.id) // 关键：绑定申请ID
-        row.innerHTML = `
-            <td>${app.userName || '未知'}</td>
-            <td>${app.productName || '未命名产品'}</td>
-            <td>¥${Number(app.loanAmount).toLocaleString()}</td>
-            <td>${app.loanPeriod || 0}</td>
-            <td>${app.term || 0}</td>
-            <td>${new Date(app.applyTime).toLocaleString()}</td>
-        `
-        tbody.appendChild(row)
+        row.setAttribute('data-application-id', app.applicationId)
 
-        // 绑定点击事件
-        row.addEventListener('click', () => showApplicationDetail(app.id));
+        // 格式化金额
+        const amount = new Intl.NumberFormat('zh-CN', {
+            style: 'currency',
+            currency: 'CNY',
+            minimumFractionDigits: 2
+        }).format(app.loanAmount)
+
+        // 格式化时间
+        const time = new Date(app.applyTime).toLocaleString('zh-CN')
+
+        row.innerHTML = `
+            <td>${app.userName || '—'}</td>
+            <td>${app.productName || '—'}</td>
+            <td>${amount}</td>
+            <td>${app.loanPeriod || 0} 年</td>
+            <td>${app.term || 0} 期</td>
+            <td>${time}</td>
+        `
+        row.addEventListener('click', () => showApplicationDetail(app.applicationId))
+        tbody.appendChild(row)
     })
 }
+
+// 初始化分页控件 & 绑定事件
+function setupPendingPagination() {
+    const total = _allPendingApps.length;
+    const totalPages = Math.ceil(total / PENDING_PAGE_SIZE) || 1;
+
+    // 更新页码信息
+    const pageInfo = document.querySelector('#pending-pagination .page-info');
+    if (pageInfo) {
+        pageInfo.textContent = total === 0 
+            ? '共 0 条' 
+            : `第 ${_currentPage} 页，共 ${totalPages} 页`;
+    }
+
+    // 上一页
+    const prevBtn = document.querySelector('#pending-pagination .prev-page');
+    if (prevBtn) {
+        prevBtn.disabled = (_currentPage <= 1);
+        prevBtn.onclick = () => {
+            if (_currentPage > 1) {
+                _currentPage--;
+                renderPendingApplications();
+                setupPendingPagination();
+            }
+        };
+    }
+
+    // 下一页
+    const nextBtn = document.querySelector('#pending-pagination .next-page');
+    if (nextBtn) {
+        nextBtn.disabled = (_currentPage >= totalPages);
+        nextBtn.onclick = () => {
+            if (_currentPage < totalPages) {
+                _currentPage++;
+                renderPendingApplications();
+                setupPendingPagination();
+            }
+        };
+    }
+}
+
 // 显示申请详情
 async function showApplicationDetail(applicationId) {
+    console.log('显示申请详情:', applicationId)
     try {
-        const detail = await AdminWeb.API_CLIENT.getApplicationDetail(applicationId)
+        const detail = await AdminWeb.API_CLIENT.getApprovalDetail(applicationId)
         if (detail.code !== 200) throw new Error(detail.message || '获取详情失败')
 
         const data = detail.data;
@@ -248,109 +319,66 @@ async function showApplicationDetail(applicationId) {
         // 显示详情容器
         document.getElementById('audition-detail').style.display = 'block';
 
-        // 填充用户信息
-        document.getElementById('real-name').textContent = data.user.realName || '—';
-        document.getElementById('phone').textContent = data.user.phoneNumber || '—';
-        document.getElementById('register-time').textContent = 
-            new Date(data.user.registerTime).toLocaleString() || '—';
-        document.getElementById('credit-score').textContent = data.user.creditScore || '—';
+        // 填充用户信息（字段都在 data 根层级）
+        document.getElementById('realName').textContent = data.userName || '—';
+        document.getElementById('phone').textContent = data.phone || '—';
 
-        // 渲染认证材料
+        // 注册时间：使用 createTime，注意可能为 null
+        const registerTime = data.createTime 
+            ? new Date(data.createTime).toLocaleString('zh-CN') 
+            : '—';
+        document.getElementById('register-time').textContent = registerTime;
+
+        // 信誉分：字段名为 creditsScore（注意拼写）
+        document.getElementById('credit-score').textContent = 
+            (data.creditsScore != null) ? data.creditsScore : '—';
+
+        // 渲染认证材料（根据独立字段构建）
         const materialsContainer = document.getElementById('materials-container');
         const materialMap = {
-            bankCard: '银行卡',
-            workProof: '工作证明',
-            thirdPartyAuth: '三方认证',
-            propertyCert: '不动产认证'
+            idCard: '身份证',
+            workCertId: '工作证明',
+            triCertId: '三证合一',
+            immovableCertId: '不动产证明'
         };
+
         let html = '';
-        for (const key in data.materials) {
-            const uploaded = data.materials[key];
-            const label = materialMap[key] || key;
+        for (const [key, label] of Object.entries(materialMap)) {
+            const uploaded = data[key] != null; // 如果字段不为 null，视为已上传
             const color = uploaded ? '#27ae60' : '#e74c3c';
-            html += `<div class="material-item"><span>${label}</span><span style="color:${color}">${uploaded ? '已上传' : '未上传'}</span></div>`;
+            const statusText = uploaded ? '已上传' : '未上传';
+            html += `<div class="material-item"><span>${label}</span><span style="color:${color}">${statusText}</span></div>`;
         }
         materialsContainer.innerHTML = html;
 
         // 填充贷款信息
-        document.getElementById('product-name').textContent = data.productName;
-        document.getElementById('loan-amount').textContent = `¥${Number(data.loanAmount).toLocaleString()}`;
-        document.getElementById('loan-term').textContent = data.loanPeriod;
-        document.getElementById('term-period').textContent = data.term;
-
+        document.getElementById('product-name').textContent = data.productName || '—';
+        document.getElementById('loan-amount').textContent = 
+            data.loanAmount != null 
+                ? `¥${Number(data.loanAmount).toLocaleString('zh-CN')}` 
+                : '—';
+        document.getElementById('loan-term').textContent = data.loanPeriod || '—';
+        document.getElementById('term-period').textContent = data.term || '—';
         // 绑定按钮
-        document.getElementById('btn-pass').onclick = () => submitReview(applicationId, 'APPROVED')
-        document.getElementById('btn-reject').onclick = () => submitReview(applicationId, 'REJECTED')
-
+        document.getElementById('btn-pass').onclick = () => submitReview(applicationId, true)  // 通过
+        document.getElementById('btn-reject').onclick = () => submitReview(applicationId, false) // 拒绝
     } catch (error) {
         console.error('获取申请详情失败:', error)
         alert('获取详情失败：' + (error.message || '请重试'))
     }
 }
-function showDetail(id) {
-  const data = mockData[id]
-  if (!data) return
 
-  // 显示详情容器
-  document.getElementById('audition-detail').style.display = 'block'
-
-  // 填充用户基本信息
-  document.getElementById('real-name').textContent = data.realName
-  document.getElementById('phone').textContent = data.phone
-  document.getElementById('register-time').textContent = data.registerTime
-  document.getElementById('credit-score').textContent = data.creditScore
-
-  // 渲染认证材料
-  const materialsContainer = document.getElementById('materials-container')
-  const materialMap = {
-    bankCard: '银行卡',
-    workProof: '工作证明',
-    thirdPartyAuth: '三方认证',
-    propertyCert: '不动产认证'
-  }
-
-  let materialsHtml = ''
-  for (const key in data.materials) {
-    const uploaded = data.materials[key]
-    const label = materialMap[key] || key
-    const statusText = uploaded ? '已上传' : '未上传'
-    const statusColor = uploaded ? '#27ae60' : '#e74c3c'
-
-    materialsHtml += `
-      <div class="material-item">
-        <span>${label}</span>
-        <span style="color: ${statusColor}; font-weight: bold;">${statusText}</span>
-      </div>
-    `
-  }
-  materialsContainer.innerHTML = materialsHtml
-
-  // 填充贷款申请信息
-  const app = data.loanApplication
-  document.getElementById('product-name').textContent = app.productName;
-  document.getElementById('loan-amount').textContent = app.loanAmount;
-  document.getElementById('loan-term').textContent = app.loanTerm;
-  document.getElementById('term-period').textContent = app.termPeriod;
-
-  // 绑定按钮事件（可选）
-  document.getElementById('btn-pass').onclick = () => handleReview(id, 'APPROVED')
-  document.getElementById('btn-reject').onclick = () => handleReview(id, 'REJECTED')
-}
 // 提交审核结果
-async function submitReview(applicationId, status) {
-    let rejectReason = null
-    if (status === 'REJECTED') {
-        rejectReason = prompt('请输入拒绝理由：')
-        if (!rejectReason) return
-    }
-
+async function submitReview(applicationId, isApproved) {
     try {
-        await AdminWeb.API_CLIENT.submitReview(applicationId, status, rejectReason)
-        alert(`审核成功！状态：${status === 'APPROVED' ? '通过' : '拒绝'}`)
-        // 刷新列表
-        await loadPendingApplications(1)
-        // 隐藏详情
-        document.getElementById('audition-detail').style.display = 'none'
+        const response = await AdminWeb.API_CLIENT.submitReview(applicationId, isApproved)
+        if (response.code === 200) {
+            alert(`审核${isApproved ? '通过' : '拒绝'}成功！`)
+            fetchAndRenderPendingList() // 刷新列表
+            document.getElementById('audition-detail').style.display = 'none'
+        } else {
+            throw new Error(response.message || '操作失败')
+        }
     } catch (error) {
         console.error('提交审核失败:', error)
         alert('提交失败：' + (error.message || '请重试'))
@@ -895,6 +923,83 @@ window.addEventListener('resize', () => {
     // barChart.resize();
 })
 
+/**
+ * 分页列表控制（可复用）
+ */
+class PaginatedList {
+  constructor({
+    containerId,
+    tableBodyId,
+    renderRow,
+    fetchData,
+    detailHandler,
+    pageSize = 10
+  }) {
+    this.container = document.getElementById(containerId);
+    this.tbody = document.getElementById(tableBodyId);
+    this.renderRow = renderRow;
+    this.fetchData = fetchData;
+    this.detailHandler = detailHandler;
+    this.pageSize = pageSize;
+    this.currentPage = 1;
+
+    this.initPagination();
+    this.bindEvents();
+    this.loadData();
+  }
+
+  async loadData() {
+    try {
+      const data = await this.fetchData(this.currentPage, this.pageSize);
+      this.render(data.records || data); // 兼容两种结构
+    } catch (err) {
+      console.error('加载失败', err);
+      this.tbody.innerHTML = `<tr><td colspan="6">加载失败</td></tr>`;
+    }
+  }
+
+  render(records) {
+    this.tbody.innerHTML = '';
+    records.forEach(item => {
+      const row = this.renderRow(item);
+      row.addEventListener('click', () => this.detailHandler(item));
+      this.tbody.appendChild(row);
+    });
+  }
+
+  initPagination() {
+    this.paginationEl = this.container.querySelector('.pagination');
+    if (!this.paginationEl) {
+      this.paginationEl = document.createElement('div');
+      this.paginationEl.className = 'pagination';
+      this.container.appendChild(this.paginationEl);
+    }
+    this.updatePagination();
+  }
+
+  updatePagination() {
+    this.paginationEl.innerHTML = `
+      <button id="prev-page" ${this.currentPage <= 1 ? 'disabled' : ''}>上一页</button>
+      <span>第 ${this.currentPage} 页</span>
+      <button id="next-page">下一页</button>
+    `;
+  }
+
+  bindEvents() {
+    this.container.addEventListener('click', (e) => {
+      if (e.target.id === 'prev-page' && this.currentPage > 1) {
+        this.currentPage--;
+        this.loadData();
+        this.updatePagination();
+      }
+      if (e.target.id === 'next-page') {
+        this.currentPage++;
+        this.loadData();
+        this.updatePagination();
+      }
+    });
+  }
+}
 
 
 // =========================页面加载完成后初始化=========================
