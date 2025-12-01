@@ -73,9 +73,10 @@ public class UserController {
      * 加入黑名单
      */
     @PostMapping("/blacklist/add")
-    public ResponseEntity<ApiResponse<String>> addToBlackList(@RequestBody AddToBlackListRequest request) {
+    public ResponseEntity<ApiResponse<String>> addToBlackList(HttpServletRequest httpRequest, @RequestBody AddToBlackListRequest request) {
         log.info("/api/users/blacklist/add success called for admin to add user {} to black list", request.getUserId());
-        userService.addToBlackList(request.getUserId(), request.getBlackLevel());
+        Long adminId = (Long) httpRequest.getAttribute("userId");
+        userService.addToBlackList(adminId, request.getUserId(), request.getBlackLevel());
         return ResponseEntity.ok(ApiResponse.success(null,"用户已加入黑名单"));
     }
 
@@ -83,9 +84,10 @@ public class UserController {
      * 解除黑名单
      */
     @PostMapping("/blacklist/remove")
-    public ResponseEntity<ApiResponse<String>> removeFromBlackList(@RequestParam Long userId) {
+    public ResponseEntity<ApiResponse<String>> removeFromBlackList(HttpServletRequest httpRequest, @RequestParam Long userId) {
         log.info("/api/users/blacklist/remove success called for admin to remove user {} from black list", userId);
-        userService.removeFromBlackList(userId);
+        Long adminId = (Long) httpRequest.getAttribute("userId");
+        userService.removeFromBlackList(adminId, userId);
         return ResponseEntity.ok(ApiResponse.success(null,"用户已解除黑名单"));
     }
 
@@ -93,9 +95,10 @@ public class UserController {
      * 获取当前黑名单列表
      */
     @GetMapping("/blacklist/list")
-    public ResponseEntity<ApiResponse<List<BlackListDto>>> getBlackList() {
+    public ResponseEntity<ApiResponse<List<BlackListDto>>> getBlackList(HttpServletRequest httpRequest) {
         log.info("/api/users/blacklist/list success called for admin to get black list");
-        List<BlackListDto> list = userService.getBlackList();
+        Long adminId = (Long) httpRequest.getAttribute("userId");
+        List<BlackListDto> list = userService.getBlackList(adminId);
         return ResponseEntity.ok(ApiResponse.success(list));
     }
     

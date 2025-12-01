@@ -18,7 +18,7 @@ public class AuthServiceImpl implements AuthService{
 
     // 资产认证
     @Override
-    public void assetAuth(){
+    public void immovablesAuth(){
         
     } 
 
@@ -28,10 +28,10 @@ public class AuthServiceImpl implements AuthService{
     }
 
     // 个人征信认证
-    @Override
-    public void creditAuth(){ 
+    // @Override
+    // public void creditAuth(){ 
 
-    }
+    // }
 
     // 工作认证
     @Override
@@ -45,6 +45,11 @@ public class AuthServiceImpl implements AuthService{
 
     }
 
+    @Override
+    public void idCardAuth(){
+
+    }
+
     // 计算贷款分数
     @Override
     public int calScore(){ 
@@ -52,7 +57,7 @@ public class AuthServiceImpl implements AuthService{
     }
 
     @Override
-    public int getScore(){ 
+    public int getCert(){ 
         return 0;
     }
 }

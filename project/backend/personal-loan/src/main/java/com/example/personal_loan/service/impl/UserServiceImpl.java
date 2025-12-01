@@ -200,12 +200,19 @@ public class UserServiceImpl implements UserService {
     /*
     * 用户使用
      */
+
+    // 查看个人信息
     @Override
     @Transactional
     public UserSelfResponse getUserSelfInfo(Long userId) {
         User user = userMapper.findById(userId);
         if (user == null) {
             throw new BusinessException(404, "用户不存在");
+        }
+
+        // 权限校验
+        if(!user.getRole().equals(0)){
+            throw new BusinessException(403,"无权查看个人信息");
         }
 
         return new UserSelfResponse(
@@ -215,6 +222,7 @@ public class UserServiceImpl implements UserService {
         );
     }
 
+    // 修改个人信息
     @Override
     @Transactional
     public UserSelfResponse updateUserSelfInfo(UserUpdateRequest request, Long id) {
@@ -225,6 +233,11 @@ public class UserServiceImpl implements UserService {
         if (!id.equals(user.getId())) {
             throw new BusinessException(400, "只能更新自己的信息");
         }
+        // 权限校验
+        if(!user.getRole().equals(0)){
+            throw new BusinessException(403,"无权修改个人信息");
+        }
+
         // 仅更新允许的字段,用户名和头像
         if (request.getUserName() != null) {
             user.setUserName(request.getUserName());
@@ -290,7 +303,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void addToBlackList(Long userId, int blackLevel) {
+    public void addToBlackList(Long adminId, Long userId, int blackLevel) {
+        // 权限校验
+        User admin = userMapper.findById(adminId);
+        if(!admin.getRole().equals(1)){
+            throw new BusinessException(403,"权限不足");
+        }
+
         User user = userMapper.findById(userId);
         if (user == null) {
             throw new BusinessException(404, "用户不存在");
@@ -312,7 +331,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void removeFromBlackList(Long userId){
+    public void removeFromBlackList(Long adminId, Long userId){
+        // 权限校验
+        User admin = userMapper.findById(adminId);
+        if(!admin.getRole().equals(1)){
+            throw new BusinessException(403,"权限不足");
+        }
+
         BlackUser blackUser = blackListMapper.selectByUserId(userId);
         if (blackUser == null) {
             throw new BusinessException(404,"用户不在黑名单中");
@@ -323,7 +348,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<BlackListDto> getBlackList() {
+    public List<BlackListDto> getBlackList(Long adminId) {
+        // 权限校验
+        User admin = userMapper.findById(adminId);
+        if(!admin.getRole().equals(1)){
+            throw new BusinessException(403,"权限不足");
+        }
+        
         List<BlackListDto> blackUsers = blackListMapper.selectAll();
         return blackUsers;
     }

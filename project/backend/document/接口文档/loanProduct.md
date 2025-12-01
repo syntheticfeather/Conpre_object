@@ -349,6 +349,70 @@
 
 ![](../loanProductImgs/logBatchCreateOption.png)
 
+### 上架产品
+
+**网址** /api/loan-products/admin/{productId}/active
+
+**请求方式** POST
+
+**请求参数**
+
+|字段名|类型|是否必填|说明|示例值|
+|---|---|---|---|---|
+| productId | integer | 是 | 产品id | 1 |
+
+**请求示例（网址）** /api/loan-products/admin/1/active
+
+**返回数据**
+
+``` json
+{
+    "code": 200,
+    "data": null,
+    "message": "产品上架成功"
+}
+```
+
+**postman测试结果**
+
+![](../loanProductImgs/active.png "产品上架成功")
+
+**日志**
+
+![](../loanProductImgs/logActive.png)
+
+### 下架产品
+
+**网址** /api/loan-products/admin/{productId}/deactive
+
+**请求方式** POST
+
+**请求参数**
+
+|字段名|类型|是否必填|说明|示例值|
+|---|---|---|---|---|
+| productId | integer | 是 | 产品id | 1 |
+
+**请求示例（网址）**/api/loan-products/admin/1/deactive
+
+**返回数据**
+
+``` json
+{
+    "code": 200,
+    "data": null,
+    "message": "产品下架成功"
+}
+```
+
+**postman测试结果**
+
+![](../loanProductImgs/deactive.png "产品下架成功")
+
+**日志**
+
+![](../loanProductImgs/logDeactive.png)
+
 ### 删除单个产品
 
 **网址** /api/loan-products/admin/products/{productId}
@@ -597,7 +661,7 @@
 
 ![](../loanProductImgs/logUpdate.png)
 
-### 获取所有产品
+### 获取产品列表
 
 **网址** /api/loan-products/admin
 
@@ -610,106 +674,22 @@
     "code": 200,
     "data": [
         {
-            "id": 2,
-            "productName": "极速贷 Pro",
-            "description": "审批快，放款快",
-            "loanUsage": "消费、装修、教育",
-            "minTerm": 3,
-            "maxTerm": 36,
-            "termStep": 3,
-            "promotionDetails": "无",
-            "options": [
-                {
-                    "id": 2,
-                    "productId": 2,
-                    "loanPeriod": 12,
-                    "loanAmount": 10000.00,
-                    "interestRate": 0.0450,
-                    "repaidType": "等额本息",
-                    "createTime": "2025-11-18T17:10:45",
-                    "updateTime": "2025-11-18T17:57:24"
-                },
-                {
-                    "id": 6,
-                    "productId": 2,
-                    "loanPeriod": 18,
-                    "loanAmount": 20000.00,
-                    "interestRate": 0.0550,
-                    "repaidType": "等额本金",
-                    "createTime": "2025-11-18T17:45:05",
-                    "updateTime": "2025-11-18T17:45:05"
-                },
-                {
-                    "id": 7,
-                    "productId": 2,
-                    "loanPeriod": 24,
-                    "loanAmount": 50000.00,
-                    "interestRate": 0.0600,
-                    "repaidType": "先息后本",
-                    "createTime": "2025-11-18T17:45:05",
-                    "updateTime": "2025-11-18T17:45:05"
-                }
-            ],
-            "createTime": "2025-11-18T17:10:45",
-            "updateTime": "2025-11-18T17:53:04"
+            "productId": 1,
+            "productName": "优享贷",
+            "description": "专为信用良好用户定制，利率优惠，期限灵活",
+            "usage": "教育、购车、旅游、大额消费",
+            "status": "INACTIVE",
+            "createTime": "2025-11-21T13:22:05",
+            "updateTime": "2025-12-01T13:26:08"
         },
         {
-            "id": 8,
-            "productName": "安心贷",
-            "description": "低利率，适合长期资金需求",
-            "loanUsage": "购房、装修、大额消费",
-            "minTerm": 6,
-            "maxTerm": 60,
-            "termStep": 6,
-            "promotionDetails": "前3期免息",
-            "options": [
-                {
-                    "id": 3,
-                    "productId": 8,
-                    "loanPeriod": 24,
-                    "loanAmount": 50000.00,
-                    "interestRate": 0.0380,
-                    "repaidType": "等额本息",
-                    "createTime": "2025-11-18T17:32:14",
-                    "updateTime": "2025-11-18T17:32:14"
-                },
-                {
-                    "id": 4,
-                    "productId": 8,
-                    "loanPeriod": 36,
-                    "loanAmount": 100000.00,
-                    "interestRate": 0.0420,
-                    "repaidType": "等额本金",
-                    "createTime": "2025-11-18T17:32:14",
-                    "updateTime": "2025-11-18T17:32:14"
-                }
-            ],
-            "createTime": "2025-11-18T17:32:14",
-            "updateTime": "2025-11-18T17:32:14"
-        },
-        {
-            "id": 9,
-            "productName": "闪电贷",
-            "description": "最快10分钟放款",
-            "loanUsage": "应急周转、医疗支出",
-            "minTerm": 1,
-            "maxTerm": 12,
-            "termStep": 1,
-            "promotionDetails": "新用户首笔免手续费",
-            "options": [
-                {
-                    "id": 5,
-                    "productId": 9,
-                    "loanPeriod": 6,
-                    "loanAmount": 5000.00,
-                    "interestRate": 0.0990,
-                    "repaidType": "先息后本",
-                    "createTime": "2025-11-18T17:32:44",
-                    "updateTime": "2025-11-18T17:32:44"
-                }
-            ],
-            "createTime": "2025-11-18T17:32:44",
-            "updateTime": "2025-11-18T17:32:44"
+            "productId": 2,
+            "productName": "极速贷",
+            "description": "专为信用良好用户定制，利率优惠，期限灵活",
+            "usage": "教育、购车、旅游、大额消费",
+            "status": "INACTIVE",
+            "createTime": "2025-11-21T13:23:46",
+            "updateTime": "2025-12-01T13:16:32"
         }
     ],
     "message": "操作成功"
@@ -724,7 +704,7 @@
 
 ![](../loanProductImgs/logAdminGetAll.png)
 
-### 获取指定产品
+### 获取指定产品详情
 
 **网址** /api/loan-products/admin/{productId}
 

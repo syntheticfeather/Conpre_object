@@ -69,6 +69,7 @@ CREATE TABLE loan_products(
     product_name VARCHAR(50) COMMENT '产品名称',
     description VARCHAR(255) COMMENT '产品描述',
     loan_usage VARCHAR(100) COMMENT '贷款用途(目前不需要)',
+    status VARCHAR(100) COMMENT 'ACTIVE, INACTIVE 表示已上架，已下架',
     min_term INT COMMENT '最短期数',
     max_term INT COMMENT '最长期数',
     term_step INT COMMENT '期限步长',

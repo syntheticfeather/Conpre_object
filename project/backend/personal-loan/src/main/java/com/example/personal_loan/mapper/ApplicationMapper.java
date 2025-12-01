@@ -60,21 +60,6 @@ public interface ApplicationMapper {
         "review_time as reviewTime " +
         "FROM loan_applications WHERE user_id = #{userId} ORDER BY apply_time DESC")
     List<LoanApplication> selectByUserId(@Param("userId") Long userId);
- 
-
-    /**
-     * 更新申请状态
-     */
-    @Update({
-        "<script>",
-        "UPDATE loan_applications",
-        "SET status = #{status}",
-        "<if test='reviewTime != null'>, review_time = #{reviewTime}</if>",
-        "<if test='rejectReason != null'>, reject_reason = #{rejectReason}</if>",
-        "WHERE id = #{id}",
-        "</script>"
-    })
-    void updateStatus(LoanApplication application);
 
     @Update({
         "UPDATE loan_applications",
@@ -104,7 +89,7 @@ public interface ApplicationMapper {
         "FROM loan_applications la",
         "JOIN users u ON la.user_id = u.id",
         "JOIN loan_products lp ON la.product_id = lp.id",
-        "WHERE la.status IN ('PENDING', 'AI_REJECTED')",
+        "WHERE la.status = 'AI_REJECTED' ",
         "ORDER BY la.apply_time DESC"
     })
     List<PendingApprovalResponse> listPendingApprovals();
@@ -127,7 +112,7 @@ public interface ApplicationMapper {
         "JOIN users u ON la.user_id = u.id",
         "LEFT JOIN user_certification uc ON u.id = uc.user_id", 
         "JOIN loan_products lp ON la.product_id = lp.id",
-        "WHERE la.id = #{loanApplicationId}"
+        "WHERE la.id = #{loanApplicationId} AND la.status = 'AI_REJECTED'"
     })
     ApplicationDetailResponse getApplicationDetail(@Param("loanApplicationId") Long loanApplicationId);
 }

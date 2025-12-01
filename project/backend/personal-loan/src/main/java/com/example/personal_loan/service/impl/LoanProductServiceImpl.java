@@ -11,11 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.personal_loan.dto.ListProductResponse;
 import com.example.personal_loan.dto.LoanOptionResponse;
 import com.example.personal_loan.dto.ProductDto;
 import com.example.personal_loan.dto.UserGetProductResponse;
 import com.example.personal_loan.entity.LoanOption;
 import com.example.personal_loan.entity.LoanProduct;
+import com.example.personal_loan.enums.ProductStatus;
 import com.example.personal_loan.exception.BusinessException;
 import com.example.personal_loan.mapper.LoanOptionMapper;
 import com.example.personal_loan.mapper.LoanProductMapper;
@@ -34,10 +36,14 @@ public class LoanProductServiceImpl implements LoanProductService{
      * 管理员使用
      */
     
+    // 新增产品
     @Override
     @Transactional
     public ProductDto createLoanProduct(ProductDto dto) {
+
         LoanProduct product = new LoanProduct();
+
+        dto.setStatus(ProductStatus.INACTIVE); // 默认下架
         dto.setCreateTime(LocalDateTime.now());
         dto.setUpdateTime(LocalDateTime.now());
         BeanUtils.copyProperties(dto, product);
@@ -53,7 +59,6 @@ public class LoanProductServiceImpl implements LoanProductService{
         if (dto.getOptions() != null && !dto.getOptions().isEmpty()) {
             for (LoanOption opt : dto.getOptions()) {
                 opt.setProductId(product.getId());
-                System.out.println("---------------repaid type:"+opt.getRepaidType());
                 loanOptionMapper.insert(opt); 
                 opt.setCreateTime(LocalDateTime.now());
                 opt.setUpdateTime(LocalDateTime.now());
@@ -63,6 +68,33 @@ public class LoanProductServiceImpl implements LoanProductService{
         }
 
         return dto;
+    }
+
+    // 上架产品
+    @Override
+    @Transactional
+    public void activeProduct(Long productId){
+        LoanProduct product = loanProductMapper.findById(productId);
+        if(product.getStatus().equals(ProductStatus.INACTIVE)){
+            product.setStatus(ProductStatus.ACTIVE);
+            loanProductMapper.update(product);
+        }else{
+            throw new BusinessException(404,"产品已经上架");
+        }
+
+    }
+
+    // 下架产品
+    @Override
+    @Transactional
+    public void deactiveProduct(Long productId){
+        LoanProduct product = loanProductMapper.findById(productId);
+        if(product.getStatus().equals(ProductStatus.ACTIVE)){
+            product.setStatus(ProductStatus.INACTIVE);
+            loanProductMapper.update(product);
+        }else{
+            throw new BusinessException(404,"产品已经下架");
+        }
     }
 
     @Override
@@ -201,13 +233,19 @@ public class LoanProductServiceImpl implements LoanProductService{
 
     @Override
     @Transactional
-    public List<ProductDto> adminGetAllProducts (){
+    public List<ListProductResponse> adminGetAllProducts (){
         List<LoanProduct> products = loanProductMapper.findAll();
         return products.stream().map(product -> {
-            ProductDto dto = new ProductDto();
-            BeanUtils.copyProperties(product, dto);
-            dto.setOptions(loanOptionMapper.selectByProductId(product.getId()));
-            return dto;
+            ListProductResponse response = new ListProductResponse();
+            response.setProductId(product.getId());
+            response.setProductName(product.getProductName());
+            response.setDescription(product.getDescription());
+            response.setUsage(product.getLoanUsage()); 
+            response.setStatus(product.getStatus());
+            response.setCreateTime(product.getCreateTime()); 
+            response.setUpdateTime(product.getUpdateTime());
+
+            return response;
         }).collect(Collectors.toList());
     }
 
@@ -265,7 +303,7 @@ public class LoanProductServiceImpl implements LoanProductService{
 
     @Override
     public List<UserGetProductResponse> getAllLoanProducts(){
-        List<LoanProduct> products = loanProductMapper.findAll();
+        List<LoanProduct> products = loanProductMapper.findAllActive();
         return products.stream().map(product -> {
             // 生成 terms 列表
             List<Integer> terms = new ArrayList<>();

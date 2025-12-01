@@ -1,0 +1,3012 @@
+{
+	"info": {
+		"_postman_id": "d4212785-a6fc-4e1a-8f51-9dba39efc609",
+		"name": "My Collection",
+		"description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "49380875",
+		"_collection_link": "https://lunar-space-5146644.postman.co/workspace/zff's-Workspace~0cc2b2d8-c2c1-48fd-8b2d-59d5dc675570/collection/49380875-d4212785-a6fc-4e1a-8f51-9dba39efc609?action=share&source=collection_link&creator=49380875"
+	},
+	"item": [
+		{
+			"name": "orders",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/orders/",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"orders",
+						""
+					]
+				},
+				"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+			},
+			"response": []
+		},
+		{
+			"name": "user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzcxMjM0NTY3OCIsInVzZXJJZCI6IjEiLCJpYXQiOjE3NjM3Mjc0ODYsImV4cCI6MTc2MzgxMzg4Nn0.G3ZvguFaCp4wZ8SJ67B3u0oMEywhC6Aj-TJykJiBRHE",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseURL}}/api/users/admin/1",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"admin",
+						"1"
+					]
+				},
+				"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+			},
+			"response": [
+				{
+					"name": "userLogin_3",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"13512245678\",\n    \"password\": \"Lihua963!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/auth/login",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 10 Nov 2025 12:29:00 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"token\": \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzUxMjI0NTY3OCIsInVzZXJJZCI6IjMiLCJpYXQiOjE3NjI3Nzc3NDAsImV4cCI6MTc2Mjg2NDE0MH0.v-ZgR8tj2HGfnroN4dRlhDKv-XdrOxH9qhXLnE9oRZs\",\n    \"phone\": \"13512245678\"\n}"
+				},
+				{
+					"name": "login",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"13545678901\",\n    \"password\": \"Admin01!!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/auth/login",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 14 Nov 2025 14:28:34 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"accessToken\": \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzU0NTY3ODkwMSIsInVzZXJJZCI6IjgiLCJpYXQiOjE3NjMxMzA1MTQsImV4cCI6MTc2MzIxNjkxNH0.Oc_jmHz0qx5TXebtnFgJOFQd1PuC4bz6XhbAIitAe-I\",\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI4IiwiaWF0IjoxNzYzMTMwNTE0LCJleHAiOjE3NjM3MzUzMTR9.u4ZCGAXYW_Cc0kTyjOWQ8hNEKNQHxzQ085HzjEYSWlg\"\n}"
+				},
+				{
+					"name": "user",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"13545678901\",\n    \"password\": \"Admin01!!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/auth/login",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 18 Nov 2025 06:48:46 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": {\n        \"token\": \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzU0NTY3ODkwMSIsInVzZXJJZCI6IjgiLCJpYXQiOjE3NjM0NDg1MjYsImV4cCI6MTc2MzUzNDkyNn0.FjIp4FZTe_Wur65rKrMV5KPN5t-HAJQaYweBLiVeKrg\"\n    },\n    \"message\": \"登录成功\"\n}"
+				},
+				{
+					"name": "userSelfInfo",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzcxMjM0NTY3OCIsInVzZXJJZCI6IjEiLCJpYXQiOjE3NjM3Mjc0ODYsImV4cCI6MTc2MzgxMzg4Nn0.G3ZvguFaCp4wZ8SJ67B3u0oMEywhC6Aj-TJykJiBRHE",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/api/users/me",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"me"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 22 Nov 2025 10:46:46 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": {\n        \"userId\": 1,\n        \"userName\": \"Tom\",\n        \"avatar\": null\n    },\n    \"message\": \"操作成功\"\n}"
+				},
+				{
+					"name": "userUpdate",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzcxMjM0NTY3OCIsInVzZXJJZCI6IjEiLCJpYXQiOjE3NjM3Mjc0ODYsImV4cCI6MTc2MzgxMzg4Nn0.G3ZvguFaCp4wZ8SJ67B3u0oMEywhC6Aj-TJykJiBRHE",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\":\"汤姆\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/users/me",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"me"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 22 Nov 2025 10:50:53 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": {\n        \"userId\": 1,\n        \"userName\": \"汤姆\",\n        \"avatar\": null\n    },\n    \"message\": \"操作成功\"\n}"
+				},
+				{
+					"name": "adminGet",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzcxMjM0NTY3OCIsInVzZXJJZCI6IjEiLCJpYXQiOjE3NjM3Mjc0ODYsImV4cCI6MTc2MzgxMzg4Nn0.G3ZvguFaCp4wZ8SJ67B3u0oMEywhC6Aj-TJykJiBRHE",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/api/users/admin/1",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"admin",
+								"1"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 22 Nov 2025 10:52:16 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": {\n        \"userId\": 1,\n        \"userName\": \"汤姆\",\n        \"avatar\": null,\n        \"phone\": \"13712345678\",\n        \"idCard\": null,\n        \"role\": 0,\n        \"creditScore\": null,\n        \"blackLevel\": 0,\n        \"createTime\": \"2025-11-21T13:21:32\",\n        \"updateTime\": \"2025-11-22T10:50:53\"\n    },\n    \"message\": \"操作成功\"\n}"
+				}
+			]
+		},
+		{
+			"name": "auth",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"phone\":\"13800138000\",\r\n    \"password\":\"Admin01!!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/auth/login",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "register",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"Tom\",\r\n    \"phone\":\"13712345678\",\r\n    \"password\":\"Tom12345!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/auth/register",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 21 Nov 2025 12:16:29 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"Tom\",\n        \"createTime\": \"2025-11-21T12:16:29.015368141\"\n    },\n    \"message\": \"注册成功\"\n}"
+				},
+				{
+					"name": "login",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"phone\":\"13712345678\",\r\n    \"password\":\"Tom12345!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/auth/login",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 21 Nov 2025 12:18:06 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": {\n        \"token\": \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzcxMjM0NTY3OCIsInVzZXJJZCI6IjEiLCJpYXQiOjE3NjM3Mjc0ODYsImV4cCI6MTc2MzgxMzg4Nn0.G3ZvguFaCp4wZ8SJ67B3u0oMEywhC6Aj-TJykJiBRHE\"\n    },\n    \"message\": \"登录成功\"\n}"
+				},
+				{
+					"name": "adminLogin",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"phone\":\"13800138000\",\r\n    \"password\":\"Admin01!!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/auth/login",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 28 Nov 2025 14:24:52 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": {\n        \"token\": \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzgwMDEzODAwMCIsInVzZXJJZCI6IjYiLCJpYXQiOjE3NjQzMzk4OTIsImV4cCI6MTc2NDQyNjI5Mn0.NIloZqQ_-L153i_weJpPEnp1Ze0N62Z_L0HW1JKFqbs\"\n    },\n    \"message\": \"登录成功\"\n}"
+				}
+			]
+		},
+		{
+			"name": "productController",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzgwMDEzODAwMCIsInVzZXJJZCI6IjYiLCJpYXQiOjE3NjQ1OTUxODQsImV4cCI6MTc2NDY4MTU4NH0.kFJ-q1UvWkYXLC6UYkD2-OhZrZG44VvWiehoAUAYPrA",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/api/loan-products/admin/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"loan-products",
+						"admin",
+						"1"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "create",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzU0NTY3ODkwMSIsInVzZXJJZCI6IjgiLCJpYXQiOjE3NjMwMjc0NjUsImV4cCI6MTc2MzExMzg2NX0.lrinWM-4w_Y1c6J5lNK7n6t653_jxt-2AnId7FsKQBk",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"productName\": \"灵活贷\",\r\n  \"minTerm\": 3,\r\n  \"maxTerm\": 36,\r\n  \"termStep\": 3,\r\n  \"promotionDetails\": \"首月免息，年化低至4.5%！\",\r\n  \"options\": [\r\n    {\r\n      \"loanPeriod\": 12,\r\n      \"loanAmount\": 50000.00,\r\n      \"interestRate\": 0.045,\r\n      \"repaidType\": \"等额本金\"\r\n    },\r\n    {\r\n      \"loanPeriod\": 24,\r\n      \"loanAmount\": 100000.00,\r\n      \"interestRate\": 0.038,\r\n      \"repaidType\": \"等额本金\"\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/loan-products/admin",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loan-products",
+								"admin"
+							],
+							"query": [
+								{
+									"key": "expr",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 13 Nov 2025 10:24:13 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": 7,\n    \"productName\": \"灵活贷\",\n    \"minTerm\": 3,\n    \"maxTerm\": 36,\n    \"termStep\": 3,\n    \"promotionDetails\": \"首月免息，年化低至4.5%！\",\n    \"options\": [\n        {\n            \"id\": 8,\n            \"productId\": 7,\n            \"loanPeriod\": 12,\n            \"loanAmount\": 50000,\n            \"interestRate\": 0.045,\n            \"repaidType\": \"等额本金\"\n        },\n        {\n            \"id\": 9,\n            \"productId\": 7,\n            \"loanPeriod\": 24,\n            \"loanAmount\": 100000,\n            \"interestRate\": 0.038,\n            \"repaidType\": \"等额本金\"\n        }\n    ],\n    \"createTime\": \"2025-11-13T18:24:13.6544573\",\n    \"updateTime\": \"2025-11-13T18:24:13.6544573\"\n}"
+				},
+				{
+					"name": "update",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzU0NTY3ODkwMSIsInVzZXJJZCI6IjgiLCJpYXQiOjE3NjMwMjc0NjUsImV4cCI6MTc2MzExMzg2NX0.lrinWM-4w_Y1c6J5lNK7n6t653_jxt-2AnId7FsKQBk",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"productName\": \"灵活贷\",\r\n  \"minTerm\": 6,\r\n  \"maxTerm\": 48,\r\n  \"promotionDetails\": \"升级版，支持最长4年分期！\",\r\n  \"options\": [\r\n    {\r\n      \"loanPeriod\": 36,\r\n      \"loanAmount\": 80000.00,\r\n      \"interestRate\": 0.039,\r\n      \"repaidType\": \"等额本金\"\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/loan-products/admin/products/7",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loan-products",
+								"admin",
+								"products",
+								"7"
+							],
+							"query": [
+								{
+									"key": "expr",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 13 Nov 2025 11:11:13 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": 7,\n    \"productName\": \"灵活贷\",\n    \"minTerm\": 6,\n    \"maxTerm\": 48,\n    \"termStep\": 3,\n    \"promotionDetails\": \"升级版，支持最长4年分期！\",\n    \"options\": [\n        {\n            \"id\": 12,\n            \"productId\": 7,\n            \"loanPeriod\": 36,\n            \"loanAmount\": 80000,\n            \"interestRate\": 0.039,\n            \"repaidType\": \"等额本金\"\n        }\n    ],\n    \"createTime\": \"2025-11-13T18:24:13\",\n    \"updateTime\": \"2025-11-13T19:11:13.1746693\"\n}"
+				},
+				{
+					"name": "batchDeleteProducts",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzU0NTY3ODkwMSIsInVzZXJJZCI6IjgiLCJpYXQiOjE3NjMxMjU1OTcsImV4cCI6MTc2MzIxMTk5N30.6V59GzJRXnowyvDZY_kADL0pmBIdBIy4-pHWRH4Pwfw",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[7,8]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/loan-products/admin/products/batch-delete",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loan-products",
+								"admin",
+								"products",
+								"batch-delete"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "text/plain;charset=UTF-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "34"
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 14 Nov 2025 13:24:26 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "Batch delete loan products success"
+				},
+				{
+					"name": "create",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzU0NTY3ODkwMSIsInVzZXJJZCI6IjgiLCJpYXQiOjE3NjM0NDg1MjYsImV4cCI6MTc2MzUzNDkyNn0.FjIp4FZTe_Wur65rKrMV5KPN5t-HAJQaYweBLiVeKrg",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"productName\": \"极速贷\",\r\n  \"description\": \"审批快，放款快\",\r\n  \"loanUsage\": \"消费、装修、教育\",\r\n  \"minTerm\": 3,\r\n  \"maxTerm\": 24,\r\n  \"termStep\": 3,\r\n  \"promotionDetails\": \"无\",\r\n  \"options\": [\r\n    {\r\n      \"loanAmount\": 10000.00,\r\n      \"interestRate\": 0.049,\r\n      \"loanPeriod\": 12,\r\n      \"repaidType\": \"等额本息\"\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/loan-products/admin",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loan-products",
+								"admin"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 18 Nov 2025 09:10:45 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": {\n        \"id\": 2,\n        \"productName\": \"极速贷\",\n        \"description\": \"审批快，放款快\",\n        \"loanUsage\": \"消费、装修、教育\",\n        \"minTerm\": 3,\n        \"maxTerm\": 24,\n        \"termStep\": 3,\n        \"promotionDetails\": \"无\",\n        \"options\": [\n            {\n                \"id\": 2,\n                \"productId\": 2,\n                \"loanPeriod\": 12,\n                \"loanAmount\": 10000,\n                \"interestRate\": 0.049,\n                \"repaidType\": \"等额本息\",\n                \"createTime\": \"2025-11-18T17:10:45.9331697\",\n                \"updateTime\": \"2025-11-18T17:10:45.9331697\"\n            }\n        ],\n        \"createTime\": \"2025-11-18T17:10:45.8932953\",\n        \"updateTime\": \"2025-11-18T17:10:45.8932953\"\n    },\n    \"message\": \"贷款产品创建成功\"\n}"
+				},
+				{
+					"name": "termFail",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzU0NTY3ODkwMSIsInVzZXJJZCI6IjgiLCJpYXQiOjE3NjM0NDg1MjYsImV4cCI6MTc2MzUzNDkyNn0.FjIp4FZTe_Wur65rKrMV5KPN5t-HAJQaYweBLiVeKrg",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"productName\": \"极速贷2\",\r\n  \"description\": \"审批快，放款快\",\r\n  \"loanUsage\": \"消费、教育\",\r\n  \"minTerm\": 4,\r\n  \"maxTerm\": 2,\r\n  \"termStep\": 2,\r\n  \"promotionDetails\": \"无\",\r\n  \"options\": []\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/loan-products/admin",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loan-products",
+								"admin"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 18 Nov 2025 09:19:38 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 400,\n    \"data\": null,\n    \"message\": \"最短期数不能大于最长期数\"\n}"
+				},
+				{
+					"name": "nullOption",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzU0NTY3ODkwMSIsInVzZXJJZCI6IjgiLCJpYXQiOjE3NjM0NDg1MjYsImV4cCI6MTc2MzUzNDkyNn0.FjIp4FZTe_Wur65rKrMV5KPN5t-HAJQaYweBLiVeKrg",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"productName\": \"极速贷2\",\r\n  \"description\": \"审批快，放款快\",\r\n  \"loanUsage\": \"消费、教育\",\r\n  \"minTerm\": 2,\r\n  \"maxTerm\": 4,\r\n  \"termStep\": 2,\r\n  \"promotionDetails\": \"无\",\r\n  \"options\": []\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/loan-products/admin",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loan-products",
+								"admin"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 18 Nov 2025 09:21:20 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 400,\n    \"data\": null,\n    \"message\": \"贷款选项不能为空\"\n}"
+				},
+				{
+					"name": "batchAddOption",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzU0NTY3ODkwMSIsInVzZXJJZCI6IjgiLCJpYXQiOjE3NjM0NDg1MjYsImV4cCI6MTc2MzUzNDkyNn0.FjIp4FZTe_Wur65rKrMV5KPN5t-HAJQaYweBLiVeKrg",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"productId\": 2,\r\n  \"options\": [\r\n    {\r\n      \"loanAmount\": 20000.00,\r\n      \"interestRate\": 0.055,\r\n      \"loanPeriod\": 18,\r\n      \"repaidType\": \"等额本金\"\r\n    },\r\n    {\r\n      \"loanAmount\": 50000.00,\r\n      \"interestRate\": 0.06,\r\n      \"loanPeriod\": 24,\r\n      \"repaidType\": \"先息后本\"\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/loan-products/admin/options/batch-create",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loan-products",
+								"admin",
+								"options",
+								"batch-create"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 18 Nov 2025 09:45:05 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": \"Batch create loan options success\",\n    \"message\": \"操作成功\"\n}"
+				},
+				{
+					"name": "userGetAll",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzU0NTY3ODkwMSIsInVzZXJJZCI6IjgiLCJpYXQiOjE3NjM0NDg1MjYsImV4cCI6MTc2MzUzNDkyNn0.FjIp4FZTe_Wur65rKrMV5KPN5t-HAJQaYweBLiVeKrg",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/loan-products/user",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loan-products",
+								"user"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 18 Nov 2025 10:57:02 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": [\n        {\n            \"productName\": \"极速贷 Pro\",\n            \"description\": \"审批快，放款快\",\n            \"loanUsage\": \"消费、装修、教育\",\n            \"promotionDetails\": \"无\",\n            \"terms\": [\n                3,\n                6,\n                9,\n                12,\n                15,\n                18,\n                21,\n                24,\n                27,\n                30,\n                33,\n                36\n            ],\n            \"options\": [\n                {\n                    \"loanAmount\": 10000,\n                    \"interestRate\": 0.045,\n                    \"loanPeriod\": 12,\n                    \"repaidType\": \"等额本息\"\n                },\n                {\n                    \"loanAmount\": 20000,\n                    \"interestRate\": 0.055,\n                    \"loanPeriod\": 18,\n                    \"repaidType\": \"等额本金\"\n                },\n                {\n                    \"loanAmount\": 50000,\n                    \"interestRate\": 0.06,\n                    \"loanPeriod\": 24,\n                    \"repaidType\": \"先息后本\"\n                }\n            ]\n        },\n        {\n            \"productName\": \"安心贷\",\n            \"description\": \"低利率，适合长期资金需求\",\n            \"loanUsage\": \"购房、装修、大额消费\",\n            \"promotionDetails\": \"前3期免息\",\n            \"terms\": [\n                6,\n                12,\n                18,\n                24,\n                30,\n                36,\n                42,\n                48,\n                54,\n                60\n            ],\n            \"options\": [\n                {\n                    \"loanAmount\": 50000,\n                    \"interestRate\": 0.038,\n                    \"loanPeriod\": 24,\n                    \"repaidType\": \"等额本息\"\n                },\n                {\n                    \"loanAmount\": 100000,\n                    \"interestRate\": 0.042,\n                    \"loanPeriod\": 36,\n                    \"repaidType\": \"等额本金\"\n                }\n            ]\n        },\n        {\n            \"productName\": \"闪电贷\",\n            \"description\": \"最快10分钟放款\",\n            \"loanUsage\": \"应急周转、医疗支出\",\n            \"promotionDetails\": \"新用户首笔免手续费\",\n            \"terms\": [\n                1,\n                2,\n                3,\n                4,\n                5,\n                6,\n                7,\n                8,\n                9,\n                10,\n                11,\n                12\n            ],\n            \"options\": [\n                {\n                    \"loanAmount\": 5000,\n                    \"interestRate\": 0.099,\n                    \"loanPeriod\": 6,\n                    \"repaidType\": \"先息后本\"\n                }\n            ]\n        }\n    ],\n    \"message\": \"操作成功\"\n}"
+				},
+				{
+					"name": "search",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzU0NTY3ODkwMSIsInVzZXJJZCI6IjgiLCJpYXQiOjE3NjM0NDg1MjYsImV4cCI6MTc2MzUzNDkyNn0.FjIp4FZTe_Wur65rKrMV5KPN5t-HAJQaYweBLiVeKrg",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/loan-products/user/search?name=闪电贷",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loan-products",
+								"user",
+								"search"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "闪电贷"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 18 Nov 2025 11:04:20 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": [\n        {\n            \"productName\": \"闪电贷\",\n            \"description\": \"最快10分钟放款\",\n            \"loanUsage\": \"应急周转、医疗支出\",\n            \"promotionDetails\": \"新用户首笔免手续费\",\n            \"terms\": [\n                1,\n                2,\n                3,\n                4,\n                5,\n                6,\n                7,\n                8,\n                9,\n                10,\n                11,\n                12\n            ],\n            \"options\": [\n                {\n                    \"loanAmount\": 5000,\n                    \"interestRate\": 0.099,\n                    \"loanPeriod\": 6,\n                    \"repaidType\": \"先息后本\"\n                }\n            ]\n        }\n    ],\n    \"message\": \"操作成功\"\n}"
+				},
+				{
+					"name": "deleteOption",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzU0NTY3ODkwMSIsInVzZXJJZCI6IjgiLCJpYXQiOjE3NjM0NDg1MjYsImV4cCI6MTc2MzUzNDkyNn0.FjIp4FZTe_Wur65rKrMV5KPN5t-HAJQaYweBLiVeKrg",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/loan-products/admin/options/4",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loan-products",
+								"admin",
+								"options",
+								"4"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 18 Nov 2025 14:28:21 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": \"The option of product delete success\",\n    \"message\": \"操作成功\"\n}"
+				},
+				{
+					"name": "products/batch-delete",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzU0NTY3ODkwMSIsInVzZXJJZCI6IjgiLCJpYXQiOjE3NjM0NDg1MjYsImV4cCI6MTc2MzUzNDkyNn0.FjIp4FZTe_Wur65rKrMV5KPN5t-HAJQaYweBLiVeKrg",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ids\":[8,10]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/loan-products/admin/products/batch-delete",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loan-products",
+								"admin",
+								"products",
+								"batch-delete"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 18 Nov 2025 14:39:52 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": \"Batch delete loan products success\",\n    \"message\": \"操作成功\"\n}"
+				},
+				{
+					"name": "create_1",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzcxMjM0NTY3OCIsInVzZXJJZCI6IjEiLCJpYXQiOjE3NjM3Mjc0ODYsImV4cCI6MTc2MzgxMzg4Nn0.G3ZvguFaCp4wZ8SJ67B3u0oMEywhC6Aj-TJykJiBRHE",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"productName\": \"优享贷\",\r\n  \"description\": \"专为信用良好用户定制，利率优惠，期限灵活\",\r\n  \"loanUsage\": \"教育、购车、旅游、大额消费\",\r\n  \"minTerm\": 6,\r\n  \"maxTerm\": 60,\r\n  \"termStep\": 6,\r\n  \"promotionDetails\": \"首年利率85折\",\r\n  \"options\": [\r\n    {\r\n      \"loanAmount\": 30000.00,\r\n      \"interestRate\": 0.0390,\r\n      \"loanPeriod\": 24,\r\n      \"repaidType\": \"等额本息\"\r\n    },\r\n    {\r\n      \"loanAmount\": 80000.00,\r\n      \"interestRate\": 0.0410,\r\n      \"loanPeriod\": 36,\r\n      \"repaidType\": \"等额本金\"\r\n    },\r\n    {\r\n      \"loanAmount\": 150000.00,\r\n      \"interestRate\": 0.0430,\r\n      \"loanPeriod\": 60,\r\n      \"repaidType\": \"等额本息\"\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/loan-products/admin",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loan-products",
+								"admin"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 21 Nov 2025 13:22:05 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": {\n        \"id\": 1,\n        \"productName\": \"优享贷\",\n        \"description\": \"专为信用良好用户定制，利率优惠，期限灵活\",\n        \"loanUsage\": \"教育、购车、旅游、大额消费\",\n        \"minTerm\": 6,\n        \"maxTerm\": 60,\n        \"termStep\": 6,\n        \"promotionDetails\": \"首年利率85折\",\n        \"options\": [\n            {\n                \"id\": 1,\n                \"productId\": 1,\n                \"loanPeriod\": 24,\n                \"loanAmount\": 30000,\n                \"interestRate\": 0.039,\n                \"repaidType\": \"等额本息\",\n                \"createTime\": \"2025-11-21T13:22:05.242452852\",\n                \"updateTime\": \"2025-11-21T13:22:05.242466792\"\n            },\n            {\n                \"id\": 2,\n                \"productId\": 1,\n                \"loanPeriod\": 36,\n                \"loanAmount\": 80000,\n                \"interestRate\": 0.041,\n                \"repaidType\": \"等额本金\",\n                \"createTime\": \"2025-11-21T13:22:05.243874167\",\n                \"updateTime\": \"2025-11-21T13:22:05.243885276\"\n            },\n            {\n                \"id\": 3,\n                \"productId\": 1,\n                \"loanPeriod\": 60,\n                \"loanAmount\": 150000,\n                \"interestRate\": 0.043,\n                \"repaidType\": \"等额本息\",\n                \"createTime\": \"2025-11-21T13:22:05.24517861\",\n                \"updateTime\": \"2025-11-21T13:22:05.245233821\"\n            }\n        ],\n        \"createTime\": \"2025-11-21T13:22:05.23461764\",\n        \"updateTime\": \"2025-11-21T13:22:05.234635536\"\n    },\n    \"message\": \"贷款产品创建成功\"\n}"
+				},
+				{
+					"name": "create_2",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzcxMjM0NTY3OCIsInVzZXJJZCI6IjEiLCJpYXQiOjE3NjM3Mjc0ODYsImV4cCI6MTc2MzgxMzg4Nn0.G3ZvguFaCp4wZ8SJ67B3u0oMEywhC6Aj-TJykJiBRHE",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"productName\": \"优享贷\",\r\n  \"description\": \"专为信用良好用户定制，利率优惠，期限灵活\",\r\n  \"loanUsage\": \"教育、购车、旅游、大额消费\",\r\n  \"minTerm\": 6,\r\n  \"maxTerm\": 60,\r\n  \"termStep\": 6,\r\n  \"promotionDetails\": \"首年利率85折\",\r\n  \"options\": [\r\n    {\r\n      \"loanAmount\": 30000.00,\r\n      \"interestRate\": 0.0390,\r\n      \"loanPeriod\": 24,\r\n      \"repaidType\": \"等额本息\"\r\n    },\r\n    {\r\n      \"loanAmount\": 80000.00,\r\n      \"interestRate\": 0.0410,\r\n      \"loanPeriod\": 36,\r\n      \"repaidType\": \"等额本金\"\r\n    },\r\n    {\r\n      \"loanAmount\": 150000.00,\r\n      \"interestRate\": 0.0430,\r\n      \"loanPeriod\": 60,\r\n      \"repaidType\": \"等额本息\"\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/loan-products/admin",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loan-products",
+								"admin"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 21 Nov 2025 13:23:46 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": {\n        \"id\": 2,\n        \"productName\": \"优享贷\",\n        \"description\": \"专为信用良好用户定制，利率优惠，期限灵活\",\n        \"loanUsage\": \"教育、购车、旅游、大额消费\",\n        \"minTerm\": 6,\n        \"maxTerm\": 60,\n        \"termStep\": 6,\n        \"promotionDetails\": \"首年利率85折\",\n        \"options\": [\n            {\n                \"id\": 4,\n                \"productId\": 2,\n                \"loanPeriod\": 24,\n                \"loanAmount\": 30000,\n                \"interestRate\": 0.039,\n                \"repaidType\": \"等额本息\",\n                \"createTime\": \"2025-11-21T13:23:46.09114765\",\n                \"updateTime\": \"2025-11-21T13:23:46.091170665\"\n            },\n            {\n                \"id\": 5,\n                \"productId\": 2,\n                \"loanPeriod\": 36,\n                \"loanAmount\": 80000,\n                \"interestRate\": 0.041,\n                \"repaidType\": \"等额本金\",\n                \"createTime\": \"2025-11-21T13:23:46.092405032\",\n                \"updateTime\": \"2025-11-21T13:23:46.092415251\"\n            },\n            {\n                \"id\": 6,\n                \"productId\": 2,\n                \"loanPeriod\": 60,\n                \"loanAmount\": 150000,\n                \"interestRate\": 0.043,\n                \"repaidType\": \"等额本息\",\n                \"createTime\": \"2025-11-21T13:23:46.093482937\",\n                \"updateTime\": \"2025-11-21T13:23:46.093493036\"\n            }\n        ],\n        \"createTime\": \"2025-11-21T13:23:46.08759037\",\n        \"updateTime\": \"2025-11-21T13:23:46.087600352\"\n    },\n    \"message\": \"贷款产品创建成功\"\n}"
+				},
+				{
+					"name": "userGetAll",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzcxMjM0NTY3OCIsInVzZXJJZCI6IjEiLCJpYXQiOjE3NjM3Mjc0ODYsImV4cCI6MTc2MzgxMzg4Nn0.G3ZvguFaCp4wZ8SJ67B3u0oMEywhC6Aj-TJykJiBRHE",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/api/loan-products/user",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loan-products",
+								"user"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 21 Nov 2025 15:06:34 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": [\n        {\n            \"productId\": 1,\n            \"productName\": \"优享贷\",\n            \"description\": \"专为信用良好用户定制，利率优惠，期限灵活\",\n            \"loanUsage\": \"教育、购车、旅游、大额消费\",\n            \"promotionDetails\": \"首年利率85折\",\n            \"terms\": [\n                6,\n                12,\n                18,\n                24,\n                30,\n                36,\n                42,\n                48,\n                54,\n                60\n            ],\n            \"options\": [\n                {\n                    \"optionId\": 1,\n                    \"loanAmount\": 30000,\n                    \"interestRate\": 0.039,\n                    \"loanPeriod\": 24,\n                    \"repaidType\": \"等额本息\"\n                },\n                {\n                    \"optionId\": 2,\n                    \"loanAmount\": 80000,\n                    \"interestRate\": 0.041,\n                    \"loanPeriod\": 36,\n                    \"repaidType\": \"等额本金\"\n                },\n                {\n                    \"optionId\": 3,\n                    \"loanAmount\": 150000,\n                    \"interestRate\": 0.043,\n                    \"loanPeriod\": 60,\n                    \"repaidType\": \"等额本息\"\n                }\n            ]\n        },\n        {\n            \"productId\": 2,\n            \"productName\": \"优享贷\",\n            \"description\": \"专为信用良好用户定制，利率优惠，期限灵活\",\n            \"loanUsage\": \"教育、购车、旅游、大额消费\",\n            \"promotionDetails\": \"首年利率85折\",\n            \"terms\": [\n                6,\n                12,\n                18,\n                24,\n                30,\n                36,\n                42,\n                48,\n                54,\n                60\n            ],\n            \"options\": [\n                {\n                    \"optionId\": 4,\n                    \"loanAmount\": 30000,\n                    \"interestRate\": 0.039,\n                    \"loanPeriod\": 24,\n                    \"repaidType\": \"等额本息\"\n                },\n                {\n                    \"optionId\": 5,\n                    \"loanAmount\": 80000,\n                    \"interestRate\": 0.041,\n                    \"loanPeriod\": 36,\n                    \"repaidType\": \"等额本金\"\n                },\n                {\n                    \"optionId\": 6,\n                    \"loanAmount\": 150000,\n                    \"interestRate\": 0.043,\n                    \"loanPeriod\": 60,\n                    \"repaidType\": \"等额本息\"\n                }\n            ]\n        }\n    ],\n    \"message\": \"操作成功\"\n}"
+				},
+				{
+					"name": "deactive",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzgwMDEzODAwMCIsInVzZXJJZCI6IjYiLCJpYXQiOjE3NjQ1OTUxODQsImV4cCI6MTc2NDY4MTU4NH0.kFJ-q1UvWkYXLC6UYkD2-OhZrZG44VvWiehoAUAYPrA",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/api/loan-products/admin/1/deactive",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loan-products",
+								"admin",
+								"1",
+								"deactive"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 01 Dec 2025 13:26:08 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": null,\n    \"message\": \"产品下架成功\"\n}"
+				}
+			]
+		},
+		{
+			"name": "search",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzU0NTY3ODkwMSIsInVzZXJJZCI6IjgiLCJpYXQiOjE3NjM0NDg1MjYsImV4cCI6MTc2MzUzNDkyNn0.FjIp4FZTe_Wur65rKrMV5KPN5t-HAJQaYweBLiVeKrg",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/loan-products/admin",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"loan-products",
+						"admin"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "searchUserByCredit",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzU0NTY3ODkwMSIsInVzZXJJZCI6IjgiLCJpYXQiOjE3NjI5MzM1MjQsImV4cCI6MTc2MzAxOTkyNH0.-sjQTq3HLL2C8V5Q_R4cRcHPqdRDOhcpm-cQ6OgiNKM",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/users/search-by-credit?expr=<100",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"users",
+								"search-by-credit"
+							],
+							"query": [
+								{
+									"key": "expr",
+									"value": "<100"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 12 Nov 2025 09:25:10 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"id\": 5,\n        \"name\": \"李华\",\n        \"phone\": \"13912345678\",\n        \"creditScore\": 70,\n        \"createTime\": \"2025-11-11T16:08:50\"\n    },\n    {\n        \"id\": 4,\n        \"name\": \"Alice_Wang\",\n        \"phone\": \"15912345678\",\n        \"creditScore\": 65,\n        \"createTime\": \"2025-11-11T16:02:20\"\n    },\n    {\n        \"id\": 3,\n        \"name\": \"张三\",\n        \"phone\": \"13800138000\",\n        \"creditScore\": 60,\n        \"createTime\": \"2025-11-11T15:59:10\"\n    }\n]"
+				},
+				{
+					"name": "getAll",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzU0NTY3ODkwMSIsInVzZXJJZCI6IjgiLCJpYXQiOjE3NjM0NDg1MjYsImV4cCI6MTc2MzUzNDkyNn0.FjIp4FZTe_Wur65rKrMV5KPN5t-HAJQaYweBLiVeKrg",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/loan-products/admin",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loan-products",
+								"admin"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 18 Nov 2025 10:09:33 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": [\n        {\n            \"id\": 2,\n            \"productName\": \"极速贷 Pro\",\n            \"description\": \"审批快，放款快\",\n            \"loanUsage\": \"消费、装修、教育\",\n            \"minTerm\": 3,\n            \"maxTerm\": 36,\n            \"termStep\": 3,\n            \"promotionDetails\": \"无\",\n            \"options\": [\n                {\n                    \"id\": 2,\n                    \"productId\": 2,\n                    \"loanPeriod\": 12,\n                    \"loanAmount\": 10000,\n                    \"interestRate\": 0.045,\n                    \"repaidType\": \"等额本息\",\n                    \"createTime\": \"2025-11-18T17:10:45\",\n                    \"updateTime\": \"2025-11-18T17:57:24\"\n                },\n                {\n                    \"id\": 6,\n                    \"productId\": 2,\n                    \"loanPeriod\": 18,\n                    \"loanAmount\": 20000,\n                    \"interestRate\": 0.055,\n                    \"repaidType\": \"等额本金\",\n                    \"createTime\": \"2025-11-18T17:45:05\",\n                    \"updateTime\": \"2025-11-18T17:45:05\"\n                },\n                {\n                    \"id\": 7,\n                    \"productId\": 2,\n                    \"loanPeriod\": 24,\n                    \"loanAmount\": 50000,\n                    \"interestRate\": 0.06,\n                    \"repaidType\": \"先息后本\",\n                    \"createTime\": \"2025-11-18T17:45:05\",\n                    \"updateTime\": \"2025-11-18T17:45:05\"\n                }\n            ],\n            \"createTime\": \"2025-11-18T17:10:45\",\n            \"updateTime\": \"2025-11-18T17:53:04\"\n        },\n        {\n            \"id\": 8,\n            \"productName\": \"安心贷\",\n            \"description\": \"低利率，适合长期资金需求\",\n            \"loanUsage\": \"购房、装修、大额消费\",\n            \"minTerm\": 6,\n            \"maxTerm\": 60,\n            \"termStep\": 6,\n            \"promotionDetails\": \"前3期免息\",\n            \"options\": [\n                {\n                    \"id\": 3,\n                    \"productId\": 8,\n                    \"loanPeriod\": 24,\n                    \"loanAmount\": 50000,\n                    \"interestRate\": 0.038,\n                    \"repaidType\": \"等额本息\",\n                    \"createTime\": \"2025-11-18T17:32:14\",\n                    \"updateTime\": \"2025-11-18T17:32:14\"\n                },\n                {\n                    \"id\": 4,\n                    \"productId\": 8,\n                    \"loanPeriod\": 36,\n                    \"loanAmount\": 100000,\n                    \"interestRate\": 0.042,\n                    \"repaidType\": \"等额本金\",\n                    \"createTime\": \"2025-11-18T17:32:14\",\n                    \"updateTime\": \"2025-11-18T17:32:14\"\n                }\n            ],\n            \"createTime\": \"2025-11-18T17:32:14\",\n            \"updateTime\": \"2025-11-18T17:32:14\"\n        },\n        {\n            \"id\": 9,\n            \"productName\": \"闪电贷\",\n            \"description\": \"最快10分钟放款\",\n            \"loanUsage\": \"应急周转、医疗支出\",\n            \"minTerm\": 1,\n            \"maxTerm\": 12,\n            \"termStep\": 1,\n            \"promotionDetails\": \"新用户首笔免手续费\",\n            \"options\": [\n                {\n                    \"id\": 5,\n                    \"productId\": 9,\n                    \"loanPeriod\": 6,\n                    \"loanAmount\": 5000,\n                    \"interestRate\": 0.099,\n                    \"repaidType\": \"先息后本\",\n                    \"createTime\": \"2025-11-18T17:32:44\",\n                    \"updateTime\": \"2025-11-18T17:32:44\"\n                }\n            ],\n            \"createTime\": \"2025-11-18T17:32:44\",\n            \"updateTime\": \"2025-11-18T17:32:44\"\n        }\n    ],\n    \"message\": \"操作成功\"\n}"
+				}
+			]
+		},
+		{
+			"name": "updateProduct",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzcxMjM0NTY3OCIsInVzZXJJZCI6IjEiLCJpYXQiOjE3NjM3Mjc0ODYsImV4cCI6MTc2MzgxMzg4Nn0.G3ZvguFaCp4wZ8SJ67B3u0oMEywhC6Aj-TJykJiBRHE",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"productName\": \"极速贷\",\r\n  \"maxTerm\": 36,\r\n  \"options\": [\r\n    {\r\n      \"id\": 5,\r\n      \"interestRate\": 0.045\r\n    }\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/loan-products/admin/products/2",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"loan-products",
+						"admin",
+						"products",
+						"2"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "update",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzU0NTY3ODkwMSIsInVzZXJJZCI6IjgiLCJpYXQiOjE3NjM0NDg1MjYsImV4cCI6MTc2MzUzNDkyNn0.FjIp4FZTe_Wur65rKrMV5KPN5t-HAJQaYweBLiVeKrg",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"productName\": \"极速贷 Pro\",\r\n  \"maxTerm\": 36,\r\n  \"options\": [\r\n    {\r\n      \"id\": 2,\r\n      \"interestRate\": 0.045\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/loan-products/admin/products/2",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loan-products",
+								"admin",
+								"products",
+								"2"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 18 Nov 2025 09:57:24 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": {\n        \"id\": 2,\n        \"productName\": \"极速贷 Pro\",\n        \"description\": \"审批快，放款快\",\n        \"loanUsage\": \"消费、装修、教育\",\n        \"minTerm\": 3,\n        \"maxTerm\": 36,\n        \"termStep\": 3,\n        \"promotionDetails\": \"无\",\n        \"options\": [\n            {\n                \"id\": 2,\n                \"productId\": 2,\n                \"loanPeriod\": 12,\n                \"loanAmount\": 10000,\n                \"interestRate\": 0.045,\n                \"repaidType\": \"等额本息\",\n                \"createTime\": \"2025-11-18T17:10:45\",\n                \"updateTime\": \"2025-11-18T17:57:24\"\n            },\n            {\n                \"id\": 6,\n                \"productId\": 2,\n                \"loanPeriod\": 18,\n                \"loanAmount\": 20000,\n                \"interestRate\": 0.055,\n                \"repaidType\": \"等额本金\",\n                \"createTime\": \"2025-11-18T17:45:05\",\n                \"updateTime\": \"2025-11-18T17:45:05\"\n            },\n            {\n                \"id\": 7,\n                \"productId\": 2,\n                \"loanPeriod\": 24,\n                \"loanAmount\": 50000,\n                \"interestRate\": 0.06,\n                \"repaidType\": \"先息后本\",\n                \"createTime\": \"2025-11-18T17:45:05\",\n                \"updateTime\": \"2025-11-18T17:45:05\"\n            }\n        ],\n        \"createTime\": \"2025-11-18T17:10:45\",\n        \"updateTime\": \"2025-11-18T17:57:24.5318755\"\n    },\n    \"message\": \"贷款产品更新成功\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Application",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzcxMjM0NTY3OCIsInVzZXJJZCI6IjEiLCJpYXQiOjE3NjM3Mjc0ODYsImV4cCI6MTc2MzgxMzg4Nn0.G3ZvguFaCp4wZ8SJ67B3u0oMEywhC6Aj-TJykJiBRHE",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/api/loan-applications/user/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"loan-applications",
+						"user",
+						"1"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "userApply",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzcxMjM0NTY3OCIsInVzZXJJZCI6IjEiLCJpYXQiOjE3NjM3Mjc0ODYsImV4cCI6MTc2MzgxMzg4Nn0.G3ZvguFaCp4wZ8SJ67B3u0oMEywhC6Aj-TJykJiBRHE",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"productId\":1,\r\n    \"optionId\":1,\r\n    \"term\":6\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/loan-applications",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loan-applications"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 21 Nov 2025 15:24:08 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": \"Application submitted successfully, please wait for review\",\n    \"message\": \"操作成功\"\n}"
+				},
+				{
+					"name": "userGetOne",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzEwMDAwMTExMSIsInVzZXJJZCI6IjIiLCJpYXQiOjE3NjM3OTQ2MDAsImV4cCI6MTc2Mzg4MTAwMH0.L3v3x79uaiG7NT-ZbTieoH65M8O7rrCgJuHmOUYLABo",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/api/loan-applications/my/4",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loan-applications",
+								"my",
+								"4"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 22 Nov 2025 07:07:13 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": {\n        \"applicationId\": 4,\n        \"productName\": \"优享贷\",\n        \"loanAmount\": 150000,\n        \"interestRate\": 0.043,\n        \"loanPeriod\": 60,\n        \"term\": 6,\n        \"repaidType\": \"等额本息\",\n        \"status\": \"PENDING\",\n        \"applyTime\": \"2025-11-22T15:03:42\",\n        \"reviewTime\": null,\n        \"rejectReason\": null\n    },\n    \"message\": \"操作成功\"\n}"
+				},
+				{
+					"name": "userGetAll",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzcxMjM0NTY3OCIsInVzZXJJZCI6IjEiLCJpYXQiOjE3NjM3Mjc0ODYsImV4cCI6MTc2MzgxMzg4Nn0.G3ZvguFaCp4wZ8SJ67B3u0oMEywhC6Aj-TJykJiBRHE",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/api/loan-applications/my",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loan-applications",
+								"my"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 22 Nov 2025 07:11:45 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": [\n        {\n            \"applicationId\": 3,\n            \"productName\": \"优享贷\",\n            \"loanAmount\": 80000,\n            \"interestRate\": 0.041,\n            \"loanPeriod\": 36,\n            \"term\": 6,\n            \"repaidType\": \"等额本金\",\n            \"status\": \"PENDING\",\n            \"applyTime\": \"2025-11-22T14:36:12\",\n            \"reviewTime\": null,\n            \"rejectReason\": null\n        },\n        {\n            \"applicationId\": 2,\n            \"productName\": \"优享贷\",\n            \"loanAmount\": 30000,\n            \"interestRate\": 0.039,\n            \"loanPeriod\": 24,\n            \"term\": 6,\n            \"repaidType\": \"等额本息\",\n            \"status\": \"PENDING\",\n            \"applyTime\": \"2025-11-21T23:24:08\",\n            \"reviewTime\": null,\n            \"rejectReason\": null\n        }\n    ],\n    \"message\": \"操作成功\"\n}"
+				},
+				{
+					"name": "withdraw",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzcxMjM0NTY3OCIsInVzZXJJZCI6IjEiLCJpYXQiOjE3NjM3Mjc0ODYsImV4cCI6MTc2MzgxMzg4Nn0.G3ZvguFaCp4wZ8SJ67B3u0oMEywhC6Aj-TJykJiBRHE",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/api/loan-applications/my/3/withdraw",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loan-applications",
+								"my",
+								"3",
+								"withdraw"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 22 Nov 2025 07:16:26 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": null,\n    \"message\": \"操作成功\"\n}"
+				},
+				{
+					"name": "adminGetOne",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzcxMjM0NTY3OCIsInVzZXJJZCI6IjEiLCJpYXQiOjE3NjM3Mjc0ODYsImV4cCI6MTc2MzgxMzg4Nn0.G3ZvguFaCp4wZ8SJ67B3u0oMEywhC6Aj-TJykJiBRHE",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/api/loan-applications/4",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loan-applications",
+								"4"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 22 Nov 2025 07:32:38 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": {\n        \"id\": 4,\n        \"userId\": 2,\n        \"productId\": 1,\n        \"userName\": \"王芳\",\n        \"phoneNumber\": \"13100001111\",\n        \"productName\": \"优享贷\",\n        \"loanAmount\": 150000,\n        \"interestRate\": 0.043,\n        \"loanPeriod\": 60,\n        \"term\": 6,\n        \"repaidType\": \"等额本息\",\n        \"status\": \"PENDING\",\n        \"applyTime\": \"2025-11-22T15:03:42\",\n        \"reviewTime\": null,\n        \"rejectReason\": null\n    },\n    \"message\": \"操作成功\"\n}"
+				},
+				{
+					"name": "adminGetAll",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzcxMjM0NTY3OCIsInVzZXJJZCI6IjEiLCJpYXQiOjE3NjM3Mjc0ODYsImV4cCI6MTc2MzgxMzg4Nn0.G3ZvguFaCp4wZ8SJ67B3u0oMEywhC6Aj-TJykJiBRHE",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/api/loan-applications/user/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loan-applications",
+								"user",
+								"1"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 22 Nov 2025 07:34:40 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": [\n        {\n            \"id\": 3,\n            \"userId\": 1,\n            \"productId\": 1,\n            \"userName\": \"Tom\",\n            \"phoneNumber\": \"13712345678\",\n            \"productName\": \"优享贷\",\n            \"loanAmount\": 80000,\n            \"interestRate\": 0.041,\n            \"loanPeriod\": 36,\n            \"term\": 6,\n            \"repaidType\": \"等额本金\",\n            \"status\": \"PENDING\",\n            \"applyTime\": \"2025-11-22T14:36:12\",\n            \"reviewTime\": null,\n            \"rejectReason\": null\n        },\n        {\n            \"id\": 2,\n            \"userId\": 1,\n            \"productId\": 1,\n            \"userName\": \"Tom\",\n            \"phoneNumber\": \"13712345678\",\n            \"productName\": \"优享贷\",\n            \"loanAmount\": 30000,\n            \"interestRate\": 0.039,\n            \"loanPeriod\": 24,\n            \"term\": 6,\n            \"repaidType\": \"等额本息\",\n            \"status\": \"CANCELLED\",\n            \"applyTime\": \"2025-11-21T23:24:08\",\n            \"reviewTime\": null,\n            \"rejectReason\": null\n        }\n    ],\n    \"message\": \"操作成功\"\n}"
+				}
+			]
+		},
+		{
+			"name": "ManualApproval",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzgwMDEzODAwMCIsInVzZXJJZCI6IjYiLCJpYXQiOjE3NjQ0MDUxODYsImV4cCI6MTc2NDQ5MTU4Nn0.Tfz38UQF_DxJe4pDkP5vaxVPFztbQWrKi5utWRkcSW8",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseURL}}/api/approval/detail/3",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"approval",
+						"detail",
+						"3"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "check",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzgwMDEzODAwMCIsInVzZXJJZCI6IjYiLCJpYXQiOjE3NjQ0MDUxODYsImV4cCI6MTc2NDQ5MTU4Nn0.Tfz38UQF_DxJe4pDkP5vaxVPFztbQWrKi5utWRkcSW8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"loanApplicationId\":4,\r\n    \"approved\":\"true\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/approval/check",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"approval",
+								"check"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 29 Nov 2025 09:14:14 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": null,\n    \"message\": \"操作成功\"\n}"
+				},
+				{
+					"name": "detail",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzgwMDEzODAwMCIsInVzZXJJZCI6IjYiLCJpYXQiOjE3NjQ0MDUxODYsImV4cCI6MTc2NDQ5MTU4Nn0.Tfz38UQF_DxJe4pDkP5vaxVPFztbQWrKi5utWRkcSW8",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/api/approval/detail/3",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"approval",
+								"detail",
+								"3"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 29 Nov 2025 09:19:37 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": {\n        \"userName\": \"汤姆\",\n        \"phone\": \"13712345678\",\n        \"createTime\": \"2025-11-21T13:21:32\",\n        \"idCard\": null,\n        \"workCertId\": null,\n        \"triCertId\": null,\n        \"immovableCertId\": null,\n        \"creditScore\": null,\n        \"productName\": \"优享贷\",\n        \"loanAmount\": 80000,\n        \"loanPeriod\": 36,\n        \"term\": 6\n    },\n    \"message\": \"操作成功\"\n}"
+				}
+			]
+		},
+		{
+			"name": "blacklist",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzgwMDEzODAwMCIsInVzZXJJZCI6IjYiLCJpYXQiOjE3NjQ0MTQ4MjQsImV4cCI6MTc2NDUwMTIyNH0.sfzkeZ1Ev5HgRz2MGmpjRyqm1OHBsiwGwTPc3KBPEm8",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseURL}}/api/users/blacklist/list",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"blacklist",
+						"list"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "add",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzgwMDEzODAwMCIsInVzZXJJZCI6IjYiLCJpYXQiOjE3NjQ0MTQ4MjQsImV4cCI6MTc2NDUwMTIyNH0.sfzkeZ1Ev5HgRz2MGmpjRyqm1OHBsiwGwTPc3KBPEm8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userId\":7,\r\n    \"blackLevel\":1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/users/blacklist/add",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"blacklist",
+								"add"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 29 Nov 2025 12:50:37 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": null,\n    \"message\": \"用户已加入黑名单\"\n}"
+				},
+				{
+					"name": "remove",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzgwMDEzODAwMCIsInVzZXJJZCI6IjYiLCJpYXQiOjE3NjQ0MTQ4MjQsImV4cCI6MTc2NDUwMTIyNH0.sfzkeZ1Ev5HgRz2MGmpjRyqm1OHBsiwGwTPc3KBPEm8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "userId",
+									"value": "7",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/users/blacklist/remove",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"blacklist",
+								"remove"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 29 Nov 2025 12:52:50 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": null,\n    \"message\": \"用户已解除黑名单\"\n}"
+				},
+				{
+					"name": "list",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzgwMDEzODAwMCIsInVzZXJJZCI6IjYiLCJpYXQiOjE3NjQ0MTQ4MjQsImV4cCI6MTc2NDUwMTIyNH0.sfzkeZ1Ev5HgRz2MGmpjRyqm1OHBsiwGwTPc3KBPEm8",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/api/users/blacklist/list",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"blacklist",
+								"list"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 29 Nov 2025 13:01:11 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": [\n        {\n            \"id\": 1,\n            \"userId\": 7,\n            \"userName\": \"lihua\",\n            \"phone\": \"13500135000\",\n            \"blackLevel\": 1,\n            \"createTime\": \"2025-11-29T12:50:37\",\n            \"updateTime\": \"2025-11-29T20:52:51\",\n            \"removeTime\": \"2025-11-29T20:52:51\"\n        }\n    ],\n    \"message\": \"操作成功\"\n}"
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL",
+			"value": "",
+			"type": "default"
+		}
+	]
+}

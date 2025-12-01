@@ -2,6 +2,8 @@ package com.example.personal_loan.entity;
 
 import java.time.LocalDateTime;
 
+import com.example.personal_loan.enums.ProductStatus;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -26,6 +28,8 @@ public class LoanProduct {
 
     @Size(max = 200, message = "贷款用途说明不能超过200个字符")
     private String loanUsage;
+
+    private ProductStatus status;
 
     @NotNull(message = "最短期数不能为空")
     @Min(value = 1, message = "最短期数不能小于1")

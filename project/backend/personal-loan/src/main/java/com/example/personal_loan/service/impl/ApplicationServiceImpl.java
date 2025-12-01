@@ -90,7 +90,7 @@ public class ApplicationServiceImpl implements ApplicationService{
         }
         // 需要审核？通过后状态变更
         application.setStatus(ApplicationStatus.CANCELLED);
-        applicationMapper.updateStatus(application); 
+        applicationMapper.update(application); 
     }
 
     // @Override

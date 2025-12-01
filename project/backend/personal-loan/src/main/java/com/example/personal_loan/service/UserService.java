@@ -48,13 +48,13 @@ public interface UserService {
     List<AdminUserListResponse> adminGetAllUsersWithStats();
    
     // 添加黑名单
-    void addToBlackList(Long userId, int blackLevel);
+    void addToBlackList(Long adminId, Long userId, int blackLevel);
 
     // 解除黑名单
-    void removeFromBlackList(Long userId);
+    void removeFromBlackList(Long adminId, Long userId);
 
     // 获取黑名单列表
-    List<BlackListDto> getBlackList();
+    List<BlackListDto> getBlackList(Long adminId);
    
     // 获取单个用户信息
     AdminGetUserResponse adminGetUser(Long userId);

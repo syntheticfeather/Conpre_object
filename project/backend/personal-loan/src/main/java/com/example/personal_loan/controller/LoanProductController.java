@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.personal_loan.dto.ApiResponse;
 import com.example.personal_loan.dto.BatchCreateOptionRequest;
 import com.example.personal_loan.dto.BatchDeleteRequest;
+import com.example.personal_loan.dto.ListProductResponse;
 import com.example.personal_loan.dto.ProductDto;
 import com.example.personal_loan.dto.UserGetProductResponse;
 import com.example.personal_loan.service.LoanProductService;
@@ -49,20 +50,8 @@ public class LoanProductController {
     }
 
     // ========== 管理端 ==========
-    @GetMapping("/admin")
-    public ResponseEntity<ApiResponse<List<ProductDto>>> listForAdmin() {
-        log.info("/loan-products/admin api success called to get all products");
-        List<ProductDto> products = loanProductService.adminGetAllProducts();
-        return ResponseEntity.ok(ApiResponse.success(products));
-    }
 
-    @GetMapping("/admin/{productId}")
-    public ResponseEntity<ApiResponse<ProductDto>> getProductForAdmin(@PathVariable Long productId) {
-        log.info("/loan-products/admin/{} api success called", productId);
-        ProductDto product = loanProductService.adminGetProductById(productId);
-        return ResponseEntity.ok(ApiResponse.success(product));
-    }
-
+    // 新增产品
     @PostMapping("/admin")
     public ResponseEntity<ApiResponse<ProductDto>> create(@RequestBody @Valid ProductDto dto) {
         log.info("/loan-products/admin api success called to create product");
@@ -70,6 +59,40 @@ public class LoanProductController {
         return ResponseEntity.ok(ApiResponse.success(created, "贷款产品创建成功"));
     }
 
+    // 上架
+    @PostMapping("/admin/{productId}/active")
+    public ResponseEntity<ApiResponse<Void>> activeProduct(@PathVariable Long productId) {
+        log.info("/loan-products/admin/{}/active success called for admin to active product with id: {}", productId, productId);
+        loanProductService.activeProduct(productId);
+        return ResponseEntity.ok(ApiResponse.success(null, "产品上架成功"));
+    }
+
+    // 下架
+    @PostMapping("/admin/{productId}/deactive")
+    public ResponseEntity<ApiResponse<Void>> deactiveProduct(@PathVariable Long productId) {
+        log.info("/loan-products/admin/{}/deactive success called for admin to deactive product with id: {}", productId, productId);
+        loanProductService.deactiveProduct(productId);
+        return ResponseEntity.ok(ApiResponse.success(null, "产品下架成功"));
+    }
+
+    // 获取产品列表
+    @GetMapping("/admin")
+    public ResponseEntity<ApiResponse<List<ListProductResponse>>> listForAdmin() {
+        log.info("/loan-products/admin api success called to get all products");
+        List<ListProductResponse> products = loanProductService.adminGetAllProducts();
+        return ResponseEntity.ok(ApiResponse.success(products));
+    }
+
+    // 获取单个产品详情
+    @GetMapping("/admin/{productId}")
+    public ResponseEntity<ApiResponse<ProductDto>> getProductForAdmin(@PathVariable Long productId) {
+        log.info("/loan-products/admin/{} api success called", productId);
+        ProductDto product = loanProductService.adminGetProductById(productId);
+        return ResponseEntity.ok(ApiResponse.success(product));
+    }
+
+    
+    // 批量删除选项
     @PostMapping("/admin/options/batch-create")
     public ResponseEntity<ApiResponse<String>> batchCreateOptions(
             @RequestBody @Valid BatchCreateOptionRequest request) {
@@ -77,6 +100,7 @@ public class LoanProductController {
         loanProductService.batchCreateLoanOptions(request.getProductId(), request.getOptions());
         return ResponseEntity.ok(ApiResponse.success("Batch create loan options success"));
     }
+
 
     @PatchMapping("/admin/products/{id}")
     public ResponseEntity<ApiResponse<ProductDto>> update(@PathVariable Long id, @RequestBody ProductDto dto) {

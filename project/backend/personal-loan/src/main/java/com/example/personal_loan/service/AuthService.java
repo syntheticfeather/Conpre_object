@@ -2,14 +2,17 @@ package com.example.personal_loan.service;
 
 public interface AuthService {
 
-    // 资产认证
-    void assetAuth(); 
+    // 不动产认证
+    void immovablesAuth(); 
 
     // 银行账户认证
     void bankAccountAuth(); 
 
+    // 身份证号验证
+    void idCardAuth();
+
     // 个人征信认证
-    void creditAuth(); 
+    // void creditAuth(); 
 
     // 工作认证
     void occupationAuth();
@@ -20,6 +23,6 @@ public interface AuthService {
     // 计算贷款认证分数
     int calScore(); 
 
-    int getScore(); 
+    int getCert(); 
 
 }

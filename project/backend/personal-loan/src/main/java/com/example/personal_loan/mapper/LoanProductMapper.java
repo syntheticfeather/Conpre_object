@@ -15,7 +15,7 @@ import com.example.personal_loan.entity.LoanProduct;
 public interface LoanProductMapper {
 
     // 增加
-    @Insert("INSERT INTO loan_products (product_name, description, loan_usage, min_term, max_term, term_step, promotion_details) VALUES ( #{productName}, #{description}, #{loanUsage}, #{minTerm}, #{maxTerm}, #{termStep}, #{promotionDetails})")
+    @Insert("INSERT INTO loan_products (product_name, description, loan_usage, status, min_term, max_term, term_step, promotion_details) VALUES ( #{productName}, #{description}, #{loanUsage}, #{status}, #{minTerm}, #{maxTerm}, #{termStep}, #{promotionDetails})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int create(LoanProduct loanProduct);
 
@@ -35,7 +35,7 @@ public interface LoanProductMapper {
     int batchDelete(List<Long> ids);
 
     // 修改
-    @Update("UPDATE loan_products SET product_name = #{productName}, description = #{description}, loan_usage = #{loanUsage}, min_term = #{minTerm}, max_term = #{maxTerm}, term_step = #{termStep}, promotion_details = #{promotionDetails} WHERE id = #{id}")
+    @Update("UPDATE loan_products SET product_name = #{productName}, description = #{description}, loan_usage = #{loanUsage}, status = #{status}, min_term = #{minTerm}, max_term = #{maxTerm}, term_step = #{termStep}, promotion_details = #{promotionDetails} WHERE id = #{id}")
     int update(LoanProduct loanProduct);
 
     // 查询单个
@@ -44,6 +44,7 @@ public interface LoanProductMapper {
         "product_name as productName, " +
         "description, " +
         "loan_usage as loanUsage, " +
+        "status as status, "+
         "min_term as minTerm, " +
         "max_term as maxTerm, " +
         "term_step as termStep, " +
@@ -60,6 +61,7 @@ public interface LoanProductMapper {
         "product_name as productName, " +
         "description, " +
         "loan_usage as loanUsage, " +
+        "status as status, "+
         "min_term as minTerm, " +
         "max_term as maxTerm, " +
         "term_step as termStep, " +
@@ -70,11 +72,28 @@ public interface LoanProductMapper {
         "ORDER BY update_time DESC, create_time DESC")
     List<LoanProduct> findAll();
 
+    // 查询上架产品
+    @Select("SELECT " +
+        "id, " +
+        "product_name as productName, " +
+        "description, " +
+        "loan_usage as loanUsage, " +
+        "min_term as minTerm, " +
+        "max_term as maxTerm, " +
+        "term_step as termStep, " +
+        "promotion_details as promotionDetails, " +
+        "create_time as createTime, " +
+        "update_time as updateTime " +
+        "FROM loan_products "+
+        "WHERE status = #{ACTIVE} "+
+        "ORDER BY update_time DESC, create_time DESC")
+    List<LoanProduct> findAllActive();
+
     // 用productName搜索查询
     @Select("SELECT id, product_name as productName, description, loan_usage as loanUsage, "+
         "min_term as minTerm, max_term as maxTerm, term_step as termStep, " +
         "promotion_details as promotionDetails, create_time as createTime, update_time as updateTime " +
         "FROM loan_products " +
-        "WHERE product_name LIKE CONCAT('%', #{keyword}, '%')")
+        "WHERE product_name LIKE CONCAT('%', #{keyword}, '%') AND status = #{ACTIVE}")
     List<LoanProduct> findByProductNameLike(String productName);
 }
