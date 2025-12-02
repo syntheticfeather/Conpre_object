@@ -6,10 +6,9 @@ const JWT_UTILS = AdminWeb.JWT_UTILS
 
 // ==================== 初始化函数 ====================
 function init() {
-    console.log("init begins...")
     // 检查登录状态
     checkLoginStatus()
-    // 绑定事件监听
+    // 绑定事件监听 
     bindEventListeners()
     // 启动token监控
     startTokenMonitor()

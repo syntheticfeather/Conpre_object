@@ -10,10 +10,35 @@ const AdminWeb = {
 AdminWeb.API_CONFIG = {
     baseUrl: 'http://localhost:8080',
     endpoints: {
-        // 注册界面
-        register: '/api/auth/register',// 注册接口
-        // 登录界面
-        login: '/api/auth/login',// 登录接口
+        logout: '/api/auth/logout', // 退出接口-未实现？
+
+        // 用户管理相关接口
+        getBlacklist: '/api/users/blacklist/list',//获取黑名单列表
+        addToBlacklist: '/api/users/blacklist/add',//添加黑名单
+        removeFromBlacklist: '/api/users/blacklist/remove',//解除黑名单
+        getUserStats: '/api/users/admin/stats',//查询用户状态列表
+        getUserDetail: '/api/users/admin/{userId}',//查看单个用户详细信息
+        searchUsersByCredit: '/api/users/search-by-credit',//据信誉分从高到低查询用
+        
+        // 贷款产品管理接口
+        adminGetAllProducts: '/api/loan-products/admin',// 获取所有贷款产品接口
+        adminGetProduct: '/api/loan-products/admin/{productId}', // 获取指定贷款产品详情接口
+        addLoanProduct: '/api/loan-products/admin', // 增加贷款产品接口
+        updateLoanProduct: '/api/loan-products/admin/products/{productId}', // 修改产品信息
+        deleteLoanProduct: '/api/loan-products/admin/products/{productId}', // 删除贷款产品接口
+        batchDeleteProducts: '/api/loan-products/admin/products/batch-delete',//批量删除产品
+        batchCreateOptions: '/api/loan-products/admin/options/batch-create',//批量增加产品选项
+        deleteOption: '/api/loan-products/admin/options/{optionId}',//删除产品的单个选项
+        batchDeleteOptions: '/api/loan-products/admin/options/batch-delete',//批量删除产品选项
+        
+        // 贷款申请相关接口
+        adminGetApplication: '/api/loan-applications/{applicationId}',// 获取任意用户的单个贷款申请详情
+        adminGetUserApplications: '/api/loan-applications/user/{userId}',// 获取指定用户的所有贷款申请详情
+        
+        // 人工审核相关接口
+        getPendingApprovals: '/api/approval/pending', // 查看代办审核列表
+        getApprovalDetail: '/api/approval/detail/{loanApplicationId}',//查看单个代办审核申请详情
+        submitApproval: '/api/approval/check' // 返回审核结果
     },
     storageKeys: {
         token: 'admin_token',
@@ -33,122 +58,115 @@ AdminWeb.JWT_CONFIG = {
 }
 // ==================== DOM元素引用 ====================
 AdminWeb.DOM_ELEMENTS = {
-    // 注册页面
-    registerForm: document.getElementById('registerForm'),
-    registerBtn: document.querySelector('.register-btn'),
-    loginBtn: document.querySelector('.login-btn'), // 跳转登录按钮
-    confirmBtn: document.querySelector('.confirm-btn'), // 确认注册信息，弹出验证弹窗
-    closeBtn: document.querySelector('.close-btn'), // 关闭验证弹窗
-    loadingSpinner: document.getElementById('loadingSpinner'), // 注册加载动画
-    registerSuccessMessage: document.getElementById('successMessage'), // 注册成功提示信息
-    networkError: document.getElementById('networkError'), // 网络错误提示信息
-    showConfirmPasswordBtn: document.getElementById('showConfirmPassword-btn'), // 显示确认密码按钮
-
-    // 登录页面
-    passwordLoginForm: document.getElementById('passwordLoginForm'),
-    passwordLoginSubmitBtn: document.getElementById('passwordLogin-submit-btn'), // 密码登录提交按钮
-    passwordLoadingSpinner: document.getElementById('passwordLoadingSpinner'), // 密码登录加载动画
-    loginSuccessMessage: document.getElementById('successMessage'), // 登录成功提示信息
-
-    // 公共输入字段（注册 + 登录共用）
-    adminNameInput: document.getElementById('adminName'),
-    passwordInput: document.getElementById('password'),
-    confirmPasswordInput: document.getElementById('confirmPassword'),
-    phoneInput: document.getElementById('phone'),
-    smsCodeInput: document.getElementById('smsCode'), // 虽未启用，保留占位
-    agreeCheckbox: document.getElementById('agreeCheckbox'),
-
-    // 公共按钮（注册 + 登录共用）
-    showPasswordBtn: document.getElementById('showPassword-btn'), // 显示密码按钮
-
-    // 登录页面
-    //验证码登录
-    // smsLoginSubmitBtn: document.getElementById('smsLogin-submit-btn'), // 验证码登录提交按钮
-    // smsLoginForm: document.getElementById('smsLoginForm'),  // 验证码登录表单
-    // getSmsBtn: document.getElementById('getSmsBtn'), // 获取验证码按钮
-    // smsLoadingSpinner: document.getElementById('smsLoadingSpinner'), // 验证码登录加载动画
+    //控制面板
+    //待办申请
+    loanApplyContent: document.getElementById('loan-apply-content'),
+    // 贷款管理
+    loanManagementContent: document.getElementById('loan-management-content'),
+    // 用户管理
+    userManagementContent: document.getElementById('user-management-content'),
+    // 风险与催收管理
+    riskAndCollectionManagementContent: document.getElementById('riskAndCollection-management-content'),
+    // 数据统计与系统管理
+    dataAndSystemManagementContent: document.getElementById('dataAndSystem-management-content')
 }
 // ==================== API 请求封装 ====================
 AdminWeb.API_CLIENT = {
-    // 通用请求方法
-    
+    /**
+     * 通用API请求方法
+     * @param {string} url - 请求URL
+     * @param {Object} options - 请求选项
+     * @returns {Promise} - 返回Promise对象
+     */
     request: async function (url, options = {}) {
+        const baseUrl = AdminWeb.API_CONFIG.baseUrl
+        const fullUrl = url.startsWith('http') ? url : baseUrl + url
         // 网络申请日志
-        console.log(`🔄 API请求: ${options.method || 'GET'} ${url}`, {
-            requiresAuth: this._requiresAuth(url),
+        console.log(`🔄 API请求: ${options.method || 'GET'} ${fullUrl}`, {
+            requiresAuth: this._requiresAuth(fullUrl),
             hasToken: !!AdminWeb.JWT_UTILS.getRawToken(),
             data: options.body ? JSON.parse(options.body) : null
         })
+        
         // 检查token是否有效（只在需要认证的请求中检查）
-        if (this._requiresAuth(url) && !AdminWeb.JWT_UTILS.isTokenValid()) {
-            this.handleUnauthorized();
-            throw new Error('登录已过期，请重新登录');
+        if (this._requiresAuth(fullUrl) && !AdminWeb.JWT_UTILS.isTokenValid()) {
+            this.handleUnauthorized()
+            throw new Error('登录已过期，请重新登录')
         }
 
         // 添加认证头（如果需要认证）
         const headers = {
             'Content-Type': 'application/json',
-            ...(this._requiresAuth(url) ? AdminWeb.JWT_UTILS.getAuthHeader() : {}),
+            ...(this._requiresAuth(fullUrl) ? AdminWeb.JWT_UTILS.getAuthHeader() : {}),
             ...options.headers
-        };
+        }
 
         try {
-            const response = await fetch(`${AdminWeb.API_CONFIG.baseUrl}${url}`, {
+            const response = await fetch(fullUrl, {
                 ...options,
                 headers
-            });
+            })
 
-            // Token 过期，尝试刷新
-            if (response.status === 401 && this._requiresAuth(url)) {
-                const refreshed = await this.refreshToken();
+            // 处理401未授权错误(Token 过期，尝试刷新)
+            if (response.status === 401 && this._requiresAuth(fullUrl)) {
+                const refreshed = await this.refreshToken()
                 if (refreshed) {
                     // 重试原始请求
-                    return this.request(url, options);
+                    return this.request(url, options)
                 } else {
-                    this.handleUnauthorized();
-                    throw new Error('认证失败，请重新登录');
+                    this.handleUnauthorized()
+                    throw new Error('认证失败，请重新登录')
                 }
             }
 
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || `请求失败（状态码：${response.status}）`);
+                const errorData = await response.json().catch(() => ({}))
+                throw new Error(errorData.message || `请求失败（状态码：${response.status}）`)
             }
 
             // 输出返回体
             const responseData = await response.json()
-            console.log(`✅ API响应: ${options.method || 'GET'} ${url}`, responseData)
+            console.log(`✅ API响应: ${options.method || 'GET'} ${fullUrl}`, responseData)
             return responseData
 
-            return await response.json();
+            return await response.json()
         } catch (error) {
-            console.error('API请求失败:', error);
-            throw error;
+            console.error('API请求失败:', error)
+            throw error
         }
     },
 
-    // 判断请求是否需要认证
+    /**
+     * 判断URL是否需要认证
+     * @param {string} url - 请求URL
+     * @returns {boolean} - 是否需要认证
+     */
     _requiresAuth: function (url) {
         const publicEndpoints = [
-            AdminWeb.API_CONFIG.endpoints.login,
-            AdminWeb.API_CONFIG.endpoints.register,
-        ];
-        return !publicEndpoints.includes(url);
+            `${AdminWeb.API_CONFIG.baseUrl}${AdminWeb.API_CONFIG.endpoints.login}`,
+            `${AdminWeb.API_CONFIG.baseUrl}${AdminWeb.API_CONFIG.endpoints.register}`
+        ]
+        return !publicEndpoints.includes(url)
     },
 
-    // 处理未授权
+    /**
+     * 处理未授权情况
+     */
     handleUnauthorized: function () {
         AdminWeb.JWT_UTILS.clearTokens();
         // 如果是登录页面，不清除，否则跳转到登录页
         if (!window.location.href.includes('/login')) {
             alert('登录已过期，请重新登录');
-            window.location.href = '/login';
+            window.location.href = '/login'
         }
     },
 
-    // 刷新 token
+    /**
+     * 刷新Token
+     * @returns {Promise<boolean>} - 是否刷新成功
+     */
     refreshToken: async function () {
-        const refreshToken = AdminWeb.JWT_UTILS.getRefreshToken();
+        const refreshToken = AdminWeb.JWT_UTILS.getRefreshToken()
         if (!refreshToken) {
             console.log('没有刷新token')
             return false
@@ -176,55 +194,138 @@ AdminWeb.API_CLIENT = {
         return false
     },
 
-    // 快捷方法
+    // 基础HTTP方法封装
     get: function (url) {
         return this.request(url)
     },
 
     post: function (url, data) {
-        return this.request(url, {
-            method: 'POST',
-            body: JSON.stringify(data)
-        })
+        return this.request(url, { method: 'POST', body: JSON.stringify(data) })
     },
 
-    // 专用方法 - 登录
-    login: async function (phone, password) {
-        try {
-            const response = await fetch(`${this._getBaseUrl()}${AdminWeb.API_CONFIG.endpoints.login}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ phone, password })
-            })
-            let result
-            try {
-                result = await response.json()
-                } catch (e) {
-                throw new Error('服务器返回格式异常')
-            }
+    patch: function (url, data) {
+        return this.request(url, { method: 'PATCH', body: JSON.stringify(data) })
+    },
 
-            if (response.ok && result.code === 200) {
-                return result; // { code: 200, data: { token: '...' }, message: '...' }
-            } else {
-                const errorMsg = result.message || result.msg || '登录失败'
-                throw new Error(errorMsg)
-            }
-        } catch (error) {
-            console.error('登录请求失败:', error)
-            throw error
+    delete: function (url) {
+        return this.request(url, { method: 'DELETE' })
+    },
+
+    // 基础URL获取方法-待处理？
+    _getBaseUrl: function () {
+        return AdminWeb.API_CONFIG.baseUrl
+    },
+    
+    // ==================== 待办审核面板快捷请求 ====================
+    // 获取所有待审核贷款申请（列表）
+    getPendingApplications: function() {
+        const url = AdminWeb.API_CONFIG.baseUrl + AdminWeb.API_CONFIG.endpoints.getPendingApprovals
+        return this.get(url)
+    },
+
+    // 根据申请ID获取完整详情
+    getApprovalDetail: function(applicationId) {
+        const url = `/api/approval/detail/${applicationId}`
+        return this.get(url)
+    },
+
+    // 提交审核结果
+    submitReview: function(loanApplicationId, approved) {
+        const url = AdminWeb.API_CONFIG.endpoints.submitApproval
+        // approved 必须是字符串 "true" 或 "false"
+        const payload = {
+            loanApplicationId: loanApplicationId,
+            approved: approved ? "true" : "false"  // 布尔转字符串
         }
+        return this.post(url, payload)
     },
 
-    // 添加基础URL获取方法
-    _getBaseUrl: function() {
-        return AdminWeb.API_CONFIG.baseUrl;
+    // ==================== 贷款管理面板快捷请求 ====================
+        getAllLoanProducts: function() {
+        return this.get('/api/loan-products/admin');
     },
 
-    // 专用方法 - 注册
-    register: function (adminData) {
-        return this.post(AdminWeb.API_CONFIG.endpoints.register, adminData)
+    getLoanProductById: function(productId) {
+        return this.get(`/api/loan-products/admin/${productId}`);
+    },
+
+    addLoanProduct: function(productData) {
+        return this.post('/api/loan-products/admin', productData);
+    },
+
+    updateLoanProduct: function(productId, productData) {
+        return this.patch(`/api/loan-products/admin/products/${productId}`, productData);
+    },
+
+    deleteLoanProduct: function(productId) {
+        return this.delete(`/api/loan-products/admin/products/${productId}`);
+    },
+
+    batchDeleteLoanProducts: function(ids) {
+        return this.post('/api/loan-products/admin/products/batch-delete', { ids });
+    },
+
+    batchCreateOptions: function(productId, options) {
+        return this.post('/api/loan-products/admin/options/batch-create', { productId, options });
+    },
+
+    deleteOption: function(optionId) {
+        return this.delete(`/api/loan-products/admin/options/${optionId}`);
+    },
+
+    batchDeleteOptions: function(ids) {
+        return this.post('/api/loan-products/admin/options/batch-delete', { ids });
+    },
+    // 新增贷款产品
+    addLoanProduct: function (productData) {
+    const url = AdminWeb.API_CONFIG.baseUrl + AdminWeb.API_CONFIG.endpoints.addLoanProduct;
+    return this.post(url, productData);
+    },
+
+    // ==================== 用户管理面板快捷请求 ====================
+        getUserStats: function() {
+        return this.get('/api/users/admin/stats');
+    },
+
+    getUserDetail: function(userId) {
+        return this.get(`/api/users/admin/${userId}`);
+    },
+
+    searchUsersByCredit: function(expr) {
+        return this.get(`/api/users/search-by-credit?expr=${encodeURIComponent(expr)}`);
+    },
+
+    addToBlacklist: function(userId, blackLevel) {
+        return this.post('/api/users/blacklist/add', { userId, blackLevel });
+    },
+
+    removeFromBlacklist: function(userId) {
+        return this.post('/api/users/blacklist/remove', null, {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `userId=${userId}`
+        });
+    },
+
+    getBlacklist: function() {
+        return this.get('/api/users/blacklist/list');
+    },
+
+    // 根据信誉分表达式查询用户
+    searchUsersByCredit: function (expr) {
+        const url = `/api/users/search-by-credit?expr=${encodeURIComponent(expr)}`
+        return this.get(url)
+    },
+
+    // ==================== 贷款申请相关 ====================
+    getUserApplications: function(userId) {
+        return this.get(`/api/loan-applications/user/${userId}`);
+    },
+
+    getApplicationById: function(applicationId) {
+        return this.get(`/api/loan-applications/${applicationId}`);
     }
 }
+
 // ==================== JWT 工具函数 ====================
 AdminWeb.JWT_UTILS = {
     // 获取 token（返回带Bearer前缀的完整格式）
@@ -248,7 +349,7 @@ AdminWeb.JWT_UTILS = {
         // 设置过期时间（当前时间 + 24小时，根据jwt.expiration=86400000）
         const expiryTime = Date.now() + (24 * 60 * 60 * 1000); // 24小时
         localStorage.setItem(AdminWeb.JWT_CONFIG.tokenExpiryKey, expiryTime.toString());
-        
+
         console.log('Token保存成功，过期时间:', new Date(expiryTime).toLocaleString());
     },
 

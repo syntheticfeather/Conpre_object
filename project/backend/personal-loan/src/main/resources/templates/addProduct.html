@@ -1,0 +1,51 @@
+<!-- add-loan-product.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>新增贷款产品</title>
+  <link rel="stylesheet" href="../static/css/addProduct.css" />
+
+</head>
+<body>
+<!-- 添加贷款项目弹窗 -->
+  <div class="modal" id="add-new-product">
+      <button class="iconfont icon-close close-btn"></button>
+      <h2>新增贷款项目</h2>
+      <div class="input-content">
+          <input type="text"  id="productName" placeholder="请输入产品名称">
+          <input type="text"  id="description" placeholder="请输入产品描述">
+          <input type="text"  id="loanUsage" placeholder="请输入产品用途">
+          <input type="text"  id="minTerm" placeholder="请输入最短借款期限（单位：月）">
+          <input type="text"  id="maxTerm" placeholder="请输入最长借款期限（单位：月）">
+          <input type="text" id="termStep" placeholder="请输入期限递增步长（单位：月）">
+          <input type="text"  id="promotionDetails" placeholder="请输入促销描述，用于展示给用户">
+      </div>
+      <div class="options">
+          <table id="option-table">
+              <tbody>
+              <tr>
+                  <th>贷款额度</th>
+                  <th>贷款期限</th>
+                  <th>年化利率</th>
+                  <th>还款方式</th>
+                  <th><button id="add-row-btn">增加</button></th>
+              </tr>
+              <tr>  
+                  <!-- 初始行 -->
+                  <td><input type="text" placeholder="请输入贷款额度" id="loan-amount"></td>
+                  <td><input type="text" placeholder="请输入贷款期限" id="loan-period"></td>
+                  <td><input type="text" placeholder="请输入年化利率" id="loan-intrest"></td>
+                  <td><input type="text" placeholder="请输入还款方式" id="pay-type"></td>
+                  <td><button class="delete-btn">删除</button></td>
+              </tr>
+              </tbody>
+          </table>
+      </div>
+      <button type="submit" class="btn btn-primary" id="add-loan-product">确认</button>
+  </div>
+
+  <script src="../JS/indexApi.js"></script>
+  <script src="../JS/index.js"></script>
+</body>
+</html>
