@@ -68,7 +68,7 @@ public interface LoanOptionMapper {
     int batchDeleteByProductIds(List<Long> productIds);
     
     @Select("SELECT " +
-        "id, " +
+        "id as optionId, " +
         "product_id as productId, " +
         "loan_period as loanPeriod, " +
         "loan_amount as loanAmount, " +
@@ -80,7 +80,7 @@ public interface LoanOptionMapper {
     LoanOption selectById(Long id);
     
     @Select("SELECT " +
-        "id, " +
+        "id as optionId, " +
         "product_id as productId, " +
         "loan_period as loanPeriod, " +
         "loan_amount as loanAmount, " +

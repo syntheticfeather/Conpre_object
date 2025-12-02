@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class LoanOption {
 
-    private Long id;
+    private Long optionId;
 
     @NotNull(message = "产品ID不能为空")
     private Long productId;

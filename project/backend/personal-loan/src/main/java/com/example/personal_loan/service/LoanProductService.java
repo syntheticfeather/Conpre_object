@@ -2,6 +2,7 @@ package com.example.personal_loan.service;
 
 import java.util.List;
 
+import com.example.personal_loan.dto.AdminGetProDetailResponse;
 import com.example.personal_loan.dto.ListProductResponse;
 import com.example.personal_loan.dto.ProductDto;
 import com.example.personal_loan.dto.UserGetProductResponse;
@@ -41,7 +42,7 @@ public interface LoanProductService {
     ProductDto updateLoanProduct(Long id,ProductDto loanProductDto);
 
     // 获取单个产品详情
-    ProductDto adminGetProductById(Long id);
+    AdminGetProDetailResponse adminGetProductById(Long id);
 
     // 获取产品列表
     List<ListProductResponse> adminGetAllProducts ();

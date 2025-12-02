@@ -166,9 +166,4 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    // @GetMapping("/search")
-    // public List<User> searchUsers(@RequestParam(required = false) Long id,
-    //                           @RequestParam(required = false) String name) {
-    //     return userService.searchUsers(id, name);
-    // }
 }

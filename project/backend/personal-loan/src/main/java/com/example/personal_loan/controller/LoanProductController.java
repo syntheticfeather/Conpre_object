@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.personal_loan.dto.AdminGetProDetailResponse;
 import com.example.personal_loan.dto.ApiResponse;
 import com.example.personal_loan.dto.BatchCreateOptionRequest;
 import com.example.personal_loan.dto.BatchDeleteRequest;
@@ -85,9 +86,9 @@ public class LoanProductController {
 
     // 获取单个产品详情
     @GetMapping("/admin/{productId}")
-    public ResponseEntity<ApiResponse<ProductDto>> getProductForAdmin(@PathVariable Long productId) {
+    public ResponseEntity<ApiResponse<AdminGetProDetailResponse>> getProductForAdmin(@PathVariable Long productId) {
         log.info("/loan-products/admin/{} api success called", productId);
-        ProductDto product = loanProductService.adminGetProductById(productId);
+        AdminGetProDetailResponse product = loanProductService.adminGetProductById(productId);
         return ResponseEntity.ok(ApiResponse.success(product));
     }
 
@@ -102,6 +103,7 @@ public class LoanProductController {
     }
 
 
+    // 更新产品信息
     @PatchMapping("/admin/products/{id}")
     public ResponseEntity<ApiResponse<ProductDto>> update(@PathVariable Long id, @RequestBody ProductDto dto) {
         log.info("/loan-products/admin/products/{} api success called to update product", id);
@@ -109,6 +111,7 @@ public class LoanProductController {
         return ResponseEntity.ok(ApiResponse.success(updated, "贷款产品更新成功"));
     }
 
+    // 删除单个产品
     @DeleteMapping("/admin/products/{productId}")
     public ResponseEntity<ApiResponse<String>> deleteProduct(@PathVariable Long productId) {
         log.info("/loan-products/admin/products/{} api success called to delete product", productId);
@@ -116,6 +119,7 @@ public class LoanProductController {
         return ResponseEntity.ok(ApiResponse.success("Loan product delete success"));
     }
 
+    // 删除单个选项
     @DeleteMapping("/admin/options/{optionId}")
     public ResponseEntity<ApiResponse<String>> deleteOption(@PathVariable Long optionId) {
         log.info("/loan-products/admin/options/{} api success called to delete option", optionId);
@@ -123,6 +127,7 @@ public class LoanProductController {
         return ResponseEntity.ok(ApiResponse.success("The option of product delete success"));
     }
 
+    // 批量删除选项
     @PostMapping("/admin/options/batch-delete")
     public ResponseEntity<ApiResponse<String>> batchDeleteOptions(@RequestBody BatchDeleteRequest request) {
         log.info("/loan-products/admin/options/batch-delete api success called to delete options");
@@ -130,6 +135,7 @@ public class LoanProductController {
         return ResponseEntity.ok(ApiResponse.success("Batch delete specific loan options success"));
     }
 
+    // 批量删除产品
     @PostMapping("/admin/products/batch-delete")
     public ResponseEntity<ApiResponse<String>> batchDeleteProducts(@RequestBody BatchDeleteRequest request) {
         log.info("/loan-products/admin/products/batch-delete api success called to delete products");

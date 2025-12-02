@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.personal_loan.dto.AdminGetProDetailResponse;
 import com.example.personal_loan.dto.ListProductResponse;
 import com.example.personal_loan.dto.LoanOptionResponse;
 import com.example.personal_loan.dto.ProductDto;
@@ -37,10 +38,6 @@ public class LoanProductServiceImpl implements LoanProductService{
      */
 
     // 新增产品
-
-    /*
-     * 创建产品
-     */
     @Override
     @Transactional
     public ProductDto createLoanProduct(ProductDto dto) {
@@ -199,17 +196,17 @@ public class LoanProductServiceImpl implements LoanProductService{
         // 处理 options：仅更新已存在的选项（带 id）
         if (dto.getOptions() != null) {
             for (LoanOption opt : dto.getOptions()) {
-                if (opt.getId() == null) {
+                if (opt.getOptionId() == null) {
                     throw new BusinessException(400, "选项不存在");
                 }
 
                 // 校验选项归属
-                LoanOption dbOpt = loanOptionMapper.selectById(opt.getId());
+                LoanOption dbOpt = loanOptionMapper.selectById(opt.getOptionId());
                 if (dbOpt == null) {
-                    throw new BusinessException(400, "贷款选项不存在: " + opt.getId());
+                    throw new BusinessException(400, "贷款选项不存在: " + opt.getOptionId());
                 }
                 if (!productId.equals(dbOpt.getProductId())) {
-                    throw new BusinessException(400, "贷款选项不属于当前产品: " + opt.getId());
+                    throw new BusinessException(400, "贷款选项不属于当前产品: " + opt.getOptionId());
                 }
 
                 // 执行选择性更新（只更新非空字段）
@@ -227,20 +224,41 @@ public class LoanProductServiceImpl implements LoanProductService{
     }
 
     /*
-     * 管理员获取产品详情
+     * 管理员获取单个产品详情
      */
     @Override
     @Transactional
-    public ProductDto adminGetProductById(Long id){
+    public AdminGetProDetailResponse adminGetProductById(Long id){
         LoanProduct product = loanProductMapper.findById(id);
-        if (product == null) return null;
+        if (product == null) {
+            throw new BusinessException(404,"产品不存在");
+        }
 
         List<LoanOption> options = loanOptionMapper.selectByProductId(id);
 
-        ProductDto dto = new ProductDto();
-        BeanUtils.copyProperties(product, dto);
-        dto.setOptions(options);
-        return dto;
+        List<Integer> terms = new ArrayList<>();
+        int min = product.getMinTerm();
+        int max = product.getMaxTerm();
+        int step = product.getTermStep();
+        if (min > 0 && max >= min && step > 0) {
+            for (int term = min; term <= max; term += step) {
+                terms.add(term);
+            }
+        }
+        
+        AdminGetProDetailResponse response = new AdminGetProDetailResponse();
+        response.setProductId(product.getId());
+        response.setProductName(product.getProductName());
+        response.setDescription(product.getDescription());
+        response.setUsage(product.getLoanUsage());
+        response.setTerms(terms);
+        response.setPromotionDetails(product.getPromotionDetails());
+        response.setStatus(product.getStatus());
+        response.setCreateTime(product.getCreateTime());
+        response.setUpdateTime(product.getUpdateTime());
+        response.setOptions(options);
+
+        return response;
     }
 
     /*
@@ -295,7 +313,7 @@ public class LoanProductServiceImpl implements LoanProductService{
             List<LoanOptionResponse> optionResponses = options.stream()
                 .map(opt -> {
                     LoanOptionResponse resp = new LoanOptionResponse();
-                    resp.setOptionId(opt.getId());
+                    resp.setOptionId(opt.getOptionId());
                     resp.setLoanAmount(opt.getLoanAmount());
                     resp.setInterestRate(opt.getInterestRate());
                     resp.setLoanPeriod(opt.getLoanPeriod());
@@ -338,7 +356,7 @@ public class LoanProductServiceImpl implements LoanProductService{
             List<LoanOptionResponse> optionResponses = options.stream()
                 .map(opt -> {
                     LoanOptionResponse resp = new LoanOptionResponse();
-                    resp.setOptionId(opt.getId());
+                    resp.setOptionId(opt.getOptionId());
                     resp.setLoanAmount(opt.getLoanAmount());
                     resp.setInterestRate(opt.getInterestRate());
                     resp.setLoanPeriod(opt.getLoanPeriod());

@@ -714,9 +714,9 @@
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
-|productId|integer|是|产品Id|2|
+|productId|integer|是|产品Id|1|
 
-**请求示例（网址）** /api/loan-products/admin/2
+**请求示例（网址）** /api/loan-products/admin/1
 
 **返回数据**:
 
@@ -724,28 +724,58 @@
 {
     "code": 200,
     "data": {
-        "id": 2,
-        "productName": "极速贷",
-        "description": "审批快，放款快",
-        "loanUsage": "消费、装修、教育",
-        "minTerm": 3,
-        "maxTerm": 24,
-        "termStep": 3,
-        "promotionDetails": "无",
+        "productId": 1,
+        "productName": "优享贷",
+        "description": "专为信用良好用户定制，利率优惠，期限灵活",
+        "usage": "教育、购车、旅游、大额消费",
+        "terms": [
+            6,
+            12,
+            18,
+            24,
+            30,
+            36,
+            42,
+            48,
+            54,
+            60
+        ],
+        "promotionDetails": "首年利率85折",
+        "status": "INACTIVE",
+        "createTime": "2025-11-21T13:22:05",
+        "updateTime": "2025-12-01T13:26:08",
         "options": [
             {
-                "id": 2,
-                "productId": 2,
-                "loanPeriod": 12,
-                "loanAmount": 10000.00,
-                "interestRate": 0.0490,
+                "optionId": 1,
+                "productId": 1,
+                "loanPeriod": 24,
+                "loanAmount": 30000.00,
+                "interestRate": 0.0390,
                 "repaidType": "等额本息",
-                "createTime": "2025-11-18T17:10:45",
-                "updateTime": "2025-11-18T17:10:45"
+                "createTime": "2025-11-21T13:22:05",
+                "updateTime": "2025-11-21T13:22:05"
+            },
+            {
+                "optionId": 2,
+                "productId": 1,
+                "loanPeriod": 36,
+                "loanAmount": 80000.00,
+                "interestRate": 0.0410,
+                "repaidType": "等额本金",
+                "createTime": "2025-11-21T13:22:05",
+                "updateTime": "2025-11-21T13:22:05"
+            },
+            {
+                "optionId": 3,
+                "productId": 1,
+                "loanPeriod": 60,
+                "loanAmount": 150000.00,
+                "interestRate": 0.0430,
+                "repaidType": "等额本息",
+                "createTime": "2025-11-21T13:22:05",
+                "updateTime": "2025-11-21T13:22:05"
             }
-        ],
-        "createTime": "2025-11-18T17:10:45",
-        "updateTime": "2025-11-18T17:10:45"
+        ]
     },
     "message": "操作成功"
 }
