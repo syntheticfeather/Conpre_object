@@ -115,6 +115,11 @@ AdminWeb.API_CLIENT = {
                 throw new Error(errorData.message || `请求失败（状态码：${response.status}）`);
             }
 
+            // 输出返回体
+            const responseData = await response.json()
+            console.log(`✅ API响应: ${options.method || 'GET'} ${url}`, responseData)
+            return responseData
+
             return await response.json();
         } catch (error) {
             console.error('API请求失败:', error);

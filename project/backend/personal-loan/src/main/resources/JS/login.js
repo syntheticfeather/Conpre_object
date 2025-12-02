@@ -91,7 +91,7 @@ function checkLoginStatus() {
         // 在登录页面，如果已登录且token有效，跳转到首页
         const isLogged = localStorage.getItem(API_CONFIG.storageKeys.isLogged)
         if (isLogged === 'true' && JWT_UTILS.isTokenValid()) {
-            console.log('检测到已登录，自动跳转到管理员中心...')
+            alert('您已登录，无需重复登录')
             setTimeout(() => {
                 window.location.href = "index.html"
             }, 1500)
