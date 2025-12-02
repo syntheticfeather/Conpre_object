@@ -22,7 +22,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/loan-applications")
+@RequestMapping("/api/loan-applications")
 @Slf4j
 public class ApplicationController {
     @Autowired

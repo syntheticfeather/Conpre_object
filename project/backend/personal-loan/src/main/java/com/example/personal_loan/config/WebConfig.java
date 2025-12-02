@@ -1,10 +1,9 @@
 package com.example.personal_loan.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -21,21 +20,28 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(jwtInterceptor)
                 .addPathPatterns("/api/**")
                 .excludePathPatterns(
-                        "/auth/login/**",
-                        "/auth/register/**",
-                        "/login/**",
-                        "/registration/**",
+                        "/api/auth/**",
+                        "/api/login/**",
+                        "/api/registration/**",
                         "/static/**",
+                        "/JS/**",
                         "/templates/**"
                 );
     }
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
+        // http:localhost:8080/login
         registry.addViewController("/login").setViewName("login");
         registry.addViewController("/registration").setViewName("registration");
-        registry.addViewController("/").setViewName("index");
+        registry.addViewController("/").setViewName("login");
         registry.addViewController("/index").setViewName("index");
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
+        registry.addResourceHandler("/JS/**").addResourceLocations("classpath:/JS/");
     }
 
 }

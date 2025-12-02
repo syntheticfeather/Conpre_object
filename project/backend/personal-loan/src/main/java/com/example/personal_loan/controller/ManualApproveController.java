@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 
 @RestController
-@RequestMapping("/approval")
+@RequestMapping("/api/approval")
 @Slf4j
 public class ManualApproveController {
 

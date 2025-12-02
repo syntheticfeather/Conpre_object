@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/orders")
+@RequestMapping("/api/orders")
 @Slf4j
 public class OrderController {
 

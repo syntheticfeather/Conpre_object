@@ -26,7 +26,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/loan-products")
+@RequestMapping("/api/loan-products")
 @Slf4j
 public class LoanProductController {
     
