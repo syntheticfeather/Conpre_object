@@ -97,7 +97,7 @@
                         </table>
                     </div>
                     <!-- 分页控件 -->
-                    <div id="pending-pagination" style="text-align: center; margin-top: 16px;">
+                    <div id="apply-pagination">
                         <button class="prev-page">上一页</button>
                         <span class="page-info">加载中...</span>
                         <button class="next-page">下一页</button>
@@ -190,75 +190,49 @@
                         <li><button class="btn" type="submit" id="product-search-btn">搜索</button></li>
                     </ul>
                 </div>
-                <!-- 已有贷款项目 -->
+                <!-- 已有贷款项目列表 -->
                 <div class="product-content">
                     <div class="product-table">
                         <table id="product-table">
-                            <thead> 
+                            <thead>
                                 <tr>
-                                    <th>序号</th>
-                                    <th>贷款名称</th>
-                                    <th>贷款描述</th>
-                                    <th>贷款用途(如果字数过长，长的部分省略号代替)</th>
-                                    <th>更新时间</th>
-                                    <th>创建时间</th>
+                                <th>序号</th>
+                                <th>贷款名称</th>
+                                <th>贷款描述</th>
+                                <th>贷款用途</th>
+                                <th>更新时间</th>
+                                <th>创建时间</th>
+                                <th>操作</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>极速贷 Pro</td>
-                                    <td>极速贷 Pro 是一款专业的快速贷款产品，适合对资金有一定要求的用户。</td>
-                                    <td>消费、装修、教育</td>
-                                    <td>2023-10-15 14:30:25</td>
-                                    <td>2023-10-15 14:30:25</td>
-                                </tr>
-                                <tr>
-                                    <td>1</td>
-                                    <td>极速贷 Pro</td>
-                                    <td>极速贷 Pro 是一款专业的快速贷款产品，适合对资金有一定要求的用户。</td>
-                                    <td>消费、装修、教育</td>
-                                    <td>2023-10-15 14:30:25</td>
-                                    <td>2023-10-15 14:30:25</td>
-                                </tr>
-                                <tr>
-                                    <td>1</td>
-                                    <td>极速贷 Pro</td>
-                                    <td>极速贷 Pro 是一款专业的快速贷款产品，适合对资金有一定要求的用户。</td>
-                                    <td>消费、装修、教育</td>
-                                    <td>2023-10-15 14:30:25</td>
-                                    <td>2023-10-15 14:30:25</td>
-                                </tr>
-                                <tr>
-                                    <td>1</td>
-                                    <td>极速贷 Pro</td>
-                                    <td>极速贷 Pro 是一款专业的快速贷款产品，适合对资金有一定要求的用户。</td>
-                                    <td>消费、装修、教育</td>
-                                    <td>2023-10-15 14:30:25</td>
-                                    <td>2023-10-15 14:30:25</td>
-                                </tr>
-                                <tr>
-                                    <td>1</td>
-                                    <td>极速贷 Pro</td>
-                                    <td>极速贷 Pro 是一款专业的快速贷款产品，适合对资金有一定要求的用户。</td>
-                                    <td>消费、装修、教育</td>
-                                    <td>2023-10-15 14:30:25</td>
-                                    <td>2023-10-15 14:30:25</td>
-                                </tr>
-                            </tbody>
+                            <tbody></tbody>
                         </table>
                     </div>
-                    <!-- 分页控件 -->
-                    <div class="pagination">
-                        <button onclick="prevPage()">上一页</button>
-                        <span id="page-info">第 <span id="current-page">1</span> 页，共 <span id="total-pages">10</span> 页</span>
-                        <button onclick="nextPage()">下一页</button>
-                    </div>
                 </div>
-                <!-- 审核详情区域 -->
-                <div id="detail-container" style="margin-top: 20px; padding: 20px; border: 1px solid #eee; border-radius: 8px;">
-                    <h3>审核详情</h3>
-                    <div id="detail-content"></div>
+                <!-- 分页 -->
+                <div id="product-pagination" class="pagination">
+                    <button id="prev-product-page" disabled>上一页</button>
+                    <span id="product-page-info">第 1 页，共 1 页</span>
+                    <button id="next-product-page">下一页</button>
+                </div>
+
+                <!-- 产品详情模态框 -->
+                <div id="product-detail" class="detail-container">
+                    <h3>产品详情</h3>
+                    <p><strong>产品名称：</strong><span id="prod-name">—</span></p>
+                    <p><strong>状态：</strong><span id="prod-status">—</span></p>
+                    <p><strong>期限范围：</strong><span id="prod-term">—</span></p>
+                    <p><strong>促销信息：</strong><span id="prod-promo">—</span></p>
+                    <h4>可选方案</h4>
+                    <table id="prod-options-table" style="width:100%; margin-top:10px;">
+                        <thead>
+                            <tr><th>额度</th><th>期限(月)</th><th>利率</th><th>还款方式</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="document.getElementById('product-detail').style.display='none'">关闭</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -305,36 +279,47 @@
                 <div class="header">
                     <h2 class="title">用户管理</h2>
                 </div>
-                <!-- 根据信誉分查询用户 -->
-                <div class="searchByCredit">
-                    <div class="credit-search">
-                        <input type="text" placeholder="请输入信誉分表达式，如: <100, >=80" id="creditExprInput">
-                        <button class="btn" id="credit-search-btn">查询</button>
-                    </div>
-                    <div class="table-body">
-                        <table>
+                <!-- 用户列表容器 -->
+                <div class="user-content">
+                    <div class="user-table">
+                        <table id="user-table">
                             <thead>
                                 <tr>
-                                    <th>序号</th>
-                                    <th>用户名</th>
-                                    <th>是否在线</th>
-                                    <th>目前借贷情况</th>
-                                    <th>总交易笔数</th>
-                                    <th>总贷款金额</th>
-                                    <th>总还款金额</th>
-                                    <th colspan="4">操作</th>
+                                <th>序号</th>
+                                <th>用户名</th>
+                                <th>信誉分</th>
+                                <th>目前借贷情况</th>
+                                <th>总交易笔数</th>
+                                <th>总贷款金额</th>
+                                <th>总还款金额</th>
+                                <th>操作</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <!-- JS填充 -->
-                            </tbody>
+                            <tbody></tbody>
                         </table>
                     </div>
-                    <!-- 分页控件 -->
-                    <div class="pagination">
-                        <button onclick="prevPage()">上一页</button>
-                        <span id="page-info">第 <span id="current-page">1</span> 页，共 <span id="total-pages">10</span> 页</span>
-                        <button onclick="nextPage()">下一页</button>
+                </div>
+                <!-- 分页控件 -->
+                <div id="user-pagination" class="pagination">
+                    <button id="prev-user-page" disabled>上一页</button>
+                    <span id="user-page-info">第 1 页，共 1 页</span>
+                    <button id="next-user-page">下一页</button>
+                </div>
+                <!-- 用户详情模态框（复用 audition-detail 结构，改 ID） -->
+                <div id="user-detail" class="detail-container">
+                    <div id="user-info-section">
+                        <h3>用户基本信息</h3>
+                        <p><strong>真实姓名：</strong><span id="user-real-name">—</span></p>
+                        <p><strong>手机号：</strong><span id="user-phone">—</span></p>
+                        <p><strong>注册时间：</strong><span id="user-register-time">—</span></p>
+                        <p><strong>信誉分：</strong><span id="user-credit-score" style="color:#e74c3c;">—</span></p>
+                    </div>
+                    <div id="user-auth-section">
+                        <h3>认证材料</h3>
+                        <div id="user-materials-container"></div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="document.getElementById('user-detail').style.display='none'">关闭</button>
                     </div>
                 </div>
             </div>
@@ -357,11 +342,16 @@
             <!-- 右侧内容面板 -->
             <div class="main-content">
                 <div class="header">
-                    <h2 class="title">黑名单管理</h2>
+                    <h2 class="title">用户管理</h2>
                 </div>
-                <div class="searchByCredit">
-                    <div class="table-body">
-                        <table>
+                <div class="credit-search">
+                    <input type="text" placeholder="请输入信誉分表达式，如: <100, >=80" id="creditExprInput">
+                    <button class="btn" id="credit-search-btn">查询</button>
+                </div>
+                <!-- 用户列表 -->
+                <div class="user-content">
+                    <div class="user-table">
+                        <table id="user-table">
                             <thead>
                                 <tr>
                                     <th>序号</th>
@@ -380,10 +370,36 @@
                         </table>
                     </div>
                     <!-- 分页控件 -->
-                    <div class="pagination">
-                        <button onclick="prevPage()">上一页</button>
-                        <span id="page-info">第 <span id="current-page">1</span> 页，共 <span id="total-pages">10</span> 页</span>
-                        <button onclick="nextPage()">下一页</button>
+                    <div id="pending-pagination" style="text-align: center; margin-top: 16px;">
+                        <button class="prev-page">上一页</button>
+                        <span class="page-info">加载中...</span>
+                        <button class="next-page">下一页</button>
+                    </div>
+                </div>
+                <!-- 审核详情区域（默认隐藏） -->
+                <div class="detail-container" id="audition-detail">
+                    <h2>申请详情</h2>
+                    <!-- 用户基本信息 -->
+                    <div id="user-info-section" class="detail-section">
+                        <h3>用户基本信息</h3>
+                        <p><strong>真实姓名：</strong><span id="realName"></span></p>
+                        <p><strong>手机号：</strong><span id="phone"></span></p>
+                        <p><strong>注册时间：</strong><span id="register-time"></span></p>
+                        
+                        <h4>认证材料</h4>
+                        <div id="materials-container">
+                            <p><strong>身份证：</strong><span id="idCard">—</span></p>
+                            <p><strong>工作证明：</strong><span id="workCert">—</span></p>
+                            <p><strong>三证合一：</strong><span id="triCert">—</span></p>
+                            <p><strong>不动产证明：</strong><span id="immovableCert">—</span></p>
+                        </div>
+
+                        <p><strong>信誉分：</strong><span id="credit-score">—</span></p>
+                    </div>
+                    <!-- 操作按钮 -->
+                    <div class="action-buttons">
+                        <button id="btn-pass" class="btn btn-success">通过</button>
+                        <button id="btn-reject" class="btn btn-danger">不通过</button>
                     </div>
                 </div>
             </div>
@@ -474,8 +490,8 @@
             </div>
         </div>
     </div>  
-    <script src="../JS/DateRangePicker.js"></script>
-    <script src="../JS/Api.js"></script>
-    <script src="../JS/index.js"></script>
+    <script src="static/JS/dateRangePicker.js"></script>
+    <script src="static/JS/Api.js"></script>
+    <script src="static/JS/index.js"></script>
 </body>
 </html>

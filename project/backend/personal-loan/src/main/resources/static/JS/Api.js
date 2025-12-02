@@ -10,7 +10,12 @@ const AdminWeb = {
 AdminWeb.API_CONFIG = {
     baseUrl: 'http://localhost:8080',
     endpoints: {
-        logout: '/api/auth/logout', // 退出接口-未实现？
+        // ========== 认证接口 ==========
+        register: '/api/auth/register', // 注册接口
+        login: '/api/auth/login',       // 登录接口
+
+        //========== 管理员接口 ==========
+        logout: '/api/auth/logout', // 退出接口
 
         // 用户管理相关接口
         getBlacklist: '/api/users/blacklist/list',//获取黑名单列表
@@ -58,7 +63,35 @@ AdminWeb.JWT_CONFIG = {
 }
 // ==================== DOM元素引用 ====================
 AdminWeb.DOM_ELEMENTS = {
-    //控制面板
+    // 注册页面
+    registerForm: document.getElementById('registerForm'),
+    registerBtn: document.querySelector('.register-btn'),
+    loginBtn: document.querySelector('.login-btn'), // 跳转登录按钮
+    confirmBtn: document.querySelector('.confirm-btn'), // 确认注册信息，弹出验证弹窗
+    closeBtn: document.querySelector('.close-btn'), // 关闭验证弹窗
+    loadingSpinner: document.getElementById('loadingSpinner'), // 注册加载动画
+    registerSuccessMessage: document.getElementById('successMessage'), // 注册成功提示信息
+    networkError: document.getElementById('networkError'), // 网络错误提示信息
+    showConfirmPasswordBtn: document.getElementById('showConfirmPassword-btn'), // 显示确认密码按钮
+
+    // 登录页面
+    passwordLoginForm: document.getElementById('passwordLoginForm'),
+    passwordLoginSubmitBtn: document.getElementById('passwordLogin-submit-btn'), // 密码登录提交按钮
+    passwordLoadingSpinner: document.getElementById('passwordLoadingSpinner'), // 密码登录加载动画
+    loginSuccessMessage: document.getElementById('successMessage'), // 登录成功提示信息
+
+    // 公共输入字段（注册 + 登录共用）
+    adminNameInput: document.getElementById('adminName'),
+    passwordInput: document.getElementById('password'),
+    confirmPasswordInput: document.getElementById('confirmPassword'),
+    phoneInput: document.getElementById('phone'),
+    smsCodeInput: document.getElementById('smsCode'), // 虽未启用，保留占位
+    agreeCheckbox: document.getElementById('agreeCheckbox'),
+
+    // 公共按钮（注册 + 登录共用）
+    showPasswordBtn: document.getElementById('showPassword-btn'), // 显示密码按钮
+
+    //管理员控制面板
     //待办申请
     loanApplyContent: document.getElementById('loan-apply-content'),
     // 贷款管理
@@ -211,11 +244,37 @@ AdminWeb.API_CLIENT = {
         return this.request(url, { method: 'DELETE' })
     },
 
-    // 基础URL获取方法-待处理？
-    _getBaseUrl: function () {
-        return AdminWeb.API_CONFIG.baseUrl
+    // ==================== 认证相关快捷请求 ====================
+    register: function(adminData) {
+        return this.post('/api/auth/register', adminData);
     },
-    
+
+    login: async function (phone, password) {
+        try {
+            const response = await fetch(`/api/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone, password })
+            })
+            let result
+            try {
+                result = await response.json()
+                } catch (e) {
+                throw new Error('服务器返回格式异常')
+            }
+
+            if (response.ok && result.code === 200) {
+                return result; // { code: 200, data: { token: '...' }, message: '...' }
+            } else {
+                const errorMsg = result.message || result.msg || '登录失败'
+                throw new Error(errorMsg)
+            }
+        } catch (error) {
+            console.error('登录请求失败:', error)
+            throw error
+        }
+    },
+
     // ==================== 待办审核面板快捷请求 ====================
     // 获取所有待审核贷款申请（列表）
     getPendingApplications: function() {

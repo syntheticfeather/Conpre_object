@@ -218,24 +218,6 @@ body {
     justify-content: space-between;
 }
 
-/* 批量管理按钮 */
-.apply-dashboard .header button {
-    padding: 5px 10px;
-
-    height: 35px;
-    background-color: #409EFF;
-
-    font-size: 17px;
-    line-height: 17px;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-.apply-dashboard .header button:hover {
-    background-color: #2a88e6;
-}
-
 /* 申请列表 */
 .apply-dashboard .apply-content {
     padding: 10px 20px;
@@ -296,7 +278,87 @@ td {
   opacity: 0.5;
   cursor: not-allowed;
 }
+/************************************************
+*********三大列表统一样式*************************
+*************************************************/
+/* 分页按钮样式 */
+#apply-agination,
+#product-pagination,
+#user-pagination {
+    text-align: center; 
+    margin-top: 16px;
+}
+/* 确保详情模态框能显示 */
+#user-detail, #product-detail {
+  display: none;
+}
 
+/* 表格操作列宽度 */
+#user-table td:last-child,
+#product-table td:last-child {
+  width: 100px;
+}
+
+/* 申请列表 */
+.apply-conten,.user-content,.product-content {
+    padding: 10px 20px;
+
+    background-color: #fff; 
+    border-radius: 5px;
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+}
+.apply-table,.user-table,.product-table {
+    padding: 6px 20px;
+    width: 100%;
+    height: 241px;
+
+    color: #525457;
+    overflow-y: hidden;
+}
+#apply-table,#user-table,#product-table {
+    margin: 0 auto;
+
+    border: none;
+    border-collapse: collapse;
+}
+#apply-table,#user-table,#product-table tr {
+    border-bottom: 1px solid #e0e0e0;
+}
+#apply-table,#user-table,#product-table th,
+td {
+    padding: 7px 50px;
+
+    border: none;
+    border-collapse: collapse;
+    text-align: center;
+}
+#apply-table,#user-table,#product-table tbody tr:hover {
+    background-color: #d1d0d0;
+    transition: transform 3s;
+    cursor: pointer;
+}
+#apply-table,#user-table,#product-table button {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+/*分页按钮*/
+.pagination {
+  margin-top: 10px;
+  text-align: center;
+}
+.pagination button {
+  padding: 8px 16px;
+  margin: 0 10px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  background: #f5f5f5;
+}
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 /************** 详情区域通用样式*******************
 **************************************************
 **************************************************/
@@ -376,6 +438,23 @@ td {
 .loan-dashboard .header {
     display: flex;
     justify-content: space-between;
+}
+/* 批量管理按钮 */
+.apply-dashboard .header button {
+    padding: 5px 10px;
+
+    height: 35px;
+    background-color: #409EFF;
+
+    font-size: 17px;
+    line-height: 17px;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.apply-dashboard .header button:hover {
+    background-color: #2a88e6;
 }
 
 /* 贷款项目查询 */
@@ -486,15 +565,33 @@ td {
 .user-dashboard hr {
     margin: 10px;
 }
+/* 批量管理按钮 */
+.apply-dashboard .header button {
+    padding: 5px 10px;
+
+    height: 35px;
+    background-color: #409EFF;
+
+    font-size: 17px;
+    line-height: 17px;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.apply-dashboard .header button:hover {
+    background-color: #2a88e6;
+}
+
 /* 用户列表 */
-.searchByCredit {
+/* .searchByCredit {
     padding: 5px;
 
     height: 515px;
     background-color: #fff;
     border-radius: 8px;
     box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.2);
-}
+} */
 /* 按信誉分查询用户 */
 .credit-search {
     display: flex;

@@ -114,15 +114,6 @@ function bindEventListeners() {
             closeModal(modal)
         })
     })
-        
-    // // 为代办事项添加点击事件-待完善
-    // document.querySelectorAll('.task-list button').forEach(button => {
-    //     button.addEventListener('click', function() {
-    //         const taskName = this.querySelector('span').textContent
-    //         alert(`跳转到${taskName}页面`)
-    //         // 实际项目中这里可以跳转到对应功能页面
-    //     })
-    // })
 
     // 退出登录-待完善
     document.getElementById('logout-btn').addEventListener('click', async function() {
@@ -140,6 +131,34 @@ function bindEventListeners() {
             }
         }
     })
+
+    // 用户列表分页
+    document.getElementById('prev-user-page').addEventListener('click', () => {
+    if (userListInstance && userListInstance.currentPage > 1) {
+        userListInstance.currentPage--;
+        userListInstance.loadData();
+    }
+    });
+    document.getElementById('next-user-page').addEventListener('click', () => {
+    if (userListInstance && userListInstance.currentPage < userListInstance.totalPages) {
+        userListInstance.currentPage++;
+        userListInstance.loadData();
+    }
+    });
+
+    // 产品列表分页
+    document.getElementById('prev-product-page').addEventListener('click', () => {
+    if (productListInstance && productListInstance.currentPage > 1) {
+        productListInstance.currentPage--;
+        productListInstance.loadData();
+    }
+    });
+    document.getElementById('next-product-page').addEventListener('click', () => {
+    if (productListInstance && productListInstance.currentPage < productListInstance.totalPages) {
+        productListInstance.currentPage++;
+        productListInstance.loadData();
+    }
+    });
 }
 
 // 显示面板
@@ -188,6 +207,12 @@ function switchToPanel(target) {
         const allPanels = document.querySelectorAll('.dashboard')
         console.log('可用面板:', Array.from(allPanels).map(panel => panel.id))
     }
+
+    if (target === 'user-management') {
+      initUserList(); // 初始化用户列表
+    } else if (target === 'loan-management') {
+      initProductList(); // 后面会写
+    }
 }
 
 // 图表调整大小函数
@@ -224,7 +249,7 @@ async function fetchAndRenderPendingList() {
         console.error('获取待办列表失败:', error);
         document.getElementById('apply-table').querySelector('tbody').innerHTML = 
             '<tr><td colspan="6" style="text-align:center;color:#e74c3c;">加载失败</td></tr>';
-        document.querySelector('#pending-pagination .page-info').textContent = '加载失败';
+        document.querySelector('#apply-pagination .page-info').textContent = '加载失败';
     }
 }
 
@@ -417,48 +442,119 @@ async function fetchApplicationsByUser(userId) {
 *==================== 贷款项目管理面板处理 ====================
 */ 
 // ============== 添加贷款项目弹窗处理 ===============
-// 数据输入表格的行增减处理
-// const addBtn = document.getElementById('add-row-btn')
-// const table = document.getElementById('option-table')
-// // 给添加按钮绑定事件
-// addBtn.addEventListener('click', function () {
-//   const tbody = table.querySelector('tbody')
-//   const newRow = document.createElement('tr')
+let productListInstance = null;
 
-//   const inputs = [
-//     '请输入贷款额度',
-//     '请输入贷款期限',
-//     '请输入年化利率',
-//     '请输入还款方式'
-//   ]
+function renderProductRow(product) {
+  const tr = document.createElement('tr');
+  tr.setAttribute('data-product-id', product.productId);
+  
+  // 截断长文本
+  const usage = (product.usage || '').length > 15 
+    ? product.usage.substring(0, 15) + '...' 
+    : product.usage;
 
-//   inputs.forEach(placeholder => {
-//     const td = document.createElement('td')
-//     const input = document.createElement('input')
-//     input.type = 'text'
-//     input.placeholder = placeholder
-//     td.appendChild(input)
-//     newRow.appendChild(td)
-//   })
+  tr.innerHTML = `
+    <td>${product.productId}</td>
+    <td>${product.productName || '—'}</td>
+    <td>${product.description || '—'}</td>
+    <td>${usage}</td>
+    <td>${product.updateTime ? new Date(product.updateTime).toLocaleString() : '—'}</td>
+    <td>${product.createTime ? new Date(product.createTime).toLocaleString() : '—'}</td>
+    <td><button class="view-prod-btn">查看详情</button></td>
+  `;
+  
+  tr.querySelector('.view-prod-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    showProductDetail(product.productId);
+  });
+  
+  return tr;
+}
 
-//   // 添加删除按钮
-//   const deleteTd = document.createElement('td')
-//   const deleteBtn = document.createElement('button')
-//   deleteBtn.textContent = '删除'
-//   deleteBtn.classList.add('delete-btn')
-//   deleteBtn.addEventListener('click', function () {
-//     newRow.remove() // 删除当前行
-//   })
-//   deleteTd.appendChild(deleteBtn)
-//   newRow.appendChild(deleteTd)
-//   tbody.appendChild(newRow)
-// })
-// // 给已有删除按钮绑定事件
-// document.querySelectorAll('.delete-btn').forEach(btn => {
-//   btn.addEventListener('click', function () {
-//     this.closest('tr').remove()
-//   })
-// })
+async function showProductDetail(productId) {
+  try {
+    const detail = await AdminWeb.API_CLIENT.getLoanProductById(productId);
+    if (detail.code !== 200) throw new Error(detail.message);
+    
+    const data = detail.data;
+    document.getElementById('prod-name').textContent = data.productName || '—';
+    document.getElementById('prod-status').textContent = data.status || '—';
+    document.getElementById('prod-term').textContent = 
+      `${data.minTerm || 0} ~ ${data.maxTerm || 0} 月 (步长: ${data.termStep || 1})`;
+    document.getElementById('prod-promo').textContent = data.promotionDetails || '—';
+    
+    // 渲染选项
+    const tbody = document.getElementById('prod-options-table').querySelector('tbody');
+    tbody.innerHTML = '';
+    if (data.options && data.options.length) {
+      data.options.forEach(opt => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>¥${opt.loanAmount.toLocaleString()}</td>
+          <td>${opt.loanPeriod}</td>
+          <td>${(opt.interestRate * 100).toFixed(2)}%</td>
+          <td>${opt.repaidType}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    } else {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">无方案</td></tr>';
+    }
+    
+    document.getElementById('product-detail').style.display = 'block';
+  } catch (error) {
+    console.error('获取产品详情失败:', error);
+    alert('加载产品详情失败');
+  }
+}
+
+async function initProductList() {
+  if (productListInstance) return;
+  
+  let allProducts = [];
+  try {
+    const res = await AdminWeb.API_CLIENT.getAllLoanProducts();
+    if (res.code === 200) allProducts = res.data;
+  } catch (err) {
+    console.error('获取产品列表失败', err);
+  }
+
+  const pageSize = 8;
+  const totalPages = Math.ceil(allProducts.length / pageSize);
+
+  productListInstance = {
+    currentPage: 1,
+    totalPages: totalPages,
+    allData: allProducts,
+    pageSize: pageSize,
+    render: function() {
+      const start = (this.currentPage - 1) * this.pageSize;
+      const pageData = this.allData.slice(start, start + this.pageSize);
+      const tbody = document.getElementById('product-table').querySelector('tbody');
+      tbody.innerHTML = '';
+      
+      if (pageData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">暂无产品</td></tr>';
+        return;
+      }
+      
+      pageData.forEach(prod => {
+        const row = renderProductRow(prod);
+        tbody.appendChild(row);
+      });
+      
+      document.getElementById('product-page-info').textContent = 
+        `第 ${this.currentPage} 页，共 ${this.totalPages} 页`;
+      document.getElementById('prev-product-page').disabled = (this.currentPage <= 1);
+      document.getElementById('next-product-page').disabled = (this.currentPage >= this.totalPages);
+    },
+    loadData: function() {
+      this.render();
+    }
+  };
+  
+  productListInstance.render();
+}
 // ============= 添加贷款项目功能实现函数 =============
 // 获取弹窗中的表单数据
 // function handleNewLoanProductData() {
@@ -560,32 +656,6 @@ async function fetchApplicationsByUser(userId) {
 //         })
 //     })
 // }
-
-// // 获取所有贷款产品
-// async function fetchAllLoanProducts() {
-//     const url = '/api/loan-products/admin/';
-//     console.log(`📡 [GET] 请求所有贷款产品: ${url}`);
-//     try {
-//         const response = await AdminWeb.API_CLIENT.get(url);
-//         console.log(`✅ [响应] 所有贷款产品:`, response);
-//         return response.data;
-//     } catch (error) {
-//         console.error(`❌ [错误] 获取产品列表失败:`, error);
-//         alert('加载产品失败');
-//     }
-// }
-// // 获取单个贷款产品详情
-// async function fetchLoanProductById(productId) {
-//     const url = `/api/loan-products/admin/${productId}`;
-//     console.log(`📡 [GET] 请求产品详情: ${url}`);
-//     try {
-//         const response = await AdminWeb.API_CLIENT.get(url);
-//         console.log(`✅ [响应] 产品 ${productId} 详情:`, response);
-//         return response.data;
-//     } catch (error) {
-//         console.error(`❌ [错误] 获取产品 ${productId} 失败:`, error);
-//     }
-// }
 // // 更新单个贷款产品
 // async function updateLoanProduct(productId, updateData) {
 //     const url = `/api/loan-products/admin/products/${productId}`;
@@ -661,34 +731,145 @@ async function fetchApplicationsByUser(userId) {
 // }
 
 
-// // ==================== 用户管理面板处理 ====================
+// ==================== 用户管理面板处理 ====================
+// ==================== 用户管理面板处理 ====================
+let userListInstance = null;
 
-// // 获取用户列表
-// async function fetchUserStats() {
-//     const url = '/api/users/admin/stats'
-//     console.log(`📡 [GET] 请求用户状态列表: ${url}`)
-//     try {
-//         const response = await AdminWeb.API_CLIENT.get(url)
-//         console.log(`✅ [响应] 用户状态列表:`, response)
-//         return response.data
-//     } catch (error) {
-//         console.error(`❌ [错误] 获取用户状态列表失败:`, error)
-//         alert('获取用户列表失败')
-//     }
-// }
-// // 通过用户ID获取单个用户详情
-// async function fetchUserById(userId) {
-//     const url = `/api/users/admin/${userId}`
-//     console.log(`📡 [GET] 请求用户详情: ${url}`)
-//     try {
-//         const response = await AdminWeb.API_CLIENT.get(url)
-//         console.log(`✅ [响应] 用户 ${userId} 详情:`, response)
-//         return response.data;
-//     } catch (error) {
-//         console.error(`❌ [错误] 获取用户 ${userId} 失败:`, error)
-//         alert('获取用户信息失败');
-//     }
-// }
+// 渲染单行用户
+function renderUserRow(user) {
+  const tr = document.createElement('tr');
+  tr.setAttribute('data-user-id', user.userId);
+  
+  // 是否在线（示例：随机或根据字段）
+  const isOnline = '—'; // 假设后端未提供，在线状态需额外字段
+  // 目前借贷情况（示例）
+  const loanStatus = user.loanStatus || '无借贷';
+
+  tr.innerHTML = `
+    <td>${user.userId}</td>
+    <td>${user.userName || '—'}</td>
+    <td>${isOnline}</td>
+    <td>${loanStatus}</td>
+    <td>${user.totalTransactionCount || 0}</td>
+    <td>¥${(user.totalLoanAmount || 0).toLocaleString()}</td>
+    <td>¥${(user.totalRepaidAmount || 0).toLocaleString()}</td>
+    <td><button class="view-user-btn">查看详情</button></td>
+  `;
+  
+  // 绑定点击事件（委托也可，这里直接绑）
+  tr.querySelector('.view-user-btn').addEventListener('click', (e) => {
+    e.stopPropagation(); // 防止触发行点击
+    showUserDetail(user.userId);
+  });
+  
+  // 行点击也看详情（可选）
+  // tr.addEventListener('click', () => showUserDetail(user.userId));
+  
+  return tr;
+}
+
+// 显示用户详情
+async function showUserDetail(userId) {
+  try {
+    const detail = await AdminWeb.API_CLIENT.getUserDetail(userId);
+    if (detail.code !== 200) throw new Error(detail.message || '获取失败');
+    
+    const data = detail.data;
+    // 填充基本信息
+    document.getElementById('user-real-name').textContent = data.userName || '—';
+    document.getElementById('user-phone').textContent = data.phone || '—';
+    document.getElementById('user-register-time').textContent = 
+      data.createTime ? new Date(data.createTime).toLocaleString() : '—';
+    document.getElementById('user-credit-score').textContent = 
+      (data.creditScore != null) ? data.creditScore : '—';
+    
+    // 认证材料（简化：只显示是否上传）
+    const materialsContainer = document.getElementById('user-materials-container');
+    const materialMap = {
+      idCard: '身份证',
+      workCertId: '工作证明',
+      triCertId: '三证合一',
+      immovableCertId: '不动产证明'
+    };
+    let html = '';
+    for (const [key, label] of Object.entries(materialMap)) {
+      const uploaded = data[key] != null;
+      const color = uploaded ? '#27ae60' : '#e74c3c';
+      const statusText = uploaded ? '已上传' : '未上传';
+      html += `<div class="material-item"><span>${label}</span><span style="color:${color}">${statusText}</span></div>`;
+    }
+    materialsContainer.innerHTML = html;
+    
+    // 显示模态框
+    document.getElementById('user-detail').style.display = 'block';
+  } catch (error) {
+    console.error('获取用户详情失败:', error);
+    alert('加载用户详情失败');
+  }
+}
+
+// 初始化用户列表（在 switchToPanel 中调用）
+async function initUserList() {
+  if (userListInstance) return; // 避免重复初始化
+  
+  const fetchData = async (page, pageSize) => {
+    const response = await AdminWeb.API_CLIENT.getUserStats();
+    if (response.code === 200) {
+      return response.data; // 注意：这个接口返回的是全量，不分页！
+    } else {
+      throw new Error(response.message);
+    }
+  };
+
+  // 分页
+  let allUsers = [];
+  try {
+    const res = await AdminWeb.API_CLIENT.getUserStats();
+    if (res.code === 200) allUsers = res.data;
+  } catch (err) {
+    console.error('获取用户列表失败', err);
+  }
+
+  // 自定义分页逻辑
+  const pageSize = 8;
+  const totalPages = Math.ceil(allUsers.length / pageSize);
+
+  userListInstance = {
+    currentPage: 1,
+    totalPages: totalPages,
+    allData: allUsers,
+    pageSize: pageSize,
+    render: function() {
+      const start = (this.currentPage - 1) * this.pageSize;
+      const pageData = this.allData.slice(start, start + this.pageSize);
+      const tbody = document.getElementById('user-table').querySelector('tbody');
+      tbody.innerHTML = '';
+      
+      if (pageData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">暂无用户</td></tr>';
+        return;
+      }
+      
+      pageData.forEach(user => {
+        const row = renderUserRow(user);
+        tbody.appendChild(row);
+      });
+      
+      // 更新分页信息
+      document.getElementById('user-page-info').textContent = 
+        `第 ${this.currentPage} 页，共 ${this.totalPages} 页`;
+      document.getElementById('prev-user-page').disabled = (this.currentPage <= 1);
+      document.getElementById('next-user-page').disabled = (this.currentPage >= this.totalPages);
+    },
+    loadData: function() {
+      this.render();
+    }
+  };
+  
+  userListInstance.render();
+}
+
+
 // // 根据信用分查询用户 
 // // 绑定信誉分查询按钮事件
 // document.getElementById('credit-search-btn').addEventListener('click', async function() {
