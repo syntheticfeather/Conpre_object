@@ -154,9 +154,9 @@ AdminWeb.API_CLIENT = {
      */
     handleUnauthorized: function () {
         AdminWeb.JWT_UTILS.clearTokens()
-        if (!window.location.href.includes('login.html')) {
+        if (!window.location.href.includes('/login')) {
             alert('登录已过期，请重新登录')
-            window.location.href = 'login.html'
+            window.location.href = '/login'
         }
     },
 

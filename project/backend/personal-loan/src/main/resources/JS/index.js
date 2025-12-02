@@ -136,7 +136,7 @@ function bindEventListeners() {
                 // 清除所有token和登录状态
                 JWT_UTILS.clearTokens()
                 // 跳转到登录页
-                window.location.href = 'login.html'
+                window.location.href = '/login'
             }
         }
     })

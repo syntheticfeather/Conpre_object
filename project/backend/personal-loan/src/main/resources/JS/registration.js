@@ -300,7 +300,7 @@ async function handleRegisterSubmit(e) {
 // 跳转登录页面
 function handleLogin() {
     console.log('关闭注册页面，返回登录页')
-    window.location.href = 'login.html'
+    window.location.href = '/login'
 }
 function handleConfirm() {
     document.getElementById('authentication').style.display = 'flex'
@@ -330,7 +330,7 @@ function handleRegisterSuccess(result) {
     
     setTimeout(() => {
         console.log('自动跳转到登录页面...')
-        window.location.href = 'login.html'
+        window.location.href = '/login'
     }, 2000)
 }
 

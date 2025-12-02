@@ -6,9 +6,10 @@ const JWT_UTILS = AdminWeb.JWT_UTILS
 
 // ==================== 初始化函数 ====================
 function init() {
+    console.log("init begins...")
     // 检查登录状态
     checkLoginStatus()
-    // 绑定事件监听 
+    // 绑定事件监听
     bindEventListeners()
     // 启动token监控
     startTokenMonitor()
@@ -85,7 +86,7 @@ async function checkServerConnection() {
 
 // 登录后自动跳转到管理员中心
 function checkLoginStatus() {
-    const isLoginPage = window.location.href.includes('login.html')
+    const isLoginPage = window.location.href.includes('/login')
     
     if (isLoginPage) {
         // 在登录页面，如果已登录且token有效，跳转到首页
@@ -93,7 +94,7 @@ function checkLoginStatus() {
         if (isLogged === 'true' && JWT_UTILS.isTokenValid()) {
             alert('您已登录，无需重复登录')
             setTimeout(() => {
-                window.location.href = "index.html"
+                window.location.href = "/index"
             }, 1500)
         } else if (isLogged === 'true' && !JWT_UTILS.isTokenValid()) {
             // token过期，清除登录状态
@@ -105,7 +106,7 @@ function checkLoginStatus() {
         if (!JWT_UTILS.isTokenValid()) {
             JWT_UTILS.clearTokens()
             alert('登录已过期，请重新登录')
-            window.location.href = 'login.html'
+            window.location.href = '/login'
         }
     }
 }
@@ -240,7 +241,7 @@ function handleLoginSuccess(result, phone) {
     
     // 跳转到管理员中心
     setTimeout(() => {
-        window.location.href = "index.html"
+        window.location.href = "/index"
     }, 1500)
 }
 
