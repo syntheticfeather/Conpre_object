@@ -78,8 +78,8 @@
                     <h2 class="title">待办审核</h2>
                 </div>
                 <!-- 待审核申请列表 -->
-                <div class="apply-content">
-                    <div class="apply-table">
+                <div class="apply-content table-content">
+                    <div class="apply-table data-table">
                         <table id="apply-table">
                             <thead>
                                 <tr>
@@ -97,10 +97,10 @@
                         </table>
                     </div>
                     <!-- 分页控件 -->
-                    <div id="apply-pagination">
-                        <button class="prev-page">上一页</button>
-                        <span class="page-info">加载中...</span>
-                        <button class="next-page">下一页</button>
+                    <div id="pending-pagination" class="pagination">
+                        <button id="prev-pending-page">上一页</button>
+                        <span id="pending-page-info">第 1 页，共 1 页</span>
+                        <button id="next-pending-page">下一页</button>
                     </div>
                 </div>
                 <!-- 审核详情区域（默认隐藏） -->
@@ -160,7 +160,7 @@
             <div class="main-content">
                 <div class="header">
                     <h2 class="title">贷款管理</h2>
-                    <button class="btn add-product-btn" data-modal="add-new-product">添加新项目</button>
+                    <button class="btn add-product-btn" id="add-product-btn">添加新项目</button>
                 </div>
                 <!-- 已有贷款项目搜索 -->
                 <div class="product-search">
@@ -191,8 +191,8 @@
                     </ul>
                 </div>
                 <!-- 已有贷款项目列表 -->
-                <div class="product-content">
-                    <div class="product-table">
+                <div class="product-content table-content">
+                    <div class="product-table data-table">
                         <table id="product-table">
                             <thead>
                                 <tr>
@@ -208,14 +208,13 @@
                             <tbody></tbody>
                         </table>
                     </div>
+                    <!-- 分页 -->
+                    <div id="product-pagination" class="pagination">
+                        <button id="prev-product-page" disabled>上一页</button>
+                        <span id="product-page-info">第 1 页，共 1 页</span>
+                        <button id="next-product-page">下一页</button>
+                    </div>
                 </div>
-                <!-- 分页 -->
-                <div id="product-pagination" class="pagination">
-                    <button id="prev-product-page" disabled>上一页</button>
-                    <span id="product-page-info">第 1 页，共 1 页</span>
-                    <button id="next-product-page">下一页</button>
-                </div>
-
                 <!-- 产品详情模态框 -->
                 <div id="product-detail" class="detail-container">
                     <h3>产品详情</h3>
@@ -280,8 +279,8 @@
                     <h2 class="title">用户管理</h2>
                 </div>
                 <!-- 用户列表容器 -->
-                <div class="user-content">
-                    <div class="user-table">
+                <div class="user-content table-content">
+                    <div class="user-table data-table">
                         <table id="user-table">
                             <thead>
                                 <tr>
@@ -290,21 +289,22 @@
                                 <th>信誉分</th>
                                 <th>目前借贷情况</th>
                                 <th>总交易笔数</th>
-                                <th>总贷款金额</th>
-                                <th>总还款金额</th>
+                                <th>预期还款项目</th>
+                                <th>待定</th>
                                 <th>操作</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
                         </table>
                     </div>
+                    <!-- 分页控件 -->
+                    <div id="user-pagination" class="pagination">
+                        <button id="prev-user-page" disabled>上一页</button>
+                        <span id="user-page-info">第 1 页，共 1 页</span>
+                        <button id="next-user-page">下一页</button>
+                    </div>
                 </div>
-                <!-- 分页控件 -->
-                <div id="user-pagination" class="pagination">
-                    <button id="prev-user-page" disabled>上一页</button>
-                    <span id="user-page-info">第 1 页，共 1 页</span>
-                    <button id="next-user-page">下一页</button>
-                </div>
+                
                 <!-- 用户详情模态框（复用 audition-detail 结构，改 ID） -->
                 <div id="user-detail" class="detail-container">
                     <div id="user-info-section">
@@ -405,6 +405,7 @@
             </div>
         </div>
 
+
         <!-- 风险与催收管理面板 -->
         <div class="risk-dashboard dashboard" id="riskAndCollection-management-content">
             <!-- 左侧子导航栏 -->
@@ -432,11 +433,11 @@
             <div class="side-bar">
                 <ul>
                     <li class="side-item">
-                        <button class="side-link active" data-target="loan-apply">风险管理</button>
+                        <button class="side-link active" data-target="loan-apply">数据统计</button>
                         <i class="iconfont icon-jinru"></i>
                     </li>
                     <li class="side-item">
-                        <button class="side-link" data-target="home-page">催收管理</button>
+                        <button class="side-link" data-target="home-page">系统管理</button>
                         <i class="iconfont icon-jinru"></i>
                     </li>
                 </ul>
@@ -444,7 +445,7 @@
             <!-- 右侧内容区域 -->
             <div class="main-content">
                 <div class="header">
-                    <h2 class="title">首页概览</h2>
+                    <h2 class="title">数据概览</h2>
                 </div>
                 <!-- 用户数据概览 -->
                 <div class="card">
@@ -489,9 +490,11 @@
                 </div>
             </div>
         </div>
+
     </div>  
-    <script src="static/JS/dateRangePicker.js"></script>
-    <script src="static/JS/Api.js"></script>
-    <script src="static/JS/index.js"></script>
+    <script src="JS/dateRangePicker.js"></script>
+    <script src="JS/Api.js"></script>
+    <script src="JS/index.js"></script>
+    <script></script>
 </body>
 </html>

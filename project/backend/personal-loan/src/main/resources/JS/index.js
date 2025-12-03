@@ -21,7 +21,6 @@ async function init() {
         initCharts()
         
         // 初始化所有数据
-        // updateData()
         // 加载待审核列表
         await fetchAndRenderPendingList()
 
@@ -132,19 +131,34 @@ function bindEventListeners() {
         }
     })
 
+    // 待办审核分页
+    document.getElementById('prev-pending-page').addEventListener('click', () => {
+      if (_currentPage > 1) {
+        _currentPage--
+        renderPendingApplications(_allPendingApps.length)
+      }
+    })
+    document.getElementById('next-pending-page').addEventListener('click', () => {
+      const totalPages = Math.ceil(_allPendingApps.length / PENDING_PAGE_SIZE) || 1
+      if (_currentPage < totalPages) {
+        _currentPage++
+        renderPendingApplications(_allPendingApps.length)
+      }
+    })
+
     // 用户列表分页
     document.getElementById('prev-user-page').addEventListener('click', () => {
     if (userListInstance && userListInstance.currentPage > 1) {
         userListInstance.currentPage--;
         userListInstance.loadData();
     }
-    });
+    })
     document.getElementById('next-user-page').addEventListener('click', () => {
     if (userListInstance && userListInstance.currentPage < userListInstance.totalPages) {
         userListInstance.currentPage++;
         userListInstance.loadData();
     }
-    });
+    })
 
     // 产品列表分页
     document.getElementById('prev-product-page').addEventListener('click', () => {
@@ -152,13 +166,13 @@ function bindEventListeners() {
         productListInstance.currentPage--;
         productListInstance.loadData();
     }
-    });
+    })
     document.getElementById('next-product-page').addEventListener('click', () => {
     if (productListInstance && productListInstance.currentPage < productListInstance.totalPages) {
         productListInstance.currentPage++;
         productListInstance.loadData();
     }
-    });
+    })
 }
 
 // 显示面板
@@ -232,6 +246,21 @@ let _allPendingApps = [] // 全量数据
 let _currentPage = 1
 const PENDING_PAGE_SIZE = 5
 
+// 渲染分页信息
+function updatePendingPagination(total) {
+  const totalPages = Math.ceil(total / PENDING_PAGE_SIZE) || 1;
+  const pageInfoEl = document.getElementById('pending-page-info');
+  if (pageInfoEl) {
+    pageInfoEl.textContent = total === 0 ? '共 0 条' : `第 ${_currentPage} 页，共 ${totalPages} 页`;
+  }
+
+  // 控制按钮状态
+  const prevBtn = document.getElementById('prev-pending-page');
+  const nextBtn = document.getElementById('next-pending-page');
+  if (prevBtn) prevBtn.disabled = (_currentPage <= 1);
+  if (nextBtn) nextBtn.disabled = (_currentPage >= totalPages);
+}
+
 // 加载全部待办申请
 async function fetchAndRenderPendingList() {
     try {
@@ -240,21 +269,19 @@ async function fetchAndRenderPendingList() {
         if (response.code === 200 && Array.isArray(response.data)) {
             _allPendingApps = response.data;
             _currentPage = 1;
-            renderPendingApplications()
-            setupPendingPagination()
+            renderPendingApplications(_allPendingApps.length)
         } else {
-            throw new Error(response.message || '数据格式异常');
+            throw new Error(response.message || '数据格式异常')
         }
     } catch (error) {
-        console.error('获取待办列表失败:', error);
-        document.getElementById('apply-table').querySelector('tbody').innerHTML = 
-            '<tr><td colspan="6" style="text-align:center;color:#e74c3c;">加载失败</td></tr>';
-        document.querySelector('#apply-pagination .page-info').textContent = '加载失败';
+      console.error('获取待办列表失败:', error)
+      document.getElementById('apply-table').querySelector('tbody').innerHTML = '<tr><td colspan="6" style="text-align:center;color:#e74c3c;">加载失败</td></tr>'
+      updatePendingPagination(0)
     }
 }
 
 // 渲染当前页表格
-function renderPendingApplications() {
+function renderPendingApplications(total) {
     const start = (_currentPage - 1) * PENDING_PAGE_SIZE
     const pageData = _allPendingApps.slice(start, start + PENDING_PAGE_SIZE)
     const tbody = document.getElementById('apply-table').querySelector('tbody')
@@ -262,9 +289,9 @@ function renderPendingApplications() {
 
     if (pageData.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">暂无待审核申请</td></tr>'
+        updatePendingPagination(0)
         return
     }
-
     pageData.forEach(app => {
         const row = document.createElement('tr')
         row.setAttribute('data-application-id', app.applicationId)
@@ -290,46 +317,7 @@ function renderPendingApplications() {
         row.addEventListener('click', () => showApplicationDetail(app.applicationId))
         tbody.appendChild(row)
     })
-}
-
-// 初始化分页控件 & 绑定事件
-function setupPendingPagination() {
-    const total = _allPendingApps.length;
-    const totalPages = Math.ceil(total / PENDING_PAGE_SIZE) || 1;
-
-    // 更新页码信息
-    const pageInfo = document.querySelector('#pending-pagination .page-info');
-    if (pageInfo) {
-        pageInfo.textContent = total === 0 
-            ? '共 0 条' 
-            : `第 ${_currentPage} 页，共 ${totalPages} 页`;
-    }
-
-    // 上一页
-    const prevBtn = document.querySelector('#pending-pagination .prev-page');
-    if (prevBtn) {
-        prevBtn.disabled = (_currentPage <= 1);
-        prevBtn.onclick = () => {
-            if (_currentPage > 1) {
-                _currentPage--;
-                renderPendingApplications();
-                setupPendingPagination();
-            }
-        };
-    }
-
-    // 下一页
-    const nextBtn = document.querySelector('#pending-pagination .next-page');
-    if (nextBtn) {
-        nextBtn.disabled = (_currentPage >= totalPages);
-        nextBtn.onclick = () => {
-            if (_currentPage < totalPages) {
-                _currentPage++;
-                renderPendingApplications();
-                setupPendingPagination();
-            }
-        };
-    }
+    updatePendingPagination(total) // 更新分页信息
 }
 
 // 显示申请详情
@@ -410,38 +398,90 @@ async function submitReview(applicationId, isApproved) {
     }
 }
 
-// ====================== 贷款申请处理面板 =====================
-// 通过申请ID获取申请详情
-async function fetchApplicationById(applicationId) {
-    const url = `/api/loan-applications/${applicationId}`;
-    console.log(`📡 [GET] 请求申请详情: ${url}`);
-    try {
-        const response = await AdminWeb.API_CLIENT.get(url);
-        console.log(`✅ [响应] 申请 ${applicationId} 详情:`, response);
-        return response.data;
-    } catch (error) {
-        console.error(`❌ [错误] 获取申请 ${applicationId} 失败:`, error);
-        alert('申请详情加载失败');
-    }
-}
-// 通过用户ID获取用户所有申请
-async function fetchApplicationsByUser(userId) {
-    const url = `/api/loan-applications/user/${userId}`;
-    console.log(`📡 [GET] 请求用户所有申请: ${url}`);
-    try {
-        const response = await AdminWeb.API_CLIENT.get(url);
-        console.log(`✅ [响应] 用户 ${userId} 的所有申请:`, response);
-        return response.data;
-    } catch (error) {
-        console.error(`❌ [错误] 获取用户 ${userId} 的申请失败:`, error);
-        alert('申请记录加载失败');
-    }
-}
 
 /*
 *==================== 贷款项目管理面板处理 ====================
 */ 
-// ============== 添加贷款项目弹窗处理 ===============
+// 增加项目按钮绑定
+document.getElementById('add-product-btn').addEventListener('click', () => {
+  window.location.href = '/addProduct';
+})
+
+
+// 更新单个贷款产品
+async function updateLoanProduct(productId, updateData) {
+    const url = `/api/loan-products/admin/products/${productId}`;
+    console.log(`📡 [PATCH] 更新产品: ${url}`, '请求体:', updateData);
+    try {
+        const response = await AdminWeb.API_CLIENT.request(url, {
+            method: 'PATCH',
+            body: JSON.stringify(updateData)
+        });
+        console.log(`✅ [响应] 产品 ${productId} 更新成功:`, response);
+        alert('产品信息更新成功');
+        return response.data;
+    } catch (error) {
+        console.error(`❌ [错误] 更新产品 ${productId} 失败:`, error);
+        alert('更新失败');
+    }
+}
+// 删除单个贷款产品
+async function deleteLoanProduct(productId) {
+    if (!confirm(`确定删除产品 ID=${productId}？此操作不可逆！`)) return;
+    const url = `/api/loan-products/admin/products/${productId}`;
+    console.log(`📡 [DELETE] 删除产品: ${url}`);
+    try {
+        const response = await AdminWeb.API_CLIENT.request(url, { method: 'DELETE' });
+        console.log(`✅ [响应] 产品 ${productId} 删除成功:`, response);
+        alert('删除成功');
+        return true;
+    } catch (error) {
+        console.error(`❌ [错误] 删除产品 ${productId} 失败:`, error);
+        alert('删除失败');
+    }
+}
+// 批量删除贷款产品
+async function batchDeleteLoanProducts(productIds) {
+    const url = '/api/loan-products/admin/products/batch-delete';
+    const payload = { productIds };
+    console.log(`📡 [POST] 批量删除产品: ${url}`, '请求体:', payload);
+    try {
+        const response = await AdminWeb.API_CLIENT.post(url, payload);
+        console.log(`✅ [响应] 批量删除产品成功:`, response);
+        alert('批量删除成功');
+        return response.data;
+    } catch (error) {
+        console.error(`❌ [错误] 批量删除产品失败:`, error);
+        alert('批量删除失败');
+    }
+}
+// 批量创建产品选项
+async function batchCreateProductOptions(productId, options) {
+    const url = '/api/loan-products/admin/options/batch-create';
+    const payload = { productId, options };
+    console.log(`📡 [POST] 批量添加选项: ${url}`, '请求体:', payload);
+    try {
+        const response = await AdminWeb.API_CLIENT.post(url, payload);
+        console.log(`✅ [响应] 批量添加选项成功:`, response);
+        return response.data;
+    } catch (error) {
+        console.error(`❌ [错误] 批量添加选项失败:`, error);
+        alert('添加选项失败');
+    }
+}
+// 批量更新产品选项
+async function deleteProductOption(optionId) {
+    const url = `/api/loan-products/admin/options/${optionId}`;
+    console.log(`📡 [DELETE] 删除选项: ${url}`);
+    try {
+        const response = await AdminWeb.API_CLIENT.request(url, { method: 'DELETE' });
+        console.log(`✅ [响应] 选项 ${optionId} 删除成功:`, response);
+        return response;
+    } catch (error) {
+        console.error(`❌ [错误] 删除选项 ${optionId} 失败:`, error);
+    }
+}
+// ============== 贷款项目展示 ===============
 let productListInstance = null;
 
 function renderProductRow(product) {
@@ -519,7 +559,7 @@ async function initProductList() {
     console.error('获取产品列表失败', err);
   }
 
-  const pageSize = 8;
+  const pageSize = 5;
   const totalPages = Math.ceil(allProducts.length / pageSize);
 
   productListInstance = {
@@ -555,6 +595,7 @@ async function initProductList() {
   
   productListInstance.render();
 }
+// ============== 添加贷款项目标签页处理 ===============
 // ============= 添加贷款项目功能实现函数 =============
 // 获取弹窗中的表单数据
 // function handleNewLoanProductData() {
@@ -656,82 +697,9 @@ async function initProductList() {
 //         })
 //     })
 // }
-// // 更新单个贷款产品
-// async function updateLoanProduct(productId, updateData) {
-//     const url = `/api/loan-products/admin/products/${productId}`;
-//     console.log(`📡 [PATCH] 更新产品: ${url}`, '请求体:', updateData);
-//     try {
-//         const response = await AdminWeb.API_CLIENT.request(url, {
-//             method: 'PATCH',
-//             body: JSON.stringify(updateData)
-//         });
-//         console.log(`✅ [响应] 产品 ${productId} 更新成功:`, response);
-//         alert('产品信息更新成功');
-//         return response.data;
-//     } catch (error) {
-//         console.error(`❌ [错误] 更新产品 ${productId} 失败:`, error);
-//         alert('更新失败');
-//     }
-// }
-// // 删除单个贷款产品
-// async function deleteLoanProduct(productId) {
-//     if (!confirm(`确定删除产品 ID=${productId}？此操作不可逆！`)) return;
-//     const url = `/api/loan-products/admin/products/${productId}`;
-//     console.log(`📡 [DELETE] 删除产品: ${url}`);
-//     try {
-//         const response = await AdminWeb.API_CLIENT.request(url, { method: 'DELETE' });
-//         console.log(`✅ [响应] 产品 ${productId} 删除成功:`, response);
-//         alert('删除成功');
-//         return true;
-//     } catch (error) {
-//         console.error(`❌ [错误] 删除产品 ${productId} 失败:`, error);
-//         alert('删除失败');
-//     }
-// }
-// // 批量删除贷款产品
-// async function batchDeleteLoanProducts(productIds) {
-//     const url = '/api/loan-products/admin/products/batch-delete';
-//     const payload = { productIds };
-//     console.log(`📡 [POST] 批量删除产品: ${url}`, '请求体:', payload);
-//     try {
-//         const response = await AdminWeb.API_CLIENT.post(url, payload);
-//         console.log(`✅ [响应] 批量删除产品成功:`, response);
-//         alert('批量删除成功');
-//         return response.data;
-//     } catch (error) {
-//         console.error(`❌ [错误] 批量删除产品失败:`, error);
-//         alert('批量删除失败');
-//     }
-// }
-// // 批量创建产品选项
-// async function batchCreateProductOptions(productId, options) {
-//     const url = '/api/loan-products/admin/options/batch-create';
-//     const payload = { productId, options };
-//     console.log(`📡 [POST] 批量添加选项: ${url}`, '请求体:', payload);
-//     try {
-//         const response = await AdminWeb.API_CLIENT.post(url, payload);
-//         console.log(`✅ [响应] 批量添加选项成功:`, response);
-//         return response.data;
-//     } catch (error) {
-//         console.error(`❌ [错误] 批量添加选项失败:`, error);
-//         alert('添加选项失败');
-//     }
-// }
-// // 批量更新产品选项
-// async function deleteProductOption(optionId) {
-//     const url = `/api/loan-products/admin/options/${optionId}`;
-//     console.log(`📡 [DELETE] 删除选项: ${url}`);
-//     try {
-//         const response = await AdminWeb.API_CLIENT.request(url, { method: 'DELETE' });
-//         console.log(`✅ [响应] 选项 ${optionId} 删除成功:`, response);
-//         return response;
-//     } catch (error) {
-//         console.error(`❌ [错误] 删除选项 ${optionId} 失败:`, error);
-//     }
-// }
 
 
-// ==================== 用户管理面板处理 ====================
+
 // ==================== 用户管理面板处理 ====================
 let userListInstance = null;
 
@@ -767,7 +735,66 @@ function renderUserRow(user) {
   
   return tr;
 }
+// 初始化用户列表（在 switchToPanel 中调用）
+async function initUserList() {
+  if (userListInstance) return; // 避免重复初始化
+  
+  const fetchData = async (page, pageSize) => {
+    const response = await AdminWeb.API_CLIENT.getUserStats();
+    if (response.code === 200) {
+      return response.data; // 注意：这个接口返回的是全量，不分页！
+    } else {
+      throw new Error(response.message);
+    }
+  };
 
+  // 分页
+  let allUsers = [];
+  try {
+    const res = await AdminWeb.API_CLIENT.getUserStats();
+    if (res.code === 200) allUsers = res.data;
+  } catch (err) {
+    console.error('获取用户列表失败', err);
+  }
+
+  // 自定义分页逻辑
+  const pageSize = 5;
+  const totalPages = Math.ceil(allUsers.length / pageSize);
+
+  userListInstance = {
+    currentPage: 1,
+    totalPages: totalPages,
+    allData: allUsers,
+    pageSize: pageSize,
+    render: function() {
+      const start = (this.currentPage - 1) * this.pageSize;
+      const pageData = this.allData.slice(start, start + this.pageSize);
+      const tbody = document.getElementById('user-table').querySelector('tbody');
+      tbody.innerHTML = '';
+      
+      if (pageData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">暂无用户</td></tr>';
+        return;
+      }
+      
+      pageData.forEach(user => {
+        const row = renderUserRow(user);
+        tbody.appendChild(row);
+      });
+      
+      // 更新分页信息
+      document.getElementById('user-page-info').textContent = 
+        `第 ${this.currentPage} 页，共 ${this.totalPages} 页`;
+      document.getElementById('prev-user-page').disabled = (this.currentPage <= 1);
+      document.getElementById('next-user-page').disabled = (this.currentPage >= this.totalPages);
+    },
+    loadData: function() {
+      this.render();
+    }
+  };
+  
+  userListInstance.render();
+}
 // 显示用户详情
 async function showUserDetail(userId) {
   try {
@@ -808,304 +835,38 @@ async function showUserDetail(userId) {
   }
 }
 
-// 初始化用户列表（在 switchToPanel 中调用）
-async function initUserList() {
-  if (userListInstance) return; // 避免重复初始化
-  
-  const fetchData = async (page, pageSize) => {
-    const response = await AdminWeb.API_CLIENT.getUserStats();
-    if (response.code === 200) {
-      return response.data; // 注意：这个接口返回的是全量，不分页！
-    } else {
-      throw new Error(response.message);
+
+// 通过申请ID获取用户申请详情
+async function fetchApplicationById(applicationId) {
+    const url = `/api/loan-applications/${applicationId}`;
+    console.log(`📡 [GET] 请求申请详情: ${url}`);
+    try {
+        const response = await AdminWeb.API_CLIENT.get(url);
+        console.log(`✅ [响应] 申请 ${applicationId} 详情:`, response);
+        return response.data;
+    } catch (error) {
+        console.error(`❌ [错误] 获取申请 ${applicationId} 失败:`, error);
+        alert('申请详情加载失败');
     }
-  };
-
-  // 分页
-  let allUsers = [];
-  try {
-    const res = await AdminWeb.API_CLIENT.getUserStats();
-    if (res.code === 200) allUsers = res.data;
-  } catch (err) {
-    console.error('获取用户列表失败', err);
-  }
-
-  // 自定义分页逻辑
-  const pageSize = 8;
-  const totalPages = Math.ceil(allUsers.length / pageSize);
-
-  userListInstance = {
-    currentPage: 1,
-    totalPages: totalPages,
-    allData: allUsers,
-    pageSize: pageSize,
-    render: function() {
-      const start = (this.currentPage - 1) * this.pageSize;
-      const pageData = this.allData.slice(start, start + this.pageSize);
-      const tbody = document.getElementById('user-table').querySelector('tbody');
-      tbody.innerHTML = '';
-      
-      if (pageData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">暂无用户</td></tr>';
-        return;
-      }
-      
-      pageData.forEach(user => {
-        const row = renderUserRow(user);
-        tbody.appendChild(row);
-      });
-      
-      // 更新分页信息
-      document.getElementById('user-page-info').textContent = 
-        `第 ${this.currentPage} 页，共 ${this.totalPages} 页`;
-      document.getElementById('prev-user-page').disabled = (this.currentPage <= 1);
-      document.getElementById('next-user-page').disabled = (this.currentPage >= this.totalPages);
-    },
-    loadData: function() {
-      this.render();
+}
+// 通过用户ID获取用户所有申请
+async function fetchApplicationsByUser(userId) {
+    const url = `/api/loan-applications/user/${userId}`;
+    console.log(`📡 [GET] 请求用户所有申请: ${url}`);
+    try {
+        const response = await AdminWeb.API_CLIENT.get(url);
+        console.log(`✅ [响应] 用户 ${userId} 的所有申请:`, response);
+        return response.data;
+    } catch (error) {
+        console.error(`❌ [错误] 获取用户 ${userId} 的申请失败:`, error);
+        alert('申请记录加载失败');
     }
-  };
-  
-  userListInstance.render();
 }
 
 
-// // 根据信用分查询用户 
-// // 绑定信誉分查询按钮事件
-// document.getElementById('credit-search-btn').addEventListener('click', async function() {
-//     console.log(`📡 [GET] 请求按信誉分降序用户列表: ${url}`);
-//     const expr = document.getElementById('creditExprInput').value.trim()
-//     if (!expr) {
-//         alert('请输入信誉分查询表达式，例如：<100 或 >=80')
-//         return
-//     }
-//     try {
-//         const users = await API_CLIENT.searchUsersByCredit(expr)
-//         console.log(`✅ [响应] 信誉分排序用户列表:`, response)
-//         const tbody = document.getElementById('searchResultBody')
-//         const container = document.getElementById('searchResultContainer')
-//         // 清空旧结果
-//         tbody.innerHTML = ''
-//         if (users.length === 0) {
-//             tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">未找到符合条件的用户</td></tr>`
-//         } else {
-//             users.forEach(user => {
-//                 const tr = document.createElement('tr')
-//                 // 格式化时间
-//                 const createTime = new Date(user.createTime).toLocaleString()
-//                 tr.innerHTML = `
-//                 <td>${user.id}</td>
-//                 <td>${user.name}</td>
-//                 <td>${user.phone}</td>
-//                 <td>${user.creditScore}</td>
-//                 <td>${createTime}</td>
-//                 `
-//                 tbody.appendChild(tr)
-//             })
-//         }
-//         container.style.display = 'block'
-//     } catch (error) {
-//         console.error('查询用户失败:', error)
-//         alert('查询失败：' + (error.message || '请检查表达式格式'))
-//         document.getElementById('searchResultContainer').style.display = 'none'
-//     }
-// })
-// // ==================== 待办审核面板处理 ====================
-// // 分页实现-待完善
-// let currentPage = 1;
-// const pageSize = 10;
-
-// // 假设这是你的原始数据
-// // const data = [
-// //   { id: 1, name: "张三", ... },
-// //   { id: 2, name: "李四", ... },
-// //   // ... 共 100 条
-// // ];
-
-// function renderTable() {
-//   const start = (currentPage - 1) * pageSize;
-//   const end = start + pageSize;
-//   const pageData = data.slice(start, end);
-
-//   const tbody = document.getElementById('table-body');
-//   tbody.innerHTML = '';
-
-//   pageData.forEach(item => {
-//     const row = document.createElement('tr');
-//     row.innerHTML = `
-//       <td>${item.id}</td>
-//       <td>${item.name}</td>
-//       <td>${item.productName}</td>
-//       <td>${item.amount}</td>
-//       <td>${item.rate}</td>
-//       <td>${item.duration}</td>
-//       <td>${item.periods}</td>
-//       <td>${item.repayType}</td>
-//       <td>${item.status}</td>
-//       <td>${item.applyTime}</td>
-//       <td>
-//         <button onclick="viewDetail(${item.id})">查看详情</button>
-//       </td>
-//     `;
-//     tbody.appendChild(row);
-//   });
-// }
-
-// function nextPage() {
-//   if (currentPage < totalPages) {
-//     currentPage++;
-//     renderTable();
-//     updatePaginationInfo();
-//   }
-// }
-
-// function prevPage() {
-//   if (currentPage > 1) {
-//     currentPage--;
-//     renderTable();
-//     updatePaginationInfo();
-//   }
-// }
-
-// function updatePaginationInfo() {
-//   document.getElementById('current-page').textContent = currentPage;
-//   document.getElementById('total-pages').textContent = totalPages;
-// }
-
-
-// ==================== 数据统计与系统管理面板处理 ====================
-// 饼图
-const pieDom = document.getElementById('pie-chart')
-const pieChart = echarts.init(pieDom, null, {
-  width: 450, // 强制饼图canvas宽度
-  height: 225 // 强制饼图canvas高度
-})
-const pieOption = {
-    title: { text: '' },
-    series: [
-    {
-        type: 'pie',
-        data: [
-        { name: '等级A', value: 2500 },
-        { name: '等级B', value: 2800 },
-        { name: '等级C', value: 3000 },
-        { name: '等级D', value: 1100 }
-        ]
-    }
-    ]
-}
-pieChart.setOption(pieOption)
-
-// 月度交易次数折线图 
-const lineDom1 = document.getElementById('line-chart-1')
-const lineChart1 = echarts.init(lineDom1)
-const lineOption1 = {
-    title: { text: '月度交易次数趋势（折线图）' },
-    legend: { data: ['交易次数'] }, // 
-    xAxis: { 
-        type: 'category', 
-        data: ['1-3号', '4-6号', '7-9号', '10-12号', '13-15号', '16-18号', '19-21号', '22-24号', '25-27号', '28-30号'], // 修复笔误：22-14号 → 22-24号
-        axisLabel: { interval: 0, rotate: 30 } // 
-    },
-    yAxis: { type: 'value', name: '交易次数' }, // 补充y轴名称
-    series: [{ 
-        name: '交易次数', 
-        type: 'line', 
-        data: [7000, 6000, 3700, 5000, 7600, 9000, 5900, 7500, 3500, 5500],
-        smooth: true, 
-        lineStyle: { width: 3 },  
-        itemStyle: { color: '#1890ff' }
-    }]
-}
-lineChart1.setOption(lineOption1)
-
-// 月度贷款与还款总额折线图
-const lineDom2 = document.getElementById('line-chart-2')
-const lineChart2 = echarts.init(lineDom2)
-const lineOption2 = {
-    title: { text: '月度贷款与还款总额趋势（折线图）' },
-    legend: { data: ['贷款总额', '还款总额'] }, 
-    xAxis: { 
-        type: 'category', 
-        data: ['1-3号', '4-6号', '7-9号', '10-12号', '13-15号', '16-18号', '19-21号', '22-24号', '25-27号', '28-30号'], // 修复笔误+统一x轴数据长度
-        axisLabel: { interval: 0, rotate: 30 }
-    },
-    yAxis: { type: 'value', name: '金额（元）' }, 
-    series: [
-        { 
-            name: '贷款总额',
-            type: 'line', 
-            data: [7000, 6000, 3700, 5000, 7600, 9000, 5900, 7500, 3500, 5500],
-            smooth: true,
-            lineStyle: { width: 3 },
-            itemStyle: { color: '#ff4d4f' }, 
-            areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(255,77,79,0.3)' }, { offset: 1, color: 'rgba(255,77,79,0)' }]) }
-        },
-        { 
-            name: '还款总额', 
-            type: 'line', 
-            data: [5000, 4500, 2800, 3800, 6000, 7200, 4800, 6200, 2700, 4200], 
-            smooth: true,
-            lineStyle: { width: 3 },
-            itemStyle: { color: '#52c41a' }, 
-            areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(82,196,26,0.3)' }, { offset: 1, color: 'rgba(82,196,26,0)' }]) }
-        }
-    ]
-}
-lineChart2.setOption(lineOption2)
-
-// 实时更新数据的函数
-function updateData() {
-    // -------------- 首页数据更新 ----------
-    // 更新用户概览数据
-    const newTotal = Math.floor(Math.random() * 5000) + 2000; // 总用户数随机
-    const newNewUser = Math.floor(Math.random() * 200); // 新增用户随机
-    const newOnline = Math.floor(Math.random() * 2000) + 1000; // 在线用户随机
-    const newVisitor = Math.floor(Math.random() * 500); // 游客数量随机
-    // 修改文本内容
-    // totalUserLi.textContent = `总用户数:${newTotal}`;
-    // newUserLi.textContent = `新增用户:${newNewUser}`;
-    // onlineUserLi.textContent = `在线用户:${newOnline}`;
-    // visitorLi.textContent = `游客数量:${newVisitor}`;
-
-    // 用户等级分布饼图数据更新
-    // 生成随机数据
-    const randomPieData = [
-    { name: '等级A', value: Math.floor(Math.random() * 3000) + 1000 },
-    { name: '等级B', value: Math.floor(Math.random() * 2500) + 1000 },
-    { name: '等级C', value: Math.floor(Math.random() * 2000) + 1000 },
-    { name: '等级D', value: Math.floor(Math.random() * 1500) + 1000 }
-    ]
-
-    // 1. 生成折线图1（交易次数）的随机数据（
-    const randomLine1Data = lineOption1.series[0].data.map(() => Math.floor(Math.random() * 6000) + 3000);
-    // 2. 生成折线图2（贷款总额+还款总额）的随机数据
-    const randomLoanData = lineOption2.series[0].data.map(() => Math.floor(Math.random() * 6000) + 3000);
-    const randomRepayData = randomLoanData.map(num => Math.floor(num * 0.7) + 1000); // 还款总额 = 贷款总额的70% + 基础值
-    
-    // 更新饼图数据
-    pieOption.series[0].data = randomPieData;
-    pieChart.setOption(pieOption);
-    // 更新折线图1数据
-    lineOption1.series[0].data = randomLine1Data;
-    lineChart1.setOption(lineOption1);
-    
-    // 更新折线图2数据
-    lineOption2.series[0].data = randomLoanData; // 贷款总额
-    lineOption2.series[1].data = randomRepayData; // 还款总额
-    lineChart2.setOption(lineOption2);
-}
-
-// 窗口大小变化时，图表自适应
-window.addEventListener('resize', () => {
-    lineChart1.resize();
-    lineChart2.resize();
-    pieChart.resize(); 
-    // barChart.resize();
-})
-
+// ========================= 可复用部件 ================================
 /**
- * 分页列表控制（可复用）
+ * 分页列表切页控制
  */
 class PaginatedList {
   constructor({

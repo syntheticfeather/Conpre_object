@@ -300,17 +300,23 @@ AdminWeb.API_CLIENT = {
     },
 
     // ==================== 贷款管理面板快捷请求 ====================
-        getAllLoanProducts: function() {
+    // 获取所有贷款产品
+    getAllLoanProducts: function() {
         return this.get('/api/loan-products/admin');
     },
-
+    // 根据产品ID获取产品详情
     getLoanProductById: function(productId) {
         return this.get(`/api/loan-products/admin/${productId}`);
     },
-
-    addLoanProduct: function(productData) {
-        return this.post('/api/loan-products/admin', productData);
+    
+    // 新增贷款产品
+    addLoanProduct: function (productData) {
+    const url = AdminWeb.API_CONFIG.baseUrl + AdminWeb.API_CONFIG.endpoints.addLoanProduct;
+    return this.post(url, productData);
     },
+    // addLoanProduct: function(productData) {
+    //     return this.post('/api/loan-products/admin', productData);
+    // },
 
     updateLoanProduct: function(productId, productData) {
         return this.patch(`/api/loan-products/admin/products/${productId}`, productData);
@@ -335,14 +341,9 @@ AdminWeb.API_CLIENT = {
     batchDeleteOptions: function(ids) {
         return this.post('/api/loan-products/admin/options/batch-delete', { ids });
     },
-    // 新增贷款产品
-    addLoanProduct: function (productData) {
-    const url = AdminWeb.API_CONFIG.baseUrl + AdminWeb.API_CONFIG.endpoints.addLoanProduct;
-    return this.post(url, productData);
-    },
 
     // ==================== 用户管理面板快捷请求 ====================
-        getUserStats: function() {
+    getUserStats: function() {
         return this.get('/api/users/admin/stats');
     },
 

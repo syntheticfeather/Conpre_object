@@ -14,5 +14,5 @@ public class UserCert {
     private Integer workCertId;
     private Integer triCertId;
     private Integer immovableCertId;
-    private Integer bankCardId;
+    private String bankCardId;
 }

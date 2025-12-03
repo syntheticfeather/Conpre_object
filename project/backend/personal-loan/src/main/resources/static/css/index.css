@@ -1,55 +1,3 @@
-/* 通用属性值预设 */
-:root {
-    --primary-color: #2c3e50;
-    --secondary-color: #3498db;
-    --accent-color: #2980b9;
-    --light-color: #ecf0f1;
-    --success-color: #27ae60;
-    --warning-color: #e67e22;
-    --danger-color: #e74c3c;
-    --border-radius: 6px;
-    --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-/*右尖括号*/
-.icon-jinru {
-    font-size: 20px;
-}
-
-/* 按钮基础样式 */
-.btn {
-    padding: 5px 10px;
-
-    height: 35px;
-    background-color: #409EFF;
-
-    font-size: 17px;
-    font-weight: 500;
-    line-height: 17px;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-.btn:hover {
-    background-color: #2a88e6;
-}
-.btn-primary {
-    background-color: var(--secondary-color);
-    color: white;
-}
-.btn-primary:hover {
-    background-color: var(--accent-color);
-}
-/* 设置整个表格的布局和边框基础样式 */
-table {
-    table-layout: fixed;        /* 固定表格布局，使得列宽可控 */
-    width: 100%;
-    border-collapse: collapse;
-}
-
-
 /* 主体 */
 body {
     background-color: #f5f7fa;
@@ -150,65 +98,6 @@ body {
     color: white;
 }
 
-/*********************
-****主内容区通用样式***
- *********************/
-/*面板*/
-.dashboard {
-    display: none;
-    justify-content: space-between;
-    margin-top: 55px;
-    width: 100%;
-}
-/* 侧栏 */
-.side-bar {
-    width: 260px;
-    box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.3);
-}
-/*左侧导航栏*/
-.side-bar ul {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-} 
-.side-bar ul li {
-    display: flex;
-    justify-content: space-between;
-
-    border-bottom: 1px solid #e0e0e0;
-    padding: 10px 0;
-}
-.side-bar ul li:hover {
-    background-color: #e2e2e2;
-    cursor: pointer;
-}
-.side-bar button {
-    margin-left: 20px;
-
-    background-color: rgba(0, 0, 0, 0);
-    font-size: 18px;
-    border: none;
-}
-.side-bar .icon-jinru {
-    margin-right: 20px;
-    margin-top: 10px;
-}
-
-/*右侧内容*/
-.main-content {
-    flex: 1;
-    padding:10px 40px;
-}
-/*内置标题*/
-.header {
-    margin-bottom: 10px;
-    padding: 10px 0;
-}
-.header h2 {
-    font-size: 25px;
-    font-family: 方正小标宋，楷体，微软雅黑;
-}
-
 /************* 代办审核面板 *************/
 .apply-dashboard {
     display: none;
@@ -219,158 +108,6 @@ body {
 }
 
 /* 申请列表 */
-.apply-dashboard .apply-content {
-    padding: 10px 20px;
-
-    background-color: #fff; 
-    border-radius: 5px;
-    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
-}
-.apply-dashboard .apply-table {
-    padding: 6px 20px;
-    width: 100%;
-    height: 241px;
-
-    color: #525457;
-    overflow-y: hidden;
-}
-#apply-table {
-    margin: 0 auto;
-
-    border: none;
-    border-collapse: collapse;
-}
-#apply-table tr {
-    border-bottom: 1px solid #e0e0e0;
-}
-#apply-table th,
-td {
-    padding: 7px 50px;
-
-    border: none;
-    border-collapse: collapse;
-    text-align: center;
-}
-#apply-table tbody tr:hover {
-    background-color: #d1d0d0;
-    transition: transform 3s;
-    cursor: pointer;
-}
-#apply-table button {
-    border: none;
-    background-color: transparent;
-    cursor: pointer;
-}
-
-/*分页按钮*/
-.pagination {
-  margin-top: 10px;
-  text-align: center;
-}
-.pagination button {
-  padding: 8px 16px;
-  margin: 0 10px;
-  cursor: pointer;
-  border: 1px solid #ccc;
-  background: #f5f5f5;
-}
-.pagination button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-/************************************************
-*********三大列表统一样式*************************
-*************************************************/
-/* 分页按钮样式 */
-#apply-agination,
-#product-pagination,
-#user-pagination {
-    text-align: center; 
-    margin-top: 16px;
-}
-/* 确保详情模态框能显示 */
-#user-detail, #product-detail {
-  display: none;
-}
-
-/* 表格操作列宽度 */
-#user-table td:last-child,
-#product-table td:last-child {
-  width: 100px;
-}
-
-/* 申请列表 */
-.apply-conten,.user-content,.product-content {
-    padding: 10px 20px;
-
-    background-color: #fff; 
-    border-radius: 5px;
-    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
-}
-.apply-table,.user-table,.product-table {
-    padding: 6px 20px;
-    width: 100%;
-    height: 241px;
-
-    color: #525457;
-    overflow-y: hidden;
-}
-#apply-table,#user-table,#product-table {
-    margin: 0 auto;
-
-    border: none;
-    border-collapse: collapse;
-}
-#apply-table,#user-table,#product-table tr {
-    border-bottom: 1px solid #e0e0e0;
-}
-#apply-table,#user-table,#product-table th,
-td {
-    padding: 7px 50px;
-
-    border: none;
-    border-collapse: collapse;
-    text-align: center;
-}
-#apply-table,#user-table,#product-table tbody tr:hover {
-    background-color: #d1d0d0;
-    transition: transform 3s;
-    cursor: pointer;
-}
-#apply-table,#user-table,#product-table button {
-    border: none;
-    background-color: transparent;
-    cursor: pointer;
-}
-
-/*分页按钮*/
-.pagination {
-  margin-top: 10px;
-  text-align: center;
-}
-.pagination button {
-  padding: 8px 16px;
-  margin: 0 10px;
-  cursor: pointer;
-  border: 1px solid #ccc;
-  background: #f5f5f5;
-}
-.pagination button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-/************** 详情区域通用样式*******************
-**************************************************
-**************************************************/
-.detail-container {
-    display: none;
-    margin-top: 20px;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background: white;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
 
 /* 审核详情区域 */
 /* 用户信息展示区 */
@@ -431,16 +168,12 @@ td {
   display: none;
   justify-content: space-between;
 }
-.loan-dashboard .main-content {
-    display: flex;
-    flex-direction: column;
-}
 .loan-dashboard .header {
     display: flex;
     justify-content: space-between;
 }
-/* 批量管理按钮 */
-.apply-dashboard .header button {
+/* 批量删除按钮 */
+.product-dashboard .header button {
     padding: 5px 10px;
 
     height: 35px;
@@ -453,9 +186,10 @@ td {
     border-radius: 5px;
     cursor: pointer;
 }
-.apply-dashboard .header button:hover {
+.product-dashboard .header button:hover {
     background-color: #2a88e6;
 }
+/*批量管理产品选项按钮-待完善*/
 
 /* 贷款项目查询 */
 .loan-dashboard .product-search {
@@ -502,56 +236,10 @@ td {
 /* 已有贷款产品列表 */
 .product-content {
     margin-top: 15px;
-    padding: 10px 10px;
 
     width: 100%;
     height: 350px;
-    background-color: #fff; 
-
-    border-radius: 5px;
-    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s;
 }
-.product-content .product-table {
-    padding: 6px 10px;
-    width: 100%;
-    height: 400px;
-
-    color: #525457;
-    overflow-y: hidden;
-}
-#product-table {
-    margin: 0 auto;
-
-    border: none;
-    border-collapse: collapse;
-}
-#product-table tr {
-    border-bottom: 1px solid #e0e0e0;
-}
-#product-table th,
-td {
-    padding: 7px 15px;
-
-    text-align: center;
-    white-space: nowrap;        /* 防止文本换行 */
-    overflow: hidden;           
-    text-overflow: ellipsis;    /* 超出部分用省略号表示 */
-
-    border: none;
-    border-collapse: collapse;
-}
-#product-table tbody tr:hover {
-    background-color: #d1d0d0;
-    transition: transform 3s;
-    cursor: pointer;
-}
-#product-table button {
-    border: none;
-    background-color: transparent;
-    cursor: pointer;
-}
-
 
 /************* 用户管理面板 *************/  
 .user-dashboard .main-content{
@@ -566,7 +254,7 @@ td {
     margin: 10px;
 }
 /* 批量管理按钮 */
-.apply-dashboard .header button {
+.user-dashboard .header button {
     padding: 5px 10px;
 
     height: 35px;
@@ -579,19 +267,12 @@ td {
     border-radius: 5px;
     cursor: pointer;
 }
-.apply-dashboard .header button:hover {
+.user-dashboard .header button:hover {
     background-color: #2a88e6;
 }
 
 /* 用户列表 */
-/* .searchByCredit {
-    padding: 5px;
 
-    height: 515px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.2);
-} */
 /* 按信誉分查询用户 */
 .credit-search {
     display: flex;
@@ -619,27 +300,8 @@ td {
 
 /* 表格内容样式 */
 .table-body {
-    width: 100%;
-    height: 330px;
-
     font-size: 15px;
     font-weight: 500;
-    color: #525457;
-    overflow-y: scroll;
-}
-.table-body table {
-    border-collapse: collapse;
-}
-.table-body thead th {
-    padding-left: 20px;
-
-    border: 1px solid #ccc;
-    border-collapse: collapse;
-}
-.table-body td {
-    text-align: center;
-    border: 1px solid #ccc;
-    border-collapse:collapse;
 }
 
 /************* 风险与催收管理面板特定样式 *************/
