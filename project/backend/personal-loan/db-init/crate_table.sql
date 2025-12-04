@@ -5,7 +5,6 @@ CREATE TABLE users(
     user_name VARCHAR(16),
     avatar VARCHAR(255) COMMENT '头像，存路径，二期工程',
     password VARCHAR(255) COMMENT '密码',
-    id_card CHAR(18) COMMENT '身份证号',
     phone CHAR(11) COMMENT '手机号',
     role INT NOT NULL DEFAULT 0 COMMENT '用户权限',
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',

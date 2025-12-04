@@ -79,6 +79,38 @@
 
 ![](../UserImgs/logUserSelf.png)
 
+### 上传头像
+
+**网址** /api/users/avatar
+
+**请求方式** POST
+
+**请求示例(请求体)**
+
+格式：form-data（多部分表单）  
+
+| Key  | Type |               Value             |   说明  |
+| --   |   -- |                --               | --     |
+| file | File | 本地图片文件，如 tomAvatar.jpg） |   必填，支持常见图片格式：JPG、PNG、WEBP 等，大小不超过5MB |
+
+**返回数据**
+
+``` json
+{
+    "code": 200,
+    "data": "/uploads/avatars/avatar_1_20251204_i6d1uv.jpg", // 上传后的路径
+    "message": "操作成功"
+}
+```
+
+**postman测试结果**
+
+![](../UserImgs/uploadAvatar.png "上传图片成功")
+
+**日志**
+
+![](../UserImgs/logAvatar.png)
+
 ## 管理员使用
 
 ### 添加黑名单

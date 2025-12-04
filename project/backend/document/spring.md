@@ -185,3 +185,28 @@ class GreetingControllerTest {
 }
 ```
 
+## 图片存储结构
+
+your-project/
+├── src/
+│   └── main/
+│       ├── java/
+│       └── resources/
+└── uploads/                ← 项目外或 static 下（推荐项目外）
+    ├── avatars/            ← 用户头像
+    │
+    ├── contracts/          ← 合同
+    │
+    ├── immovables/         ← 不动产认证
+    │     ├── car/          ← 车产证明
+    │     └── property/     ← 房产证明
+    │
+    ├── tri/                      ← 第三方认证
+    │    ├── credit-report/       ← 征信报告
+    │    └── social-security/     ← 社保证明
+    │
+    └── work/                     ← 工作证明
+         ├── employment/          ← 在职证明
+         └── salary/              ← 收入证明
+
+mysql -u admin -p1234 -h localhost

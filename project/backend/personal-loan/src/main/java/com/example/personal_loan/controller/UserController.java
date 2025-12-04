@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.personal_loan.dto.AddToBlackListRequest;
 import com.example.personal_loan.dto.AdminGetUserResponse;
@@ -64,6 +65,21 @@ public class UserController {
 
         UserSelfResponse updated = userService.updateUserSelfInfo(userUpdateRequest,userId);
         return ResponseEntity.ok(ApiResponse.success(updated));
+    }
+
+    /**
+     * 用户上传头像
+     */
+    @PostMapping("/avatar")
+    public ResponseEntity<ApiResponse<String>> uploadAvatar(
+            HttpServletRequest request,
+            @RequestParam("file") MultipartFile file) {
+
+        Long userId = (Long) request.getAttribute("userId");
+        log.info("/api/users/avatar success called for user {} to upload avatar", userId);
+        
+        String avatarUrl = userService.uploadAvatar(userId, file);
+        return ResponseEntity.ok(ApiResponse.success(avatarUrl));
     }
 
     

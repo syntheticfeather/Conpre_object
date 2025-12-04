@@ -1,6 +1,9 @@
 package com.example.personal_loan.service.impl;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.example.personal_loan.config.FileStorageConfig;
 import com.example.personal_loan.dto.AdminGetUserResponse;
 import com.example.personal_loan.dto.AdminUserListResponse;
 import com.example.personal_loan.dto.BlackListDto;
@@ -31,8 +36,10 @@ import com.example.personal_loan.mapper.BlackListMapper;
 import com.example.personal_loan.mapper.OrderMapper;
 import com.example.personal_loan.mapper.UserCertMapper;
 import com.example.personal_loan.mapper.UserMapper;
+import com.example.personal_loan.service.LocalFileStorageService;
 import com.example.personal_loan.service.UserService;
 import com.example.personal_loan.utils.CalculateUtil;
+import com.example.personal_loan.utils.FileNamingUtil;
 import com.example.personal_loan.utils.JwtUtil;
 import com.example.personal_loan.utils.RedisUtil;
 import static com.example.personal_loan.utils.RedisUtil.JWT_REFRESH_CACHE_TOKEN_PREFIX_STRING;
@@ -63,6 +70,15 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private RedisUtil RedisUtil;
+
+    @Autowired
+    private FileStorageConfig fileStorageConfig;
+
+    @Autowired
+    private LocalFileStorageService fileStorageService;
+
+    // 文件大小限制：5MB
+    private static final long MAX_FILE_SIZE = 5 * 1024 * 1024;
 
     /*
     * 用户认证（登录注册）
@@ -254,6 +270,55 @@ public class UserServiceImpl implements UserService {
                 user.getUserName(),
                 user.getAvatar()
         );
+    }
+
+    // 上传头像
+    @Override
+    public String uploadAvatar(Long userId, MultipartFile file){
+        // 1. 校验文件非空
+        if (file.isEmpty()) {
+            throw new BusinessException(400, "上传的文件为空");
+        }
+
+        // 2. 校验文件大小
+        if (file.getSize() > MAX_FILE_SIZE) {
+            throw new BusinessException(400, "头像不能超过 5MB");
+        }
+
+        // 3. 校验 Content-Type（防止伪装图片）
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new BusinessException(400, "仅支持图片格式");
+        }
+
+        // 4. 获取存储路径
+        String relativePath = fileStorageConfig.getPaths().getAvatar(); // e.g. "avatars"
+
+        Path uploadDir = Paths.get(fileStorageConfig.getBaseDir(), relativePath);
+        fileStorageService.createDirectoriesIfNotExist(uploadDir);
+
+        // 5. 生成唯一文件名
+        String filename = FileNamingUtil.generateFileName("avatar", userId, file.getOriginalFilename());
+        Path filePath = uploadDir.resolve(filename);
+
+        // 6. 保存文件到磁盘
+        try {
+            file.transferTo(filePath.toFile());
+        } catch (IOException e) {
+            log.error("保存头像文件失败: userId={}, filename={}", userId, filename, e);
+            throw new BusinessException(500, "文件存储失败");
+        }
+
+        // 7. 构造访问 URL（供前端使用）
+        String avatarUrl = "/uploads/" + relativePath + "/" + filename;
+
+        // 8. 更新数据库
+        User user = userMapper.findById(userId);
+        user.setAvatar(avatarUrl);
+        userMapper.update(user);
+    
+        log.info("用户 {} 头像上传成功: {}", userId, avatarUrl);
+        return avatarUrl;
     }
 
     /*

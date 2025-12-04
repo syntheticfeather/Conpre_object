@@ -2,6 +2,8 @@ package com.example.personal_loan.service;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.example.personal_loan.dto.AdminGetUserResponse;
 import com.example.personal_loan.dto.AdminUserListResponse;
 import com.example.personal_loan.dto.BlackListDto;
@@ -36,9 +38,14 @@ public interface UserService {
     * 用户使用
     */
 
+    // 获取个人信息
     UserSelfResponse getUserSelfInfo(Long userId);
     
+    // 修改个人信息
     UserSelfResponse updateUserSelfInfo(UserUpdateRequest request,Long id);
+
+    // 上传头像
+    String uploadAvatar(Long userId, MultipartFile file);
     
     /*
     * 管理员使用

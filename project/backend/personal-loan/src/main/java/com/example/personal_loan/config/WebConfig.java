@@ -15,6 +15,9 @@ public class WebConfig implements WebMvcConfigurer {
     @Autowired
     private JwtInterceptor jwtInterceptor;
 
+    @Autowired
+    private FileStorageConfig fileStorageConfig;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(jwtInterceptor)
@@ -42,6 +45,11 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
         registry.addResourceHandler("/JS/**").addResourceLocations("classpath:/JS/");
+
+        // 映射 /uploads/** 到物理目录
+        String location = "file:" + fileStorageConfig.getBaseDir() + "/";
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations(location);
     }
 
 }

@@ -74,3 +74,26 @@ mybatis:
   configuration:
     map-underscore-to-camel-case: true
     mapper-locations: classpath*:mapper/*.xml  # 如需启用，取消注释
+
+# 文件存储配置
+file-storage:
+  # 根目录（建议使用绝对路径，生产环境不要放在项目内）
+  base-dir: "D:/Conpre_object/project/backend/personal-loan/uploads"
+
+  # 各业务类型的相对路径（相对于 base-dir）
+  paths:
+    avatar: avatars
+
+    contract: contracts
+
+    # 不动产认证
+    car-proof: immovables/car
+    property-proof: immovables/property
+
+    # 第三方认证
+    credit-report: tri/credit-report
+    social-security: tri/social-security
+
+    # 工作证明
+    employment-proof: work/employment
+    salary-proof: work/salary
