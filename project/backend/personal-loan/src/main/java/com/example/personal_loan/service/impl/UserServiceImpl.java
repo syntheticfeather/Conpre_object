@@ -1,9 +1,6 @@
 package com.example.personal_loan.service.impl;
 
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,7 +36,6 @@ import com.example.personal_loan.mapper.UserMapper;
 import com.example.personal_loan.service.LocalFileStorageService;
 import com.example.personal_loan.service.UserService;
 import com.example.personal_loan.utils.CalculateUtil;
-import com.example.personal_loan.utils.FileNamingUtil;
 import com.example.personal_loan.utils.JwtUtil;
 import com.example.personal_loan.utils.RedisUtil;
 import static com.example.personal_loan.utils.RedisUtil.JWT_REFRESH_CACHE_TOKEN_PREFIX_STRING;
@@ -121,9 +117,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public RegisterResponse userRegister(RegisterRequest request) {
         request.setPassword(passwordEncoder.encode(request.getPassword()));
-        User user = new User(request.getName(), request.getPassword(), null, request.getPhone());
+        User user = new User(request.getName(), request.getPassword(), request.getPhone());
         user.setRole(0);    // 用户的注册，默认权限为0
         User newUser = addUser(user);
+
+        // 创建认证记录
+        UserCert cert = new UserCert();
+        cert.setUserId(newUser.getId()); // 主键
+        // 其他字段（idCard, bankCardId, workCertId...）留 null
+        userCertMapper.insert(cert);
+
         return new RegisterResponse(newUser.getId(), newUser.getUserName(), newUser.getCreateTime());
     }
 
@@ -133,11 +136,6 @@ public class UserServiceImpl implements UserService {
         if (userMapper.findByPhone(user.getPhone()) != null) {
             throw new BusinessException(400, "该手机号已被注册");
         }
-
-        if (userMapper.findByIdCard(user.getIdCard()) != null) {
-            throw new BusinessException(400, "身份证号已被注册");
-        }
-
         userMapper.insert(user);
         user.setCreateTime(LocalDateTime.now());
         return user;
@@ -175,14 +173,7 @@ public class UserServiceImpl implements UserService {
                 old.setPhone(user.getPhone());   // 更新手机号
             }
         }
-        // 校验身份证号唯一性
-        if (user.getIdCard() != null && !user.getIdCard().equals(old.getIdCard())) {
-            if (userMapper.findByIdCardExcludeId(user.getIdCard(), user.getId()) != 0) {
-                throw new BusinessException(400, "身份证号已存在");
-            } else {
-                old.setIdCard(user.getIdCard());  // 更新身份证号
-            }
-        }
+        
         // 更新其他字段
         if (user.getPassword() != null) {
             old.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -291,26 +282,11 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException(400, "仅支持图片格式");
         }
 
-        // 4. 获取存储路径
+        // 4. 获取相对路径
         String relativePath = fileStorageConfig.getPaths().getAvatar(); // e.g. "avatars"
 
-        Path uploadDir = Paths.get(fileStorageConfig.getBaseDir(), relativePath);
-        fileStorageService.createDirectoriesIfNotExist(uploadDir);
-
-        // 5. 生成唯一文件名
-        String filename = FileNamingUtil.generateFileName("avatar", userId, file.getOriginalFilename());
-        Path filePath = uploadDir.resolve(filename);
-
-        // 6. 保存文件到磁盘
-        try {
-            file.transferTo(filePath.toFile());
-        } catch (IOException e) {
-            log.error("保存头像文件失败: userId={}, filename={}", userId, filename, e);
-            throw new BusinessException(500, "文件存储失败");
-        }
-
-        // 7. 构造访问 URL（供前端使用）
-        String avatarUrl = "/uploads/" + relativePath + "/" + filename;
+        // 5.存储图片
+        String avatarUrl = fileStorageService.storeFile(file,"avatar", userId, relativePath);
 
         // 8. 更新数据库
         User user = userMapper.findById(userId);
@@ -444,7 +420,6 @@ public class UserServiceImpl implements UserService {
                 user.getUserName(),
                 user.getAvatar(),
                 user.getPhone(),
-                user.getIdCard(),
                 user.getRole(),
                 creditScore,
                 blackLevel,

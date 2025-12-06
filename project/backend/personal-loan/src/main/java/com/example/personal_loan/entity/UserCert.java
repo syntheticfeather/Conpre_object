@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserCert {
     private Long userId;
-    private Integer creditScore;
     private String idCard;
+    private Integer creditScore;
+    private String bankCardId;
     private Integer workCertId;
     private Integer triCertId;
     private Integer immovableCertId;
-    private String bankCardId;
 }

@@ -9,13 +9,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ImmovablesCert {
 
-    private Integer immovablesCertId;
+    private Integer immovableCertId;
 
     // 房产证明
     private String propertyCertPath;
 
     //车产证明
-    private String carCertificate;
+    private String carCertPath;
 
     //总资产
     private Integer totalValue;

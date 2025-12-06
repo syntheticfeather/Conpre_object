@@ -25,7 +25,6 @@ class UserMapperTest {
         User user = new User();
         user.setUserName("张一");
         user.setPassword("123456");
-        user.setIdCard("110101199001011234");
         user.setPhone("13800138000");
         return user;
     }

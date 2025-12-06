@@ -24,12 +24,15 @@ CREATE Table black_list(
 CREATE TABLE user_certification(
     user_id INT PRIMARY KEY COMMENT '用户ID',
     id_card CHAR(18) COMMENT '身份证号',
-    credit_score TINYINT COMMENT '信誉分',
+    credit_score INT COMMENT '信誉分',
+    bank_card_id CHAR(16) COMMENT '银行卡号',
     work_cert_id INT UNIQUE COMMENT '工作证明',
     tri_cert_id INT UNIQUE COMMENT '第三方证明',
-    bank_card_id CHAR(16) COMMENT '银行卡号',
     immovable_cert_id INT UNIQUE COMMENT '不动产证明',
-    Foreign Key (user_id) REFERENCES users(id)
+    Foreign Key (user_id) REFERENCES users(id),
+    Foreign Key (work_cert_id) REFERENCES work_cert(work_cert_id),
+    Foreign Key (tri_cert_id) REFERENCES tri_cert(tri_cert_id),
+    Foreign Key (immovable_cert_id) REFERENCES immovables_cert(immovable_cert_id)
 )COMMENT '用户认证表';
 
 /*
@@ -41,26 +44,23 @@ CREATE TABLE user_certification(
  以{业务前缀}_{用户ID或业务ID}_{时间戳(YYYYMMDD)}_{随机字符串}.{原始扩展名}作为文件名
  */
 CREATE TABLE work_cert(
-    work_cert_id INT PRIMARY KEY COMMENT '工作证明ID',
+    work_cert_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '工作证明ID',
     employment_cert_path VARCHAR(255) COMMENT '在职证明图片路径',
-    salary_cert_path VARCHAR(255) COMMENT '收入证明图片路径',
-    Foreign Key (work_cert_id) REFERENCES user_certification(work_cert_id)
+    salary_cert_path VARCHAR(255) COMMENT '收入证明图片路径'
 )COMMENT '工作认证表';
 
 /* 二期工程 */
 CREATE TABLE tri_cert(
-    tri_cert_id INT PRIMARY KEY COMMENT '第三方证明ID',
+    tri_cert_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '第三方证明ID',
     social_security_path VARCHAR(255) COMMENT '社保证明，存路径',
-    credit_report_path VARCHAR(255) COMMENT '征信报告，存路径（）',
-    Foreign Key (tri_cert_id) REFERENCES user_certification(tri_cert_id)
+    credit_report_path VARCHAR(255) COMMENT '征信报告，存路径（）'
 )COMMENT '第三方认证表';
 
 CREATE TABLE immovables_cert(
-    immovable_cert_id INT PRIMARY KEY COMMENT '不动产证明ID',
+    immovable_cert_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '不动产证明ID',
     property_cert_path VARCHAR(255) COMMENT '房产证，存路径', 
     car_cert_path VARCHAR(255) COMMENT '车产证明，存路径',
-    total_value INT COMMENT '总资产值',
-    Foreign Key (immovable_cert_id) REFERENCES user_certification(immovable_cert_id)
+    total_value INT COMMENT '总资产值'
 )COMMENT '不动产认证表';
 
 

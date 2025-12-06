@@ -25,11 +25,6 @@ public class User {
     @NotBlank(message="手机号不能为空")
     private String phone;
 
-    @Pattern(regexp="(^\\d{15}$)|(^\\d{17}([0-9]|X|x)$)",
-        message="身份证号码格式不正确")
-    @NotBlank(message="身份证号码不能为空")
-    private String idCard;
-
     @NotBlank(message="密码不能为空")
     @Pattern(
         regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,20}$",
@@ -44,10 +39,9 @@ public class User {
 
     private LocalDateTime updateTime;
 
-    public User(String name, String password, String idCard, String phone) {
+    public User(String name, String password, String phone) {
         this.userName = name;
         this.password = password;
-        this.idCard = idCard;
         this.phone = phone;
     }
 }
