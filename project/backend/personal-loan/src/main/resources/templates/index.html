@@ -217,19 +217,85 @@
                 </div>
                 <!-- 产品详情模态框 -->
                 <div id="product-detail" class="detail-container">
-                    <h3>产品详情</h3>
+                    <h3>产品详情</h3>          
+                    <!-- 基本信息 -->
                     <p><strong>产品名称：</strong><span id="prod-name">—</span></p>
                     <p><strong>状态：</strong><span id="prod-status">—</span></p>
                     <p><strong>期限范围：</strong><span id="prod-term">—</span></p>
                     <p><strong>促销信息：</strong><span id="prod-promo">—</span></p>
+
+                    <!-- 可选方案表格 -->
                     <h4>可选方案</h4>
-                    <table id="prod-options-table" style="width:100%; margin-top:10px;">
+                    <table id="prod-options-table">
                         <thead>
-                            <tr><th>额度</th><th>期限(月)</th><th>利率</th><th>还款方式</th></tr>
+                            <tr>
+                                <th>额度</th>
+                                <th>期限(月)</th>
+                                <th>利率</th>
+                                <th>还款方式</th>
+                            </tr>
                         </thead>
-                        <tbody></tbody>
+                        <tbody>
+                        <!-- JS 动态填充 -->
+                        </tbody>
                     </table>
-                    <div class="action-buttons">
+
+                    <!-- ============ 功能区（不在 table 内）============ -->
+                    <!-- 批量添加选项 -->
+                    <div class="batch-add">
+                        <h4>批量添加选项</h4>
+                        <table id="batch-option-table">
+                        <thead>
+                            <tr>
+                            <th>额度</th>
+                            <th>期限(月)</th>
+                            <th>利率</th>
+                            <th>还款方式</th>
+                            <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                            <td><input type="number" step="0.01" placeholder="如 10000.00"></td>
+                            <td><input type="number" placeholder="如 12"></td>
+                            <td><input type="number" step="0.0001" placeholder="如 0.049"></td>
+                            <td>
+                                <select>
+                                <option value="等额本息">等额本息</option>
+                                <option value="等额本金">等额本金</option>
+                                <option value="先息后本">先息后本</option>
+                                <option value="一次性还本付息">一次性还本付息</option>
+                                </select>
+                            </td>
+                            <td><button class="add-option-row">+</button></td>
+                            </tr>
+                        </tbody>
+                        </table>
+                        <button id="submit-batch-options detail-btn">批量添加选项</button>
+                    </div>
+                    <!-- 批量删除选项 -->
+                    <div class="batch-delete">
+                        <h4>批量删除选项</h4>
+                        <div id="option-checkbox-container"></div>
+                        <button id="batch-delete-options-btn  detail-btn">批量删除选中选项</button>
+                    </div>
+                    <!-- 编辑产品信息 -->
+                    <div class="edit-product">
+                        <button id="edit-product-btn">编辑产品信息</button>
+                        <div id="edit-product-form" style="display:none; margin-top:10px; padding:15px; border:1px solid #eee; background:#f9f9f9;">
+                        <label>产品名称：<input id="edit-productName" type="text"></label><br>
+                        <label>描述：<textarea id="edit-description" style="width:100%; height:60px; margin:5px 0;"></textarea></label><br>
+                        <label>用途：<input id="edit-loanUsage" type="text"></label><br>
+                        <label>最短期限（月）：<input id="edit-minTerm" type="number"></label><br>
+                        <label>最长期限（月）：<input id="edit-maxTerm" type="number"></label><br>
+                        <label>期限步长（月）：<input id="edit-termStep" type="number"></label><br>
+                        <label>促销信息：<input id="edit-promotionDetails" type="text"></label><br>
+                        <button id="confirm-edit-btn detail-btn">确认修改</button>
+                        <button id="cancel-edit-btn detail-btn">取消</button>
+                        </div>
+                    </div>
+                    <!-- 关闭按钮 -->
+                    <div class="action-buttons" style="margin-top:20px;">
                         <button class="btn btn-primary" onclick="document.getElementById('product-detail').style.display='none'">关闭</button>
                     </div>
                 </div>

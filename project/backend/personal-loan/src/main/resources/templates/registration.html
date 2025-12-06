@@ -17,7 +17,7 @@
                 <!-- 通用错误提示 -->
                 <div id="networkError" class="error-message"></div>
                 <!-- 输入账户信息 -->
-                <div class="base-information">
+                <div class="base-information" id="baseInformation">
                     <div class="infor">
                         <p><i>*</i>用户名(2-20位)</p>
                         <div class="input-group"><input type="text" placeholder="请输入用户名" id="adminName"><span class="decration"></span></div>
@@ -43,17 +43,14 @@
                         </div>
                         <div id="confirmPasswordError" class="error-message"></div>
                     </div>
-                    <div class="infor-btn">
-                        <!-- 登录按钮 -->
-                        <button type = "button" class="login-btn btn">登录</button>
-                        <!-- 确认按钮 -->
-                        <button type = "button" class="confirm-btn btn">确认</button>
-                    </div>
+                    <!-- 登录按钮 -->
+                    <p class="login-btn">返回登录</p>
+                    <!-- 确认按钮 -->
+                    <button type = "button" class="confirm-btn btn">确认</button>
                 </div>
                 
                 <!-- 输入验证信息 -->
                 <div id="authentication"> 
-                    <button class="iconfont icon-close close-btn"></button>
                     <p><i>*</i>手机号码</p>
                     <input type="text" placeholder="请输入手机号码" id="phone">
                     <div id="phoneError" class="error-message"></div>
@@ -62,8 +59,12 @@
                     <input type="text" placeholder="请输入短信验证码" id="smsCode">
                     <div id="smsCodeError" class="error-message"></div> 
                     
-                    <!-- 获取验证码按钮 -->
-                    <button class="get-code-btn btn">获取验证码</button>
+                    <div class="back-line">
+                        <!-- 返回注册信息输入 -->
+                        <p class="close-btn">返回</p>
+                        <!-- 获取验证码按钮 -->
+                        <button class="get-code-btn btn">获取验证码</button>
+                    </div>
                     <!-- 注册按钮 -->
                     <button type="submit" class="register-btn btn">注册</button>
                 </div>

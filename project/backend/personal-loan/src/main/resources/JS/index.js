@@ -173,6 +173,16 @@ function bindEventListeners() {
         productListInstance.loadData();
     }
     })
+
+    // 关闭产品详情
+    document.querySelector('#product-detail .close-btn')?.addEventListener('click', () => {
+      document.getElementById('product-detail').style.display = 'none';
+    })
+
+    // 关闭用户详情
+    document.querySelector('#user-detail .close-btn')?.addEventListener('click', () => {
+      document.getElementById('user-detail').style.display = 'none';
+    })
 }
 
 // 显示面板
@@ -398,7 +408,6 @@ async function submitReview(applicationId, isApproved) {
     }
 }
 
-
 /*
 *==================== 贷款项目管理面板处理 ====================
 */ 
@@ -406,93 +415,15 @@ async function submitReview(applicationId, isApproved) {
 document.getElementById('add-product-btn').addEventListener('click', () => {
   window.location.href = '/addProduct';
 })
-
-
-// 更新单个贷款产品
-async function updateLoanProduct(productId, updateData) {
-    const url = `/api/loan-products/admin/products/${productId}`;
-    console.log(`📡 [PATCH] 更新产品: ${url}`, '请求体:', updateData);
-    try {
-        const response = await AdminWeb.API_CLIENT.request(url, {
-            method: 'PATCH',
-            body: JSON.stringify(updateData)
-        });
-        console.log(`✅ [响应] 产品 ${productId} 更新成功:`, response);
-        alert('产品信息更新成功');
-        return response.data;
-    } catch (error) {
-        console.error(`❌ [错误] 更新产品 ${productId} 失败:`, error);
-        alert('更新失败');
-    }
-}
-// 删除单个贷款产品
-async function deleteLoanProduct(productId) {
-    if (!confirm(`确定删除产品 ID=${productId}？此操作不可逆！`)) return;
-    const url = `/api/loan-products/admin/products/${productId}`;
-    console.log(`📡 [DELETE] 删除产品: ${url}`);
-    try {
-        const response = await AdminWeb.API_CLIENT.request(url, { method: 'DELETE' });
-        console.log(`✅ [响应] 产品 ${productId} 删除成功:`, response);
-        alert('删除成功');
-        return true;
-    } catch (error) {
-        console.error(`❌ [错误] 删除产品 ${productId} 失败:`, error);
-        alert('删除失败');
-    }
-}
-// 批量删除贷款产品
-async function batchDeleteLoanProducts(productIds) {
-    const url = '/api/loan-products/admin/products/batch-delete';
-    const payload = { productIds };
-    console.log(`📡 [POST] 批量删除产品: ${url}`, '请求体:', payload);
-    try {
-        const response = await AdminWeb.API_CLIENT.post(url, payload);
-        console.log(`✅ [响应] 批量删除产品成功:`, response);
-        alert('批量删除成功');
-        return response.data;
-    } catch (error) {
-        console.error(`❌ [错误] 批量删除产品失败:`, error);
-        alert('批量删除失败');
-    }
-}
-// 批量创建产品选项
-async function batchCreateProductOptions(productId, options) {
-    const url = '/api/loan-products/admin/options/batch-create';
-    const payload = { productId, options };
-    console.log(`📡 [POST] 批量添加选项: ${url}`, '请求体:', payload);
-    try {
-        const response = await AdminWeb.API_CLIENT.post(url, payload);
-        console.log(`✅ [响应] 批量添加选项成功:`, response);
-        return response.data;
-    } catch (error) {
-        console.error(`❌ [错误] 批量添加选项失败:`, error);
-        alert('添加选项失败');
-    }
-}
-// 批量更新产品选项
-async function deleteProductOption(optionId) {
-    const url = `/api/loan-products/admin/options/${optionId}`;
-    console.log(`📡 [DELETE] 删除选项: ${url}`);
-    try {
-        const response = await AdminWeb.API_CLIENT.request(url, { method: 'DELETE' });
-        console.log(`✅ [响应] 选项 ${optionId} 删除成功:`, response);
-        return response;
-    } catch (error) {
-        console.error(`❌ [错误] 删除选项 ${optionId} 失败:`, error);
-    }
-}
 // ============== 贷款项目展示 ===============
 let productListInstance = null;
 
+// 贷款产品列表事件绑定
 function renderProductRow(product) {
   const tr = document.createElement('tr');
   tr.setAttribute('data-product-id', product.productId);
+  const usage = (product.usage || '').length > 15 ? product.usage.substring(0, 15) + '...' : product.usage;
   
-  // 截断长文本
-  const usage = (product.usage || '').length > 15 
-    ? product.usage.substring(0, 15) + '...' 
-    : product.usage;
-
   tr.innerHTML = `
     <td>${product.productId}</td>
     <td>${product.productName || '—'}</td>
@@ -500,17 +431,45 @@ function renderProductRow(product) {
     <td>${usage}</td>
     <td>${product.updateTime ? new Date(product.updateTime).toLocaleString() : '—'}</td>
     <td>${product.createTime ? new Date(product.createTime).toLocaleString() : '—'}</td>
-    <td><button class="view-prod-btn">查看详情</button></td>
+    <td>
+      ${product.status === 'ACTIVE' 
+        ? '<button class="toggle-status-btn" data-action="deactive">下架</button>' 
+        : '<button class="toggle-status-btn" data-action="active">上架</button>'}
+      <button class="delete-prod-btn">删除</button>
+    </td>
   `;
-  
-  tr.querySelector('.view-prod-btn').addEventListener('click', (e) => {
-    e.stopPropagation();
-    showProductDetail(product.productId);
-  });
-  
-  return tr;
-}
 
+  tr.addEventListener('click', (e) => {
+    if (!e.target.closest('.toggle-status-btn') && !e.target.closest('.delete-prod-btn')) {
+      showProductDetail(product.productId);
+    }
+  });
+
+  // 上架/下架按钮
+  const toggleBtn = tr.querySelector('.toggle-status-btn');
+  toggleBtn?.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    const action = toggleBtn.dataset.action; // 'active' 或 'deactive'
+    await toggleLoanProductStatus(product.productId, action);
+  })
+
+  // 删除按钮
+  const deleteBtn = tr.querySelector('.delete-prod-btn');
+  deleteBtn?.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    if (confirm(`确定删除产品【${product.productName}】？`)) {
+    try {
+      await AdminWeb.API_CLIENT.deleteLoanProduct(product.productId); 
+      initProductList(); // 刷新列表
+    } catch (error) {
+      alert('删除失败：' + error.message);
+    }
+    }
+  })
+
+  return tr
+}
+// 显示产品详情
 async function showProductDetail(productId) {
   try {
     const detail = await AdminWeb.API_CLIENT.getLoanProductById(productId);
@@ -546,8 +505,141 @@ async function showProductDetail(productId) {
     console.error('获取产品详情失败:', error);
     alert('加载产品详情失败');
   }
-}
+  // 渲染选项复选框用于批量删除
+  const checkboxContainer = document.getElementById('option-checkbox-container');
+  checkboxContainer.innerHTML = '';
+  if (data.options && data.options.length) {
+    data.options.forEach(opt => {
+      const label = document.createElement('label');
+      label.style.display = 'block';
+      label.innerHTML = `
+        <input type="checkbox" value="${opt.optionId}"> 额度: ¥${opt.loanAmount}, 期限: ${opt.loanPeriod}月, 利率: ${(opt.interestRate * 100).toFixed(2)}%, 方式: ${opt.repaidType}
+      `;
+      checkboxContainer.appendChild(label);
 
+      // 单独删除按钮（可加在每行）
+      const row = tbody.querySelector(`tr:nth-child(${opt.index || 1})`);
+      // 或者在表格中加一列，这里简化：在复选框旁加
+      const delBtn = document.createElement('button');
+      delBtn.textContent = '删除';
+      delBtn.style.marginLeft = '10px';
+      delBtn.onclick = async () => {
+        if (confirm('确定删除该选项？')) {
+          await deleteProductOption(opt.optionId);
+          showProductDetail(productId); // 刷新详情
+        }
+      };
+      label.appendChild(delBtn);
+    });
+  }
+
+  // 批量添加选项 - 动态添加行
+  document.querySelectorAll('.add-option-row').forEach(btn => btn.remove()); // 清理旧按钮
+  const batchTableBody = document.querySelector('#batch-option-table tbody');
+  const addRowBtn = batchTableBody.querySelector('button.add-option-row');
+  if (addRowBtn) addRowBtn.remove();
+
+  const newRowBtn = document.createElement('button');
+  newRowBtn.textContent = '+';
+  newRowBtn.className = 'add-option-row';
+  newRowBtn.style.marginLeft = '5px';
+  newRowBtn.onclick = () => {
+    const newRow = document.createElement('tr');
+    newRow.innerHTML = `
+      <td><input type="number" step="0.01" placeholder="如 10000.00"></td>
+      <td><input type="number" placeholder="如 12"></td>
+      <td><input type="number" step="0.0001" placeholder="如 0.049"></td>
+      <td>
+        <select>
+          <option value="等额本息">等额本息</option>
+          <option value="等额本金">等额本金</option>
+          <option value="先息后本">先息后本</option>
+          <option value="一次性还本付息">一次性还本付息</option>
+        </select>
+      </td>
+      <td><button class="add-option-row">+</button></td>
+    `;
+    batchTableBody.appendChild(newRow);
+    newRow.querySelector('.add-option-row').onclick = () => {
+      const tr = newRow.cloneNode(true);
+      batchTableBody.appendChild(tr);
+      tr.querySelector('.add-option-row').onclick = addRowBtn.onclick;
+    };
+  };
+  batchTableBody.lastElementChild?.querySelector('td:last-child')?.appendChild(newRowBtn);
+
+  // 提交批量选项
+  document.getElementById('submit-batch-options').onclick = async () => {
+    const rows = batchTableBody.querySelectorAll('tr');
+    const options = [];
+    rows.forEach(row => {
+      const inputs = row.querySelectorAll('input, select');
+      if (inputs.length >= 4) {
+        const loanAmount = parseFloat(inputs[0].value);
+        const loanPeriod = parseInt(inputs[1].value);
+        const interestRate = parseFloat(inputs[2].value);
+        const repaidType = inputs[3].value;
+        if (!isNaN(loanAmount) && !isNaN(loanPeriod) && !isNaN(interestRate)) {
+          options.push({ loanAmount, loanPeriod, interestRate, repaidType });
+        }
+      }
+    });
+    if (options.length === 0) {
+      alert('请填写至少一个有效选项');
+      return;
+    }
+    await batchCreateProductOptions(productId, options);
+    showProductDetail(productId); // 刷新
+  };
+
+  // 批量删除选项
+  document.getElementById('batch-delete-options-btn').onclick = async () => {
+  const checked = checkboxContainer.querySelectorAll('input[type="checkbox"]:checked');
+  const ids = Array.from(checked).map(cb => parseInt(cb.value));
+  if (ids.length === 0) {
+    alert('请选择要删除的选项');
+    return;
+  }
+  if (confirm(`确定删除 ${ids.length} 个选项？`)) {
+    await AdminWeb.API_CLIENT.batchDeleteOptions(ids);
+    showProductDetail(productId);
+  }
+};
+
+  // 编辑产品信息
+  document.getElementById('edit-product-btn').onclick = () => {
+    document.getElementById('edit-product-form').style.display = 'block';
+    document.getElementById('edit-productName').value = data.productName || '';
+    document.getElementById('edit-description').value = data.description || '';
+    document.getElementById('edit-loanUsage').value = data.usage || '';
+    document.getElementById('edit-minTerm').value = data.minTerm || '';
+    document.getElementById('edit-maxTerm').value = data.maxTerm || '';
+    document.getElementById('edit-termStep').value = data.termStep || '';
+    document.getElementById('edit-promotionDetails').value = data.promotionDetails || '';
+  };
+
+  document.getElementById('cancel-edit-btn').onclick = () => {
+    document.getElementById('edit-product-form').style.display = 'none';
+  };
+
+  document.getElementById('confirm-edit-btn').onclick = async () => {
+    const updateData = {
+      productName: document.getElementById('edit-productName').value.trim(),
+      description: document.getElementById('edit-description').value.trim(),
+      loanUsage: document.getElementById('edit-loanUsage').value.trim(),
+      minTerm: parseInt(document.getElementById('edit-minTerm').value) || undefined,
+      maxTerm: parseInt(document.getElementById('edit-maxTerm').value) || undefined,
+      termStep: parseInt(document.getElementById('edit-termStep').value) || undefined,
+      promotionDetails: document.getElementById('edit-promotionDetails').value.trim() || undefined
+    };
+    // 过滤空值
+    Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
+    await AdminWeb.API_CLIENT.updateLoanProduct(productId, updateData);
+    document.getElementById('edit-product-form').style.display = 'none';
+    showProductDetail(productId);
+  };
+}
+// 产品列表初始化
 async function initProductList() {
   if (productListInstance) return;
   
@@ -595,6 +687,94 @@ async function initProductList() {
   
   productListInstance.render();
 }
+
+// ============== 其他功能函数 ===============
+// 更新单个贷款产品
+async function updateLoanProduct(productId, updateData) {
+    const url = `/api/loan-products/admin/${productId}`;
+    console.log(`[PATCH] 更新产品: ${url}`, '请求体:', updateData);
+    try {
+        const response = await AdminWeb.API_CLIENT.request(url, {
+            method: 'PATCH',
+            body: JSON.stringify(updateData)
+        });
+        console.log(`✅ [响应] 产品 ${productId} 更新成功:`, response);
+        alert('产品信息更新成功');
+        return response.data;
+    } catch (error) {
+        console.error(`❌ [错误] 更新产品 ${productId} 失败:`, error);
+        alert('更新失败');
+    }
+}
+// 删除单个贷款产品
+// async function deleteLoanProduct(productId) {
+//   if (!confirm(`确定删除产品 ID=${productId}？`)) return;
+//   try {
+//     await AdminWeb.API_CLIENT.deleteLoanProduct(productId); 
+//     alert('删除成功')
+//     initProductList()
+//   } catch (error) {
+//     console.error('删除失败:', error);
+//     alert('删除失败：' + (error.message || '请重试'));
+//   }
+// }
+// 上下架单个贷款产品
+async function toggleLoanProductStatus(productId, action) {
+  // action: 'active' 或 'deactive'
+  const url = `${AdminWeb.API_CONFIG.baseUrl}/api/loan-products/admin/${productId}/${action}`;
+  
+  try {
+    const response = await AdminWeb.API_CLIENT.post(url, null);
+    alert(`产品${action === 'active' ? '上架' : '下架'}成功`);
+    initProductList();
+    return response;
+  } catch (error) {
+    console.error('操作失败:', error);
+    alert('操作失败：' + (error.message || '请重试'));
+  }
+}
+// 批量删除贷款产品
+async function batchDeleteLoanProducts(productIds) {
+    const url = '/api/loan-products/admin/products/batch-delete';
+    const payload = { productIds };
+    console.log(`📡 [POST] 批量删除产品: ${url}`, '请求体:', payload);
+    try {
+        const response = await AdminWeb.API_CLIENT.post(url, payload);
+        console.log(`✅ [响应] 批量删除产品成功:`, response);
+        alert('批量删除成功');
+        return response.data;
+    } catch (error) {
+        console.error(`❌ [错误] 批量删除产品失败:`, error);
+        alert('批量删除失败');
+    }
+}
+// 批量创建产品选项
+async function batchCreateProductOptions(productId, options) {
+    const url = '/api/loan-products/admin/options/batch-create';
+    const payload = { productId, options };
+    console.log(`[POST] 批量添加选项: ${url}`, '请求体:', payload);
+    try {
+        const response = await AdminWeb.API_CLIENT.post(url, payload);
+        console.log(`✅ [响应] 批量添加选项成功:`, response);
+        return response.data;
+    } catch (error) {
+        console.error(`❌ [错误] 批量添加选项失败:`, error);
+        alert('添加选项失败');
+    }
+}
+// 批量更新产品选项
+async function deleteProductOption(optionId) {
+    const url = `/api/loan-products/admin/options/${optionId}`;
+    console.log(`[DELETE] 删除选项: ${url}`);
+    try {
+        const response = await AdminWeb.API_CLIENT.request(url, { method: 'DELETE' });
+        console.log(`✅ [响应] 选项 ${optionId} 删除成功:`, response);
+        return response;
+    } catch (error) {
+        console.error(`❌ [错误] 删除选项 ${optionId} 失败:`, error);
+    }
+}
+
 // ============== 添加贷款项目标签页处理 ===============
 // ============= 添加贷款项目功能实现函数 =============
 // 获取弹窗中的表单数据
@@ -723,15 +903,8 @@ function renderUserRow(user) {
     <td>¥${(user.totalRepaidAmount || 0).toLocaleString()}</td>
     <td><button class="view-user-btn">查看详情</button></td>
   `;
-  
-  // 绑定点击事件（委托也可，这里直接绑）
-  tr.querySelector('.view-user-btn').addEventListener('click', (e) => {
-    e.stopPropagation(); // 防止触发行点击
-    showUserDetail(user.userId);
-  });
-  
-  // 行点击也看详情（可选）
-  // tr.addEventListener('click', () => showUserDetail(user.userId));
+  // 行点击事件：查看详情
+  tr.addEventListener('click', () => showUserDetail(user.userId));
   
   return tr;
 }

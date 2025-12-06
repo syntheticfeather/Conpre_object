@@ -29,10 +29,10 @@ i {
 /* 输入框统一样式 */
 input {
     padding: 7px 5px;
-    width: 307px;
-    height: 33px;
+    width: 370px;
+    height: 40px;
     
-    font-size: 18px;
+    font-size: 20px;
     color: #aaadad;
     border: none;
     border-radius: 5px 0 0 5px;
@@ -65,10 +65,6 @@ body {
     background: #3e404d;
     border: 2px solid rgba(255, 255, 255, 0.5);
     border-radius: 20px;
-}
-.main:hover {
-    box-shadow: 0 0 40px rgba(255,255,255,0.5);
-    background: #46474e;
 }
 /* 标题 */
 .main h2 {
@@ -178,13 +174,8 @@ body {
 }
 
 /*用户信息区按钮*/
-.infor-btn {
-    display: flex;
-    justify-content:space-around;
-}
 /* 注册按钮  */
-.main .login-btn,
-.confirm-btn  {
+.main .confirm-btn  {
     margin-left: 10px;
     width: 119px;
     height: 45px;
@@ -195,13 +186,22 @@ body {
     color: #fff;
     border: none;
 }
+.login-btn {
+    display: block;
+    margin-top: -10px;
+    margin-right: 252px;
+    margin-bottom: 10px;
 
+    font-size: 17px;
+    color: #3edca7;
+}
 /***************** 输入验证信息 ****************/
 /* 绑定手机号 */
 #authentication {
     display: none;
     flex-direction: column;
     align-content: center;
+    margin-top: -36px;
  
     position: fixed;
     top: 50%; 
@@ -210,25 +210,29 @@ body {
     z-index: 1000;
 
     padding: 10px 20px;
-    width: 390px;
+    width: 440px;
     background: #3e404d;
-    border: 2px solid rgba(255, 255, 255, 0.5);
     border-radius: 10px;
 }
 #authentication input,p {
     margin-left: 15px;
     border-radius: 5px;
 }
+#phone, #smsCode {
+    margin-bottom: 19px;
+}
+.back-line {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
 /* 获取验证码按钮  */
 .get-code-btn {
-    margin-left: 190px;
-    margin-top: 6px;
-    margin-bottom: 12px;
-
+    margin-left: 155px;
     width: 127px;
     height: 33px;
 
-    font-size: 20px;
+    font-size: 17px;
     line-height: 20px;
     font-weight: 600;
     color: #fff;
@@ -236,17 +240,9 @@ body {
 }
 /* 关闭按钮  */
 .close-btn {
-    margin-left: 340px;
-    margin-top: -13px;
-
-    width: 30px;
-    height: 30px;
-    background-color: rgba(0, 0, 0, 0);
-
-    font-size: 24px;
-    font-weight: 600;
-    color: #fff;
-    border: none;
+    font-size: 17px;
+    font-weight: 400;
+    color: #3edca7;
     cursor: pointer;
 }
 /* 注册按钮 */

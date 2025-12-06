@@ -29,7 +29,7 @@ function bindEventListeners() {
         DOM_ELEMENTS.loginBtn.addEventListener('click', handleLogin)
     }
 
-    //关闭验证弹窗按钮绑定
+    //注册信息确认按钮绑定
     if (DOM_ELEMENTS.confirmBtn) {
         DOM_ELEMENTS.confirmBtn.addEventListener('click', handleConfirm)
     }
@@ -245,68 +245,19 @@ async function handleRegisterSubmit(e) {
     }
 }
 
-// 获取验证码处理-待修改
-// async function handleGetCode() {
-//     const phone = DOM_ELEMENTS.phoneInput ? DOM_ELEMENTS.phoneInput.value.trim() : ''
-    
-//     // 验证手机号格式
-//     if (!phone) {
-//         showFieldError('phone', '请输入手机号码')
-//         return
-//     }
-    
-//     if (!/^1[3-9]\d{9}$/.test(phone)) {
-//         showFieldError('phone', '请输入正确的手机号码')
-//         return
-//     }
-    
-//     try {
-//         // 禁用按钮，防止重复点击
-//         DOM_ELEMENTS.getCodeBtn.disabled = true
-//         DOM_ELEMENTS.getCodeBtn.textContent = '发送中...'
-        
-//         // 这里应该调用发送验证码的API
-//         // await API_CLIENT.sendSms(phone)
-        
-//         // 模拟发送成功
-//         console.log('发送验证码到:', phone)
-//         startCountdown()
-        
-//     } catch (error) {
-//         console.error('发送验证码失败:', error)
-//         showGenericError('发送验证码失败，请重试')
-//         DOM_ELEMENTS.getCodeBtn.disabled = false
-//         DOM_ELEMENTS.getCodeBtn.textContent = '获取验证码'
-//     }
-// }
-
-// 倒计时函数-待修改
-// function startCountdown() {
-//     let countdown = 60
-//     DOM_ELEMENTS.getCodeBtn.textContent = `${countdown}秒后重试`
-    
-//     const timer = setInterval(() => {
-//         countdown--
-//         DOM_ELEMENTS.getCodeBtn.textContent = `${countdown}秒后重试`
-        
-//         if (countdown <= 0) {
-//             clearInterval(timer)
-//             DOM_ELEMENTS.getCodeBtn.disabled = false
-//             DOM_ELEMENTS.getCodeBtn.textContent = '获取验证码'
-//         }
-//     }, 1000)
-// }
-
 // 跳转登录页面
 function handleLogin() {
     console.log('关闭注册页面，返回登录页')
     window.location.href = '/login'
 }
+// 验证信息输入弹窗显示
 function handleConfirm() {
+    document.getElementById('baseInformation').style.display = 'none'
     document.getElementById('authentication').style.display = 'flex'
 }
-// 跳转登录页面
+// 验证信息输入弹窗关闭
 function handleClose() {
+    document.getElementById('baseInformation').style.display = 'flex'
     document.getElementById('authentication').style.display = 'none'
 }
 

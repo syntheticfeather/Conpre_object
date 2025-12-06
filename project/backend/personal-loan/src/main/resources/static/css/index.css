@@ -8,7 +8,6 @@ body {
 /* 最大容器 */
 .container {
     display: flex;
-    min-height: 730px;
 }
 
 /* 顶部导航栏区域 */
@@ -239,6 +238,45 @@ body {
 
     width: 100%;
     height: 350px;
+}
+/* 产品详情区域 */
+.product-detail #prod-option-table {
+     width:100%; 
+     margin-top:10px; 
+     border-collapse: collapse;
+}
+#prod-option-table th {
+     border:1px solid #ddd; 
+     padding:8px;
+}
+/* 批量管理产品选项 */
+.batch-add {
+    margin-top:20px;
+}
+#batch-options-table {
+    width:100%; 
+     margin-top:10px; 
+}
+#batch-options-table th,td {
+     padding:8px;
+}
+/* 批量删除 */
+.batch-delete {
+    margin-top:20px;
+}
+#option-checkbox-container {
+    margin-top: 10px;
+}
+/* 详情页按钮统一样式 */
+#detail-btn {
+    margin-top: 10px;
+}
+/* 编辑产品信息 */
+.edit-product {
+  margin-top:20px;
+}
+#confirm-edit-btn {
+    margin-right:10px;
 }
 
 /************* 用户管理面板 *************/  
