@@ -1,0 +1,71 @@
+        <div class="black-dashboard dashboard" id="black-management-content">
+            <!-- 左侧子导航栏 -->
+            <div class="side-bar">
+                <ul>
+                    <li class="side-item">
+                        <button class="side-link active" data-target="loan-apply">用户管理</button>
+                        <i class="iconfont icon-jinru"></i>
+                    </li>
+                    <li class="side-item">
+                        <button class="side-link" data-target="home-page">黑名单管理</button>
+                        <i class="iconfont icon-jinru"></i>
+                    </li>
+                </ul>
+            </div>
+            <!-- 右侧内容面板 -->
+            <div class="main-content">
+                <div class="header">
+                    <h2 class="title">黑名单用户管理</h2>
+                </div>
+                <div class="credit-search">
+                    <input type="text" placeholder="请输入信誉分表达式，如: <100, >=80" id="creditExprInput">
+                    <button class="btn" id="credit-search-btn">查询</button>
+                </div>
+                <!-- 黑名单用户列表 -->
+                <div class="user-content table-content">
+                    <div class="user-table data-table">
+                        <table id="black-user-table">
+                            <thead>
+                                <tr>
+                                    <th>序号</th>
+                                    <th>用户名</th>
+                                    <th>信誉分</th>
+                                    <th>目前借贷情况</th>
+                                    <th>总交易笔数</th>
+                                    <th>总贷款金额</th>
+                                    <th>总还款金额</th>
+                                    <th colspan="4">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- JS填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- 分页控件 -->
+                    <div id="user-pagination" class="pagination">
+                        <button id="prev-user-page" disabled>上一页</button>
+                        <span id="user-page-info">第 1 页，共 1 页</span>
+                        <button id="next-user-page">下一页</button>
+                    </div>
+                </div>
+                
+                <!-- 黑名单用户详情框 -->
+                <div id="black-user-detail" class="detail-container">
+                    <div id="user-info-section">
+                        <h3>用户基本信息</h3>
+                        <p><strong>真实姓名：</strong><span id="user-real-name">—</span></p>
+                        <p><strong>手机号：</strong><span id="user-phone">—</span></p>
+                        <p><strong>注册时间：</strong><span id="user-register-time">—</span></p>
+                        <p><strong>信誉分：</strong><span id="user-credit-score" style="color:#e74c3c;">—</span></p>
+                    </div>
+                    <div id="user-auth-section">
+                        <h3>认证材料</h3>
+                        <div id="user-materials-container"></div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="document.getElementById('user-detail').style.display='none'">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>

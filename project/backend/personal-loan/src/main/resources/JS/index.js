@@ -235,7 +235,8 @@ function switchToPanel(target) {
     if (target === 'user-management') {
       initUserList(); // 初始化用户列表
     } else if (target === 'loan-management') {
-      initProductList(); // 后面会写
+      initProductList() // 后面会写
+      // refreshProductList()
     }
 }
 
@@ -687,7 +688,41 @@ async function initProductList() {
   
   productListInstance.render();
 }
+// async function initProductList() {
+//   refreshProductList()
+// }
+// // 获取并渲染产品列表（可多次调用）
+// async function refreshProductList() {
+//   let allProducts = [];
+//   try {
+//     const res = await AdminWeb.API_CLIENT.getAllLoanProducts();
+//     if (res.code === 200) allProducts = res.data;
+//   } catch (err) {
+//     console.error('获取产品列表失败', err);
+//     allProducts = [] // 确保即使出错也能清空或保留旧数据
+//   }
 
+//   // 如果是首次初始化，创建实例
+//   if (!productListInstance) {
+//     const pageSize = 5;
+//     const totalPages = Math.ceil(allProducts.length / pageSize);
+//     productListInstance = {
+//       currentPage: 1,
+//       totalPages,
+//       allData: all_products,
+//       pageSize,
+//       render: function() { /*...*/ },
+//       loadData: function() { this.render(); }
+//     };
+//     productListInstance.render();
+//   } else {
+//     // 后续刷新：更新数据并重新渲染当前页
+//     productListInstance.allData = allProducts;
+//     productListInstance.totalPages = Math.ceil(allProducts.length / productListInstance.pageSize);
+//     productListInstance.currentPage = Math.min(productListInstance.currentPage, productListInstance.totalPages) || 1;
+//     productListInstance.render(); // 重新渲染
+//   }
+// }
 // ============== 其他功能函数 ===============
 // 更新单个贷款产品
 async function updateLoanProduct(productId, updateData) {
@@ -721,16 +756,17 @@ async function updateLoanProduct(productId, updateData) {
 // 上下架单个贷款产品
 async function toggleLoanProductStatus(productId, action) {
   // action: 'active' 或 'deactive'
-  const url = `${AdminWeb.API_CONFIG.baseUrl}/api/loan-products/admin/${productId}/${action}`;
+  const url = `${AdminWeb.API_CONFIG.baseUrl}/api/loan-products/admin/${productId}/${action}`
   
   try {
-    const response = await AdminWeb.API_CLIENT.post(url, null);
-    alert(`产品${action === 'active' ? '上架' : '下架'}成功`);
-    initProductList();
-    return response;
+    const response = await AdminWeb.API_CLIENT.post(url, null)
+    alert(`产品${action === 'active' ? '上架' : '下架'}成功`)
+    // refreshProductList()
+    initProductList()
+    return response
   } catch (error) {
-    console.error('操作失败:', error);
-    alert('操作失败：' + (error.message || '请重试'));
+    console.error('操作失败:', error)
+    alert('操作失败：' + (error.message || '请重试'))
   }
 }
 // 批量删除贷款产品
@@ -775,109 +811,6 @@ async function deleteProductOption(optionId) {
     }
 }
 
-// ============== 添加贷款项目标签页处理 ===============
-// ============= 添加贷款项目功能实现函数 =============
-// 获取弹窗中的表单数据
-// function handleNewLoanProductData() {
-//     // 获取基础信息
-//     const productName = document.getElementById('productName').value.trim()
-//     const description = document.getElementById('description').value.trim()
-//     const loanUsage = document.getElementById('loanUsage').value.trim()
-//     const minTerm = parseInt(document.getElementById('minTerm').value) || 0
-//     const maxTerm = parseInt(document.getElementById('maxTerm').value) || 0
-//     const termStep = parseInt(document.getElementById('termStep').value) || 0
-//     const promotionDetails = document.getElementById('promotionDetails').value.trim()
-
-//     // 获取选项表格数据
-//     const options = []
-//     const tableRows = document.querySelectorAll('#option-table tbody tr')
-    
-//     tableRows.forEach(row => {
-//         const inputs = row.querySelectorAll('input[type="text"]')
-//         if (inputs.length >= 4) { // 确保有四个输入框
-//             const option = {
-//                 loanAmount: parseFloat(inputs[0].value) || 0,
-//                 interestRate: parseFloat(inputs[1].value) || 0,
-//                 loanPeriod: parseInt(inputs[2].value) || 0,
-//                 repaidType: inputs[3].value.trim()
-//             }
-//             options.push(option)
-//         }
-//     })
-//     // 构建完整的请求数据
-//     const productData = {
-//         productName,
-//         description,
-//         loanUsage,
-//         minTerm,
-//         maxTerm,
-//         termStep,
-//         promotionDetails,
-//         options
-//     }
-//     return productData
-// }
-// //表单提交按钮事件绑定
-// document.getElementById('add-loan-product').addEventListener('click', async function() {
-//     try {
-//         // 验证必填字段
-//         const productName = document.getElementById('productName').value.trim()
-//         if (!productName) {
-//             alert('请输入产品名称')
-//             return
-//         }
-//         const options = document.querySelectorAll('#option-table tbody tr')
-//         if (options.length === 0) {
-//             alert('至少需要添加一个贷款选项')
-//             return
-//         }
-//         // 获取并验证数据
-//         const productData = handleNewLoanProductData()
-//         // 调用API客户端提交数据
-//         const response = await API_CLIENT.addLoanProduct(productData)
-//         console.log('新增贷款产品请求数据:', productData)
-//         alert('新增贷款产品请求数据:', productData)
-//         console.log('新增贷款产品成功:', response)
-//         alert('贷款产品添加成功！')
-//         // 关闭弹窗
-//         document.getElementById('add-new-product').style.display = 'none'
-//         // 重置表单
-//         resetAddLoanProductForm()
-//     } catch (error) {
-//         console.error('新增贷款产品失败:', error)
-//         alert('添加失败，请检查输入信息或稍后重试')
-//     }
-// })
-// // 提交后重置添加贷款产品表单函数 
-// function resetAddLoanProductForm() {
-//     // 重置基础输入框
-//     document.getElementById('productName').value = ''
-//     document.getElementById('description').value = ''
-//     document.getElementById('loanUsage').value = ''
-//     document.getElementById('minTerm').value = ''
-//     document.getElementById('maxTerm').value = ''
-//     document.getElementById('termStep').value = ''
-//     document.getElementById('promotionDetails').value = ''
-    
-//     // 重置表格，只保留初始行
-//     const tbody = document.querySelector('#option-table tbody')
-//     tbody.innerHTML = `
-//         <tr>  
-//             <td><input type="text" placeholder="请输入贷款额度"></td>
-//             <td><input type="text" placeholder="请输入贷款期限"></td>
-//             <td><input type="text" placeholder="请输入年化利率"></td>
-//             <td><input type="text" placeholder="请输入还款方式"></td>
-//             <td><button class="delete-btn">删除</button></td>
-//         </tr>
-//     `
-//     // 重新绑定删除按钮事件
-//     document.querySelectorAll('.delete-btn').forEach(btn => {
-//         btn.addEventListener('click', function() {
-//             this.closest('tr').remove()
-//         })
-//     })
-// }
-
 
 
 // ==================== 用户管理面板处理 ====================
@@ -901,11 +834,27 @@ function renderUserRow(user) {
     <td>${user.totalTransactionCount || 0}</td>
     <td>¥${(user.totalLoanAmount || 0).toLocaleString()}</td>
     <td>¥${(user.totalRepaidAmount || 0).toLocaleString()}</td>
-    <td><button class="view-user-btn">查看详情</button></td>
+    <td><button id="black-btn">加入黑名单</button></td>
   `;
   // 行点击事件：查看详情
   tr.addEventListener('click', () => showUserDetail(user.userId));
   
+  // 加入黑名单按钮
+  const deleteBtn = tr.querySelector('#black-btn');
+  deleteBtn?.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    if (confirm(`确定加入黑名单用户【${user.userName}】？`)) {
+      try {
+        const level = prompt('请输入黑名单等级:')
+        await AdminWeb.API_CLIENT.addToBlacklist(user.userId,level)
+        alert('加入黑名单成功')
+        initUserList() // 刷新列表
+      } catch (error) {
+        alert('加入黑名单失败：' + error.message)
+      }
+    }
+  })
+
   return tr;
 }
 // 初始化用户列表（在 switchToPanel 中调用）
@@ -1007,6 +956,68 @@ async function showUserDetail(userId) {
     alert('加载用户详情失败');
   }
 }
+
+// 初始化黑名单列表
+async function initBlacklist() {
+  if (userListInstance) return; // 避免重复初始化
+
+    const fetchData = async (page, pageSize) => {
+    const response = await AdminWeb.API_CLIENT.getBlacklist()
+    if (response.code === 200) {
+      return response.data; 
+    } else {
+      throw new Error(response.message);
+    }
+  }
+
+  // 分页
+  let allUsers = [];
+  try {
+    const res = await AdminWeb.API_CLIENT.getUserStats();
+    if (res.code === 200) allUsers = res.data;
+  } catch (err) {
+    console.error('获取黑名单列表失败', err);
+  }
+
+  // 自定义分页逻辑
+  const pageSize = 5;
+  const totalPages = Math.ceil(allUsers.length / pageSize);
+
+  userListInstance = {
+    currentPage: 1,
+    totalPages: totalPages,
+    allData: allUsers,
+    pageSize: pageSize,
+    render: function() {
+      const start = (this.currentPage - 1) * this.pageSize;
+      const pageData = this.allData.slice(start, start + this.pageSize);
+      const tbody = document.getElementById('user-table').querySelector('tbody');
+      tbody.innerHTML = '';
+      
+      if (pageData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">暂无用户</td></tr>';
+        return;
+      }
+      
+      pageData.forEach(user => {
+        const row = renderUserRow(user);
+        tbody.appendChild(row);
+      });
+      
+      // 更新分页信息
+      document.getElementById('user-page-info').textContent = 
+        `第 ${this.currentPage} 页，共 ${this.totalPages} 页`;
+      document.getElementById('prev-user-page').disabled = (this.currentPage <= 1);
+      document.getElementById('next-user-page').disabled = (this.currentPage >= this.totalPages);
+    },
+    loadData: function() {
+      this.render();
+    }
+  };
+  
+  userListInstance.render();
+}
+
 
 
 // 通过申请ID获取用户申请详情

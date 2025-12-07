@@ -310,7 +310,13 @@ body {
 }
 
 /* 用户列表 */
-
+#user-table #black-btn {
+    color: #474747;
+}
+#user-table #black-btn:hover {
+    text-decoration: underline;
+    color: #000;
+}
 /* 按信誉分查询用户 */
 .credit-search {
     display: flex;
@@ -340,6 +346,14 @@ body {
 .table-body {
     font-size: 15px;
     font-weight: 500;
+}
+
+/* 黑名单用户表 */
+.black-user-content {
+    display: none;
+}
+#black-user-detail {
+    display: none;
 }
 
 /************* 风险与催收管理面板特定样式 *************/
