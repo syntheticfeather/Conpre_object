@@ -349,7 +349,7 @@ body {
 }
 
 /* 黑名单用户表 */
-.black-user-content {
+#black-user-content {
     display: none;
 }
 #black-user-detail {

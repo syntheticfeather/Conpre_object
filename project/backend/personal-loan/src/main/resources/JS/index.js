@@ -11,9 +11,12 @@ async function init() {
         // 检查令牌时效
         // checkLoginStatus()
 
-        // 默认显示待办审核面板
-        switchToPanel('loan-apply')
+        // 检查是否有上次保存的面板
+        const savedPanel = sessionStorage.getItem('activePanel') || 'loan-apply'
         
+        // 默认显示待办审核面板
+        switchToPanel(savedPanel)
+
         // 绑定事件监听
         bindEventListeners()
         
@@ -88,7 +91,7 @@ function bindEventListeners() {
         button.addEventListener('click', function() {
             const target = this.getAttribute('data-target')
             if (target) {
-                switchToPanel(target)
+                switchToContent(target)
             }
         })
     })
@@ -185,11 +188,12 @@ function bindEventListeners() {
     })
 }
 
-// 显示面板
+// 面板显示切换
 function switchToPanel(target) {
-    console.log('切换到面板:', target)
-    
-// 隐藏所有面板
+  console.log('切换到面板:', target)
+  // 保存当前面板到 sessionStorage
+  sessionStorage.setItem('activePanel', target)
+  // 隐藏所有面板
     document.querySelectorAll('.dashboard').forEach(panel => {
         panel.style.display = 'none'
         panel.classList.remove('active') // 移除active类
@@ -240,37 +244,30 @@ function switchToPanel(target) {
     }
 }
 
-// 图表调整大小函数
-function resizeCharts() {
-    if (window.pieChart) window.pieChart.resize()
-    if (window.lineChart1) window.lineChart1.resize()
-    if (window.lineChart2) window.lineChart2.resize()
+function switchToContent(target) {
+  switch (target) {
+    case 'user-main-content':
+      document.getElementById('user-main-content').style.display = 'block';
+      document.getElementById('black-main-content').style.display = 'none';
+      break;
+    case 'black-main-content':
+      document.getElementById('user-main-content').style.display = 'none';
+      document.getElementById('black-main-content').style.display = 'block';
+      break;
+    default:
+      console.error('未知内容:', target);
+  }
 }
 
-
 /*
-*==================== 待办审核面板处理 ====================
+*
+* 待办审核面板处理 
+*
 */ 
-// ============== 面板初始化 ===============
-// 加载待审核申请列表
+// ============== 待办审核列表初始化 ===============
 let _allPendingApps = [] // 全量数据
 let _currentPage = 1
 const PENDING_PAGE_SIZE = 5
-
-// 渲染分页信息
-function updatePendingPagination(total) {
-  const totalPages = Math.ceil(total / PENDING_PAGE_SIZE) || 1;
-  const pageInfoEl = document.getElementById('pending-page-info');
-  if (pageInfoEl) {
-    pageInfoEl.textContent = total === 0 ? '共 0 条' : `第 ${_currentPage} 页，共 ${totalPages} 页`;
-  }
-
-  // 控制按钮状态
-  const prevBtn = document.getElementById('prev-pending-page');
-  const nextBtn = document.getElementById('next-pending-page');
-  if (prevBtn) prevBtn.disabled = (_currentPage <= 1);
-  if (nextBtn) nextBtn.disabled = (_currentPage >= totalPages);
-}
 
 // 加载全部待办申请
 async function fetchAndRenderPendingList() {
@@ -289,6 +286,21 @@ async function fetchAndRenderPendingList() {
       document.getElementById('apply-table').querySelector('tbody').innerHTML = '<tr><td colspan="6" style="text-align:center;color:#e74c3c;">加载失败</td></tr>'
       updatePendingPagination(0)
     }
+}
+
+// 渲染分页信息
+function updatePendingPagination(total) {
+  const totalPages = Math.ceil(total / PENDING_PAGE_SIZE) || 1;
+  const pageInfoEl = document.getElementById('pending-page-info');
+  if (pageInfoEl) {
+    pageInfoEl.textContent = total === 0 ? '共 0 条' : `第 ${_currentPage} 页，共 ${totalPages} 页`;
+  }
+
+  // 控制按钮状态
+  const prevBtn = document.getElementById('prev-pending-page');
+  const nextBtn = document.getElementById('next-pending-page');
+  if (prevBtn) prevBtn.disabled = (_currentPage <= 1);
+  if (nextBtn) nextBtn.disabled = (_currentPage >= totalPages);
 }
 
 // 渲染当前页表格
@@ -1018,8 +1030,6 @@ async function initBlacklist() {
   userListInstance.render();
 }
 
-
-
 // 通过申请ID获取用户申请详情
 async function fetchApplicationById(applicationId) {
     const url = `/api/loan-applications/${applicationId}`;
@@ -1049,7 +1059,7 @@ async function fetchApplicationsByUser(userId) {
 
 
 // ========================= 可复用部件 ================================
-/**
+/*
  * 分页列表切页控制
  */
 class PaginatedList {

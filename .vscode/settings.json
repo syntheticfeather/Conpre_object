@@ -4,5 +4,6 @@
     "java.project.sourcePaths": [
         "."
     ],
-    "java.project.referencedLibraries": []
+    "java.project.referencedLibraries": [],
+    "notebook.defaultFormatter": "esbenp.prettier-vscode"
 }

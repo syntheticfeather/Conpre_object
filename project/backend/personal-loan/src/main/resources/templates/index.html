@@ -330,17 +330,17 @@
             <div class="side-bar">
                 <ul>
                     <li class="side-item">
-                        <button class="side-link active" data-target="">用户管理</button>
+                        <button class="side-link active" data-target="user-main-content">用户管理</button>
                         <i class="iconfont icon-jinru"></i>
                     </li>
                     <li class="side-item">
-                        <button class="side-link" data-target="">黑名单管理</button>
+                        <button class="side-link" data-target="black-main-content">黑名单管理</button>
                         <i class="iconfont icon-jinru"></i>
                     </li>
                 </ul>
             </div>
             <!-- 右侧内容面板 -->
-            <div class="main-content">
+            <div class="main-content" id="user-main-content">
                 <div class="header">
                     <h2 class="title">用户管理</h2>
                 </div>
@@ -389,50 +389,55 @@
                     </div>
                 </div>
             </div>
-            <!-- 黑名单管理组件 -->
-            <!-- 黑名单用户列表 -->
-            <div class="black-user-content table-content">
-                <div class="user-table data-table">
-                    <table id="black-user-table">
-                        <thead>
-                            <tr>
-                                <th>序号</th>
-                                <th>用户名</th>
-                                <th>信誉分</th>
-                                <th>目前借贷情况</th>
-                                <th>总交易笔数</th>
-                                <th>总贷款金额</th>
-                                <th>总还款金额</th>
-                                <th colspan="4">操作</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- JS填充 -->
-                        </tbody>
-                    </table>
+            <div class="main-content" id="black-main-content">
+                <!-- 黑名单管理组件 -->
+                <div class="header">
+                    <h2 class="title">黑名单管理</h2>
                 </div>
-                <!-- 分页控件 -->
-                <div id="user-pagination" class="pagination">
-                    <button id="prev-user-page" disabled>上一页</button>
-                    <span id="user-page-info">第 1 页，共 1 页</span>
-                    <button id="next-user-page">下一页</button>
-                </div>
-            </div>                
-            <!-- 黑名单用户详情框 -->
-            <div id="black-user-detail" class="detail-container">
-                <div id="user-info-section">
-                    <h3>用户基本信息</h3>
-                    <p><strong>真实姓名：</strong><span id="user-real-name">—</span></p>
-                    <p><strong>手机号：</strong><span id="user-phone">—</span></p>
-                    <p><strong>注册时间：</strong><span id="user-register-time">—</span></p>
-                    <p><strong>信誉分：</strong><span id="user-credit-score" style="color:#e74c3c;">—</span></p>
-                </div>
-                <div id="user-auth-section">
-                    <h3>认证材料</h3>
-                    <div id="user-materials-container"></div>
-                </div>
-                <div class="action-buttons">
-                    <button class="btn btn-primary" onclick="document.getElementById('user-detail').style.display='none'">关闭</button>
+                <!-- 黑名单用户列表 -->
+                <div class="black-user-content table-content">
+                    <div class="user-table data-table">
+                        <table id="black-user-table">
+                            <thead>
+                                <tr>
+                                    <th>序号</th>
+                                    <th>用户名</th>
+                                    <th>信誉分</th>
+                                    <th>目前借贷情况</th>
+                                    <th>总交易笔数</th>
+                                    <th>总贷款金额</th>
+                                    <th>总还款金额</th>
+                                    <th colspan="4">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- JS填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- 分页控件 -->
+                    <div id="user-pagination" class="pagination">
+                        <button id="prev-user-page" disabled>上一页</button>
+                        <span id="user-page-info">第 1 页，共 1 页</span>
+                        <button id="next-user-page">下一页</button>
+                    </div>
+                </div>                
+                <!-- 黑名单用户详情框 -->
+                <div id="black-user-detail" class="detail-container">
+                    <div id="user-info-section">
+                        <h3>用户基本信息</h3>
+                        <p><strong>真实姓名：</strong><span id="user-real-name">—</span></p>
+                        <p><strong>手机号：</strong><span id="user-phone">—</span></p>
+                        <p><strong>注册时间：</strong><span id="user-register-time">—</span></p>
+                        <p><strong>信誉分：</strong><span id="user-credit-score" style="color:#e74c3c;">—</span></p>
+                    </div>
+                    <div id="user-auth-section">
+                        <h3>认证材料</h3>
+                        <div id="user-materials-container"></div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="document.getElementById('user-detail').style.display='none'">关闭</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -475,52 +480,8 @@
                 </ul>
             </div>
             <!-- 右侧内容区域 -->
-            <div class="main-content">
-                <div class="header">
-                    <h2 class="title">数据概览</h2>
-                </div>
-                <!-- 用户数据概览 -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">用户数据概览</h3>
-                    </div>
-                    <div class="card-content">
-                        <ul class="feature-list">
-                            <li class="feature-item">总用户数: 12580</li>
-                            <li class="feature-item">新增用户: 156</li>
-                            <li class="feature-item">在线用户: 892</li>
-                            <li class="feature-item">游客数量: 234</li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- 用户等级分布饼图 -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">用户等级分布</h3>
-                    </div>
-                    <div class="card-content">
-                        <div id="pie-chart" class="chart-container"></div>
-                    </div>
-                </div>
-                <!-- 月度交易量折线图 -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">月度交易趋势</h3>
-                    </div>
-                    <div class="card-content">
-                        <div id="line-chart-1"></div>
-                    </div>
-                </div>
-                <!-- 额度折线图 -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">贷款与还款趋势</h3>
-                    </div>
-                    <div class="card-content">
-                        <div id="line-chart-2"></div>
-                    </div>
-                </div>
-            </div>
+            <!-- <div class="main-content">
+            </div> -->
         </div>
 
     </div>  
