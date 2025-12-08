@@ -32,6 +32,7 @@ public class LoanApplicationConsumer {
     public void consume(Message message, Channel channel) throws IOException {
         String payload = new String(message.getBody());
         String messageId = message.getMessageProperties().getHeader("messageId");
+        log.info("🔔 收到消息: {}", payload);
         Long tag = rabbitUtil.getTag(message);
 
         if (messageId == null) {

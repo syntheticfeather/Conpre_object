@@ -46,8 +46,8 @@ public class RabbitTest {
     void testInsert() {
         Long userId = 2L;
         ApplicationRequest applicationRequest = new ApplicationRequest();
-        applicationRequest.setProductId(2L);
-        applicationRequest.setOptionId(2L);
+        applicationRequest.setProductId(11L);
+        applicationRequest.setOptionId(11L);
         applicationService.addApplication(userId, applicationRequest);
         // 执行插入
 

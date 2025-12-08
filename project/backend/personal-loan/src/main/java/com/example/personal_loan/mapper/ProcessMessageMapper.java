@@ -11,8 +11,8 @@ public interface ProcessMessageMapper {
     @Select("SELECT COUNT(1) > 0 FROM processed_message WHERE message_id = #{messageId}")
     boolean isProcessMessage(String message_id);
 
-    @Insert("INSERT INTO processed_message (message_id) (business_id) (business_type) " +
-            "VALUES (#{messageId}) (#{businessType}) (#{Id})")
-    void insertMessage(String message_id, String businessType, Long Id);
+    @Insert("INSERT INTO processed_message (message_id, business_id, business_type) " +
+            "VALUES (#{messageId}, #{Id}, #{businessType})")
+    void insertMessage(String messageId, String businessType, Long Id);
 
 }

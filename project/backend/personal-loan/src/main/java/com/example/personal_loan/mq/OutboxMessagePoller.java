@@ -59,7 +59,7 @@ public class OutboxMessagePoller {
     public void sendAndMarkMessage (OutboxMessage message){
         try {
             // 发送消息到 RabbitMQ
-            rabbitUtil.send(
+            rabbitUtil.sendToApp(
                     message.getTopic(),
                     createMessageWithHeaders(message)
             );

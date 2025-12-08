@@ -1,5 +1,6 @@
 package com.example.personal_loan.utils;
 
+import com.example.personal_loan.config.RabbitMQConfig;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,8 @@ public class RabbitUtil {
         rabbitTemplate.convertAndSend(queueName, routingKey,message);
     }
 
-    public void send(String routingKey ,Object message) {
-        rabbitTemplate.convertAndSend(routingKey,message);
+    public void sendToApp(String routingKey ,Object message) {
+        rabbitTemplate.convertAndSend(RabbitMQConfig.LOAN_EXCHANGE,routingKey,message);
     }
 
     /*
