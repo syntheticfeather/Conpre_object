@@ -21,6 +21,7 @@ services:
       - SPRING_RABBITMQ_PORT=5672
       - SPRING_RABBITMQ_USERNAME=admin
       - SPRING_RABBITMQ_PASSWORD=admin123
+      - UPLOAD_DIR=/app/uploads
     depends_on:
       - mysql-db
       - redis-cache
@@ -60,6 +61,9 @@ services:
       - "6379:6379" # 暴露端口到本地
     volumes:
       - redis_data:/data
+    networks:
+      - messaging
+
   rabbitmq:
     image: rabbitmq:4.2.0-management
     container_name: rabbitmq

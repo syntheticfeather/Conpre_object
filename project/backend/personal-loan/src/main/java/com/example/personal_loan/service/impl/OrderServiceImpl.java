@@ -136,8 +136,6 @@ public class OrderServiceImpl implements OrderService{
             order.getId(),
             order.getUserId(),
             productName,
-            user.getUserName(),
-            MaskUtil.maskPhone(user.getPhone()),   // 脱敏
             order.getRepaidAmount(),
             order.getLoanAmount(),
             order.getInterestRate(),
@@ -174,8 +172,6 @@ public class OrderServiceImpl implements OrderService{
                 order.getId(),
                 order.getUserId(),
                 productName,
-                user.getUserName(),
-                MaskUtil.maskPhone(user.getPhone()),
                 order.getRepaidAmount(),
                 order.getLoanAmount(),
                 order.getInterestRate(),

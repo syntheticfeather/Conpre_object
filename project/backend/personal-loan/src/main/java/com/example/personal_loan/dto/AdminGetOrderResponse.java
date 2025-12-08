@@ -19,11 +19,7 @@ public class AdminGetOrderResponse {
     private Long userId;
 
     private String productName;
-    
-    // 用户信息
-    private String userName;      // 用户名
-    private String userPhone;     // 手机号（可脱敏，如 138****1234）
-    
+
     // 贷款信息
     private BigDecimal repaidAmount;
     private BigDecimal loanAmount;
