@@ -85,7 +85,7 @@ public interface LoanProductMapper {
         "create_time as createTime, " +
         "update_time as updateTime " +
         "FROM loan_products "+
-        "WHERE status = #{ACTIVE} "+
+        "WHERE status = 'ACTIVE' "+
         "ORDER BY update_time DESC, create_time DESC")
     List<LoanProduct> findAllActive();
 

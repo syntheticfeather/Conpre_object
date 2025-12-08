@@ -21,6 +21,27 @@ CREATE Table black_list(
     FOREIGN KEY (user_id) REFERENCES users(id)
 )COMMENT '黑名单表';
 
+CREATE TABLE work_cert(
+      work_cert_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '工作证明ID',
+      employment_cert_path VARCHAR(255) COMMENT '在职证明图片路径',
+      salary_cert_path VARCHAR(255) COMMENT '收入证明图片路径'
+)COMMENT '工作认证表';
+
+/* 二期工程 */
+CREATE TABLE tri_cert(
+     tri_cert_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '第三方证明ID',
+     social_security_path VARCHAR(255) COMMENT '社保证明，存路径',
+     credit_report_path VARCHAR(255) COMMENT '征信报告，存路径（）'
+)COMMENT '第三方认证表';
+
+CREATE TABLE immovables_cert(
+    immovable_cert_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '不动产证明ID',
+    property_cert_path VARCHAR(255) COMMENT '房产证，存路径',
+    car_cert_path VARCHAR(255) COMMENT '车产证明，存路径',
+    total_value INT COMMENT '总资产值'
+)COMMENT '不动产认证表';
+
+
 CREATE TABLE user_certification(
     user_id INT PRIMARY KEY COMMENT '用户ID',
     id_card CHAR(18) COMMENT '身份证号',
@@ -43,25 +64,6 @@ CREATE TABLE user_certification(
  以库的xxx_cert中的xxx作为文件夹名
  以{业务前缀}_{用户ID或业务ID}_{时间戳(YYYYMMDD)}_{随机字符串}.{原始扩展名}作为文件名
  */
-CREATE TABLE work_cert(
-    work_cert_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '工作证明ID',
-    employment_cert_path VARCHAR(255) COMMENT '在职证明图片路径',
-    salary_cert_path VARCHAR(255) COMMENT '收入证明图片路径'
-)COMMENT '工作认证表';
-
-/* 二期工程 */
-CREATE TABLE tri_cert(
-    tri_cert_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '第三方证明ID',
-    social_security_path VARCHAR(255) COMMENT '社保证明，存路径',
-    credit_report_path VARCHAR(255) COMMENT '征信报告，存路径（）'
-)COMMENT '第三方认证表';
-
-CREATE TABLE immovables_cert(
-    immovable_cert_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '不动产证明ID',
-    property_cert_path VARCHAR(255) COMMENT '房产证，存路径', 
-    car_cert_path VARCHAR(255) COMMENT '车产证明，存路径',
-    total_value INT COMMENT '总资产值'
-)COMMENT '不动产认证表';
 
 
 /*

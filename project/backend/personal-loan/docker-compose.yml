@@ -8,7 +8,6 @@ services:
       - "8080:8080"
     # 关键：将本地代码目录“绑定挂载”到容器内，覆盖掉构建时复制的文件。
     environment:
-      - SPRING_PROFILES_ACTIVE=dev
       # mysql 配置
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/person-loan?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       - SPRING_DATASOURCE_USERNAME=admin
@@ -17,9 +16,17 @@ services:
       - SPRING_REDIS_HOST=redis-cache  
       - SPRING_REDIS_PASSWORD=
       - SPRING_REDIS_PORT=6379
+      # rabbitmq 配置
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=admin
+      - SPRING_RABBITMQ_PASSWORD=admin123
     depends_on:
       - mysql-db
       - redis-cache
+      - rabbitmq
+    networks:
+      - messaging
 
   mysql-db:
     image: mysql:8.0
@@ -42,7 +49,8 @@ services:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
     restart: unless-stopped
-
+    networks:
+      - messaging
 
   redis-cache:
     image: redis:6-alpine

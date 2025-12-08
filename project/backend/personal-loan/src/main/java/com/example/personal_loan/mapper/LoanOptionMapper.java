@@ -16,7 +16,7 @@ public interface LoanOptionMapper {
     
     @Insert("INSERT INTO loan_options (product_id, loan_period, loan_amount, repaid_type, interest_rate) " +
             "VALUES(#{productId}, #{loanPeriod}, #{loanAmount}, #{repaidType}, #{interestRate})")
-    @Options(useGeneratedKeys = true, keyProperty = "id")
+    @Options(useGeneratedKeys = true, keyProperty = "optionId")
     int insert(LoanOption option);
 
     @Insert({
