@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.personal_loan.dto.ApiResponse;
 import com.example.personal_loan.dto.ApplicationDetailResponse;
 import com.example.personal_loan.dto.ManualCheckRequest;
+import com.example.personal_loan.dto.ManualCheckResponse;
 import com.example.personal_loan.dto.PendingApprovalResponse;
 import com.example.personal_loan.service.ManualApproveService;
 
@@ -49,9 +50,9 @@ public class ManualApproveController {
     }
 
     @PostMapping("/check")
-    public ResponseEntity<ApiResponse<String>> manualCheck(@RequestBody ManualCheckRequest request) {
+    public ResponseEntity<ApiResponse<ManualCheckResponse>> manualCheck(@RequestBody ManualCheckRequest request) {
         log.info("/api/approval/check success called for admin to check application");
-        Boolean result = manualApproveService.manualCheck(request.getLoanApplicationId(), request.getApproved());
-        return ResponseEntity.ok(ApiResponse.success(null,"操作成功"));
+        ManualCheckResponse response = manualApproveService.manualCheck(request.getLoanApplicationId(), request.getApproved(), request.getManualRejectReason());
+        return ResponseEntity.ok(ApiResponse.success(response,"操作成功"));
     }
 }

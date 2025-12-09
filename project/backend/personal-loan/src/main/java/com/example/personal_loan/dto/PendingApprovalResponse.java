@@ -12,10 +12,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PendingApprovalResponse {
     private Long applicationId;
+
     private String userName;
     private String productName;
     private BigDecimal loanAmount;
     private Integer loanPeriod;
     private Integer term;
     private LocalDateTime applyTime;
+    private String rejectReason;
 }

@@ -6,6 +6,7 @@
     <update id="update" parameterType="com.example.personal_loan.entity.LoanOption">
         UPDATE loan_options
         <set>
+            update_time = #{updateTime},
             <if test="loanAmount != null">
                 loan_amount = #{loanAmount},
             </if>
@@ -19,7 +20,7 @@
                 repaid_type = #{repaidType},
             </if>
         </set>
-        WHERE id = #{id}
+        WHERE id = #{optionId}
         AND product_id = #{productId}
     </update>
 </mapper>

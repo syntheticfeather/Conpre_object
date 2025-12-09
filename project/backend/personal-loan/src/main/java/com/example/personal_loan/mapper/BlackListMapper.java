@@ -16,8 +16,8 @@ import com.example.personal_loan.entity.BlackUser;
 @Mapper
 public interface BlackListMapper {
     
-    @Insert("INSERT INTO black_list (user_id, black_level) " +
-            "VALUES (#{userId}, #{blackLevel} )")
+    @Insert("INSERT INTO black_list (user_id, black_level, create_time, update_time) " +
+            "VALUES (#{userId}, #{blackLevel}, #{createTime}, #{updateTime} )")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(BlackUser blackUser);
     

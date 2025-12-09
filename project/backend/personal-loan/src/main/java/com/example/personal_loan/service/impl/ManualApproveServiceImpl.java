@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.personal_loan.dto.ApplicationDetailResponse;
+import com.example.personal_loan.dto.ManualCheckResponse;
 import com.example.personal_loan.dto.PendingApprovalResponse;
 import com.example.personal_loan.entity.LoanApplication;
 import com.example.personal_loan.entity.User;
@@ -51,20 +52,50 @@ public class ManualApproveServiceImpl implements ManualApproveService{
 
     @Override
     @Transactional
-    public Boolean manualCheck(Long loanApplicationId, Boolean approved){
+    public ManualCheckResponse manualCheck(Long loanApplicationId, Boolean approved, String manualRejectReason){
         // 查询申请
         LoanApplication application = applicationMapper.selectById(loanApplicationId);
         if (application == null) {
             throw new BusinessException(404,"贷款申请不存在");
         }
+        ApplicationStatus newStatus;
+        String currentRejectReason = application.getRejectReason(); // 可能已有 AI 的拒绝原因
+        ManualCheckResponse response = new ManualCheckResponse();
 
-        // 更新状态 (拒绝原因还未处理) (添加审核员id后期实现)
-        ApplicationStatus newStatus = approved ? ApplicationStatus.APPROVED : ApplicationStatus.MANUAL_REJECTED;
+        if (approved) {
+            // 人工通过
+            StringBuilder reasonBuilder = new StringBuilder();
+            if (currentRejectReason != null && !currentRejectReason.trim().isEmpty()) {
+                reasonBuilder.append(currentRejectReason);
+            }
+            reasonBuilder.append("Manual approve");
+            application.setRejectReason(reasonBuilder.toString());
+            newStatus = ApplicationStatus.APPROVED;
+            application.setReviewTime(LocalDateTime.now());
+            response.setReviewTime(LocalDateTime.now());
+            response.setRejectReason(reasonBuilder.toString());
+        } else {
+            // 人工拒绝
+            StringBuilder reasonBuilder = new StringBuilder();
+            if (currentRejectReason != null && !currentRejectReason.trim().isEmpty()) {
+                reasonBuilder.append(currentRejectReason);
+            }
+            if (manualRejectReason != null && !manualRejectReason.trim().isEmpty()) {
+                reasonBuilder.append("人工拒绝: ").append(manualRejectReason);
+            } else {
+                reasonBuilder.append("人工拒绝: 未填写原因");
+            }
+            application.setRejectReason(reasonBuilder.toString());
+            response.setRejectReason(reasonBuilder.toString());
+            newStatus = ApplicationStatus.MANUAL_REJECTED;
+        }
+
         application.setStatus(newStatus);
-        application.setReviewTime(LocalDateTime.now());
+        applicationMapper.update(application);
 
-        // 更新申请记录
-        int updated = applicationMapper.update(application);
-        return updated > 0;
+        response.setLoanApplicationId(loanApplicationId);
+        response.setStatus(newStatus);
+
+        return response;
     }
 }

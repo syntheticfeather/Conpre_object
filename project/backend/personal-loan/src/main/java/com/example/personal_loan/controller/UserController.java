@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -155,12 +154,6 @@ public class UserController {
        return ResponseEntity.ok(Map.of("token", newAccessToken));
     }
 
-    // 未使用
-    @PostMapping
-    public ResponseEntity<User> addUser(@RequestBody @Valid User user) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.addUser(user));
-    }
-    
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());

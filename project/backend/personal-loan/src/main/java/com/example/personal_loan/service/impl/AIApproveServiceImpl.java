@@ -1,17 +1,18 @@
 package com.example.personal_loan.service.impl;
 
-import com.example.personal_loan.entity.LoanApplication;
-import com.example.personal_loan.enums.ApplicationStatus;
-import com.example.personal_loan.mapper.ApplicationMapper;
-import com.example.personal_loan.mapper.ApplicationMapper;
-import com.example.personal_loan.service.AIApproveService;
-import com.example.personal_loan.service.AuthService;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDateTime;
+import java.util.Random;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.Random;
+import com.example.personal_loan.entity.LoanApplication;
+import com.example.personal_loan.enums.ApplicationStatus;
+import com.example.personal_loan.mapper.ApplicationMapper;
+import com.example.personal_loan.service.AIApproveService;
+import com.example.personal_loan.service.AuthService;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -38,7 +39,6 @@ public class AIApproveServiceImpl implements AIApproveService {
             // AI审核失败
             application.setStatus(ApplicationStatus.AI_REJECTED);
             application.setRejectReason("AI rejected\n");
-            application.setReviewTime(LocalDateTime.now());
             applicationMapper.update(application);
             log.info("AI reject success");
             return false;

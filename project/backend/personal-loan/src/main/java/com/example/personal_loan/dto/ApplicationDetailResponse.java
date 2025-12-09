@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+// 改成3个变量
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,9 +19,11 @@ public class ApplicationDetailResponse {
 
     // 认证材料
     private String idCard; 
+
     private Integer workCertId;  
     private Integer triCertId; 
     private Integer immovableCertId;  
+
     private Integer creditScore; 
 
     // 贷款申请信息

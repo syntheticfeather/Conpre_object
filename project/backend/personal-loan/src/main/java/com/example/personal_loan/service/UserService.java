@@ -31,9 +31,6 @@ public interface UserService {
     // 用户注册
     RegisterResponse userRegister(RegisterRequest request);
 
-    // 添加用户（注册时使用）
-    User addUser(User user);
-
     /*
     * 用户使用
     */

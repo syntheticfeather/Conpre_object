@@ -16,28 +16,30 @@
 
 ``` json
 {
-  "code": 200,
-  "data": [
-    {
-      "applicationId": 4,
-      "userName": "王芳",
-      "productName": "优享贷",
-      "loanAmount": 150000.00,
-      "loanPeriod": 60,
-      "term": 6,
-      "applyTime": "2025-11-22T15:03:42"
-    },
-    {
-      "applicationId": 3,
-      "userName": "汤姆",
-      "productName": "优享贷",
-      "loanAmount": 80000.00,
-      "loanPeriod": 36,
-      "term": 6,
-      "applyTime": "2025-11-22T14:36:12"
-    }
-  ],
-  "message": "操作成功"
+    "code": 200,
+    "data": [
+        {
+            "applicationId": 5,
+            "userName": "alice",
+            "productName": "优享贷 Pro",
+            "loanAmount": 80000,
+            "loanPeriod": 36,
+            "term": 12,
+            "applyTime": "2025-12-09T20:55:36",
+            "rejectReason": "AI rejected\n"
+        },
+        {
+            "applicationId": 4,
+            "userName": "alice",
+            "productName": "优享贷 Pro",
+            "loanAmount": 30000,
+            "loanPeriod": 24,
+            "term": 12,
+            "applyTime": "2025-12-09T20:55:25",
+            "rejectReason": "AI rejected\n"
+        }
+    ],
+    "message": "操作成功"
 }
 ```
 
@@ -104,31 +106,64 @@
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
-| loanApplicationId | integer | 是 | 申请id | 4 |
+| loanApplicationId | integer | 是 | 申请id | 17 |
 | approved | string | 是 | true表示通过，false表示不通过 | true |
+| manualRejectReason | String | 否 | 拒绝时需要填写原因 | 材料信息有误 |
 
-**请求示例（请求体）**
+**请求示例（请求体）（通过）**
 
 ``` json
 {
-    "loanApplicationId":4,
+    "loanApplicationId":17,
     "approved":"true"
 }
 ```
 
-**返回数据**
+**返回数据（通过）**
 
 ``` json
 {
     "code": 200,
-    "data": null,
+    "data": {
+        "loanApplicationId": 17,
+        "status": "APPROVED",
+        "rejectReason": "AI rejected\nManual approve",
+        "reviewTime": "2025-12-09T21:59:05.9672001"
+    },
+    "message": "操作成功"
+}
+```
+
+**请求示例（请求体）（拒绝）**
+
+``` json
+{
+    "loanApplicationId":15,
+    "approved":"false",
+    "manualRejectReason": "材料信息有误"
+}
+```
+
+**返回数据（拒绝）**
+
+``` json
+{
+    "code": 200,
+    "data": {
+        "loanApplicationId": 15,
+        "status": "MANUAL_REJECTED",
+        "rejectReason": "AI rejected\n人工拒绝: 材料信息有误",
+        "reviewTime": null
+    },
     "message": "操作成功"
 }
 ```
 
 **postman测试结果**
 
-![](../ManualApproveImgs/check.png)
+![](../ManualApproveImgs/approve.png "通过人工审核")
+![](../ManualApproveImgs/reject.png "不通过人工审核")
+![](../ManualApproveImgs/rejectWithoutReason.png "拒绝，但未填写人工拒绝的理由")
 
 **日志**
 

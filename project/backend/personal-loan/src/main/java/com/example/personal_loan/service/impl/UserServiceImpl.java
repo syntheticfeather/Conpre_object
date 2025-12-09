@@ -118,28 +118,21 @@ public class UserServiceImpl implements UserService {
     public RegisterResponse userRegister(RegisterRequest request) {
         request.setPassword(passwordEncoder.encode(request.getPassword()));
         User user = new User(request.getName(), request.getPassword(), request.getPhone());
-        user.setRole(0);    // 用户的注册，默认权限为0
-        User newUser = addUser(user);
+        user.setRole(0);                      // 用户的注册，默认权限为0
+        user.setCreateTime(LocalDateTime.now());
+        user.setUpdateTime(LocalDateTime.now());
+        userMapper.insert(user);
 
         // 创建认证记录
         UserCert cert = new UserCert();
-        cert.setUserId(newUser.getId()); // 主键
+        cert.setUserId(user.getId()); // 主键
         // 其他字段（idCard, bankCardId, workCertId...）留 null
         userCertMapper.insert(cert);
 
-        return new RegisterResponse(newUser.getId(), newUser.getUserName(), newUser.getCreateTime());
+        return new RegisterResponse(user.getId(), user.getUserName(), user.getCreateTime());
     }
 
-    @Override
-    public User addUser(User user) {
 
-        if (userMapper.findByPhone(user.getPhone()) != null) {
-            throw new BusinessException(400, "该手机号已被注册");
-        }
-        userMapper.insert(user);
-        user.setCreateTime(LocalDateTime.now());
-        return user;
-    }
 
     @Override
     public void deleteUser(Long id) {
@@ -184,7 +177,7 @@ public class UserServiceImpl implements UserService {
         if (user.getRole() != null) {
             old.setRole(user.getRole());
         }
-
+        old.setUpdateTime(LocalDateTime.now());
         userMapper.update(old);
         return old;
     }
@@ -240,11 +233,7 @@ public class UserServiceImpl implements UserService {
         if (!id.equals(user.getId())) {
             throw new BusinessException(400, "只能更新自己的信息");
         }
-        // 权限校验
-        if(!user.getRole().equals(0)){
-            throw new BusinessException(403,"无权修改个人信息");
-        }
-
+        
         // 仅更新允许的字段,用户名和头像
         if (request.getUserName() != null) {
             user.setUserName(request.getUserName());
@@ -256,10 +245,11 @@ public class UserServiceImpl implements UserService {
         user.setUpdateTime(LocalDateTime.now());
 
         userMapper.update(user);
+        User user2 = userMapper.findById(id);
         return new UserSelfResponse(
                 id,
-                user.getUserName(),
-                user.getAvatar()
+                user2.getUserName(),
+                user2.getAvatar()
         );
     }
 
@@ -356,12 +346,16 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException(404, "用户不存在");
         }
 
+        if(adminId.equals(userId)){
+            throw new BusinessException(403,"无权添加到黑名单");
+        }
+
         // 检查是否已在黑名单
         if (blackListMapper.selectActiveByUserId(userId) != null) {
             throw new BusinessException(400, "用户已在黑名单中");
         }
 
-        // 检查level范围 ？
+        // 检查level范围
         BlackUser blackUser = new BlackUser();
         blackUser.setUserId(userId);
         blackUser.setBlackLevel(blackLevel);

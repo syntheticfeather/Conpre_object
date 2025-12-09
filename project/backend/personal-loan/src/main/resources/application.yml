@@ -71,9 +71,9 @@ logging:
     console: UTF-8
 # MyBatis 配置
 mybatis:
+  mapper-locations: classpath*:mapper/*.xml
   configuration:
     map-underscore-to-camel-case: true
-    mapper-locations: classpath*:mapper/*.xml  # 如需启用，取消注释
 
 # 文件存储配置
 file-storage:

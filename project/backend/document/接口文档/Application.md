@@ -70,17 +70,21 @@
 {
     "code": 200,
     "data": {
-        "applicationId": 4,
-        "productName": "优享贷",
-        "loanAmount": 150000,
-        "interestRate": 0.043,
-        "loanPeriod": 60,
-        "term": 6,
+        "id": 4,
+        "userId": 1,
+        "productId": 1,
+        "userName": "alice",
+        "phoneNumber": "13800138000",
+        "productName": "优享贷 Pro",
+        "loanAmount": 30000,
+        "interestRate": 0.039,
+        "loanPeriod": 24,
+        "term": 12,
         "repaidType": "等额本息",
-        "status": "PENDING",
-        "applyTime": "2025-11-22T15:03:42",
-        "reviewTime": null,
-        "rejectReason": null
+        "status": "AI_REJECTED",
+        "applyTime": "2025-12-09T20:55:25",
+        "reviewTime": "2025-12-09T20:55:27",
+        "rejectReason": "AI rejected\n"
     },
     "message": "操作成功"
 }

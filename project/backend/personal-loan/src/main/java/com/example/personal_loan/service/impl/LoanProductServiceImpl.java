@@ -60,9 +60,9 @@ public class LoanProductServiceImpl implements LoanProductService{
         if (dto.getOptions() != null && !dto.getOptions().isEmpty()) {
             for (LoanOption opt : dto.getOptions()) {
                 opt.setProductId(product.getId());
-                loanOptionMapper.insert(opt); 
                 opt.setCreateTime(LocalDateTime.now());
                 opt.setUpdateTime(LocalDateTime.now());
+                loanOptionMapper.insert(opt); 
             }
         }else{
             throw new BusinessException(400, "贷款选项不能为空");
@@ -78,6 +78,7 @@ public class LoanProductServiceImpl implements LoanProductService{
         LoanProduct product = loanProductMapper.findById(productId);
         if(product.getStatus().equals(ProductStatus.INACTIVE)){
             product.setStatus(ProductStatus.ACTIVE);
+            product.setUpdateTime(LocalDateTime.now());
             loanProductMapper.update(product);
         }else{
             throw new BusinessException(404,"产品已经上架");
@@ -92,6 +93,7 @@ public class LoanProductServiceImpl implements LoanProductService{
         LoanProduct product = loanProductMapper.findById(productId);
         if(product.getStatus().equals(ProductStatus.ACTIVE)){
             product.setStatus(ProductStatus.INACTIVE);
+            product.setUpdateTime(LocalDateTime.now());
             loanProductMapper.update(product);
         }else{
             throw new BusinessException(404,"产品已经下架");
@@ -110,7 +112,8 @@ public class LoanProductServiceImpl implements LoanProductService{
     
         for (LoanOption option : options) {
             if (option == null) continue;
-            
+            option.setCreateTime(LocalDateTime.now());
+            option.setUpdateTime(LocalDateTime.now());
             option.setProductId(productId);
         }
 
@@ -211,8 +214,8 @@ public class LoanProductServiceImpl implements LoanProductService{
 
                 // 执行选择性更新（只更新非空字段）
                 opt.setProductId(productId); 
-                loanOptionMapper.update(opt);
                 opt.setUpdateTime(LocalDateTime.now());
+                loanOptionMapper.update(opt);
             }
         }
 
@@ -284,10 +287,7 @@ public class LoanProductServiceImpl implements LoanProductService{
 
 
     /*
-     * 用户使用
-     */
-    /*
-     * 用户获取贷款产品
+     * 用户根据产品名搜索贷款产品
      */
     @Override
     public List<UserGetProductResponse> searchProductsByName(String name){
@@ -342,6 +342,7 @@ public class LoanProductServiceImpl implements LoanProductService{
     @Override
     public List<UserGetProductResponse> getAllLoanProducts(){
         List<LoanProduct> products = loanProductMapper.findAllActive();
+        System.out.println(products);
         return products.stream().map(product -> {
             // 生成 terms 列表
             List<Integer> terms = new ArrayList<>();

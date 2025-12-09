@@ -15,7 +15,7 @@ import com.example.personal_loan.entity.LoanProduct;
 public interface LoanProductMapper {
 
     // 增加
-    @Insert("INSERT INTO loan_products (product_name, description, loan_usage, status, min_term, max_term, term_step, promotion_details) VALUES ( #{productName}, #{description}, #{loanUsage}, #{status}, #{minTerm}, #{maxTerm}, #{termStep}, #{promotionDetails})")
+    @Insert("INSERT INTO loan_products (product_name, description, loan_usage, status, min_term, max_term, term_step, promotion_details, create_time, update_time) VALUES ( #{productName}, #{description}, #{loanUsage}, #{status}, #{minTerm}, #{maxTerm}, #{termStep}, #{promotionDetails}, #{createTime}, #{updateTime})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int create(LoanProduct loanProduct);
 
@@ -35,7 +35,7 @@ public interface LoanProductMapper {
     int batchDelete(List<Long> ids);
 
     // 修改
-    @Update("UPDATE loan_products SET product_name = #{productName}, description = #{description}, loan_usage = #{loanUsage}, status = #{status}, min_term = #{minTerm}, max_term = #{maxTerm}, term_step = #{termStep}, promotion_details = #{promotionDetails} WHERE id = #{id}")
+    @Update("UPDATE loan_products SET product_name = #{productName}, description = #{description}, loan_usage = #{loanUsage}, status = #{status}, min_term = #{minTerm}, max_term = #{maxTerm}, term_step = #{termStep}, promotion_details = #{promotionDetails}, update_time = #{updateTime} WHERE id = #{id}")
     int update(LoanProduct loanProduct);
 
     // 查询单个
@@ -94,6 +94,6 @@ public interface LoanProductMapper {
         "min_term as minTerm, max_term as maxTerm, term_step as termStep, " +
         "promotion_details as promotionDetails, create_time as createTime, update_time as updateTime " +
         "FROM loan_products " +
-        "WHERE product_name LIKE CONCAT('%', #{keyword}, '%') AND status = #{ACTIVE}")
+        "WHERE product_name LIKE CONCAT('%', #{keyword}, '%') AND status = 'ACTIVE'")
     List<LoanProduct> findByProductNameLike(String productName);
 }

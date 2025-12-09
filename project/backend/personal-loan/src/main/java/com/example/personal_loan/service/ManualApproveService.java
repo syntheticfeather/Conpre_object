@@ -3,6 +3,7 @@ package com.example.personal_loan.service;
 import java.util.List;
 
 import com.example.personal_loan.dto.ApplicationDetailResponse;
+import com.example.personal_loan.dto.ManualCheckResponse;
 import com.example.personal_loan.dto.PendingApprovalResponse;
 
 public interface ManualApproveService {
@@ -10,5 +11,5 @@ public interface ManualApproveService {
 
     ApplicationDetailResponse getApprove(Long userId,Long loanApplicationId); // 获得本审核员单个审核申请详情
 
-    Boolean manualCheck(Long loanApplicationId, Boolean approved); // 返回审核结果
+    ManualCheckResponse manualCheck(Long loanApplicationId, Boolean approved, String manualRejectReason); // 返回审核结果
 }

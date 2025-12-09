@@ -14,17 +14,17 @@ import com.example.personal_loan.entity.LoanOption;
 @Mapper
 public interface LoanOptionMapper {
     
-    @Insert("INSERT INTO loan_options (product_id, loan_period, loan_amount, repaid_type, interest_rate) " +
-            "VALUES(#{productId}, #{loanPeriod}, #{loanAmount}, #{repaidType}, #{interestRate})")
+    @Insert("INSERT INTO loan_options (product_id, loan_period, loan_amount, repaid_type, interest_rate, create_time, update_time) " +
+            "VALUES(#{productId}, #{loanPeriod}, #{loanAmount}, #{repaidType}, #{interestRate}, #{createTime}, #{updateTime})")
     @Options(useGeneratedKeys = true, keyProperty = "optionId")
     int insert(LoanOption option);
 
     @Insert({
         "<script>",
-        "INSERT INTO loan_options (product_id, loan_period, loan_amount, interest_rate, repaid_type)",
+        "INSERT INTO loan_options (product_id, loan_period, loan_amount, interest_rate, repaid_type, create_time, update_time)",
         "VALUES ",
         "<foreach collection='list' item='opt' separator=','>",
-        "(#{opt.productId}, #{opt.loanPeriod}, #{opt.loanAmount}, #{opt.interestRate}, #{opt.repaidType})",
+        "(#{opt.productId}, #{opt.loanPeriod}, #{opt.loanAmount}, #{opt.interestRate}, #{opt.repaidType}, #{opt.createTime}, #{opt.updateTime})",
         "</foreach>",
         "</script>"
     })

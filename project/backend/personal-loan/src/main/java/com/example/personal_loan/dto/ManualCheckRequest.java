@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class ManualCheckRequest {
     private Long loanApplicationId;
     private Boolean approved; 
+    private String manualRejectReason;
 }
