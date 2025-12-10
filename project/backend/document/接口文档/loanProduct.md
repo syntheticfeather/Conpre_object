@@ -674,22 +674,49 @@
     "code": 200,
     "data": [
         {
-            "productId": 1,
-            "productName": "优享贷",
-            "description": "专为信用良好用户定制，利率优惠，期限灵活",
-            "usage": "教育、购车、旅游、大额消费",
-            "status": "INACTIVE",
-            "createTime": "2025-11-21T13:22:05",
-            "updateTime": "2025-12-01T13:26:08"
+            "productId": 9,
+            "productName": "学子启航贷",
+            "description": "支持青年创业与技能提升，低门槛申请",
+            "loanUsage": "技能培训、创业启动、留学准备、电脑设备购置",
+            "status": "已下架",
+            "createTime": "2025-12-10T14:26:22",
+            "updateTime": "2025-12-10T14:26:22"
+        },
+        {
+            "productId": 8,
+            "productName": "绿色生活贷",
+            "description": "鼓励购买新能源车、节能家电、安装光伏设备等绿色消费",
+            "loanUsage": "新能源电动车、节能空调、太阳能热水器、垃圾分类设备",
+            "status": "已下架",
+            "createTime": "2025-12-10T14:25:17",
+            "updateTime": "2025-12-10T06:29:09"
+        },
+        {
+            "productId": 7,
+            "productName": "乡村振兴助农贷",
+            "description": "支持农业生产、养殖扩建、农产品加工与销售",
+            "loanUsage": "购买种子化肥、农机设备、建设大棚、冷链仓储",
+            "status": "已下架",
+            "createTime": "2025-12-09T20:48:58",
+            "updateTime": "2025-12-10T06:29:09"
         },
         {
             "productId": 2,
-            "productName": "极速贷",
+            "productName": "小微经营贷",
+            "description": "助力小微企业发展，快速审批，灵活还款",
+            "loanUsage": "进货周转、设备采购、门店扩张",
+            "status": "上架中",
+            "createTime": "2025-12-05T09:46:05",
+            "updateTime": "2025-12-10T06:29:09"
+        },
+        {
+            "productId": 1,
+            "productName": "优享贷 Pro",
             "description": "专为信用良好用户定制，利率优惠，期限灵活",
-            "usage": "教育、购车、旅游、大额消费",
-            "status": "INACTIVE",
-            "createTime": "2025-11-21T13:23:46",
-            "updateTime": "2025-12-01T13:16:32"
+            "loanUsage": "教育、购车、旅游、大额消费",
+            "status": "上架中",
+            "createTime": "2025-12-02T09:40:40",
+            "updateTime": "2025-12-10T06:29:09"
         }
     ],
     "message": "操作成功"
