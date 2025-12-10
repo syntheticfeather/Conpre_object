@@ -349,13 +349,9 @@ body {
 }
 
 /* 黑名单用户表 */
-#black-user-content {
+#black-main-content {
     display: none;
 }
-#black-user-detail {
-    display: none;
-}
-
 /************* 风险与催收管理面板特定样式 *************/
 .risk-dashboard {
   display: none;

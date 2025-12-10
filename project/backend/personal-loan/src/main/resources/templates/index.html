@@ -164,31 +164,20 @@
                 </div>
                 <!-- 已有贷款项目搜索 -->
                 <div class="product-search">
-                    <ul class="search-list">
-                        <li><input type="text" placeholder="贷款项目类型" id="product-type"></input></li>
-                        <li><input type="text" placeholder="贷款项目名称" id="product-name"></input></li>
-                        <li><input type="text" placeholder="贷款项目金额" id="product-amount"></input></li>
-                        <li><input type="text" placeholder="贷款项目期限" id="product-period"></input></li>
-                        <li>
-                            <div class="date-range-picker">
-                                <div class="input-group">
-                                    <input type="text" id="start-date" placeholder="更新开始日期" readonly>
-                                    <span>至</span>
-                                    <input type="text" id="end-date" placeholder="更新结束日期" readonly>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="date-range-picker">
-                                <div class="input-group">
-                                    <input type="text" id="start-date" placeholder="创建开始日期" readonly>
-                                    <span>至</span>
-                                    <input type="text" id="end-date" placeholder="创建结束日期" readonly>
-                                </div>
-                            </div>
-                        </li>
-                        <li><button class="btn" type="submit" id="product-search-btn">搜索</button></li>
-                    </ul>
+                    <div class="input-group">
+                        <label>创建时间：</label>
+                        <input type="text" id="create-start-date" placeholder="开始日期" readonly />
+                        <span>至</span>
+                        <input type="text" id="create-end-date" placeholder="结束日期" readonly />
+                    </div>
+                    <div class="input-group">
+                        <label>更新时间：</label>
+                        <input type="text" id="update-start-date" placeholder="开始日期" readonly />
+                        <span>至</span>
+                        <input type="text" id="update-end-date" placeholder="结束日期" readonly />
+                    </div>
+                    <button id="search-products-btn">搜索</button>
+                    <button id="reset-search-btn">重置</button>
                 </div>
                 <!-- 已有贷款项目列表 -->
                 <div class="product-content table-content">
@@ -215,6 +204,7 @@
                         <button id="next-product-page">下一页</button>
                     </div>
                 </div>
+                <button id="close-search-result-btn" style="display:none; margin-top:10px;">关闭搜索结果</button>
                 <!-- 产品详情模态框 -->
                 <div id="product-detail" class="detail-container">
                     <h3>产品详情</h3>          
@@ -355,7 +345,7 @@
                                 <th>信誉分</th>
                                 <th>目前借贷情况</th>
                                 <th>总交易笔数</th>
-                                <th>预期还款项目</th>
+                                <th>总贷款金额</th>
                                 <th>待定</th>
                                 <th>快捷操作</th>
                                 </tr>
@@ -389,8 +379,8 @@
                     </div>
                 </div>
             </div>
-            <div class="main-content" id="black-main-content">
-                <!-- 黑名单管理组件 -->
+            <div class="main-content" id="black-main-content" style="display: none;">
+                <!-- 黑名单管理小标题 -->
                 <div class="header">
                     <h2 class="title">黑名单管理</h2>
                 </div>
@@ -401,13 +391,14 @@
                             <thead>
                                 <tr>
                                     <th>序号</th>
+                                    <th>用户ID</th>
                                     <th>用户名</th>
-                                    <th>信誉分</th>
-                                    <th>目前借贷情况</th>
-                                    <th>总交易笔数</th>
-                                    <th>总贷款金额</th>
-                                    <th>总还款金额</th>
-                                    <th colspan="4">操作</th>
+                                    <th>手机号</th>
+                                    <th>黑名单等级</th>
+                                    <th>加入黑名单时间</th>
+                                    <th>更新时间</th>
+                                    <th>解除时间</th>
+                                    <th colspan="4">快捷操作</th>
                                 </tr>
                             </thead>
                             <tbody>

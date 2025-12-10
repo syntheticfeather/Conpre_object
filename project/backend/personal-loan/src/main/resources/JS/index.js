@@ -4,6 +4,15 @@ const DOM_ELEMENTS = AdminWeb.DOM_ELEMENTS
 const API_CLIENT = AdminWeb.API_CLIENT
 const JWT_UTILS = AdminWeb.JWT_UTILS
 
+// ==================== 全局变量 ====================
+let _allPendingApps = [] // 待办申请
+let _currentPage = 1
+const PENDING_PAGE_SIZE = 5
+
+let userListInstance = null     // 用户列表实例
+let blacklistInstance = null    // 黑名单列表实例
+let productListInstance = null  // 产品列表实例
+
 // ==================== 初始化函数 ====================
 async function init() {
     console.log('开始初始化...')
@@ -186,7 +195,104 @@ function bindEventListeners() {
     document.querySelector('#user-detail .close-btn')?.addEventListener('click', () => {
       document.getElementById('user-detail').style.display = 'none';
     })
-}
+
+    // 搜索产品按钮
+    document.getElementById('search-products-btn').addEventListener('click', async () => {
+      const createStart = document.getElementById('create-start-date').value
+      const createEnd = document.getElementById('create-end-date').value
+      const updateStart = document.getElementById('update-start-date').value
+      const updateEnd = document.getElementById('update-end-date').value
+
+      // 构建查询参数
+      const params = new URLSearchParams();
+      if (createStart) params.append('createStartDate', createStart)
+      if (createEnd) params.append('createEndDate', createEnd)
+      if (updateStart) params.append('updateStartDate', updateStart)
+      if (updateEnd) params.append('updateEndDate', updateEnd)
+
+      try {
+        const url = `/api/loan-products?${params.toString()}`
+        const response = await AdminWeb.API_CLIENT.get(url)
+
+        if (response.code === 200) {
+          const products = response.data || []
+          
+          // 显示搜索结果数量
+          // const infoEl = document.getElementById('search-result-info')
+          // infoEl.textContent = `搜索到 ${products.length} 个产品`
+          // infoEl.style.display = 'block'
+
+          // 渲染到现有表格（复用 product-table）
+          const tbody = document.querySelector('#product-table tbody')
+          tbody.innerHTML = ''
+
+          if (products.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">未找到匹配的产品</td></tr>'
+          } else {
+            products.forEach(prod => {
+              const row = renderProductRow(prod) // 复用现有函数
+              tbody.appendChild(row)
+            })
+          }
+
+          // 隐藏分页（因为不分页），显示关闭按钮
+          // document.querySelector('.product-pagination')?.style.display = 'none'
+          document.getElementById('close-search-result-btn').style.display = 'inline-block'
+        } else {
+          throw new Error(response.message || '搜索失败')
+        }
+      } catch (error) {
+        console.error('搜索产品失败:', error)
+        alert('搜索失败：' + error.message)
+      }
+    })
+
+    // 重置按钮：清空输入并刷新全部列表
+    document.getElementById('reset-search-btn').addEventListener('click', () => {
+      ['create-start-date', 'create-end-date', 'update-start-date', 'update-end-date'].forEach(id => {
+        document.getElementById(id).value = ''
+      })
+      // 重新加载全部产品
+      if (productListInstance) {
+        productListInstance.currentPage = 1
+        productListInstance.loadData()
+      }
+      document.getElementById('search-result-info').style.display = 'none'
+      document.getElementById('close-search-result-btn').style.display = 'none'
+    })
+
+    // 关闭产品搜索结果按钮
+    document.getElementById('close-search-result-btn').addEventListener('click', () => {
+      // 重新加载全部产品列表
+      if (productListInstance) {
+        productListInstance.currentPage = 1
+        productListInstance.loadData()
+      }
+      // document.getElementById('search-result-info').style.display = 'none'
+      document.getElementById('close-search-result-btn').style.display = 'none'
+      })
+    // ============ 新增：日期输入互斥逻辑 ============
+    const createStartInput = document.getElementById('create-start-date');
+    const createEndInput = document.getElementById('create-end-date');
+    const updateStartInput = document.getElementById('update-start-date');
+    const updateEndInput = document.getElementById('update-end-date');
+
+    // 点击创建时间输入框 → 清空更新时间
+    [createStartInput, createEndInput].forEach(input => {
+      input.addEventListener('focus', () => {
+        updateStartInput.value = '';
+        updateEndInput.value = '';
+      });
+    });
+
+    // 点击更新时间输入框 → 清空创建时间
+    [updateStartInput, updateEndInput].forEach(input => {
+      input.addEventListener('focus', () => {
+        createStartInput.value = '';
+        createEndInput.value = '';
+      });
+      });
+    }
 
 // 面板显示切换
 function switchToPanel(target) {
@@ -224,11 +330,7 @@ function switchToPanel(target) {
         targetPanel.style.display = displayStyle
         targetPanel.classList.add('active')
         console.log(`成功显示 ${target} 面板`)
-        
-        // 面板显示后调整图表大小
-        setTimeout(() => {
-            resizeCharts()
-        }, 100)
+
     } else {
         console.error('未找到目标面板:', `${target}-content`)
         // 调试信息：列出所有可用的面板
@@ -238,6 +340,8 @@ function switchToPanel(target) {
 
     if (target === 'user-management') {
       initUserList(); // 初始化用户列表
+      document.getElementById('user-main-content').style.display = 'flex';
+      document.getElementById('black-main-content').style.display = 'none';
     } else if (target === 'loan-management') {
       initProductList() // 后面会写
       // refreshProductList()
@@ -247,15 +351,17 @@ function switchToPanel(target) {
 function switchToContent(target) {
   switch (target) {
     case 'user-main-content':
-      document.getElementById('user-main-content').style.display = 'block';
-      document.getElementById('black-main-content').style.display = 'none';
-      break;
+      document.getElementById('user-main-content').style.display = 'flex'
+      document.getElementById('black-main-content').style.display = 'none'
+      break
     case 'black-main-content':
-      document.getElementById('user-main-content').style.display = 'none';
-      document.getElementById('black-main-content').style.display = 'block';
-      break;
+      document.getElementById('user-main-content').style.display = 'none'
+      document.getElementById('black-main-content').style.display = 'flex'
+      // ✅ 关键：初始化黑名单列表
+      if (!blacklistInstance) initBlacklist()
+      break
     default:
-      console.error('未知内容:', target);
+      console.error('未知内容:', target)
   }
 }
 
@@ -265,10 +371,6 @@ function switchToContent(target) {
 *
 */ 
 // ============== 待办审核列表初始化 ===============
-let _allPendingApps = [] // 全量数据
-let _currentPage = 1
-const PENDING_PAGE_SIZE = 5
-
 // 加载全部待办申请
 async function fetchAndRenderPendingList() {
     try {
@@ -290,17 +392,17 @@ async function fetchAndRenderPendingList() {
 
 // 渲染分页信息
 function updatePendingPagination(total) {
-  const totalPages = Math.ceil(total / PENDING_PAGE_SIZE) || 1;
-  const pageInfoEl = document.getElementById('pending-page-info');
+  const totalPages = Math.ceil(total / PENDING_PAGE_SIZE) || 1
+  const pageInfoEl = document.getElementById('pending-page-info')
   if (pageInfoEl) {
     pageInfoEl.textContent = total === 0 ? '共 0 条' : `第 ${_currentPage} 页，共 ${totalPages} 页`;
   }
 
   // 控制按钮状态
-  const prevBtn = document.getElementById('prev-pending-page');
-  const nextBtn = document.getElementById('next-pending-page');
-  if (prevBtn) prevBtn.disabled = (_currentPage <= 1);
-  if (nextBtn) nextBtn.disabled = (_currentPage >= totalPages);
+  const prevBtn = document.getElementById('prev-pending-page')
+  const nextBtn = document.getElementById('next-pending-page')
+  if (prevBtn) prevBtn.disabled = (_currentPage <= 1)
+  if (nextBtn) nextBtn.disabled = (_currentPage >= totalPages)
 }
 
 // 渲染当前页表格
@@ -345,63 +447,90 @@ function renderPendingApplications(total) {
 
 // 显示申请详情
 async function showApplicationDetail(applicationId) {
-    console.log('显示申请详情:', applicationId)
-    try {
-        const detail = await AdminWeb.API_CLIENT.getApprovalDetail(applicationId)
-        if (detail.code !== 200) throw new Error(detail.message || '获取详情失败')
+  console.log('显示申请详情:', applicationId)
+  try {
+    const detail = await AdminWeb.API_CLIENT.getApprovalDetail(applicationId)
+    if (detail.code !== 200) throw new Error(detail.message || '获取详情失败')
 
-        const data = detail.data;
+    const data = detail.data
+    const user = data.user || {}
+    const userCert = data.userCert || {}
+    const app = data.application || {}
 
-        // 显示详情容器
-        document.getElementById('audition-detail').style.display = 'block';
+    // 显示详情容器
+    document.getElementById('audition-detail').style.display = 'block'
 
-        // 填充用户信息（字段都在 data 根层级）
-        document.getElementById('realName').textContent = data.userName || '—';
-        document.getElementById('phone').textContent = data.phone || '—';
+    // 用户信息
+    document.getElementById('realName').textContent = user.userName || '—'
+    document.getElementById('phone').textContent = user.phone || '—'
 
-        // 注册时间：使用 createTime，注意可能为 null
-        const registerTime = data.createTime 
-            ? new Date(data.createTime).toLocaleString('zh-CN') 
-            : '—';
-        document.getElementById('register-time').textContent = registerTime;
+    // 注册时间
+    const registerTime = user.createTime 
+        ? new Date(user.createTime).toLocaleString('zh-CN') 
+        : '—'
+    document.getElementById('register-time').textContent = registerTime
 
-        // 信誉分：字段名为 creditsScore（注意拼写）
-        document.getElementById('credit-score').textContent = 
-            (data.creditsScore != null) ? data.creditsScore : '—';
+    // 信誉分
+    document.getElementById('credit-score').textContent = 
+        (userCert.creditScore != null) ? userCert.creditScore : '—'
 
-        // 渲染认证材料（根据独立字段构建）
-        const materialsContainer = document.getElementById('materials-container');
-        const materialMap = {
-            idCard: '身份证',
-            workCertId: '工作证明',
-            triCertId: '三证合一',
-            immovableCertId: '不动产证明'
-        };
-
-        let html = '';
-        for (const [key, label] of Object.entries(materialMap)) {
-            const uploaded = data[key] != null; // 如果字段不为 null，视为已上传
-            const color = uploaded ? '#27ae60' : '#e74c3c';
-            const statusText = uploaded ? '已上传' : '未上传';
-            html += `<div class="material-item"><span>${label}</span><span style="color:${color}">${statusText}</span></div>`;
-        }
-        materialsContainer.innerHTML = html;
-
-        // 填充贷款信息
-        document.getElementById('product-name').textContent = data.productName || '—';
-        document.getElementById('loan-amount').textContent = 
-            data.loanAmount != null 
-                ? `¥${Number(data.loanAmount).toLocaleString('zh-CN')}` 
-                : '—';
-        document.getElementById('loan-term').textContent = data.loanPeriod || '—';
-        document.getElementById('term-period').textContent = data.term || '—';
-        // 绑定按钮
-        document.getElementById('btn-pass').onclick = () => submitReview(applicationId, true)  // 通过
-        document.getElementById('btn-reject').onclick = () => submitReview(applicationId, false) // 拒绝
-    } catch (error) {
-        console.error('获取申请详情失败:', error)
-        alert('获取详情失败：' + (error.message || '请重试'))
+    // 渲染认证材料（字段都在 userCert 下）
+    const materialsContainer = document.getElementById('materials-container')
+    const materialMap = {
+        idCard: '身份证',
+        bankCardId: '银行卡',         
+        workCertId: '工作证明',
+        triCertId: '三证合一',
+        immovableCertId: '不动产证明'
     }
+
+    let html = ''
+    for (const [key, label] of Object.entries(materialMap)) {
+        const uploaded = userCert[key] != null
+        const color = uploaded ? '#27ae60' : '#e74c3c'
+        const statusText = uploaded ? '已上传' : '未上传'
+        html += `<div class="material-item"><span>${label}</span><span style="color:${color}">${statusText}</span></div>`
+    }
+    materialsContainer.innerHTML = html
+
+    // 贷款信息
+    // 如果后端不能提供 productName，可暂时显示 productId 或留空
+    document.getElementById('product-name').textContent = 
+      app.productId != null ? `产品ID: ${app.productId}` : '—'
+
+    document.getElementById('loan-amount').textContent = 
+      app.loanAmount != null 
+        ? `¥${Number(app.loanAmount).toLocaleString('zh-CN')}` 
+        : '—'
+
+    document.getElementById('loan-term').textContent = app.loanPeriod != null ? `${app.loanPeriod} 期` : '—'
+    document.getElementById('term-period').textContent = app.term != null ? `${app.term} 个月` : '—'
+
+    // 利率和还款方式
+    const interestRateEl = document.getElementById('interest-rate')
+    if (interestRateEl) {
+      interestRateEl.textContent = app.interestRate != null ? `${(app.interestRate * 100).toFixed(2)}%` : '—'
+    }
+
+    const repayTypeEl = document.getElementById('repay-type')
+    if (repayTypeEl) {
+      repayTypeEl.textContent = app.repaidType || '—'
+    }
+
+    // 拒绝原因
+    const rejectReasonEl = document.getElementById('reject-reason')
+    if (rejectReasonEl) {
+        rejectReasonEl.textContent = app.rejectReason || '—'
+    }
+
+    // 绑定按钮
+    document.getElementById('btn-pass').onclick = () => submitReview(applicationId, true)  // 通过
+    document.getElementById('btn-reject').onclick = () => submitReview(applicationId, false) // 拒绝
+
+  } catch (error) {
+    console.error('获取申请详情失败:', error)
+    alert('获取详情失败：' + (error.message || '请重试'))
+  }
 }
 
 // 提交审核结果
@@ -429,8 +558,6 @@ document.getElementById('add-product-btn').addEventListener('click', () => {
   window.location.href = '/addProduct';
 })
 // ============== 贷款项目展示 ===============
-let productListInstance = null;
-
 // 贷款产品列表事件绑定
 function renderProductRow(product) {
   const tr = document.createElement('tr');
@@ -826,35 +953,28 @@ async function deleteProductOption(optionId) {
 
 
 // ==================== 用户管理面板处理 ====================
-let userListInstance = null;
-
 // 渲染单行用户
 function renderUserRow(user) {
   const tr = document.createElement('tr');
   tr.setAttribute('data-user-id', user.userId);
   
-  // 是否在线（示例：随机或根据字段）
-  const isOnline = '—'; // 假设后端未提供，在线状态需额外字段
-  // 目前借贷情况（示例）
-  const loanStatus = user.loanStatus || '无借贷';
-
   tr.innerHTML = `
     <td>${user.userId}</td>
     <td>${user.userName || '—'}</td>
-    <td>${isOnline}</td>
-    <td>${loanStatus}</td>
+    <td>${user.creditScore || '—'}</td>
+    <td>${user.loanStatus || '—'}</td>
     <td>${user.totalTransactionCount || 0}</td>
     <td>¥${(user.totalLoanAmount || 0).toLocaleString()}</td>
     <td>¥${(user.totalRepaidAmount || 0).toLocaleString()}</td>
     <td><button id="black-btn">加入黑名单</button></td>
   `;
   // 行点击事件：查看详情
-  tr.addEventListener('click', () => showUserDetail(user.userId));
+  tr.addEventListener('click', () => showUserDetail(user.userId))
   
   // 加入黑名单按钮
-  const deleteBtn = tr.querySelector('#black-btn');
+  const deleteBtn = tr.querySelector('#black-btn')
   deleteBtn?.addEventListener('click', async (e) => {
-    e.stopPropagation();
+    e.stopPropagation()
     if (confirm(`确定加入黑名单用户【${user.userName}】？`)) {
       try {
         const level = prompt('请输入黑名单等级:')
@@ -969,67 +1089,6 @@ async function showUserDetail(userId) {
   }
 }
 
-// 初始化黑名单列表
-async function initBlacklist() {
-  if (userListInstance) return; // 避免重复初始化
-
-    const fetchData = async (page, pageSize) => {
-    const response = await AdminWeb.API_CLIENT.getBlacklist()
-    if (response.code === 200) {
-      return response.data; 
-    } else {
-      throw new Error(response.message);
-    }
-  }
-
-  // 分页
-  let allUsers = [];
-  try {
-    const res = await AdminWeb.API_CLIENT.getUserStats();
-    if (res.code === 200) allUsers = res.data;
-  } catch (err) {
-    console.error('获取黑名单列表失败', err);
-  }
-
-  // 自定义分页逻辑
-  const pageSize = 5;
-  const totalPages = Math.ceil(allUsers.length / pageSize);
-
-  userListInstance = {
-    currentPage: 1,
-    totalPages: totalPages,
-    allData: allUsers,
-    pageSize: pageSize,
-    render: function() {
-      const start = (this.currentPage - 1) * this.pageSize;
-      const pageData = this.allData.slice(start, start + this.pageSize);
-      const tbody = document.getElementById('user-table').querySelector('tbody');
-      tbody.innerHTML = '';
-      
-      if (pageData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">暂无用户</td></tr>';
-        return;
-      }
-      
-      pageData.forEach(user => {
-        const row = renderUserRow(user);
-        tbody.appendChild(row);
-      });
-      
-      // 更新分页信息
-      document.getElementById('user-page-info').textContent = 
-        `第 ${this.currentPage} 页，共 ${this.totalPages} 页`;
-      document.getElementById('prev-user-page').disabled = (this.currentPage <= 1);
-      document.getElementById('next-user-page').disabled = (this.currentPage >= this.totalPages);
-    },
-    loadData: function() {
-      this.render();
-    }
-  };
-  
-  userListInstance.render();
-}
-
 // 通过申请ID获取用户申请详情
 async function fetchApplicationById(applicationId) {
     const url = `/api/loan-applications/${applicationId}`;
@@ -1057,6 +1116,98 @@ async function fetchApplicationsByUser(userId) {
     }
 }
 
+// 初始化黑名单列表
+async function initBlacklist() {
+  if (blacklistInstance) return // 避免重复初始化（建议新建一个 blacklistInstance）
+
+  let allBlacklist = []
+  try {
+    // 调用黑名单接口
+    const res = await AdminWeb.API_CLIENT.getBlacklist()
+    if (res.code === 200) allBlacklist = res.data
+  } catch (err) {
+    console.error('获取黑名单列表失败', err)
+    alert('加载黑名单失败')
+    return
+  }
+
+  // 分页逻辑（复用 userListInstance 结构，或新建 blacklistInstance）
+  const pageSize = 5;
+  const totalPages = Math.ceil(allBlacklist.length / pageSize);
+
+  blacklistInstance = {
+    currentPage: 1,
+    totalPages,
+    allData: allBlacklist,
+    pageSize,
+    render: function() {
+      const start = (this.currentPage - 1) * this.pageSize;
+      const pageData = this.allData.slice(start, start + this.pageSize);
+      const tbody = document.getElementById('black-user-table').querySelector('tbody'); // 注意：需确认表格 ID
+      tbody.innerHTML = ''
+
+      if (pageData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">暂无黑名单用户</td></tr>';
+        return
+      }
+
+      pageData.forEach(item => {
+        const row = renderBlacklistRow(item)
+        tbody.appendChild(row)
+      });
+
+      // 更新分页信息（需对应黑名单的分页元素 ID）
+      document.getElementById('blacklist-page-info').textContent = `第 ${this.currentPage} 页，共 ${this.totalPages} 页`;
+      document.getElementById('prev-blacklist-page').disabled = (this.currentPage <= 1);
+      document.getElementById('next-blacklist-page').disabled = (this.currentPage >= this.totalPages);
+    },
+    loadData: function() {
+      this.render()
+    }
+  }
+
+  blacklistInstance.render()
+}
+// 渲染单行黑名单
+function renderBlacklistRow(item) {
+  const tr = document.createElement('tr');
+  tr.setAttribute('data-user-id', item.userId);
+  tr.innerHTML = `
+    <td>${item.id}</td>
+    <td>${item.userId || '—'}</td>
+    <td>${item.userName || '—'}</td>
+    <td>${item.phone || '—'}</td>
+    <td>${item.blackLevel || '—'}</td>
+    <td>${item.createTime ? new Date(item.createTime).toLocaleString() : '—'}</td>
+    <td>${item.updateTime ? new Date(item.updateTime).toLocaleString() : '—'}</td>
+    <td>${item.removeTime ? new Date(item.removeTime).toLocaleString() : '—'}</td>
+    <td>
+      <button class="remove-black-btn" data-user-id="${item.userId}">解除黑名单</button>
+    </td>
+  `;
+
+  // 绑定解除黑名单事件
+  const removeBtn = tr.querySelector('.remove-black-btn');
+  removeBtn?.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    if (confirm(`确定解除用户【${item.userName}】的黑名单？`)) {
+      try {
+        await AdminWeb.API_CLIENT.removeFromBlacklist(item.userId);
+        alert('已解除黑名单');
+        // 重新加载黑名单列表
+        blacklistInstance = null;
+        initBlacklist();
+      } catch (error) {
+        alert('操作失败：' + error.message);
+      }
+    }
+  });
+
+  // 可选：点击行查看详情
+  tr.addEventListener('click', () => showUserDetail(item.userId));
+
+  return tr;
+}
 
 // ========================= 可复用部件 ================================
 /*
@@ -1140,36 +1291,8 @@ class PaginatedList {
 
 // =========================页面加载完成后初始化=========================
 document.addEventListener('DOMContentLoaded', function() {
-    init()
-    new DateRangePicker('start-date', 'end-date')
-    // 在页面加载完成后添加调试信息
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('DOM加载完成，开始初始化...')
-        
-        // 检查所有面板是否存在
-        const panels = [
-            'loan-apply-content',
-            'home-page-content', 
-            'loan-management-content',
-            'user-management-content',
-            'riskAndCollection-management-content',
-            'dataAndSystem-management-content'
-        ]
-        
-        panels.forEach(panelId => {
-            const panel = document.getElementById(panelId)
-            console.log(`面板 ${panelId}:`, panel ? '存在' : '不存在')
-        })
-        
-        // 检查导航按钮
-        const navButtons = document.querySelectorAll('.nav-link')
-        console.log(`找到 ${navButtons.length} 个导航按钮`)
-        
-        navButtons.forEach(button => {
-            const target = button.getAttribute('data-target')
-            console.log(`导航按钮: ${target}`, document.getElementById(`${target}-content`) ? '✓' : '✗')
-        })
-        
-        init()
-    })
+  init()
+
+  new DateRangePicker('create-start-date', 'create-end-date')
+  new DateRangePicker('update-start-date', 'update-end-date')
 })

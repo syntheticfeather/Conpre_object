@@ -18,11 +18,11 @@ AdminWeb.API_CONFIG = {
         logout: '/api/auth/logout', // 退出接口
 
         // 用户管理相关接口
+        getUserStats: '/api/users/stats',//查询用户状态列表
+        getUserDetail: '/api/users/{userId}/detail',//查看单个用户详细信息
         getBlacklist: '/api/users/blacklist/list',//获取黑名单列表
         addToBlacklist: '/api/users/blacklist/add',//添加黑名单
         removeFromBlacklist: '/api/users/blacklist/remove',//解除黑名单
-        getUserStats: '/api/users/admin/stats',//查询用户状态列表
-        getUserDetail: '/api/users/admin/{userId}',//查看单个用户详细信息
         searchUsersByCredit: '/api/users/search-by-credit',//据信誉分从高到低查询用
         
         // 贷款产品管理接口
@@ -35,6 +35,7 @@ AdminWeb.API_CONFIG = {
         batchCreateOptions: '/api/loan-products/admin/options/batch-create',//批量增加产品选项
         deleteOption: '/api/loan-products/admin/options/{optionId}',//删除产品的单个选项
         batchDeleteOptions: '/api/loan-products/admin/options/batch-delete',//批量删除产品选项
+        searchProductByDeta: '/api/loan-products',//根据更新/创建时间查询产品列表
         
         // 贷款申请相关接口
         adminGetApplication: '/api/loan-applications/{applicationId}',// 获取任意用户的单个贷款申请详情
@@ -308,18 +309,9 @@ AdminWeb.API_CLIENT = {
     getLoanProductById: function(productId) {
         return this.get(`/api/loan-products/admin/${productId}`);
     },
-    
-    // 新增贷款产品
-    addLoanProduct: function (productData) {
-    const url = AdminWeb.API_CONFIG.baseUrl + AdminWeb.API_CONFIG.endpoints.addLoanProduct;
-    return this.post(url, productData);
-    },
-    // addLoanProduct: function(productData) {
-    //     return this.post('/api/loan-products/admin', productData);
-    // },
-
-    updateLoanProduct: function(productId, productData) {
-        return this.patch(`/api/loan-products/admin/products/${productId}`, productData);
+    searchProductByDeta: function(expr1,exper2) {
+        const url = `/api/loan-products/admin/search?expr1=${expr1}&expr2=${exper2}`
+        return this.get(url)
     },
     //删除单个产品
     deleteLoanProduct: function(productId) {
@@ -328,6 +320,15 @@ AdminWeb.API_CLIENT = {
     //上架产品
     LoanProduct: function(productId) {
         return this.delete(`/api/loan-products/admin/${productId}/active`);
+    },
+    // 新增贷款产品
+    addLoanProduct: function (productData) {
+    const url = AdminWeb.API_CONFIG.baseUrl + AdminWeb.API_CONFIG.endpoints.addLoanProduct;
+    return this.post(url, productData);
+    },
+    // 修改产品信息
+    updateLoanProduct: function(productId, productData) {
+        return this.patch(`/api/loan-products/admin/products/${productId}`, productData);
     },
     //批量删除产品
     batchDeleteLoanProducts: function(ids) {
@@ -347,29 +348,26 @@ AdminWeb.API_CLIENT = {
     },
 
     // ==================== 用户管理面板快捷请求 ====================
+    // 待确认
     getUserStats: function() {
         return this.get('/api/users/admin/stats');
     },
-
+    // 获取单个用户详情
     getUserDetail: function(userId) {
         return this.get(`/api/users/admin/${userId}`);
     },
-
-    searchUsersByCredit: function(expr) {
-        return this.get(`/api/users/search-by-credit?expr=${encodeURIComponent(expr)}`);
-    },
-
+    // 加入黑名单
     addToBlacklist: function(userId, blackLevel) {
         return this.post('/api/users/blacklist/add', { userId, blackLevel });
     },
-
+    // 解除黑名单
     removeFromBlacklist: function(userId) {
         return this.post('/api/users/blacklist/remove', null, {
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: `userId=${userId}`
         });
     },
-
+    // 获取黑名单列表
     getBlacklist: function() {
         return this.get('/api/users/blacklist/list');
     },
