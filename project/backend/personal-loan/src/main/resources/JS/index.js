@@ -271,7 +271,7 @@ function bindEventListeners() {
       // document.getElementById('search-result-info').style.display = 'none'
       document.getElementById('close-search-result-btn').style.display = 'none'
       })
-    // ============ 新增：日期输入互斥逻辑 ============
+    // ============ 日期输入互斥逻辑 ============
     const createStartInput = document.getElementById('create-start-date');
     const createEndInput = document.getElementById('create-end-date');
     const updateStartInput = document.getElementById('update-start-date');
@@ -1051,41 +1051,101 @@ async function initUserList() {
 }
 // 显示用户详情
 async function showUserDetail(userId) {
+  // 显示模态框
+  document.getElementById('user-detail').style.display = 'block'
+
   try {
-    const detail = await AdminWeb.API_CLIENT.getUserDetail(userId);
-    if (detail.code !== 200) throw new Error(detail.message || '获取失败');
+    const detail = await AdminWeb.API_CLIENT.getUserDetail(userId)
+    if (detail.code !== 200) throw new Error(detail.message || '获取失败')
     
-    const data = detail.data;
+    const user = detail.data.user
+    const userCert = detail.data.userCert||{}
+    const loanApplications = detail.data.loanApplication||{}
+    const orders = detail.data.order||{}
     // 填充基本信息
-    document.getElementById('user-real-name').textContent = data.userName || '—';
-    document.getElementById('user-phone').textContent = data.phone || '—';
+    document.getElementById('user-real-name').textContent = user.userName || '—'
+    document.getElementById('user-phone').textContent = user.phone || '—'
     document.getElementById('user-register-time').textContent = 
-      data.createTime ? new Date(data.createTime).toLocaleString() : '—';
-    document.getElementById('user-credit-score').textContent = 
-      (data.creditScore != null) ? data.creditScore : '—';
+      user.createTime ? new Date(user.createTime).toLocaleString() : '—'
+        document.getElementById('user-update-time').textContent = 
+      user.updateTime ? new Date(user.updateTime).toLocaleString() : '—'
     
     // 认证材料（简化：只显示是否上传）
-    const materialsContainer = document.getElementById('user-materials-container');
+    document.getElementById('user-credit-score').textContent = 
+      (userCert.creditScore != null) ? userCert.creditScore : '—'
+    const materialsContainer = document.getElementById('user-materials-container')
     const materialMap = {
       idCard: '身份证',
+      bankCardId: '银行卡',
       workCertId: '工作证明',
       triCertId: '三证合一',
       immovableCertId: '不动产证明'
-    };
-    let html = '';
-    for (const [key, label] of Object.entries(materialMap)) {
-      const uploaded = data[key] != null;
-      const color = uploaded ? '#27ae60' : '#e74c3c';
-      const statusText = uploaded ? '已上传' : '未上传';
-      html += `<div class="material-item"><span>${label}</span><span style="color:${color}">${statusText}</span></div>`;
     }
-    materialsContainer.innerHTML = html;
+    let html = ''
+    for (const [key, label] of Object.entries(materialMap)) {
+      const uploaded = userCert[key] != null
+      const color = uploaded ? '#27ae60' : '#e74c3c'
+      const statusText = uploaded ? '已上传' : '未上传'
+      html += `<div class="material-item"><span>${label}</span><span style="color:${color}">${statusText}</span></div>`
+    }
+    materialsContainer.innerHTML = html
     
-    // 显示模态框
-    document.getElementById('user-detail').style.display = 'block';
+    // 显示贷款申请
+    if (loanApplications) {
+      const tbody = document.getElementById('application-table').querySelector('tbody')
+      tbody.innerHTML = ''
+      loanApplications.forEach((app, i) => {  
+        const row = document.createElement('tr')
+        const rejectReason = app.rejectReason?.trim() || '—'
+        row.innerHTML = `
+          <td>${i+1}</td>
+          <td>${app.productId}</td>
+          <td>${app.loanAmount}</td>
+          <td>${app.term}</td>
+          <td>${app.repaidType}</td>
+          <td>${app.interestRate}</td>
+          <td>${app.applyTime}</td>
+          <td>${app.status}</td>
+          <td>${rejectReason}</td>
+          <td>${app.reviewTime}</td>
+        `
+        tbody.appendChild(row)
+      })
+    } else {
+      const tbody = document.getElementById('application-table').querySelector('tbody')
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">暂无申请</td></tr>'
+    }
+  
+    // 显示订单列表
+    if (orders) {
+      const tbody = document.getElementById('order-table').querySelector('tbody')
+      tbody.innerHTML = ''
+      orders.forEach((order, id) => {  
+        const row = document.createElement('tr')
+        row.innerHTML = `
+          <td>${id+1}</td>
+          <td>${order.productId}</td>
+          <td>${order.status}</td>
+          <td>${order.repaidAmount}</td>
+          <td>${order.loanAmount}</td>
+          <td>${order.interestRate}</td>
+          <td>${order.repaidType}</td>
+          <td>${order.loanPeriod}</td>
+          <td>${order.term}</td>
+          <td>${order.currentTerm}</td>
+          <td>${order.contract}</td>
+          <td>${order.overdueDays}</td>
+          <td>${order.startTime}</td>
+        `
+        tbody.appendChild(row)
+      })
+    } else {
+      const tbody = document.getElementById('application-table').querySelector('tbody')
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">暂无申请</td></tr>'
+    }
   } catch (error) {
-    console.error('获取用户详情失败:', error);
-    alert('加载用户详情失败');
+    console.error('获取用户详情失败:', error)
+    alert('加载用户详情失败')
   }
 }
 

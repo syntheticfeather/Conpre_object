@@ -368,11 +368,59 @@
                         <p><strong>真实姓名：</strong><span id="user-real-name">—</span></p>
                         <p><strong>手机号：</strong><span id="user-phone">—</span></p>
                         <p><strong>注册时间：</strong><span id="user-register-time">—</span></p>
+                        <p><strong>最近上线时间：</strong><span id="user-update-time">—</span></p>
                         <p><strong>信誉分：</strong><span id="user-credit-score" style="color:#e74c3c;">—</span></p>
                     </div>
                     <div id="user-auth-section">
                         <h3>认证材料</h3>
                         <div id="user-materials-container"></div>
+                    </div>
+                    <div id="applications">
+                        <h3>贷款申请列表</h3>
+                        <table id="application-table">
+                            <thead>
+                                <tr>
+                                    <th>序号</th>
+                                    <th>贷款产品</th>
+                                    <th>申请金额（元）</th>
+                                    <th>期限（月）</th>
+                                    <th>还款方式</th>
+                                    <th>年利率</th>
+                                    <th>申请时间</th>
+                                    <th>状态</th>
+                                    <th>拒绝原因</th>
+                                    <th>人工审核时间</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- JS填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="orders">
+                        <h3>贷款订单列表</h3>
+                        <table id="order-table">
+                            <thead>
+                                <tr>
+                                    <th>序号</th>
+                                    <th>贷款产品</th>
+                                    <th>状态</th>
+                                    <th>已还金额（元）</th>
+                                    <th>贷款金额（元）</th>
+                                    <th>年利率</th>
+                                    <th>还款方式</th>
+                                    <th>年限</th>
+                                    <th>期数</th>
+                                    <th>已还期数</th>
+                                    <th>合同</th>
+                                    <th>逾期天数</th>
+                                    <th>起始时间</th> 
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- JS填充 -->
+                            </tbody>
+                        </table>
                     </div>
                     <div class="action-buttons">
                         <button class="btn btn-primary" onclick="document.getElementById('user-detail').style.display='none'">关闭</button>

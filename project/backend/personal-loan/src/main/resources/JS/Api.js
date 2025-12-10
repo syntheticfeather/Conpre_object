@@ -350,11 +350,11 @@ AdminWeb.API_CLIENT = {
     // ==================== 用户管理面板快捷请求 ====================
     // 待确认
     getUserStats: function() {
-        return this.get('/api/users/admin/stats');
+        return this.get('/api/users/stats');
     },
     // 获取单个用户详情
     getUserDetail: function(userId) {
-        return this.get(`/api/users/admin/${userId}`);
+        return this.get(`/api/users/${userId}/detail`);
     },
     // 加入黑名单
     addToBlacklist: function(userId, blackLevel) {
