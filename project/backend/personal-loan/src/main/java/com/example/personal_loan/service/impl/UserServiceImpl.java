@@ -12,13 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.personal_loan.config.FileStorageConfig;
-import com.example.personal_loan.dto.AdminGetUserResponse;
-import com.example.personal_loan.dto.AdminUserListResponse;
 import com.example.personal_loan.dto.BlackListDto;
 import com.example.personal_loan.dto.LoginRequest;
 import com.example.personal_loan.dto.LoginResponse;
 import com.example.personal_loan.dto.RegisterRequest;
 import com.example.personal_loan.dto.RegisterResponse;
+import com.example.personal_loan.dto.UserDetailResponse;
+import com.example.personal_loan.dto.UserListResponse;
 import com.example.personal_loan.dto.UserSearchDto;
 import com.example.personal_loan.dto.UserSelfResponse;
 import com.example.personal_loan.dto.UserUpdateRequest;
@@ -300,39 +300,45 @@ public class UserServiceImpl implements UserService {
         return userMapper.selectUsersByCreditScore(parsed.operator, parsed.value);
     }
 
+    // 用户管理列表
     @Override
-    public List<AdminUserListResponse> adminGetAllUsersWithStats() {
+    public List<UserListResponse> adminGetAllUsersWithStats() {
         // 查询所有用户（带用户名）
         List<User> users = userMapper.findAll();
 
         // 遍历每个用户，计算统计信息
         return users.stream().map(user -> {
             List<Order> orders = orderMapper.selectAllByUserId(user.getId());
+            UserCert userCert = userCertMapper.selectByUserId(user.getId());
 
             Integer transactionCount = CalculateUtil.getTotalTransactionCount(orders);
             BigDecimal totalLoanAmount = CalculateUtil.getTotalLoanAmount(orders);
-            BigDecimal totalRepaidAmount = CalculateUtil.getTotalRepaidAmount(orders);
 
             // 判断用户有无借贷, 逾期状态
             String loanStatus;
             if (orders.isEmpty()) {
                 loanStatus = "无借贷";
-            } else if (orders.stream().anyMatch(order -> OrderStatus.OVERDUE.equals(order.getStatus()))) {
+            } else if (orders.stream().anyMatch(order -> 
+                OrderStatus.已逾期.equals(order.getStatus()) && 
+                order.getOverdueDays() != null && 
+                order.getOverdueDays() > 0
+            )) {
                 loanStatus = "逾期";
-            } else {
+            }else {
                 loanStatus = "正常";
             }
-            return new AdminUserListResponse(
+            return new UserListResponse(
                     user.getId(),
                     user.getUserName(),
+                    userCert.getCreditScore(),
                     loanStatus,
                     transactionCount,
-                    totalLoanAmount,
-                    totalRepaidAmount
+                    totalLoanAmount
             );
         }).collect(Collectors.toList());
     }
 
+    // 加入黑名单
     @Override
     public void addToBlackList(Long adminId, Long userId, int blackLevel) {
         // 权限校验
@@ -365,6 +371,7 @@ public class UserServiceImpl implements UserService {
         blackListMapper.insert(blackUser);
     }
 
+    // 移除黑名单
     @Override
     public void removeFromBlackList(Long adminId, Long userId){
         // 权限校验
@@ -382,6 +389,7 @@ public class UserServiceImpl implements UserService {
         blackListMapper.update(blackUser);
     }
 
+    // 黑名单列表
     @Override
     public List<BlackListDto> getBlackList(Long adminId) {
         // 权限校验
@@ -394,32 +402,10 @@ public class UserServiceImpl implements UserService {
         return blackUsers;
     }
 
+    // 用户管理详情
     @Override
-    public AdminGetUserResponse adminGetUser(Long userId) {
-        User user = userMapper.findById(userId);
-        if (user == null) {
-            throw new BusinessException(404, "用户不存在");
-        }
-
-        // 查询认证信息（含 creditScore）
-        UserCert cert = userCertMapper.selectByUserId(userId);
-        Integer creditScore = (cert != null) ? cert.getCreditScore() : null;
-
-        // 查询黑名单等级
-        BlackUser blackUser = blackListMapper.selectByUserId(userId);
-        int blackLevel = (blackUser != null) ? blackUser.getBlackLevel() : 0;
-
-        return new AdminGetUserResponse(
-                user.getId(),
-                user.getUserName(),
-                user.getAvatar(),
-                user.getPhone(),
-                user.getRole(),
-                creditScore,
-                blackLevel,
-                user.getCreateTime(),
-                user.getUpdateTime()
-        );
+    public UserDetailResponse adminGetUser(Long userId) {
+        return userMapper.selectUserDetail(userId);
     }
 
     // 内部类

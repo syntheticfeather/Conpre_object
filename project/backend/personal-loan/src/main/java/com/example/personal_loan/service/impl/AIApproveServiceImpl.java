@@ -1,5 +1,6 @@
 package com.example.personal_loan.service.impl;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Random;
 
@@ -7,8 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.personal_loan.entity.LoanApplication;
+import com.example.personal_loan.entity.Order;
 import com.example.personal_loan.enums.ApplicationStatus;
+import com.example.personal_loan.enums.OrderStatus;
 import com.example.personal_loan.mapper.ApplicationMapper;
+import com.example.personal_loan.mapper.OrderMapper;
 import com.example.personal_loan.service.AIApproveService;
 import com.example.personal_loan.service.AuthService;
 
@@ -24,6 +28,9 @@ public class AIApproveServiceImpl implements AIApproveService {
     @Autowired
     private ApplicationMapper applicationMapper;
 
+    @Autowired 
+    private OrderMapper orderMapper;
+
     @Override
     public Boolean AICheck(LoanApplication application) {
         if (new Random().nextInt(100) < 50) {
@@ -32,6 +39,25 @@ public class AIApproveServiceImpl implements AIApproveService {
             application.setRejectReason("AI approve\n");
             application.setReviewTime(LocalDateTime.now());
             applicationMapper.update(application);
+
+            // 创建订单
+            Order order = new Order();
+            order.setUserId(application.getUserId());
+            order.setProductId(application.getProductId()); 
+            order.setStatus(OrderStatus.正常); 
+            order.setRepaidAmount(BigDecimal.ZERO);
+            order.setLoanAmount(application.getLoanAmount()); 
+            order.setInterestRate(application.getInterestRate()); 
+            order.setRepaidType(application.getRepaidType()); 
+            order.setLoanPeriod(application.getLoanPeriod());
+            // contract 后续生成
+            order.setContract(null); 
+            order.setTerm(application.getLoanPeriod()); 
+            order.setCurrentTerm(0); // 初始为0，尚未还款（？）
+            order.setOverdueDays(0);
+            order.setStartTime(LocalDateTime.now());
+            orderMapper.insert(order); // 插入订单表
+
             log.info("AI approve success");
             return true;
         }

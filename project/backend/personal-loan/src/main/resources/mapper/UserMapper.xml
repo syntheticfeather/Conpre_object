@@ -23,4 +23,119 @@
         </where>
         ORDER BY uc.credit_score DESC
     </select>
+
+
+    <resultMap id="UserDetailResultMap" type="com.example.personal_loan.dto.UserDetailResponse">
+        <!-- 用户基本信息 -->
+        <result property="user.id" column="user_id"/>
+        <result property="user.userName" column="user_name"/>
+        <result property="user.avatar" column="avatar"/>
+        <result property="user.phone" column="phone"/>
+        <result property="user.password" column="password"/> <!-- 后续设为 null -->
+        <result property="user.role" column="role"/>
+        <result property="user.createTime" column="user_create_time"/>
+        <result property="user.updateTime" column="user_update_time"/>
+
+        <!-- 用户认证 -->
+        <result property="userCert.userId" column="cert_user_id"/>
+        <result property="userCert.idCard" column="id_card"/>
+        <result property="userCert.creditScore" column="credit_score"/>
+        <result property="userCert.bankCardId" column="bank_card_id"/>
+        <result property="userCert.workCertId" column="work_cert_id"/>
+        <result property="userCert.triCertId" column="tri_cert_id"/>
+        <result property="userCert.immovableCertId" column="immovable_cert_id"/>
+
+        <!-- 最新贷款申请 -->
+        <result property="loanApplication.id" column="app_id"/>
+        <result property="loanApplication.userId" column="app_user_id"/>
+        <result property="loanApplication.productId" column="app_product_id"/>
+        <result property="loanApplication.status" column="app_status"/>
+        <result property="loanApplication.loanAmount" column="app_loan_amount"/>
+        <result property="loanApplication.interestRate" column="app_interest_rate"/>
+        <result property="loanApplication.loanPeriod" column="app_loan_period"/>
+        <result property="loanApplication.term" column="app_term"/>
+        <result property="loanApplication.repaidType" column="app_repaid_type"/>
+        <result property="loanApplication.rejectReason" column="app_reject_reason"/>
+        <result property="loanApplication.applyTime" column="app_apply_time"/>
+        <result property="loanApplication.reviewTime" column="app_review_time"/>
+
+        <!-- 最新订单 -->
+        <result property="order.id" column="order_id"/>
+        <result property="order.userId" column="order_user_id"/>
+        <result property="order.productId" column="order_product_id"/>
+        <result property="order.status" column="order_status"/>
+        <result property="order.repaidAmount" column="repaid_amount"/>
+        <result property="order.loanAmount" column="order_loan_amount"/>
+        <result property="order.interestRate" column="order_interest_rate"/>
+        <result property="order.repaidType" column="order_repaid_type"/>
+        <result property="order.loanPeriod" column="order_loan_period"/>
+        <result property="order.term" column="order_term"/>
+        <result property="order.currentTerm" column="current_term"/>
+        <result property="order.contract" column="contract"/>
+        <result property="order.overdueDays" column="overdue_days"/>
+        <result property="order.startTime" column="start_time"/>
+    </resultMap>
+
+    <select id="selectUserDetail" resultMap="UserDetailResultMap">
+        SELECT
+            u.id AS user_id,
+            u.user_name,
+            u.avatar,
+            u.phone,
+            u.password,
+            u.role,
+            u.create_time AS user_create_time,
+            u.update_time AS user_update_time,
+
+            uc.user_id AS cert_user_id,
+            uc.id_card,
+            uc.credit_score,
+            uc.bank_card_id,
+            uc.work_cert_id,
+            uc.tri_cert_id,
+            uc.immovable_cert_id,
+
+            la.id AS app_id,
+            la.user_id AS app_user_id,
+            la.product_id AS app_product_id,
+            la.status AS app_status,
+            la.loan_amount AS app_loan_amount,
+            la.interest_rate AS app_interest_rate,
+            la.loan_period AS app_loan_period,
+            la.term AS app_term,
+            la.repaid_type AS app_repaid_type,
+            la.reject_reason AS app_reject_reason,
+            la.apply_time AS app_apply_time,
+            la.review_time AS app_review_time,
+
+            o.id AS order_id,
+            o.user_id AS order_user_id,
+            o.product_id AS order_product_id,
+            o.status AS order_status,
+            o.repaid_amount,
+            o.loan_amount AS order_loan_amount,
+            o.interest_rate AS order_interest_rate,
+            o.repaid_type AS order_repaid_type,
+            o.loan_period AS order_loan_period,
+            o.term AS order_term,
+            o.current_term,
+            o.contract,
+            o.overdue_days,
+            o.start_time
+        FROM users u
+        LEFT JOIN user_certification uc ON u.id = uc.user_id
+        LEFT JOIN (
+            SELECT * FROM loan_applications
+            WHERE user_id = #{userId}
+            ORDER BY apply_time DESC
+            LIMIT 1
+        ) la ON u.id = la.user_id
+        LEFT JOIN (
+            SELECT * FROM orders
+            WHERE user_id = #{userId}
+            ORDER BY start_time DESC
+            LIMIT 1
+        ) o ON u.id = o.user_id
+        WHERE u.id = #{userId}
+    </select>
 </mapper>

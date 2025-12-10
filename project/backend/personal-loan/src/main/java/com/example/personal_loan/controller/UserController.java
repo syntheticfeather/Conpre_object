@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.personal_loan.dto.AddToBlackListRequest;
-import com.example.personal_loan.dto.AdminGetUserResponse;
-import com.example.personal_loan.dto.AdminUserListResponse;
 import com.example.personal_loan.dto.ApiResponse;
 import com.example.personal_loan.dto.BlackListDto;
+import com.example.personal_loan.dto.UserDetailResponse;
+import com.example.personal_loan.dto.UserListResponse;
 import com.example.personal_loan.dto.UserSearchDto;
 import com.example.personal_loan.dto.UserSelfResponse;
 import com.example.personal_loan.dto.UserUpdateRequest;
@@ -117,24 +117,26 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(list));
     }
     
-    // 用户管理列表，查看贷款状态和金额统计信息
-    @GetMapping("/admin/stats")
-    public ResponseEntity<ApiResponse<List<AdminUserListResponse>>> getAllUsersWithStats() {
-        log.info("/api/users/admin/stats success called for admin to get all users with stats");
-        List<AdminUserListResponse> userStatsList = userService.adminGetAllUsersWithStats();
+    /**
+     * 用户管理列表，查看贷款状态和金额统计信息
+     */
+    @GetMapping("/stats")
+    public ResponseEntity<ApiResponse<List<UserListResponse>>> getAllUsersWithStats() {
+        log.info("/api/users/stats success called for admin to get all users with stats");
+        List<UserListResponse> userStatsList = userService.adminGetAllUsersWithStats();
         return ResponseEntity.ok(ApiResponse.success(userStatsList));
     }
 
     /**
-     * 获取指定用户的详细信息（含黑名单等级、信誉分）
+     * 获取指定用户的详细信息
      */
-    @GetMapping("/admin/{userId}")
-    public ResponseEntity<ApiResponse<AdminGetUserResponse>> getAdminUserDetail(
+    @GetMapping("/{userId}/detail")
+    public ResponseEntity<ApiResponse<UserDetailResponse>> getAdminUserDetail(
             @PathVariable Long userId) {
         
-        log.info("/api/users/admin/{} success called for admin to get user {} info", userId,userId);
+        log.info("/api/users/{}/detail success called for admin to get user {} info", userId,userId);
         
-        AdminGetUserResponse response = userService.adminGetUser(userId);
+        UserDetailResponse response = userService.adminGetUser(userId);
         
         return ResponseEntity.ok(ApiResponse.success(response));
     }

@@ -1,7 +1,7 @@
 package com.example.personal_loan.enums;
 
 public enum OrderStatus {
-    NORMAL,
-    OVERDUE,
-    SETTLED;
+    正常,
+    已逾期,
+    已完成;
 }

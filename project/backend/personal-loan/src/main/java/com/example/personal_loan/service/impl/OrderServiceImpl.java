@@ -1,9 +1,7 @@
 package com.example.personal_loan.service.impl;
 
 import java.math.BigDecimal;
-
 import java.util.ArrayList;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,7 +20,6 @@ import com.example.personal_loan.mapper.LoanProductMapper;
 import com.example.personal_loan.mapper.OrderMapper;
 import com.example.personal_loan.service.OrderService;
 import com.example.personal_loan.service.UserService;
-import com.example.personal_loan.utils.MaskUtil;
 import com.example.personal_loan.utils.CalculateUtil;
 
 @Service
@@ -37,15 +34,6 @@ public class OrderServiceImpl implements OrderService{
 
     @Autowired
     private LoanProductMapper loanProductMapper;
-    
-    // @Autowired
-    // private LoanProductService loanProductService;
-    
-    // @Autowired
-    // private PayService payService;
-    
-    // @Autowired
-    // private AuthService authService;
     
     // 用户获取单个订单
     @Override
@@ -82,7 +70,7 @@ public class OrderServiceImpl implements OrderService{
             order.getRepaidType(),
             order.getStartTime(),
             order.getStatus(),  
-            (order.getStatus() == OrderStatus.OVERDUE)  ? order.getOverdueDays() : null, // overdueDays
+            (order.getStatus() == OrderStatus.已逾期)  ? order.getOverdueDays() : null, // overdueDays
             order.getTerm(),                // term（总期数）
             order.getCurrentTerm(),         // currentTerm
             null                    // contractUrl
@@ -110,7 +98,7 @@ public class OrderServiceImpl implements OrderService{
                 order.getRepaidType(),
                 order.getStartTime(),
                 order.getStatus(),
-                (order.getStatus() == OrderStatus.OVERDUE)  ? order.getOverdueDays() : null,
+                (order.getStatus() == OrderStatus.已逾期)  ? order.getOverdueDays() : null,
                 order.getTerm(),
                 order.getCurrentTerm(),
                 contractUrl
@@ -144,7 +132,7 @@ public class OrderServiceImpl implements OrderService{
             order.getRepaidType(),
             order.getStartTime(),
             order.getStatus(),
-            (order.getStatus() == OrderStatus.OVERDUE)  ? order.getOverdueDays() : null,
+            (order.getStatus() == OrderStatus.已逾期)  ? order.getOverdueDays() : null,
             order.getCurrentTerm(),
             contractUrl
         );
@@ -180,7 +168,7 @@ public class OrderServiceImpl implements OrderService{
                 order.getRepaidType(),
                 order.getStartTime(),
                 order.getStatus(),
-                (order.getStatus() == OrderStatus.OVERDUE)  ? order.getOverdueDays() : null,
+                (order.getStatus() == OrderStatus.已逾期)  ? order.getOverdueDays() : null,
                 order.getCurrentTerm(),
                 contractUrl
             );
@@ -201,7 +189,7 @@ public class OrderServiceImpl implements OrderService{
 
         // 2. 校验状态
         OrderStatus status = order.getStatus();
-        if (status != OrderStatus.NORMAL && status != OrderStatus.OVERDUE) {
+        if (status != OrderStatus.正常 && status != OrderStatus.已逾期) {
             throw new BusinessException(400, "订单不可还款，当前状态：" + status);
         }
 
@@ -219,7 +207,7 @@ public class OrderServiceImpl implements OrderService{
         // 6. 更新订单
         BigDecimal newRepaidAmount = order.getRepaidAmount().add(dueAmount);
         Integer newCurrentTerm = order.getCurrentTerm() + 1;
-        OrderStatus newStatus = (newCurrentTerm.equals(order.getTerm())) ? OrderStatus.SETTLED : OrderStatus.NORMAL;
+        OrderStatus newStatus = (newCurrentTerm.equals(order.getTerm())) ? OrderStatus.已完成 : OrderStatus.正常;
 
         order.setRepaidAmount(newRepaidAmount);
         order.setCurrentTerm(newCurrentTerm);
@@ -245,7 +233,7 @@ public class OrderServiceImpl implements OrderService{
             order.getRepaidType(),
             order.getStartTime(),
             order.getStatus(),
-            (order.getStatus() == OrderStatus.OVERDUE)  ? order.getOverdueDays() : null,
+            (order.getStatus() == OrderStatus.已逾期)  ? order.getOverdueDays() : null,
             order.getTerm(),
             order.getCurrentTerm(),
             contractUrl

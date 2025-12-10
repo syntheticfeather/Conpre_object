@@ -222,9 +222,9 @@
 
 ![](../UserImgs/logBlacklist.png)
 
-### 查询用户状态列表
+### 用户管理列表
 
-**网址** /api/users/admin/stats
+**网址** /api/users/stats
 
 **请求方式** GET
 
@@ -236,35 +236,35 @@
     "data": [
         {
             "userId": 1,
-            "userName": "Tom",
-            "loanStatus": "无借贷",
+            "userName": "alice",
+            "creditScore": null,
+            "loanStatus": "逾期",
             "totalTransactionCount": 0,
-            "totalLoanAmount": 0,
-            "totalRepaidAmount": 0
+            "totalLoanAmount": 90000.00
         },
         {
             "userId": 2,
-            "userName": "王芳",
-            "loanStatus": "无借贷",
-            "totalTransactionCount": 0,
-            "totalLoanAmount": 0,
-            "totalRepaidAmount": 0
-        },
-        {
-            "userId": 3,
             "userName": "张伟",
+            "creditScore": null,
             "loanStatus": "无借贷",
             "totalTransactionCount": 0,
-            "totalLoanAmount": 0,
-            "totalRepaidAmount": 0
+            "totalLoanAmount": 0
         },
         {
-            "userId": 4,
-            "userName": "李明",
+            "userId": 7,
+            "userName": "李华",
+            "creditScore": null,
             "loanStatus": "无借贷",
             "totalTransactionCount": 0,
-            "totalLoanAmount": 0,
-            "totalRepaidAmount": 0
+            "totalLoanAmount": 0
+        },
+        {
+            "userId": 8,
+            "userName": "李四",
+            "creditScore": null,
+            "loanStatus": "无借贷",
+            "totalTransactionCount": 0,
+            "totalLoanAmount": 0
         }
     ],
     "message": "操作成功"
@@ -281,7 +281,7 @@
 
 ### 查看单个用户详细信息
 
-**网址** /api/users/admin/{userId}
+**网址** /api/users/{userId}/detail
 
 **请求方式** GET
 
@@ -291,7 +291,7 @@
 |---|---|---|---|---|
 | userId | integer | 是 | 用户id | 1 |
 
-**请求示例(网址)** /api/users/admin/1
+**请求示例(网址)** /api/users/1/detail
 
 **返回数据**:
 
@@ -299,16 +299,55 @@
 {
     "code": 200,
     "data": {
-        "userId": 1,
-        "userName": "汤姆",
-        "avatar": null,
-        "phone": "13712345678",
-        "idCard": null,
-        "role": 0,
-        "creditScore": null,
-        "blackLevel": 0,
-        "createTime": "2025-11-21T13:21:32",
-        "updateTime": "2025-11-22T10:50:53"
+        "user": {
+            "id": 1,
+            "userName": "alice",
+            "avatar": null,
+            "phone": "13800138000",
+            "password": "$2a$10$otTD6KpzXlbblLqzZmqNIOR4vwNcSLKUAt0Um3rh85KPWM89Xvpr2",
+            "role": 0,
+            "createTime": "2025-12-08T09:20:20",
+            "updateTime": "2025-12-08T13:42:03"
+        },
+        "userCert": {
+            "userId": 1,
+            "idCard": null,
+            "creditScore": null,
+            "bankCardId": null,
+            "workCertId": null,
+            "triCertId": null,
+            "immovableCertId": null
+        },
+        "loanApplication": {
+            "id": 30,
+            "userId": 1,
+            "productId": 1,
+            "status": "AI_REJECTED",
+            "loanAmount": 30000,
+            "interestRate": 0.039,
+            "loanPeriod": 24,
+            "term": 6,
+            "repaidType": "等额本息",
+            "rejectReason": "AI rejected\n",
+            "applyTime": "2025-12-10T16:57:51",
+            "reviewTime": null
+        },
+        "order": {
+            "id": 3,
+            "userId": 1,
+            "productId": 1,
+            "status": "正常",
+            "repaidAmount": 0,
+            "loanAmount": 30000,
+            "interestRate": 0.039,
+            "repaidType": "等额本息",
+            "loanPeriod": 24,
+            "term": 24,
+            "currentTerm": 0,
+            "contract": null,
+            "overdueDays": 0,
+            "startTime": "2025-12-10T16:59:47"
+        }
     },
     "message": "操作成功"
 }

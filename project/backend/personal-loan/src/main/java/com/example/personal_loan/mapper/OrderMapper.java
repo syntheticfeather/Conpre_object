@@ -36,18 +36,18 @@ public interface OrderMapper {
     List<Order> selectAllByUserId(Long userId);
     
     // 插入新订单
-    @Insert("INSERT INTO orders (user_id, product_id, application_id, repaid_amount, outstanding_amount, " +
-            "interest_rate, repaid_type, status, contract, current_term, loan_period, overdue_days , end_date) " +
-            "VALUES(#{userId}, #{productId}, #{applicationId}, #{repaidAmount}, #{outstandingAmount}, " +
-            "#{interestRate}, #{repaidType}, #{status}, #{contract}, #{currentTerm}, #{loanPeriod}, #{overdueDays}, " +
-            "#{endDate})")
+    @Insert("INSERT INTO orders (user_id, product_id, status, repaid_amount, loan_amount, " +
+            "interest_rate, repaid_type, loan_period, contract, term, current_term, overdue_days , start_time) " +
+            "VALUES(#{userId}, #{productId}, #{status}, #{repaidAmount}, #{loanAmount}, " +
+            "#{interestRate}, #{repaidType}, #{loanPeriod}, #{contract}, #{term}, #{currentTerm}, #{overdueDays}, " +
+            "#{startTime})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(Order order);
     
     // 更新订单信息
-    @Update("UPDATE orders SET repaid_amount=#{repaidAmount}, outstanding_amount=#{outstandingAmount}, " +
-            "status=#{status}, current_term=#{currentTerm}, overdue_days=#{overdueDays}, " +
-            "end_date=#{endDate} WHERE id=#{id}")
+    @Update("UPDATE orders SET status = #{status}, repaid_amount = #{repaidAmount}, loan_amount = #{loanAmount}, " +
+            "current_term = #{currentTerm}, overdue_days=#{overdueDays}, " +
+            " WHERE id = #{id}")
     int update(Order order);
     
     // 还款更新
@@ -64,6 +64,6 @@ public interface OrderMapper {
     int updateForPostpone(Long orderId);
     
     // 更新订单状态
-    @Update("UPDATE orders SET status=#{status} WHERE id=#{orderId}")
+    @Update("UPDATE orders SET status = #{status} WHERE id = #{orderId}")
     int updateStatus(@Param("orderId") Long orderId, @Param("status") String status);
 }

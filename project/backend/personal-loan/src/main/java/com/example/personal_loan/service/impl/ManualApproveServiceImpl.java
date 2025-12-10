@@ -1,5 +1,6 @@
 package com.example.personal_loan.service.impl;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -11,10 +12,13 @@ import com.example.personal_loan.dto.ApplicationDetailResponse;
 import com.example.personal_loan.dto.ManualCheckResponse;
 import com.example.personal_loan.dto.PendingApprovalResponse;
 import com.example.personal_loan.entity.LoanApplication;
+import com.example.personal_loan.entity.Order;
 import com.example.personal_loan.entity.User;
 import com.example.personal_loan.enums.ApplicationStatus;
+import com.example.personal_loan.enums.OrderStatus;
 import com.example.personal_loan.exception.BusinessException;
 import com.example.personal_loan.mapper.ApplicationMapper;
+import com.example.personal_loan.mapper.OrderMapper;
 import com.example.personal_loan.service.ManualApproveService;
 import com.example.personal_loan.service.UserService;
 
@@ -23,6 +27,9 @@ public class ManualApproveServiceImpl implements ManualApproveService{
 
     @Autowired
     private ApplicationMapper applicationMapper;
+
+    @Autowired
+    private OrderMapper orderMapper;
 
     @Autowired
     private UserService userService;
@@ -74,6 +81,24 @@ public class ManualApproveServiceImpl implements ManualApproveService{
             application.setReviewTime(LocalDateTime.now());
             response.setReviewTime(LocalDateTime.now());
             response.setRejectReason(reasonBuilder.toString());
+
+            // 创建订单
+            Order order = new Order();
+            order.setUserId(application.getUserId());
+            order.setProductId(application.getProductId()); 
+            order.setStatus(OrderStatus.正常); 
+            order.setRepaidAmount(BigDecimal.ZERO);
+            order.setLoanAmount(application.getLoanAmount()); 
+            order.setInterestRate(application.getInterestRate()); 
+            order.setRepaidType(application.getRepaidType()); 
+            order.setLoanPeriod(application.getLoanPeriod());
+            // contract 后续生成
+            order.setContract(null); 
+            order.setTerm(application.getLoanPeriod()); 
+            order.setCurrentTerm(0); // 初始为0，尚未还款（？）
+            order.setOverdueDays(0);
+            order.setStartTime(LocalDateTime.now());
+            orderMapper.insert(order); // 插入订单表
         } else {
             // 人工拒绝
             StringBuilder reasonBuilder = new StringBuilder();

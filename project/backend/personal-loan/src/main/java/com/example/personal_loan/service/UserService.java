@@ -4,13 +4,13 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.personal_loan.dto.AdminGetUserResponse;
-import com.example.personal_loan.dto.AdminUserListResponse;
 import com.example.personal_loan.dto.BlackListDto;
 import com.example.personal_loan.dto.LoginRequest;
 import com.example.personal_loan.dto.LoginResponse;
 import com.example.personal_loan.dto.RegisterRequest;
 import com.example.personal_loan.dto.RegisterResponse;
+import com.example.personal_loan.dto.UserDetailResponse;
+import com.example.personal_loan.dto.UserListResponse;
 import com.example.personal_loan.dto.UserSearchDto;
 import com.example.personal_loan.dto.UserSelfResponse;
 import com.example.personal_loan.dto.UserUpdateRequest;
@@ -49,7 +49,7 @@ public interface UserService {
     */
    
     // 管理获取用户贷款状态及金额统计信息
-    List<AdminUserListResponse> adminGetAllUsersWithStats();
+    List<UserListResponse> adminGetAllUsersWithStats();
    
     // 添加黑名单
     void addToBlackList(Long adminId, Long userId, int blackLevel);
@@ -61,7 +61,7 @@ public interface UserService {
     List<BlackListDto> getBlackList(Long adminId);
    
     // 获取单个用户信息
-    AdminGetUserResponse adminGetUser(Long userId);
+    UserDetailResponse adminGetUser(Long userId);
 
    
     List<UserSearchDto> searchUsersByCreditScore(String expr);

@@ -18,7 +18,7 @@ public class Order {
     private Long userId;
     private Long productId;
 
-    private OrderStatus status; // "NORMAL", "OVERDUE", "SETTLED"
+    private OrderStatus status; // "正常", "已逾期", "已完成"
     private BigDecimal repaidAmount;
     private BigDecimal loanAmount;
     private BigDecimal interestRate;

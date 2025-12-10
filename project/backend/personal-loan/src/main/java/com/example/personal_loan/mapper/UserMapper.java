@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import com.example.personal_loan.dto.UserDetailResponse;
 import com.example.personal_loan.dto.UserSearchDto;
 import com.example.personal_loan.entity.User;
 
@@ -42,7 +43,7 @@ public interface UserMapper {
     // 查询所有用户
     @Select("SELECT id, user_name as userName, avatar, password, "+
         "phone, role, create_time as createTime, update_time as updateTime " +
-        "FROM users")
+        "FROM users WHERE role = 0")
     List<User> findAll();
 
     // 根据手机号查询用户
@@ -54,4 +55,5 @@ public interface UserMapper {
     @Select("SELECT COUNT(*) FROM users WHERE phone = #{phone} AND id != #{id}")
     int findByPhoneExcludeId(@Param("phone") String phone, @Param("id") Long id);
 
+    UserDetailResponse selectUserDetail(@Param("userId") Long userId);
 }
