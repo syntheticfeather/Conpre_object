@@ -18,7 +18,7 @@ public class AdminGetProDetailResponse {
 
     private String productName;
     private String description;
-    private String usage;
+    private String loanUsage;
     private List<Integer> terms;
     private String promotionDetails;
     private ProductStatus status;

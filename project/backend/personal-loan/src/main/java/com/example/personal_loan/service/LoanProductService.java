@@ -5,6 +5,7 @@ import java.util.List;
 import com.example.personal_loan.dto.AdminGetProDetailResponse;
 import com.example.personal_loan.dto.ListProductResponse;
 import com.example.personal_loan.dto.ProductDto;
+import com.example.personal_loan.dto.SearchByDateRequest;
 import com.example.personal_loan.dto.UserGetProductResponse;
 import com.example.personal_loan.entity.LoanOption;
 
@@ -47,7 +48,8 @@ public interface LoanProductService {
     // 获取产品列表
     List<ListProductResponse> adminGetAllProducts ();
 
-
+    // 搜索
+    List<ListProductResponse> searchByDate(SearchByDateRequest request);
 
     /*
      * 用户使用

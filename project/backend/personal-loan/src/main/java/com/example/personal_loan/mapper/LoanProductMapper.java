@@ -1,14 +1,17 @@
 package com.example.personal_loan.mapper;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import com.example.personal_loan.dto.ListProductResponse;
 import com.example.personal_loan.entity.LoanProduct;
 
 @Mapper
@@ -85,7 +88,7 @@ public interface LoanProductMapper {
         "create_time as createTime, " +
         "update_time as updateTime " +
         "FROM loan_products "+
-        "WHERE status = 'ACTIVE' "+
+        "WHERE status = '上架中' "+
         "ORDER BY update_time DESC, create_time DESC")
     List<LoanProduct> findAllActive();
 
@@ -94,6 +97,14 @@ public interface LoanProductMapper {
         "min_term as minTerm, max_term as maxTerm, term_step as termStep, " +
         "promotion_details as promotionDetails, create_time as createTime, update_time as updateTime " +
         "FROM loan_products " +
-        "WHERE product_name LIKE CONCAT('%', #{keyword}, '%') AND status = 'ACTIVE'")
+        "WHERE product_name LIKE CONCAT('%', #{keyword}, '%') AND status = '上架中'")
     List<LoanProduct> findByProductNameLike(String productName);
+
+    // 根据更新时间和创建时间的范围搜索产品
+    List<ListProductResponse> searchByDate(
+        @Param("createStartDate") LocalDate createStartDate,
+        @Param("createEndDate") LocalDate createEndDate,
+        @Param("updateStartDate") LocalDate updateStartDate,
+        @Param("updateEndDate") LocalDate updateEndDate
+    );
 }

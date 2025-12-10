@@ -15,6 +15,7 @@ import com.example.personal_loan.dto.AdminGetProDetailResponse;
 import com.example.personal_loan.dto.ListProductResponse;
 import com.example.personal_loan.dto.LoanOptionResponse;
 import com.example.personal_loan.dto.ProductDto;
+import com.example.personal_loan.dto.SearchByDateRequest;
 import com.example.personal_loan.dto.UserGetProductResponse;
 import com.example.personal_loan.entity.LoanOption;
 import com.example.personal_loan.entity.LoanProduct;
@@ -44,7 +45,7 @@ public class LoanProductServiceImpl implements LoanProductService{
 
         LoanProduct product = new LoanProduct();
 
-        dto.setStatus(ProductStatus.INACTIVE); // 默认下架
+        dto.setStatus(ProductStatus.已下架); // 默认下架
         dto.setCreateTime(LocalDateTime.now());
         dto.setUpdateTime(LocalDateTime.now());
         BeanUtils.copyProperties(dto, product);
@@ -76,8 +77,8 @@ public class LoanProductServiceImpl implements LoanProductService{
     @Transactional
     public void activeProduct(Long productId){
         LoanProduct product = loanProductMapper.findById(productId);
-        if(product.getStatus().equals(ProductStatus.INACTIVE)){
-            product.setStatus(ProductStatus.ACTIVE);
+        if(product.getStatus().equals(ProductStatus.已下架)){
+            product.setStatus(ProductStatus.上架中);
             product.setUpdateTime(LocalDateTime.now());
             loanProductMapper.update(product);
         }else{
@@ -91,8 +92,8 @@ public class LoanProductServiceImpl implements LoanProductService{
     @Transactional
     public void deactiveProduct(Long productId){
         LoanProduct product = loanProductMapper.findById(productId);
-        if(product.getStatus().equals(ProductStatus.ACTIVE)){
-            product.setStatus(ProductStatus.INACTIVE);
+        if(product.getStatus().equals(ProductStatus.上架中)){
+            product.setStatus(ProductStatus.已下架);
             product.setUpdateTime(LocalDateTime.now());
             loanProductMapper.update(product);
         }else{
@@ -100,9 +101,7 @@ public class LoanProductServiceImpl implements LoanProductService{
         }
     }
 
-    /*
-     * 批量创建产品选项
-     */
+    // 批量创建产品选项
     @Override
     @Transactional
     public void batchCreateLoanOptions(Long productId, List<LoanOption> options){
@@ -155,9 +154,7 @@ public class LoanProductServiceImpl implements LoanProductService{
         loanOptionMapper.batchDeleteByIds(optionIds);
     }
 
-    /*
-     * 更新产品
-     */
+    // 更新产品
     @Override
     public ProductDto updateLoanProduct(Long productId,ProductDto dto){
 
@@ -226,9 +223,7 @@ public class LoanProductServiceImpl implements LoanProductService{
         return result;
     }
 
-    /*
-     * 管理员获取单个产品详情
-     */
+    // 管理员获取单个产品详情
     @Override
     @Transactional
     public AdminGetProDetailResponse adminGetProductById(Long id){
@@ -253,7 +248,7 @@ public class LoanProductServiceImpl implements LoanProductService{
         response.setProductId(product.getId());
         response.setProductName(product.getProductName());
         response.setDescription(product.getDescription());
-        response.setUsage(product.getLoanUsage());
+        response.setLoanUsage(product.getLoanUsage());
         response.setTerms(terms);
         response.setPromotionDetails(product.getPromotionDetails());
         response.setStatus(product.getStatus());
@@ -264,9 +259,7 @@ public class LoanProductServiceImpl implements LoanProductService{
         return response;
     }
 
-    /*
-     * 管理员获取所有产品列表
-     */
+    // 管理员获取所有产品列表
     @Override
     @Transactional
     public List<ListProductResponse> adminGetAllProducts (){
@@ -276,7 +269,7 @@ public class LoanProductServiceImpl implements LoanProductService{
             response.setProductId(product.getId());
             response.setProductName(product.getProductName());
             response.setDescription(product.getDescription());
-            response.setUsage(product.getLoanUsage());
+            response.setLoanUsage(product.getLoanUsage());
             response.setStatus(product.getStatus());
             response.setCreateTime(product.getCreateTime());
             response.setUpdateTime(product.getUpdateTime());
@@ -285,6 +278,16 @@ public class LoanProductServiceImpl implements LoanProductService{
         }).collect(Collectors.toList());
     }
 
+    // 管理员 根据更新时间和创建时间范围搜索产品
+    @Override
+    public List<ListProductResponse> searchByDate(SearchByDateRequest request) {
+        return loanProductMapper.searchByDate(
+            request.getCreateStartDate(),
+            request.getCreateEndDate(),
+            request.getUpdateStartDate(),
+            request.getUpdateEndDate()
+        );
+    }
 
     /*
      * 用户根据产品名搜索贷款产品

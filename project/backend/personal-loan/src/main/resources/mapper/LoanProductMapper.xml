@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.personal_loan.mapper.LoanProductMapper">
+
+    <!-- 结果映射：将数据库字段映射到 ListProductResponse -->
+    <resultMap id="ListProductResponseMap" type="com.example.personal_loan.dto.ListProductResponse">
+        <id property="productId" column="id"/>
+        <result property="productName" column="product_name"/>
+        <result property="description" column="description"/>
+        <result property="loanUsage" column="loan_usage"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <!-- 查询贷款产品列表（支持按创建/更新日期范围筛选） -->
+    <select id="searchByDate" resultMap="ListProductResponseMap">
+        SELECT
+            id,
+            product_name,
+            description,
+            loan_usage, 
+            status,
+            create_time,
+            update_time
+        FROM loan_products
+        WHERE 1 = 1
+          <!-- 创建时间范围 -->
+          <if test="createStartDate != null">
+            AND DATE(create_time) &gt;= #{createStartDate}
+          </if>
+          <if test="createEndDate != null">
+            AND DATE(create_time) &lt;= #{createEndDate}
+          </if>
+          <!-- 更新时间范围 -->
+          <if test="updateStartDate != null">
+            AND DATE(update_time) &gt;= #{updateStartDate}
+          </if>
+          <if test="updateEndDate != null">
+            AND DATE(update_time) &lt;= #{updateEndDate}
+          </if>
+        ORDER BY create_time DESC, update_time DESC
+    </select>
+
+</mapper>

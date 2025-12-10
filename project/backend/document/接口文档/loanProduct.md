@@ -788,3 +788,46 @@
 **日志**：
 
 ![](../loanProductImgs/logGetOne.png)
+
+### 根据创建时间/更新时间范围搜索产品
+
+**网址** /api/loan-products
+
+**请求方式** GET
+
+**请求参数**:
+
+|字段名|类型|是否必填|说明|示例值|
+|---|---|---|---|---|
+| createStartDate | String | 否 | 创建开始日期，格式yyyy-mm-dd | 2025-12-09 (不能写2025-12-9) |
+| createEndDate   | String | 否 | 创建结束日期，格式yyyy-mm-dd | 2025-12-09                   |
+| updateStartDate   | String | 否 | 更新开始日期，格式yyyy-mm-dd | 2025-12-10                 |
+| updateEndDate    | String | 否 | 更新结束日期，格式yyyy-mm-dd | 2025-12-10                 |
+
+**返回数据**
+
+``` json
+{
+    "code": 200,
+    "data": [
+        {
+            "productId": 7,
+            "productName": "乡村振兴助农贷",
+            "description": "支持农业生产、养殖扩建、农产品加工与销售",
+            "loanUsage": "购买种子化肥、农机设备、建设大棚、冷链仓储",
+            "status": "已下架",
+            "createTime": "2025-12-09T20:48:58",
+            "updateTime": "2025-12-10T06:29:09"
+        }
+    ],
+    "message": "操作成功"
+}
+```
+
+**postman测试结果**
+
+![](../loanProductImgs/searchByDate.png)
+
+**日志**
+
+![](../loanProductImgs/logSearchByDate.png)

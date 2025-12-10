@@ -1,8 +1,11 @@
 package com.example.personal_loan.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +23,7 @@ import com.example.personal_loan.dto.BatchCreateOptionRequest;
 import com.example.personal_loan.dto.BatchDeleteRequest;
 import com.example.personal_loan.dto.ListProductResponse;
 import com.example.personal_loan.dto.ProductDto;
+import com.example.personal_loan.dto.SearchByDateRequest;
 import com.example.personal_loan.dto.UserGetProductResponse;
 import com.example.personal_loan.service.LoanProductService;
 
@@ -141,5 +145,32 @@ public class LoanProductController {
         log.info("/loan-products/admin/products/batch-delete api success called to delete products");
         loanProductService.batchDeleteLoanProducts(request.getIds());
         return ResponseEntity.ok(ApiResponse.success("Batch delete loan products success"));
+    }
+
+    // 根据更新时间和创建时间范围搜索产品
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<ListProductResponse>>> listProducts(
+            @RequestParam(required = false) 
+            @DateTimeFormat(iso = ISO.DATE) LocalDate createStartDate,
+
+            @RequestParam(required = false) 
+            @DateTimeFormat(iso = ISO.DATE) LocalDate createEndDate,
+
+            @RequestParam(required = false) 
+            @DateTimeFormat(iso = ISO.DATE) LocalDate updateStartDate,
+
+            @RequestParam(required = false) 
+            @DateTimeFormat(iso = ISO.DATE) LocalDate updateEndDate) {
+
+        log.info("/api/loan-products success called to search products by date range");
+        SearchByDateRequest request = new SearchByDateRequest();
+        request.setCreateStartDate(createStartDate);
+        request.setCreateEndDate(createEndDate);
+        request.setUpdateStartDate(updateStartDate);
+        request.setUpdateEndDate(updateEndDate);
+
+        List<ListProductResponse> result = loanProductService.searchByDate(request);
+
+        return ResponseEntity.ok(ApiResponse.success(result));
     }
 }

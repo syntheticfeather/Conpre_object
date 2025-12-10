@@ -16,7 +16,7 @@ public class ListProductResponse {
 
     private String productName;
     private String description;
-    private String usage;
+    private String loanUsage;
     private ProductStatus status;
     
     private LocalDateTime createTime;
