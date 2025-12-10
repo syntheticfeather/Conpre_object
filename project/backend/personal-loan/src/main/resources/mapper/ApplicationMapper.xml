@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.personal_loan.mapper.ApplicationMapper">
+
+    <!-- 结果映射：组合 User + UserCert + LoanApplication -->
+    <resultMap id="ApplicationDetailResultMap" type="com.example.personal_loan.dto.ApplicationDetailResponse">
+        <!-- 用户信息 (user) -->
+        <result property="user.id" column="user_id"/>
+        <result property="user.userName" column="user_name"/>
+        <result property="user.avatar" column="avatar"/>
+        <result property="user.phone" column="phone"/>
+        <result property="user.password" column="password"/> 
+        <result property="user.role" column="role"/>
+        <result property="user.createTime" column="user_create_time"/>
+        <result property="user.updateTime" column="user_update_time"/>
+
+        <!-- 用户认证信息 (userCert) -->
+        <result property="userCert.userId" column="cert_user_id"/>
+        <result property="userCert.idCard" column="id_card"/>
+        <result property="userCert.creditScore" column="credit_score"/>
+        <result property="userCert.bankCardId" column="bank_card_id"/>
+        <result property="userCert.workCertId" column="work_cert_id"/>
+        <result property="userCert.triCertId" column="tri_cert_id"/>
+        <result property="userCert.immovableCertId" column="immovable_cert_id"/>
+
+        <!-- 贷款申请信息 (application) -->
+        <result property="application.id" column="app_id"/>
+        <result property="application.userId" column="app_user_id"/>
+        <result property="application.productId" column="product_id"/>
+        <result property="application.status" column="status"/>
+        <result property="application.loanAmount" column="loan_amount"/>
+        <result property="application.interestRate" column="interest_rate"/>
+        <result property="application.loanPeriod" column="loan_period"/>
+        <result property="application.term" column="term"/>
+        <result property="application.repaidType" column="repaid_type"/>
+        <result property="application.rejectReason" column="reject_reason"/>
+        <result property="application.applyTime" column="apply_time"/>
+        <result property="application.reviewTime" column="review_time"/>
+    </resultMap>
+
+    <!-- 查询审核详情 -->
+    <select id="getApplicationDetail" resultMap="ApplicationDetailResultMap">
+        SELECT
+            u.id AS user_id,
+            u.user_name,
+            u.avatar,
+            u.phone,
+            u.password, 
+            u.role,
+            u.create_time AS user_create_time,
+            u.update_time AS user_update_time,
+
+            uc.user_id AS cert_user_id,
+            uc.id_card,
+            uc.credit_score,
+            uc.bank_card_id,
+            uc.work_cert_id,
+            uc.tri_cert_id,
+            uc.immovable_cert_id,
+
+            a.id AS app_id,
+            a.user_id AS app_user_id,
+            a.product_id,
+            a.status,
+            a.loan_amount,
+            a.interest_rate,
+            a.loan_period,
+            a.term,
+            a.repaid_type,
+            a.reject_reason,
+            a.apply_time,
+            a.review_time
+        FROM loan_applications a
+        INNER JOIN users u ON a.user_id = u.id
+        LEFT JOIN user_certification uc ON u.id = uc.user_id
+        WHERE a.id = #{loanApplicationId}
+    </select>
+
+</mapper>

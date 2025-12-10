@@ -61,30 +61,51 @@
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
-| loanApplicationId | integer | 是 | 申请id | 4 |
+| loanApplicationId | integer | 是 | 申请id | 23 |
 
-**请求示例（网址）** /api/approval/detail/4
+**请求示例（网址）** /api/approval/detail/23
 
 **返回数据**
 
 ``` json
 {
-  "code": 200,
-  "data": {
-    "userName": "王芳",
-    "phone": "13100001111",
-    "createTime": "2025-11-21T13:22:17",
-    "idCard": null,
-    "workCertId": null,
-    "triCertId": null,
-    "immovableCertId": null,
-    "creditsScore": null,
-    "productName": "优享贷",
-    "loanAmount": 150000.00,
-    "loanPeriod": 60,
-    "term": 6
-  },
-  "message": "操作成功"
+    "code": 200,
+    "data": {
+        "user": {
+            "id": 1,
+            "userName": "alice",
+            "avatar": null,
+            "phone": "13800138000",
+            "password": "$2a$10$otTD6KpzXlbblLqzZmqNIOR4vwNcSLKUAt0Um3rh85KPWM89Xvpr2",
+            "role": 0,
+            "createTime": "2025-12-08T09:20:20",
+            "updateTime": "2025-12-08T13:42:03"
+        },
+        "userCert": {
+            "userId": 1,
+            "idCard": null,
+            "creditScore": null,
+            "bankCardId": null,
+            "workCertId": null,
+            "triCertId": null,
+            "immovableCertId": null
+        },
+        "application": {
+            "id": 23,
+            "userId": 1,
+            "productId": 1,
+            "status": "AI_REJECTED",
+            "loanAmount": 30000.00,
+            "interestRate": 0.0390,
+            "loanPeriod": 24,
+            "term": 6,
+            "repaidType": "等额本息",
+            "rejectReason": "AI rejected\n",
+            "applyTime": "2025-12-10T14:59:49",
+            "reviewTime": null
+        }
+    },
+    "message": "操作成功"
 }
 ```
 

@@ -1,7 +1,8 @@
 package com.example.personal_loan.dto;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import com.example.personal_loan.entity.LoanApplication;
+import com.example.personal_loan.entity.User;
+import com.example.personal_loan.entity.UserCert;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,22 +14,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ApplicationDetailResponse {
     // 用户基本信息
-    private String userName;  
-    private String phone; 
-    private LocalDateTime createTime; 
+    private User user;
 
     // 认证材料
-    private String idCard; 
-
-    private Integer workCertId;  
-    private Integer triCertId; 
-    private Integer immovableCertId;  
-
-    private Integer creditScore; 
+    private UserCert userCert; 
 
     // 贷款申请信息
-    private String productName; 
-    private BigDecimal loanAmount; 
-    private Integer loanPeriod; 
-    private Integer term;  
+    private LoanApplication application;
 }

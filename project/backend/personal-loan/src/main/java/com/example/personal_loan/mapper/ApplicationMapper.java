@@ -95,25 +95,5 @@ public interface ApplicationMapper {
     })
     List<PendingApprovalResponse> listPendingApprovals();
 
-    @Select({
-        "SELECT",
-        "  u.user_name AS userName,",
-        "  u.phone,",
-        "  u.create_time AS createTime,",
-        "  uc.id_card AS idCard,",      
-        "  uc.work_cert_id AS workCertId,",  
-        "  uc.tri_cert_id AS triCertId,",
-        "  uc.immovable_cert_id AS immovableCertId,",
-        "  uc.credit_score AS creditScore,",
-        "  lp.product_name AS productName,",
-        "  la.loan_amount AS loanAmount,",
-        "  la.loan_period AS loanPeriod,",
-        "  la.term AS term",
-        "FROM loan_applications la",
-        "JOIN users u ON la.user_id = u.id",
-        "LEFT JOIN user_certification uc ON u.id = uc.user_id", 
-        "JOIN loan_products lp ON la.product_id = lp.id",
-        "WHERE la.id = #{loanApplicationId} AND la.status = 'AI_REJECTED'"
-    })
     ApplicationDetailResponse getApplicationDetail(@Param("loanApplicationId") Long loanApplicationId);
 }
