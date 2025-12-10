@@ -831,6 +831,8 @@
 | updateStartDate   | String | 否 | 更新开始日期，格式yyyy-mm-dd | 2025-12-10                 |
 | updateEndDate    | String | 否 | 更新结束日期，格式yyyy-mm-dd | 2025-12-10                 |
 
+**请求示例（网址）**  localhost:8080/api/loan-products?createStartDate=2025-12-09&createEndDate=2025-12-09
+
 **返回数据**
 
 ``` json

@@ -300,17 +300,17 @@
     "code": 200,
     "data": {
         "user": {
-            "id": 1,
-            "userName": "alice",
+            "id": 2,
+            "userName": "张伟",
             "avatar": null,
-            "phone": "13800138000",
-            "password": "$2a$10$otTD6KpzXlbblLqzZmqNIOR4vwNcSLKUAt0Um3rh85KPWM89Xvpr2",
+            "phone": "15098765432",
+            "password": "$2a$10$/DayvQc7CvDyhbaSI63LR.eKIq4NeW6pnuX6csz/RgE5hpPAZUowe",
             "role": 0,
-            "createTime": "2025-12-08T09:20:20",
-            "updateTime": "2025-12-08T13:42:03"
+            "createTime": "2025-12-08T09:33:47",
+            "updateTime": "2025-12-08T09:33:47"
         },
         "userCert": {
-            "userId": 1,
+            "userId": 2,
             "idCard": null,
             "creditScore": null,
             "bankCardId": null,
@@ -318,36 +318,70 @@
             "triCertId": null,
             "immovableCertId": null
         },
-        "loanApplication": {
-            "id": 30,
-            "userId": 1,
-            "productId": 1,
-            "status": "AI_REJECTED",
-            "loanAmount": 30000,
-            "interestRate": 0.039,
-            "loanPeriod": 24,
-            "term": 6,
-            "repaidType": "等额本息",
-            "rejectReason": "AI rejected\n",
-            "applyTime": "2025-12-10T16:57:51",
-            "reviewTime": null
-        },
-        "order": {
-            "id": 3,
-            "userId": 1,
-            "productId": 1,
-            "status": "正常",
-            "repaidAmount": 0,
-            "loanAmount": 30000,
-            "interestRate": 0.039,
-            "repaidType": "等额本息",
-            "loanPeriod": 24,
-            "term": 24,
-            "currentTerm": 0,
-            "contract": null,
-            "overdueDays": 0,
-            "startTime": "2025-12-10T16:59:47"
-        }
+        "loanApplication": [
+            {
+                "id": 34,
+                "userId": 2,
+                "productId": 1,
+                "status": "APPROVED",
+                "loanAmount": 30000.00,
+                "interestRate": 0.0390,
+                "loanPeriod": 24,
+                "term": 6,
+                "repaidType": "等额本息",
+                "rejectReason": "AI approve\n",
+                "applyTime": "2025-12-10T22:58:28",
+                "reviewTime": "2025-12-10T22:58:30"
+            },
+            {
+                "id": 31,
+                "userId": 2,
+                "productId": 1,
+                "status": "APPROVED",
+                "loanAmount": 30000.00,
+                "interestRate": 0.0390,
+                "loanPeriod": 24,
+                "term": 6,
+                "repaidType": "等额本息",
+                "rejectReason": "AI approve\n",
+                "applyTime": "2025-12-10T22:58:20",
+                "reviewTime": "2025-12-10T22:58:20"
+            }
+        ],
+        "order": [
+            {
+                "id": 5,
+                "userId": 2,
+                "productId": 1,
+                "status": "正常",
+                "repaidAmount": 0.00,
+                "loanAmount": 30000.00,
+                "interestRate": 0.0390,
+                "repaidType": "等额本息",
+                "loanPeriod": 24,
+                "term": 24,
+                "currentTerm": 0,
+                "contract": null,
+                "overdueDays": 0,
+                "startTime": "2025-12-10T22:58:30"
+            },
+            {
+                "id": 4,
+                "userId": 2,
+                "productId": 1,
+                "status": "正常",
+                "repaidAmount": 0.00,
+                "loanAmount": 30000.00,
+                "interestRate": 0.0390,
+                "repaidType": "等额本息",
+                "loanPeriod": 24,
+                "term": 24,
+                "currentTerm": 0,
+                "contract": null,
+                "overdueDays": 0,
+                "startTime": "2025-12-10T22:58:20"
+            }
+        ]
     },
     "message": "操作成功"
 }

@@ -1,6 +1,8 @@
 package com.example.personal_loan.dto;
 
 
+import java.util.List;
+
 import com.example.personal_loan.entity.LoanApplication;
 import com.example.personal_loan.entity.Order;
 import com.example.personal_loan.entity.User;
@@ -16,6 +18,6 @@ import lombok.NoArgsConstructor;
 public class UserDetailResponse {
     private User user;
     private UserCert userCert;
-    private LoanApplication loanApplication;
-    private Order order;
+    private List<LoanApplication> loanApplication;
+    private List<Order> order;
 }
