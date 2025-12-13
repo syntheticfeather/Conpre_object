@@ -3,6 +3,7 @@ package com.example.personal_loan.dto;
 import java.time.LocalDateTime;
 
 import com.example.personal_loan.enums.ProductStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,6 +20,8 @@ public class ListProductResponse {
     private String loanUsage;
     private ProductStatus status;
     
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 }

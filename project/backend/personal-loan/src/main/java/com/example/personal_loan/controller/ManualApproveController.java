@@ -38,6 +38,14 @@ public class ManualApproveController {
         return ResponseEntity.ok(ApiResponse.success(list));
     }
 
+    @GetMapping("/completed")
+    public ResponseEntity<ApiResponse<List<PendingApprovalResponse>>> getCompletedApprovals(HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        log.info("/api/approval/completed success called for admin {} to get completed approvals list", userId);
+        List<PendingApprovalResponse> list = manualApproveService.completedApproves(userId);
+        return ResponseEntity.ok(ApiResponse.success(list));
+    }
+
     @GetMapping("/detail/{loanApplicationId}")
     public ResponseEntity<ApiResponse<ApplicationDetailResponse>> getApplicationDetail(
             HttpServletRequest request,

@@ -34,7 +34,7 @@ public class ManualApproveServiceImpl implements ManualApproveService{
     @Autowired
     private UserService userService;
 
-    // 获得本审核员所有需审核申请
+    // 获得本审核员所有代办审核申请
     @Override
     public List<PendingApprovalResponse> getApproves(Long userId){
         // 权限校验
@@ -57,6 +57,7 @@ public class ManualApproveServiceImpl implements ManualApproveService{
         return applicationMapper.getApplicationDetail(loanApplicationId);
     }
 
+    // 返回审核结果
     @Override
     @Transactional
     public ManualCheckResponse manualCheck(Long loanApplicationId, Boolean approved, String manualRejectReason){
@@ -71,16 +72,11 @@ public class ManualApproveServiceImpl implements ManualApproveService{
 
         if (approved) {
             // 人工通过
-            StringBuilder reasonBuilder = new StringBuilder();
-            if (currentRejectReason != null && !currentRejectReason.trim().isEmpty()) {
-                reasonBuilder.append(currentRejectReason);
-            }
-            reasonBuilder.append("Manual approve");
-            application.setRejectReason(reasonBuilder.toString());
-            newStatus = ApplicationStatus.APPROVED;
+            application.setRejectReason("无");
+            newStatus = ApplicationStatus.已通过;
             application.setReviewTime(LocalDateTime.now());
             response.setReviewTime(LocalDateTime.now());
-            response.setRejectReason(reasonBuilder.toString());
+            response.setRejectReason("无");
 
             // 创建订单
             Order order = new Order();
@@ -106,13 +102,13 @@ public class ManualApproveServiceImpl implements ManualApproveService{
                 reasonBuilder.append(currentRejectReason);
             }
             if (manualRejectReason != null && !manualRejectReason.trim().isEmpty()) {
-                reasonBuilder.append("人工拒绝: ").append(manualRejectReason);
+                reasonBuilder.append("人工审核未通过: ").append(manualRejectReason);
             } else {
-                reasonBuilder.append("人工拒绝: 未填写原因");
+                reasonBuilder.append("人工审核未通过: 未填写原因");
             }
             application.setRejectReason(reasonBuilder.toString());
             response.setRejectReason(reasonBuilder.toString());
-            newStatus = ApplicationStatus.MANUAL_REJECTED;
+            newStatus = ApplicationStatus.人工拒绝;
         }
 
         application.setStatus(newStatus);
@@ -123,4 +119,16 @@ public class ManualApproveServiceImpl implements ManualApproveService{
 
         return response;
     }
+
+    // 获取已办审核列表
+    @Override
+    public List<PendingApprovalResponse> completedApproves(Long userId){
+        // 权限校验
+        User admin = userService.getUserById(userId);
+        if (!admin.getRole().equals(1)) {
+            throw new BusinessException(403, "无权限查看代办审核列表");
+        }
+        return applicationMapper.listCompletedApprovals();
+    }
+
 }

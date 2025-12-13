@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.example.personal_loan.entity.LoanOption;
 import com.example.personal_loan.enums.ProductStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -50,6 +51,8 @@ public class ProductDto {
 
     private List<LoanOption> options;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 }

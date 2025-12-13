@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import com.example.personal_loan.enums.RepaidType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -39,6 +40,8 @@ public class LoanOption {
     @NotNull(message = "还款方式不能为空")
     private RepaidType repaidType;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 }

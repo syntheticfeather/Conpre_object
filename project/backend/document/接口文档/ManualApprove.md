@@ -51,7 +51,58 @@
 
 ![](../ManualApproveImgs/logGetList.png)
 
-## 查看单个代办审核申请详情
+## 查看已办审核列表
+
+**网址** /api/approval/completed
+
+**请求方式** GET
+
+**返回数据**
+
+``` json
+{
+    "code": 200,
+    "data": [
+        {
+            "applicationId": 47,
+            "userName": "张伟",
+            "productName": "优享贷 Pro",
+            "loanAmount": 30000.00,
+            "loanPeriod": 24,
+            "term": 6,
+            "applyTime": "2025-12-13 17:52:20",
+            "rejectReason": "无"
+        },
+        {
+            "applicationId": 45,
+            "userName": "张伟",
+            "productName": "优享贷 Pro",
+            "loanAmount": 30000.00,
+            "loanPeriod": 24,
+            "term": 6,
+            "applyTime": "2025-12-13 17:41:37",
+            "rejectReason": "AI审核未通过\n人工审核未通过: 未填写原因"
+        },
+        {
+            "applicationId": 41,
+            "userName": "张伟",
+            "productName": "优享贷 Pro",
+            "loanAmount": 30000.00,
+            "loanPeriod": 24,
+            "term": 6,
+            "applyTime": "2025-12-13 17:38:23",
+            "rejectReason": "AI审核未通过\n人工审核未通过: 认证材料未上传"
+        }
+    ],
+    "message": "操作成功"
+}
+```
+
+**postman测试结果**
+
+![](../ManualApproveImgs/completedList.png "成功获取已办审核列表")
+
+## 查看单个审核申请详情(代办和已办都用这个接口)
 
 **网址** /api/approval/detail/{loanApplicationId}
 
@@ -127,15 +178,15 @@
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
-| loanApplicationId | integer | 是 | 申请id | 17 |
+| loanApplicationId | integer | 是 | 申请id | 43 |
 | approved | string | 是 | true表示通过，false表示不通过 | true |
-| manualRejectReason | String | 否 | 拒绝时需要填写原因 | 材料信息有误 |
+| manualRejectReason | String | 否 | 拒绝时需要填写原因 | 认证材料未上传 |
 
 **请求示例（请求体）（通过）**
 
 ``` json
 {
-    "loanApplicationId":17,
+    "loanApplicationId":43,
     "approved":"true"
 }
 ```
@@ -146,10 +197,10 @@
 {
     "code": 200,
     "data": {
-        "loanApplicationId": 17,
-        "status": "APPROVED",
-        "rejectReason": "AI rejected\nManual approve",
-        "reviewTime": "2025-12-09T21:59:05.9672001"
+        "loanApplicationId": 43,
+        "status": "已通过",
+        "rejectReason": "无",
+        "reviewTime": "2025-12-13 17:46:09"
     },
     "message": "操作成功"
 }
@@ -159,9 +210,9 @@
 
 ``` json
 {
-    "loanApplicationId":15,
+    "loanApplicationId":41,
     "approved":"false",
-    "manualRejectReason": "材料信息有误"
+    "manualRejectReason": "认证材料未上传"
 }
 ```
 
@@ -171,9 +222,9 @@
 {
     "code": 200,
     "data": {
-        "loanApplicationId": 15,
-        "status": "MANUAL_REJECTED",
-        "rejectReason": "AI rejected\n人工拒绝: 材料信息有误",
+        "loanApplicationId": 41,
+        "status": "人工拒绝",
+        "rejectReason": "AI审核未通过\n人工审核未通过: 认证材料未上传",
         "reviewTime": null
     },
     "message": "操作成功"
@@ -183,7 +234,7 @@
 **postman测试结果**
 
 ![](../ManualApproveImgs/approve.png "通过人工审核")
-![](../ManualApproveImgs/reject.png "不通过人工审核")
+![](../ManualApproveImgs/reject.png "不通过人工审核，拒绝原因示例：认证材料未上传")
 ![](../ManualApproveImgs/rejectWithoutReason.png "拒绝，但未填写人工拒绝的理由")
 
 **日志**

@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 import com.example.personal_loan.enums.OrderStatus;
 import com.example.personal_loan.enums.RepaidType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,6 +28,7 @@ public class AdminGetOrderResponse {
     private Integer loanPeriod;
     private Integer term;
     private RepaidType repaidType;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startTime;
     
     // 状态

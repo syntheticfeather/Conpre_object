@@ -4,28 +4,33 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.example.personal_loan.config.RabbitMQConfig;
-import com.example.personal_loan.entity.*;
-import com.example.personal_loan.mapper.OutboxMapper;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.personal_loan.config.RabbitMQConfig;
 import com.example.personal_loan.dto.AdminGetAppResponse;
 import com.example.personal_loan.dto.ApplicationRequest;
 import com.example.personal_loan.dto.UserGetAppResponse;
+import com.example.personal_loan.entity.LoanApplication;
+import com.example.personal_loan.entity.LoanOption;
+import com.example.personal_loan.entity.LoanProduct;
+import com.example.personal_loan.entity.OutboxMessage;
+import com.example.personal_loan.entity.User;
 import com.example.personal_loan.enums.ApplicationStatus;
 import com.example.personal_loan.exception.BusinessException;
 import com.example.personal_loan.mapper.ApplicationMapper;
 import com.example.personal_loan.mapper.LoanOptionMapper;
 import com.example.personal_loan.mapper.LoanProductMapper;
+import com.example.personal_loan.mapper.OutboxMapper;
 import com.example.personal_loan.service.ApplicationService;
 import com.example.personal_loan.service.AuthService;
 import com.example.personal_loan.service.LoanProductService;
 import com.example.personal_loan.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 贷款申请服务实现类
@@ -79,7 +84,7 @@ public class ApplicationServiceImpl implements ApplicationService{
         LoanApplication application = new LoanApplication();
         application.setUserId(userId);
         application.setProductId(request.getProductId());
-        application.setStatus(ApplicationStatus.PENDING);
+        application.setStatus(ApplicationStatus.审核中);
         application.setLoanAmount(option.getLoanAmount());
         application.setInterestRate(option.getInterestRate());
         application.setLoanPeriod(option.getLoanPeriod());
@@ -123,11 +128,11 @@ public class ApplicationServiceImpl implements ApplicationService{
         if (!application.getUserId().equals(userId)) {
             throw new BusinessException(403, "无权操作他人的申请");  // 可选
         }
-        if (!ApplicationStatus.PENDING.equals(application.getStatus())) {
+        if (!ApplicationStatus.审核中.equals(application.getStatus())) {
             throw new BusinessException(400, "仅可撤回待审核的申请");
         }
         // 需要审核？通过后状态变更
-        application.setStatus(ApplicationStatus.CANCELLED);
+        application.setStatus(ApplicationStatus.已取消);
         applicationMapper.update(application);
     }
 

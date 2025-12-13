@@ -90,10 +90,28 @@ public interface ApplicationMapper {
         "FROM loan_applications la",
         "JOIN users u ON la.user_id = u.id",
         "JOIN loan_products lp ON la.product_id = lp.id",
-        "WHERE la.status = 'AI_REJECTED' ",
+        "WHERE la.status = 'AI拒绝' ",
         "ORDER BY la.apply_time DESC"
     })
     List<PendingApprovalResponse> listPendingApprovals();
 
     ApplicationDetailResponse getApplicationDetail(@Param("loanApplicationId") Long loanApplicationId);
+
+    @Select({
+        "SELECT",
+        "  la.id AS applicationId,",
+        "  u.user_name AS userName,",
+        "  lp.product_name AS productName,",
+        "  la.loan_amount AS loanAmount,",
+        "  la.loan_period AS loanPeriod,",
+        "  la.term AS term,",
+        "  la.apply_time AS applyTime,",
+        "  la.reject_reason AS rejectReason",
+        "FROM loan_applications la",
+        "JOIN users u ON la.user_id = u.id",
+        "JOIN loan_products lp ON la.product_id = lp.id",
+        "WHERE la.status = '已通过' OR la.status = '人工拒绝' ",
+        "ORDER BY la.apply_time DESC"
+    })
+    List<PendingApprovalResponse> listCompletedApprovals();
 }

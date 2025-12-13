@@ -3,6 +3,8 @@ package com.example.personal_loan.dto;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +20,7 @@ public class PendingApprovalResponse {
     private BigDecimal loanAmount;
     private Integer loanPeriod;
     private Integer term;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime applyTime;
     private String rejectReason;
 }

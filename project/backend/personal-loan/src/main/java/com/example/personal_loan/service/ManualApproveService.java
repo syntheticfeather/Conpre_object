@@ -12,4 +12,7 @@ public interface ManualApproveService {
     ApplicationDetailResponse getApprove(Long userId,Long loanApplicationId); // 获得本审核员单个审核申请详情
 
     ManualCheckResponse manualCheck(Long loanApplicationId, Boolean approved, String manualRejectReason); // 返回审核结果
+
+    List<PendingApprovalResponse> completedApproves(Long userId); // 已办审核列表
+
 }

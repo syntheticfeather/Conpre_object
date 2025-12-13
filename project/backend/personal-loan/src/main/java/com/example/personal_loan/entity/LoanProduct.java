@@ -3,6 +3,7 @@ package com.example.personal_loan.entity;
 import java.time.LocalDateTime;
 
 import com.example.personal_loan.enums.ProductStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -46,7 +47,9 @@ public class LoanProduct {
     @Size(max = 1000, message = "促销详情不能超过1000个字符")
     private String promotionDetails;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
     public LoanProduct(String productName, int minTerm, int maxTerm, int termStep, String promotionDetails) {

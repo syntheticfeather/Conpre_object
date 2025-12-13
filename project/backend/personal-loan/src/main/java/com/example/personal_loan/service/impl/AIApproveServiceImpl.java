@@ -35,8 +35,8 @@ public class AIApproveServiceImpl implements AIApproveService {
     public Boolean AICheck(LoanApplication application) {
         if (new Random().nextInt(100) < 50) {
             // AI审核成功
-            application.setStatus(ApplicationStatus.APPROVED);
-            application.setRejectReason("AI approve\n");
+            application.setStatus(ApplicationStatus.已通过);
+            application.setRejectReason("无");
             application.setReviewTime(LocalDateTime.now());
             applicationMapper.update(application);
 
@@ -63,8 +63,8 @@ public class AIApproveServiceImpl implements AIApproveService {
         }
         else {
             // AI审核失败
-            application.setStatus(ApplicationStatus.AI_REJECTED);
-            application.setRejectReason("AI rejected\n");
+            application.setStatus(ApplicationStatus.AI拒绝);
+            application.setRejectReason("AI审核未通过\n");
             applicationMapper.update(application);
             log.info("AI reject success");
             return false;
