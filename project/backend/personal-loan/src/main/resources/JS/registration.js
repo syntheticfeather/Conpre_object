@@ -23,15 +23,24 @@ function bindEventListeners() {
     if (DOM_ELEMENTS.registerForm) {
         DOM_ELEMENTS.registerForm.addEventListener('submit', handleRegisterSubmit)
     }
-    
+    // 注册按钮（验证区域）
+    const registerBtn = document.querySelector('.register-btn')
+    if (registerBtn) {
+    registerBtn.addEventListener('click', handleRegisterSubmit)
+    }
+
     //跳转登录页面按钮绑定
     if (DOM_ELEMENTS.loginBtn) {
         DOM_ELEMENTS.loginBtn.addEventListener('click', handleLogin)
     }
 
     //注册信息确认按钮绑定
-    if (DOM_ELEMENTS.confirmBtn) {
-        DOM_ELEMENTS.confirmBtn.addEventListener('click', handleConfirm)
+    const confirmBtnElement = document.querySelector('.confirm-btn')
+    if (confirmBtnElement) {
+        confirmBtnElement.addEventListener('click', handleConfirm)
+        console.log('确认按钮事件绑定成功')
+    } else {
+        console.log('未找到确认按钮，使用选择器：', document.querySelector('.confirm-btn'))
     }
 
     //关闭验证弹窗按钮绑定
@@ -100,61 +109,107 @@ function getFormData() {
         password: DOM_ELEMENTS.passwordInput ? DOM_ELEMENTS.passwordInput.value.trim() : '',
         confirmPassword: DOM_ELEMENTS.confirmPasswordInput ? DOM_ELEMENTS.confirmPasswordInput.value.trim() : '',
         phone: DOM_ELEMENTS.phoneInput ? DOM_ELEMENTS.phoneInput.value.trim() : '',
-        // smsCode: DOM_ELEMENTS.smsCodeInput ? DOM_ELEMENTS.smsCodeInput.value.trim() : ''
+        smsCode: DOM_ELEMENTS.smsCodeInput ? DOM_ELEMENTS.smsCodeInput.value.trim() : ''
     }
 }
-// 验证表单数据
-function validateForm(formData) {
+// 注册信息检验 
+function validateBaseForm(formData) {
     const errors = {}
+    let isValid = true
     
     // 用户名格式验证 (2-20位)
     if (!formData.adminName) {
         errors.adminName = '请输入用户名'
+        isValid = false
+        console.log('用户名错误: 请输入用户名')
     } else if (formData.adminName.length < 2 || formData.adminName.length > 20) {
         errors.adminName = '用户名长度需为2-20位'
+        isValid = false
+        console.log('用户名错误: 长度不符合要求')
     } else if (!/^[a-zA-Z0-9_\u4e00-\u9fa5]+$/.test(formData.adminName)) {
         errors.adminName = '用户名只能包含字母、数字、下划线和中文字符'
+        isValid = false
+        console.log('用户名错误: 包含非法字符')
     }
 
     // 密码格式验证 (8-20位，包含大小写字母、数字和特殊字符)
     if (!formData.password) {
-        errors.password = '请输入密码';
+        errors.password = '请输入密码'
+        isValid = false
+        console.log('密码错误: 请输入密码')
     } else if (formData.password.length < 8 || formData.password.length > 20) {
-        errors.password = '密码长度需为8-20位';
+        errors.password = '密码长度需为8-20位'
+        isValid = false
+        console.log('密码错误: 长度不符合要求')
     } else if (!validatePasswordComplexity(formData.password)) {
-        errors.password = '密码需包含大小写字母、数字和特殊字符';
+        errors.password = '密码需包含大小写字母、数字和特殊字符'
+        isValid = false
+        console.log('密码错误: 复杂度不足')
     }
     
     // 确认密码验证
     if (!formData.confirmPassword) {
-        errors.confirmPassword = '请确认密码';
+        errors.confirmPassword = '请确认密码'
+        isValid = false
+        console.log('确认密码错误: 请确认密码')
     } else if (formData.password !== formData.confirmPassword) {
-        errors.confirmPassword = '两次输入的密码不一致';
+        errors.confirmPassword = '两次输入的密码不一致'
+        isValid = false
+        console.log('确认密码错误: 两次输入不一致')
     }
-    
-    // 手机号验证
-    if (!formData.phone) {
-        errors.phone = '请输入手机号码'
-    } else if (!/^1[3-9]\d{9}$/.test(formData.phone)) {
-        errors.phone = '请输入正确的手机号码'
-    }
-    // 验证码验证
-    // if (!formData.smsCode) {
-    //     errors.smsCode = '请输入短信验证码'
-    // }else if (formData.smsCode.length !== 6){
-    //     errors.smsCode = '请输入正确的短信验证码'
-    // }
-    
-    // 显示错误
+    console.log('收集到的错误:', errors)
+    // 显示/清除错误
     Object.keys(errors).forEach(field => {
+        console.log(`显示 ${field} 错误: ${errors[field]}`)
         showFieldError(`${field}Error`, errors[field])
     })
-  
+
     return {
         isValid: Object.keys(errors).length === 0,// 若没有错误，说明验证通过
         errors: errors, // 返回所有错误信息
         formData: formData // 将收集的表单数据返回，避免作用域问题
     }
+}
+
+// 验证信息检验 
+function validateAuthForm(formData) {
+    const errors = {}
+    let isValid = true
+
+    if (!formData.phone) {
+        errors.phone = '请输入手机号码'
+        isValid = false
+    } else if (!/^1[3-9]\d{9}$/.test(formData.phone)) {
+        errors.phone = '请输入正确的手机号码'
+        isValid = false;
+    }
+
+    if (!formData.smsCode) {
+        errors.smsCode = '请输入短信验证码'
+        isValid = false;
+    } else if (formData.smsCode.length !== 6) {
+        errors.smsCode = '验证码应为6位数字'
+        isValid = false
+    }
+
+    // 显示/清除错误
+    Object.keys(errors).forEach(field => {
+        showFieldError(`${field}Error`, errors[field])
+    })
+
+    return {
+        isValid: Object.keys(errors).length === 0,// 若没有错误，说明验证通过
+        errors: errors, // 返回所有错误信息
+        formData: formData // 将收集的表单数据返回，避免作用域问题
+    }
+}
+
+// 统一数据验证
+function validateForm(formData) {
+    const baseValid = validateBaseForm(formData)
+    const authValid = validateAuthForm(formData)
+
+    return baseValid && authValid
 }
 // 密码复杂度验证函数
 function validatePasswordComplexity(password) {
@@ -211,24 +266,28 @@ function showConfirmPassword() {
 // 注册表单提交处理函数
 async function handleRegisterSubmit(e) {
     e.preventDefault()
-    
-    console.log('开始处理注册请求...')
-    
+    // 先获取所有表单数据
     const formData = getFormData()
+    // 清除所有错误和成功消息
     clearAllErrors()
-    
-    const validationResult = validateForm(formData);
-    if (!validationResult.isValid) {
-        console.log('表单验证失败:', validationResult.errors);
-        return;
+    // 验证基础信息
+    const baseValidation = validateBaseForm(formData)
+    if (!baseValidation.isValid) {
+        console.log('基础信息验证失败')
+        return
     }
-    
+    // 验证认证信息
+    const authValidation = validateAuthForm(formData)
+    if (!authValidation.isValid) {
+        console.log('认证信息验证失败')
+        return
+    }
     try {
         showLoading(true)
         
-        // 准备提交数据-待完善
+        // 准备提交数据
         const submitData = { 
-            name: formData.adminName,      // ✅ 字段名为 name
+            name: formData.adminName,      
             phone: formData.phone,
             password: formData.password
         }  
@@ -252,6 +311,14 @@ function handleLogin() {
 }
 // 验证信息输入弹窗显示
 function handleConfirm() {
+    const formData = getFormData()
+    clearAllErrors() // 清除旧错误
+    
+    const validationResult = validateBaseForm(formData)
+    if (!validationResult.isValid) {
+        console.log('基础信息验证失败，阻止进入下一步')
+        return // 阻止进入下一步
+    }
     document.getElementById('baseInformation').style.display = 'none'
     document.getElementById('authentication').style.display = 'flex'
 }
@@ -303,40 +370,39 @@ function handleRegisterError(error) {
 
 // ==================== UI更新函数 ====================
 //显示单个错误信息
-function showFieldError(field, message) {
-    const errorElement = document.getElementById(`${field}Error`)
-    if (errorElement) {
-        errorElement.textContent = message
-        errorElement.style.display = 'block'
-    }
-    
-    const inputElement = document.getElementById(field)
-    if (inputElement) {
-        inputElement.classList.add('input-error')
+function showFieldError(field, errorMessage) {
+    console.log(`showFieldError: ${field} -> "${errorMessage}"`)
+    const el = document.getElementById(field)
+    if (el) {
+        el.textContent = errorMessage || ''
+        if (errorMessage) {
+            el.style.opacity = '1'
+            el.classList.add('visible')
+            console.log(`错误元素 ${field} 已显示，opacity: ${el.style.opacity}, classList: ${el.classList}`)
+        } else {
+            el.style.opacity = '0'
+            el.classList.remove('visible')
+        }
+    } else {
+        console.error(`错误元素 ${field} 未找到`)
     }
 }
 //清除单个错误信息
 function clearFieldError(field) {
-    const errorElement = document.getElementById(`${field}Error`)
-    if (errorElement) {
-        errorElement.style.display = 'none'
-    }
-    
-    const inputElement = document.getElementById(field)
-    if (inputElement) {
-        inputElement.classList.remove('input-error')
-    }
+  const errorElement = document.getElementById(`${field}Error`)
+  if (errorElement) {
+    errorElement.style.opacity = 0
+    errorElement.classList.remove('visible')  // 移除visible类
+    errorElement.textContent = ''  // 清空文本内容
+  }
 }
 //清除所有错误信息
 function clearAllErrors() {
     document.querySelectorAll('.error-message').forEach(element => {
-        element.style.display = 'none'
+        element.style.opacity = 0
+        element.classList.remove('visible')  // 移除visible类
+        element.textContent = ''  // 清空文本内容
     })
-    
-    document.querySelectorAll('input').forEach(input => {
-        input.classList.remove('input-error')
-    })
-    
     clearGenericError()
 }
 // 清除网络错误信息
@@ -367,11 +433,10 @@ function showLoading(show) {
 // 显示成功信息
 function showSuccessMessage() {
     if (DOM_ELEMENTS.registerSuccessMessage) {
-        DOM_ELEMENTS.registerSuccessMessage.style.display = 'block'
+        DOM_ELEMENTS.registerSuccessMessage.style.opacity = 1
         DOM_ELEMENTS.registerSuccessMessage.textContent = '注册成功！正在跳转到登录页面...'
     }
 }
-
 // ==================== 页面初始化 ====================
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM内容加载完成，开始初始化注册页面...')

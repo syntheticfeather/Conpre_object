@@ -213,8 +213,9 @@ async function handlePasswordLogin(e) {
 // 登录成功处理
 function handleLoginSuccess(result, phone) { 
     console.log('登录成功:', result)
-    
+
     showSuccessMessage()
+    showLoading('password', false) 
     
     // 保存登录状态和token 
     const token = result.data.token
@@ -280,43 +281,42 @@ function startTokenMonitor() {
 
 // ==================== UI更新函数 ====================
 // 显示/隐藏加载状态
-function showLoading(type, show) {
+function showLoading(type,show) {
     const spinner = type === 'password' ? DOM_ELEMENTS.passwordLoadingSpinner : DOM_ELEMENTS.smsLoadingSpinner
     if (spinner) {
-        spinner.style.display = show ? 'block' : 'none'
-        spinner.textContent = show ? '登录中，请稍候...' : ''
+        spinner.style.opacity = show ? 1 : 0
+        spinner.textContent = '登录中，请稍候...'
     }
 }
-
 // 显示成功消息
 function showSuccessMessage() {
     if (DOM_ELEMENTS.loginSuccessMessage) {
-        DOM_ELEMENTS.loginSuccessMessage.style.display = 'block'
+        DOM_ELEMENTS.loginSuccessMessage.style.opacity = 1
     }
 }
 
 // 错误提示函数
 function showErrorById(elementId, message) {
-    const element = document.getElementById(elementId)
-    if (element) {
-        element.textContent = message
-        element.style.display = 'block'
-    }
+  const element = document.getElementById(elementId)
+  if (element) {
+    element.textContent = message
+    element.style.opacity = 1
+  }
 }
 
 // 单个错误提示清除函数
 function clearErrorById(elementId) {
-    const element = document.getElementById(elementId)
-    if (element) {
-        element.style.display = 'none'
-    }
+  const element = document.getElementById(elementId)
+  if (element) {
+    element.style.opacity = 0
+  }
 }
 
 // 所有错误提示清除函数
 function clearAllErrors() {
     const errorElements = document.querySelectorAll('.error-message')
     errorElements.forEach(element => {
-        element.style.display = 'none'
+        element.style.opacity = 0
     })
 }
 

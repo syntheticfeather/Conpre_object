@@ -6,7 +6,7 @@
     <title>网贷APP管理系统</title>
     <link rel="stylesheet" href="../static/css/base.css">
     <link rel="stylesheet" href="../static/css/index.css">
-    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>    <!--实时数据图表-->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>    实时数据图表 -->
     <link rel="stylesheet" href="../static/iconfont/iconfont.css">
     <link rel="stylesheet" href="../static/css/DateRangePicker.css">
 </head>
@@ -63,17 +63,18 @@
             <div class="side-bar">
                 <ul>
                     <li class="side-item">
-                        <button class="side-link active" data-target="loan-apply">代办审核</button>
+                        <button class="side-link active" data-target="pending-apply-content">代办审核</button>
                         <i class="iconfont icon-jinru"></i>
                     </li>
                     <li class="side-item">
-                        <button class="side-link" data-target="home-page">子功能</button>
+                        <button class="side-link" data-target="pended-apply-content">已办审核</button>
                         <i class="iconfont icon-jinru"></i>
                     </li>
                 </ul>
             </div>
             <!-- 右侧内容区域 -->
-            <div class="main-content">
+             <!-- 待办审核内容 -->
+            <div class="main-content" id="pending-apply-content">
                 <div class="header">
                     <h2 class="title">待办审核</h2>
                 </div>
@@ -105,31 +106,99 @@
                 </div>
                 <!-- 审核详情区域（默认隐藏） -->
                 <div class="detail-container" id="audition-detail">
-                    <h2>申请详情</h2>
+                    <h2 class="detail-title1">申请详情</h2>
                     <!-- 用户基本信息 -->
                     <div id="user-info-section" class="detail-section">
-                        <h3>用户基本信息</h3>
-                        <p><strong>真实姓名：</strong><span id="realName"></span></p>
-                        <p><strong>手机号：</strong><span id="phone"></span></p>
-                        <p><strong>注册时间：</strong><span id="register-time"></span></p>
-                        
-                        <h4>认证材料</h4>
-                        <div id="materials-container">
-                            <p><strong>身份证：</strong><span id="idCard">—</span></p>
-                            <p><strong>工作证明：</strong><span id="workCert">—</span></p>
-                            <p><strong>三证合一：</strong><span id="triCert">—</span></p>
-                            <p><strong>不动产证明：</strong><span id="immovableCert">—</span></p>
+                        <div id="user-base-info">
+                            <h3 class="detail-title2">用户基本信息</h3>
+                            <p><strong>真实姓名：</strong><span id="realName"></span></p>
+                            <p><strong>手机号：</strong><span id="phone"></span></p>
+                            <p><strong>注册时间：</strong><span id="register-time"></span></p>
+                            <p><strong>信誉分：</strong><span id="credit-score" class="credit-score">—</span></p>
                         </div>
-
-                        <p><strong>信誉分：</strong><span id="credit-score">—</span></p>
+                        
+                        <div id="materials-container">
+                            <h4>认证材料</h4>
+                            <!-- JS填充 -->
+                        </div>
                     </div>
                     <!-- 贷款申请信息 -->
+                    <h3 class="detail-title2">贷款申请信息</h3>
                     <div id="loan-info-section" class="detail-section">
-                        <h3>贷款申请信息</h3>
-                        <p><strong>贷款项目：</strong><span id="product-name"></span></p>
-                        <p><strong>申请金额：</strong><span id="loan-amount"></span></p>
-                        <p><strong>贷款年限：</strong><span id="loan-term"></span> 年</p>
-                        <p><strong>分期期数：</strong><span id="term-period"></span> 期</p>
+                        <div class="detail-item"><strong>贷款项目：</strong><span id="product-name"></span></div>
+                        <div class="detail-item"><strong>申请金额：</strong><span id="loan-amount"></span></div>
+                        <div class="detail-item"><strong>总期数：</strong><span id="loan-term"></span></div>
+                        <div class="detail-item"><strong>贷款年限：</strong><span id="term-period"></span></div>
+                        <div class="detail-item"><strong>年利率</strong><span id="interest-rate"></span></div>
+                        <div class="detail-item"><strong>还款方式：</strong><span id="repay-type"></span></div>
+                        <div class="detail-item"><strong>AI拒绝原因：</strong><span id="reject-reason"></span></div>
+                    </div>
+                    <!-- 操作按钮 -->
+                    <div class="action-buttons">
+                        <button id="btn-pass" class="btn btn-success">通过</button>
+                        <button id="btn-reject" class="btn btn-danger">不通过</button>
+                    </div>
+                </div>
+            </div>
+            <!-- 已办审核面板 -->
+             <div class="main-content" id="pended-apply-content" style="display: none;">
+                <div class="header">
+                    <h2 class="title">待办审核</h2>
+                </div>
+                <!-- 待审核申请列表 -->
+                <div class="apply-content table-content">
+                    <div class="apply-table data-table">
+                        <table id="apply-table">
+                            <thead>
+                                <tr>
+                                    <th>贷款人姓名</th>
+                                    <th>贷款项目</th>
+                                    <th>贷款金额</th>
+                                    <th>贷款年限</th>
+                                    <th>贷款期数</th>
+                                    <th>申请时间</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- JS填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- 分页控件 -->
+                    <div id="pending-pagination" class="pagination">
+                        <button id="prev-pending-page">上一页</button>
+                        <span id="pending-page-info">第 1 页，共 1 页</span>
+                        <button id="next-pending-page">下一页</button>
+                    </div>
+                </div>
+                <!-- 审核详情区域（默认隐藏） -->
+                <div class="detail-container" id="audition-detail">
+                    <h2 class="detail-title1">申请详情</h2>
+                    <!-- 用户基本信息 -->
+                    <div id="user-info-section" class="detail-section">
+                        <div id="user-base-info">
+                            <h3 class="detail-title2">用户基本信息</h3>
+                            <p><strong>真实姓名：</strong><span id="realName"></span></p>
+                            <p><strong>手机号：</strong><span id="phone"></span></p>
+                            <p><strong>注册时间：</strong><span id="register-time"></span></p>
+                            <p><strong>信誉分：</strong><span id="credit-score">—</span></p>
+                        </div>
+                        
+                        <div id="materials-container">
+                            <h4>认证材料</h4>
+                            <!-- JS填充 -->
+                        </div>
+                    </div>
+                    <!-- 贷款申请信息 -->
+                        <h3 class="detail-title2">贷款申请信息</h3>
+                    <div id="loan-info-section" class="detail-section">
+                        <div class="detail-item"><strong>贷款项目：</strong><span id="product-name"></span></div>
+                        <div class="detail-item"><strong>申请金额：</strong><span id="loan-amount"></span></div>
+                        <div class="detail-item"><strong>总期数：</strong><span id="loan-term"></span></div>
+                        <div class="detail-item"><strong>贷款年限：</strong><span id="term-period"></span></div>
+                        <div class="detail-item"><strong>年利率</strong><span id="interest-rate"></span></div>
+                        <div class="detail-item"><strong>还款方式：</strong><span id="repay-type"></span></div>
+                        <div class="detail-item"><strong>AI拒绝原因：</strong><span id="reject-reason"></span></div>
                     </div>
                     <!-- 操作按钮 -->
                     <div class="action-buttons">
@@ -147,19 +216,154 @@
             <div class="side-bar">
                 <ul>
                     <li class="side-item">
-                        <button class="side-link active" data-target="loan-apply">贷款管理</button>
+                        <button class="side-link active" data-target="product-content">贷款管理</button>
                         <i class="iconfont icon-jinru"></i>
                     </li>
                     <li class="side-item">
-                        <button class="side-link" data-target="home-page">子功能</button>
+                        <button class="side-link" data-target="#">子功能</button>
                         <i class="iconfont icon-jinru"></i>
                     </li>
                 </ul>
             </div>
             <!-- 右侧内容面板 -->
-            <div class="main-content">
+             <!-- 贷款产品管理内容 -->
+            <div class="main-content" id="product-content">
                 <div class="header">
                     <h2 class="title">贷款管理</h2>
+                    <button class="btn add-product-btn" id="add-product-btn">添加新项目</button>
+                </div>
+                <!-- 已有贷款项目搜索 -->
+                <div class="product-search">
+                    <div class="input-group">
+                        <label>创建时间：</label>
+                        <input type="text" id="create-start-date" placeholder="开始日期" readonly />
+                        <span>至</span>
+                        <input type="text" id="create-end-date" placeholder="结束日期" readonly />
+                    </div>
+                    <div class="input-group">
+                        <label>更新时间：</label>
+                        <input type="text" id="update-start-date" placeholder="开始日期" readonly />
+                        <span>至</span>
+                        <input type="text" id="update-end-date" placeholder="结束日期" readonly />
+                    </div>
+                    <button id="search-products-btn">搜索</button>
+                    <button id="reset-search-btn">重置</button>
+                </div>
+                <!-- 已有贷款项目列表 -->
+                <div class="product-content table-content">
+                    <div class="product-table data-table">
+                        <table id="product-table">
+                            <thead>
+                                <tr>
+                                <th>序号</th>
+                                <th>贷款名称</th>
+                                <th>贷款描述</th>
+                                <th>贷款用途</th>
+                                <th>更新时间</th>
+                                <th>创建时间</th>
+                                <th>快捷操作</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <!-- 分页 -->
+                    <div id="product-pagination" class="pagination">
+                        <button id="prev-product-page" disabled>上一页</button>
+                        <span id="product-page-info">第 1 页，共 1 页</span>
+                        <button id="next-product-page">下一页</button>
+                    </div>
+                </div>
+                <button id="close-search-result-btn" style="display:none; margin-top:10px;">关闭搜索结果</button>
+                <!-- 产品详情模态框 -->
+                <div id="product-detail" class="detail-container">
+                    <h3>产品详情</h3>          
+                    <!-- 基本信息 -->
+                    <p><strong>产品名称：</strong><span id="prod-name">—</span></p>
+                    <p><strong>状态：</strong><span id="prod-status">—</span></p>
+                    <p><strong>期限范围：</strong><span id="prod-term">—</span></p>
+                    <p><strong>促销信息：</strong><span id="prod-promo">—</span></p>
+
+                    <!-- 可选方案表格 -->
+                    <h4>可选方案</h4>
+                    <table id="prod-options-table">
+                        <thead>
+                            <tr>
+                                <th>额度</th>
+                                <th>期限(月)</th>
+                                <th>利率</th>
+                                <th>还款方式</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <!-- JS 动态填充 -->
+                        </tbody>
+                    </table>
+
+                    <!-- ============ 功能区（不在 table 内）============ -->
+                    <!-- 批量添加选项 -->
+                    <div class="batch-add">
+                        <h4>批量添加选项</h4>
+                        <table id="batch-option-table">
+                        <thead>
+                            <tr>
+                            <th>额度</th>
+                            <th>期限(月)</th>
+                            <th>利率</th>
+                            <th>还款方式</th>
+                            <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                            <td><input type="number" step="0.01" placeholder="如 10000.00"></td>
+                            <td><input type="number" placeholder="如 12"></td>
+                            <td><input type="number" step="0.0001" placeholder="如 0.049"></td>
+                            <td>
+                                <select>
+                                <option value="等额本息">等额本息</option>
+                                <option value="等额本金">等额本金</option>
+                                <option value="先息后本">先息后本</option>
+                                <option value="一次性还本付息">一次性还本付息</option>
+                                </select>
+                            </td>
+                            <td><button class="add-option-row">+</button></td>
+                            </tr>
+                        </tbody>
+                        </table>
+                        <button id="submit-batch-options detail-btn">批量添加选项</button>
+                    </div>
+                    <!-- 批量删除选项 -->
+                    <div class="batch-delete">
+                        <h4>批量删除选项</h4>
+                        <div id="option-checkbox-container"></div>
+                        <button id="batch-delete-options-btn  detail-btn">批量删除选中选项</button>
+                    </div>
+                    <!-- 编辑产品信息 -->
+                    <div class="edit-product">
+                        <button id="edit-product-btn">编辑产品信息</button>
+                        <div id="edit-product-form" style="display:none; margin-top:10px; padding:15px; border:1px solid #eee; background:#f9f9f9;">
+                        <label>产品名称：<input id="edit-productName" type="text"></label><br>
+                        <label>描述：<textarea id="edit-description" style="width:100%; height:60px; margin:5px 0;"></textarea></label><br>
+                        <label>用途：<input id="edit-loanUsage" type="text"></label><br>
+                        <label>最短期限（月）：<input id="edit-minTerm" type="number"></label><br>
+                        <label>最长期限（月）：<input id="edit-maxTerm" type="number"></label><br>
+                        <label>期限步长（月）：<input id="edit-termStep" type="number"></label><br>
+                        <label>促销信息：<input id="edit-promotionDetails" type="text"></label><br>
+                        <button id="confirm-edit-btn detail-btn">确认修改</button>
+                        <button id="cancel-edit-btn detail-btn">取消</button>
+                        </div>
+                    </div>
+                    <!-- 关闭按钮 -->
+                    <div class="action-buttons" style="margin-top:20px;">
+                        <button class="btn btn-primary" onclick="document.getElementById('product-detail').style.display='none'">关闭</button>
+                    </div>
+                </div>
+            </div>
+            <!-- 待定子功能内容 -->
+            <div class="main-content" id="product1-content" style="display: none;">
+                <div class="header">
+                    <h2 class="title">子功能</h2>
                     <button class="btn add-product-btn" id="add-product-btn">添加新项目</button>
                 </div>
                 <!-- 已有贷款项目搜索 -->
@@ -319,17 +523,18 @@
             <!-- 左侧子导航栏 -->
             <div class="side-bar">
                 <ul>
-                    <li class="side-item">
-                        <button class="side-link active" data-target="user-main-content">用户管理</button>
+                    <li class="side-item active" data-target="user-main-content">
+                        <button>用户管理</button>
                         <i class="iconfont icon-jinru"></i>
                     </li>
-                    <li class="side-item">
-                        <button class="side-link" data-target="black-main-content">黑名单管理</button>
+                    <li class="side-item" data-target="black-main-content">
+                        <button>黑名单管理</button>
                         <i class="iconfont icon-jinru"></i>
                     </li>
                 </ul>
             </div>
             <!-- 右侧内容面板 -->
+             <!-- 用户管理 -->
             <div class="main-content" id="user-main-content">
                 <div class="header">
                     <h2 class="title">用户管理</h2>
@@ -369,7 +574,7 @@
                         <p><strong>手机号：</strong><span id="user-phone">—</span></p>
                         <p><strong>注册时间：</strong><span id="user-register-time">—</span></p>
                         <p><strong>最近上线时间：</strong><span id="user-update-time">—</span></p>
-                        <p><strong>信誉分：</strong><span id="user-credit-score" style="color:#e74c3c;">—</span></p>
+                        <p><strong>信誉分：</strong><span id="user-credit-score" class="credit-score">—</span></p>
                     </div>
                     <div id="user-auth-section">
                         <h3>认证材料</h3>
@@ -427,6 +632,7 @@
                     </div>
                 </div>
             </div>
+            <!-- 黑名单管理 -->
             <div class="main-content" id="black-main-content" style="display: none;">
                 <!-- 黑名单管理小标题 -->
                 <div class="header">
@@ -455,10 +661,10 @@
                         </table>
                     </div>
                     <!-- 分页控件 -->
-                    <div id="user-pagination" class="pagination">
-                        <button id="prev-user-page" disabled>上一页</button>
-                        <span id="user-page-info">第 1 页，共 1 页</span>
-                        <button id="next-user-page">下一页</button>
+                    <div id="blacklist-pagination" class="pagination">
+                        <button id="prev-blacklist-page" disabled>上一页</button>
+                        <span id="blacklist-page-info">第 1 页，共 1 页</span>
+                        <button id="next-blacklist-page">下一页</button>
                     </div>
                 </div>                
                 <!-- 黑名单用户详情框 -->
@@ -468,7 +674,7 @@
                         <p><strong>真实姓名：</strong><span id="user-real-name">—</span></p>
                         <p><strong>手机号：</strong><span id="user-phone">—</span></p>
                         <p><strong>注册时间：</strong><span id="user-register-time">—</span></p>
-                        <p><strong>信誉分：</strong><span id="user-credit-score" style="color:#e74c3c;">—</span></p>
+                        <p><strong>信誉分：</strong><span id="user-credit-score">—</span></p>
                     </div>
                     <div id="user-auth-section">
                         <h3>认证材料</h3>
@@ -488,12 +694,20 @@
             <div class="side-bar">
                 <ul>
                     <li class="side-item">
-                        <button class="side-link active" data-target="loan-apply">风险管理</button>
+                        <button class="side-link active side-menu" data-target="risk-content">风险管理</button>
                         <i class="iconfont icon-jinru"></i>
+                        <ul class="submenu">
+                            <li><a href="#">风险评估</a></li>
+                            <li><a href="#">风险预警</a></li>
+                        </ul>
                     </li>
                     <li class="side-item">
-                        <button class="side-link" data-target="home-page">催收管理</button>
+                        <button class="side-link side-menu" data-target="collection-content">催收管理</button>
                         <i class="iconfont icon-jinru"></i>
+                        <ul class="submenu">
+                            <li><a href="#">催收任务</a></li>
+                            <li><a href="#">催收记录</a></li>
+                        </ul>
                     </li>
                 </ul>
             </div>
@@ -509,11 +723,11 @@
             <div class="side-bar">
                 <ul>
                     <li class="side-item">
-                        <button class="side-link active" data-target="loan-apply">数据统计</button>
+                        <button class="side-link active" data-target="data-content">数据统计</button>
                         <i class="iconfont icon-jinru"></i>
                     </li>
                     <li class="side-item">
-                        <button class="side-link" data-target="home-page">系统管理</button>
+                        <button class="side-link" data-target="system-content">系统管理</button>
                         <i class="iconfont icon-jinru"></i>
                     </li>
                 </ul>

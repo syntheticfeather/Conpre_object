@@ -102,10 +102,26 @@ a {
     background-color: rgba(0, 0, 0, 0);
     font-size: 18px;
     border: none;
+    cursor: pointer;
 }
 .side-bar .icon-jinru {
     margin-right: 20px;
     margin-top: 10px;
+}
+/*侧栏展开收起*/
+.side-item.expanded .icon-jinru {
+  transform: rotate(90deg);
+}
+.submenu {
+  list-style: none;
+  padding-left: 20px;
+  margin: 0;
+  border-top: 1px solid #ddd;
+  display: none;
+}
+
+.menu-item.expanded .submenu {
+  display: block;
 }
 
 /*右侧内容*/
@@ -209,9 +225,13 @@ td {
 .detail-container {
     display: none;
     margin-top: 20px;
-    padding: 20px;
+    padding: 20px 40px;
     border: 1px solid #ddd;
     border-radius: 8px;
     background: white;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.credit-score {
+    color: #e74c3c; 
+    font-weight: bold;
 }

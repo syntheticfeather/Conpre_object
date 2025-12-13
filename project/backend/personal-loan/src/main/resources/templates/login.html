@@ -16,15 +16,15 @@
             <div class="login-type">
                 <button type="button" class="active" id="change-passwordLogin-btn">密码登录</button>
                 <button type="button" id="change-smsLogin-btn">验证码登录</button>
-            </div>
+            </div> 
             
             <!-- 密码登录表单 -->
             <form class="login-form" id="passwordLoginForm">
-                  <input type="text" id="phone" placeholder="请输入手机号码">
-                  <div class="error-message" id="phoneError">请输入手机号码</div>
+                  <input type="text" id="phone" placeholder="请输入手机号码" autocomplete="off">
+                  <div class="error-message" id="phoneError"></div>
 
                   <div class="password-input">
-                      <input type="password" id="password" placeholder="请输入密码">
+                      <input type="password" id="password" placeholder="请输入密码" style="margin-left: 30px;" autocomplete="off">
                       <button type="button" id="showPassword-btn">
                           <i class="iconfont icon-browse"></i>
                           <i class="iconfont icon-eye-close"></i>
@@ -34,8 +34,10 @@
 
 
                 <button type="submit" id="passwordLogin-submit-btn">登录</button>
-                <div class="loading" id="passwordLoadingSpinner"></div>
-                <div class="success-message" id="successMessage">登录成功！正在跳转...</div>
+                <div class="loginMess">
+                    <div class="loading" id="passwordLoadingSpinner"></div>
+                    <div class="success-message" id="successMessage">登录成功！正在跳转...</div>
+                </div>
             </form>
             
             <!-- 验证码登录表单 -->

@@ -29,9 +29,6 @@ async function init() {
         // 绑定事件监听
         bindEventListeners()
         
-        // 初始化图表
-        initCharts()
-        
         // 初始化所有数据
         // 加载待审核列表
         await fetchAndRenderPendingList()
@@ -40,42 +37,6 @@ async function init() {
     } catch (error) {
         console.error('初始化失败:', error)
         alert('页面初始化失败，请刷新页面重试')
-    }
-}
-
-// 初始化图表（单独函数，便于错误处理）
-function initCharts() {
-    try {
-        // 检查echarts是否加载
-        if (typeof echarts === 'undefined') {
-            console.warn('echarts未加载，跳过图表初始化');
-            return;
-        }
-        
-        // 饼图初始化
-        const pieDom = document.getElementById('pie-chart');
-        if (pieDom) {
-            const pieChart = echarts.init(pieDom);
-            const pieOption = {
-                title: { text: '用户等级分布' },
-                series: [{
-                    type: 'pie',
-                    data: [
-                        { name: '等级A', value: 2500 },
-                        { name: '等级B', value: 2800 },
-                        { name: '等级C', value: 3000 },
-                        { name: '等级D', value: 1100 }
-                    ]
-                }]
-            };
-            pieChart.setOption(pieOption);
-            window.pieChart = pieChart; // 保存到全局以便后续使用
-        }
-        
-        // 其他图表初始化...
-        
-    } catch (error) {
-        console.error('图表初始化失败:', error);
     }
 }
 
@@ -94,10 +55,10 @@ function bindEventListeners() {
             }
         }
     })
-
     // 侧边栏导航切换
-    document.querySelectorAll('.side-link').forEach(button => {
-        button.addEventListener('click', function() {
+    document.querySelectorAll('.side-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault()
             const target = this.getAttribute('data-target')
             if (target) {
                 switchToContent(target)
@@ -105,6 +66,15 @@ function bindEventListeners() {
         })
     })
 
+    // 侧边栏导航展开/收起
+    document.querySelectorAll('.side-link.side-menu').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault()
+            const sideItem = this.closest('.side-item')
+            // 切换 expanded 类
+            sideItem.classList.toggle('expanded')
+        })
+    })
     // 弹窗控制
     document.querySelectorAll('[data-modal]').forEach(button => {
         button.addEventListener('click', function() {
@@ -112,35 +82,16 @@ function bindEventListeners() {
             document.getElementById(modalId).style.display = 'flex'
         })
     })
-
     // 关闭弹窗函数
     function closeModal(modal) {
         modal.style.display = 'none'
     }
-
     // 点击关闭按钮关闭弹窗
     document.querySelectorAll('.close-btn').forEach(button => {
         button.addEventListener('click', function() {
             const modal = this.closest('.modal') // 找到最近的外层.modal
             closeModal(modal)
         })
-    })
-
-    // 退出登录-待完善
-    document.getElementById('logout-btn').addEventListener('click', async function() {
-        if(confirm('确定要退出登录吗？')) {
-            try {
-                // 调用后端退出接口
-                await API_CLIENT.post(API_CONFIG.endpoints.logout)
-            } catch (error) {
-                console.error('退出登录失败:', error)
-            } finally {
-                // 清除所有token和登录状态
-                JWT_UTILS.clearTokens()
-                // 跳转到登录页
-                window.location.href = '/login'
-            }
-        }
     })
 
     // 待办审核分页
@@ -161,39 +112,39 @@ function bindEventListeners() {
     // 用户列表分页
     document.getElementById('prev-user-page').addEventListener('click', () => {
     if (userListInstance && userListInstance.currentPage > 1) {
-        userListInstance.currentPage--;
-        userListInstance.loadData();
+        userListInstance.currentPage--
+        userListInstance.loadData()
     }
     })
     document.getElementById('next-user-page').addEventListener('click', () => {
     if (userListInstance && userListInstance.currentPage < userListInstance.totalPages) {
-        userListInstance.currentPage++;
-        userListInstance.loadData();
+        userListInstance.currentPage++
+        userListInstance.loadData()
     }
     })
 
     // 产品列表分页
     document.getElementById('prev-product-page').addEventListener('click', () => {
     if (productListInstance && productListInstance.currentPage > 1) {
-        productListInstance.currentPage--;
-        productListInstance.loadData();
+        productListInstance.currentPage--
+        productListInstance.loadData()
     }
     })
     document.getElementById('next-product-page').addEventListener('click', () => {
     if (productListInstance && productListInstance.currentPage < productListInstance.totalPages) {
-        productListInstance.currentPage++;
-        productListInstance.loadData();
+        productListInstance.currentPage++
+        productListInstance.loadData()
     }
     })
 
     // 关闭产品详情
     document.querySelector('#product-detail .close-btn')?.addEventListener('click', () => {
-      document.getElementById('product-detail').style.display = 'none';
+      document.getElementById('product-detail').style.display = 'none'
     })
 
     // 关闭用户详情
     document.querySelector('#user-detail .close-btn')?.addEventListener('click', () => {
-      document.getElementById('user-detail').style.display = 'none';
+      document.getElementById('user-detail').style.display = 'none'
     })
 
     // 搜索产品按钮
@@ -204,7 +155,7 @@ function bindEventListeners() {
       const updateEnd = document.getElementById('update-end-date').value
 
       // 构建查询参数
-      const params = new URLSearchParams();
+      const params = new URLSearchParams()
       if (createStart) params.append('createStartDate', createStart)
       if (createEnd) params.append('createEndDate', createEnd)
       if (updateStart) params.append('updateStartDate', updateStart)
@@ -271,28 +222,47 @@ function bindEventListeners() {
       // document.getElementById('search-result-info').style.display = 'none'
       document.getElementById('close-search-result-btn').style.display = 'none'
       })
+
+    
+    // 退出登录
+    document.getElementById('logout-btn').addEventListener('click', async function() {
+        if(confirm('确定要退出登录吗？')) {
+            try {
+                // 调用后端退出接口
+                await API_CLIENT.post(API_CONFIG.endpoints.logout)
+            } catch (error) {
+                console.error('退出登录失败:', error)
+            } finally {
+                // 清除所有token和登录状态
+                JWT_UTILS.clearTokens()
+                // 跳转到登录页
+                window.location.href = '/login'
+            }
+        }
+    })
+
     // ============ 日期输入互斥逻辑 ============
-    const createStartInput = document.getElementById('create-start-date');
-    const createEndInput = document.getElementById('create-end-date');
-    const updateStartInput = document.getElementById('update-start-date');
-    const updateEndInput = document.getElementById('update-end-date');
+    const createStartInput = document.getElementById('create-start-date')
+    const createEndInput = document.getElementById('create-end-date')
+    const updateStartInput = document.getElementById('update-start-date')
+    const updateEndInput = document.getElementById('update-end-date')
 
     // 点击创建时间输入框 → 清空更新时间
     [createStartInput, createEndInput].forEach(input => {
       input.addEventListener('focus', () => {
-        updateStartInput.value = '';
-        updateEndInput.value = '';
-      });
-    });
+        updateStartInput.value = ''
+        updateEndInput.value = ''
+      })
+    })
 
     // 点击更新时间输入框 → 清空创建时间
     [updateStartInput, updateEndInput].forEach(input => {
       input.addEventListener('focus', () => {
-        createStartInput.value = '';
-        createEndInput.value = '';
-      });
-      });
-    }
+        createStartInput.value = ''
+        createEndInput.value = ''
+      })
+      })
+}
 
 // 面板显示切换
 function switchToPanel(target) {
@@ -339,15 +309,14 @@ function switchToPanel(target) {
     }
 
     if (target === 'user-management') {
-      initUserList(); // 初始化用户列表
-      document.getElementById('user-main-content').style.display = 'flex';
-      document.getElementById('black-main-content').style.display = 'none';
+      initUserList() // 初始化用户列表
+      document.getElementById('user-main-content').style.display = 'flex'
+      document.getElementById('black-main-content').style.display = 'none'
     } else if (target === 'loan-management') {
-      initProductList() // 后面会写
-      // refreshProductList()
+      initProductList() 
     }
 }
-
+// 子面板显示切换
 function switchToContent(target) {
   switch (target) {
     case 'user-main-content':
@@ -357,9 +326,21 @@ function switchToContent(target) {
     case 'black-main-content':
       document.getElementById('user-main-content').style.display = 'none'
       document.getElementById('black-main-content').style.display = 'flex'
-      // ✅ 关键：初始化黑名单列表
+      // 初始化黑名单列表
       if (!blacklistInstance) initBlacklist()
       break
+    case 'pending-apply-content':
+      document.getElementById('pending-apply-content').style.display = 'flex'
+      document.getElementById('pended-apply-content').style.display = 'none'
+      break
+    case 'pended-apply-content':
+      document.getElementById('pending-apply-content').style.display = 'none'
+      document.getElementById('pended-apply-content').style.display = 'flex'
+      break
+    // case 'product-main-content':
+    //   document.getElementById('user-main-content').style.display = 'none'
+    //   document.getElementById('user-detail').style.display = 'flex'
+    //   break
     default:
       console.error('未知内容:', target)
   }
@@ -377,15 +358,15 @@ async function fetchAndRenderPendingList() {
         const response = await AdminWeb.API_CLIENT.getPendingApplications()
 
         if (response.code === 200 && Array.isArray(response.data)) {
-            _allPendingApps = response.data;
-            _currentPage = 1;
+            _allPendingApps = response.data
+            _currentPage = 1
             renderPendingApplications(_allPendingApps.length)
         } else {
             throw new Error(response.message || '数据格式异常')
         }
     } catch (error) {
       console.error('获取待办列表失败:', error)
-      document.getElementById('apply-table').querySelector('tbody').innerHTML = '<tr><td colspan="6" style="text-align:center;color:#e74c3c;">加载失败</td></tr>'
+      document.getElementById('apply-table').querySelector('tbody').innerHTML = '<tr><td colspan="6" style="text-align:centercolor:#e74c3c;">加载失败</td></tr>'
       updatePendingPagination(0)
     }
 }
@@ -395,7 +376,7 @@ function updatePendingPagination(total) {
   const totalPages = Math.ceil(total / PENDING_PAGE_SIZE) || 1
   const pageInfoEl = document.getElementById('pending-page-info')
   if (pageInfoEl) {
-    pageInfoEl.textContent = total === 0 ? '共 0 条' : `第 ${_currentPage} 页，共 ${totalPages} 页`;
+    pageInfoEl.textContent = total === 0 ? '共 0 条' : `第 ${_currentPage} 页，共 ${totalPages} 页`
   }
 
   // 控制按钮状态
@@ -489,22 +470,22 @@ async function showApplicationDetail(applicationId) {
         const uploaded = userCert[key] != null
         const color = uploaded ? '#27ae60' : '#e74c3c'
         const statusText = uploaded ? '已上传' : '未上传'
-        html += `<div class="material-item"><span>${label}</span><span style="color:${color}">${statusText}</span></div>`
+        html += `<div class="detail-item"><span>${label}</span><span style="color:${color};">${statusText}</span></div>`
     }
     materialsContainer.innerHTML = html
 
     // 贷款信息
     // 如果后端不能提供 productName，可暂时显示 productId 或留空
     document.getElementById('product-name').textContent = 
-      app.productId != null ? `产品ID: ${app.productId}` : '—'
+      app.productId != null ? app.productId : '—'
 
     document.getElementById('loan-amount').textContent = 
       app.loanAmount != null 
         ? `¥${Number(app.loanAmount).toLocaleString('zh-CN')}` 
         : '—'
 
-    document.getElementById('loan-term').textContent = app.loanPeriod != null ? `${app.loanPeriod} 期` : '—'
-    document.getElementById('term-period').textContent = app.term != null ? `${app.term} 个月` : '—'
+    document.getElementById('term-period').textContent = app.loanPeriod != null ? `${app.loanPeriod}年` : '—'
+    document.getElementById('loan-term').textContent = app.term != null ? `${app.term}期` : '—'
 
     // 利率和还款方式
     const interestRateEl = document.getElementById('interest-rate')
@@ -520,7 +501,7 @@ async function showApplicationDetail(applicationId) {
     // 拒绝原因
     const rejectReasonEl = document.getElementById('reject-reason')
     if (rejectReasonEl) {
-        rejectReasonEl.textContent = app.rejectReason || '—'
+        rejectReasonEl.textContent = app.rejectReason || '暂无'
     }
 
     // 绑定按钮
@@ -555,14 +536,14 @@ async function submitReview(applicationId, isApproved) {
 */ 
 // 增加项目按钮绑定
 document.getElementById('add-product-btn').addEventListener('click', () => {
-  window.location.href = '/addProduct';
+  window.location.href = '/addProduct'
 })
 // ============== 贷款项目展示 ===============
 // 贷款产品列表事件绑定
 function renderProductRow(product) {
-  const tr = document.createElement('tr');
-  tr.setAttribute('data-product-id', product.productId);
-  const usage = (product.usage || '').length > 15 ? product.usage.substring(0, 15) + '...' : product.usage;
+  const tr = document.createElement('tr')
+  tr.setAttribute('data-product-id', product.productId)
+  const usage = (product.usage || '').length > 15 ? product.usage.substring(0, 15) + '...' : product.usage
   
   tr.innerHTML = `
     <td>${product.productId}</td>
@@ -577,32 +558,32 @@ function renderProductRow(product) {
         : '<button class="toggle-status-btn" data-action="active">上架</button>'}
       <button class="delete-prod-btn">删除</button>
     </td>
-  `;
+  `
 
   tr.addEventListener('click', (e) => {
     if (!e.target.closest('.toggle-status-btn') && !e.target.closest('.delete-prod-btn')) {
-      showProductDetail(product.productId);
+      showProductDetail(product.productId)
     }
-  });
+  })
 
   // 上架/下架按钮
-  const toggleBtn = tr.querySelector('.toggle-status-btn');
+  const toggleBtn = tr.querySelector('.toggle-status-btn')
   toggleBtn?.addEventListener('click', async (e) => {
-    e.stopPropagation();
-    const action = toggleBtn.dataset.action; // 'active' 或 'deactive'
-    await toggleLoanProductStatus(product.productId, action);
+    e.stopPropagation()
+    const action = toggleBtn.dataset.action // 'active' 或 'deactive'
+    await toggleLoanProductStatus(product.productId, action)
   })
 
   // 删除按钮
-  const deleteBtn = tr.querySelector('.delete-prod-btn');
+  const deleteBtn = tr.querySelector('.delete-prod-btn')
   deleteBtn?.addEventListener('click', async (e) => {
-    e.stopPropagation();
+    e.stopPropagation()
     if (confirm(`确定删除产品【${product.productName}】？`)) {
     try {
-      await AdminWeb.API_CLIENT.deleteLoanProduct(product.productId); 
-      initProductList(); // 刷新列表
+      await AdminWeb.API_CLIENT.deleteLoanProduct(product.productId) 
+      initProductList() // 刷新列表
     } catch (error) {
-      alert('删除失败：' + error.message);
+      alert('删除失败：' + error.message)
     }
     }
   })
@@ -612,79 +593,79 @@ function renderProductRow(product) {
 // 显示产品详情
 async function showProductDetail(productId) {
   try {
-    const detail = await AdminWeb.API_CLIENT.getLoanProductById(productId);
-    if (detail.code !== 200) throw new Error(detail.message);
+    const detail = await AdminWeb.API_CLIENT.getLoanProductById(productId)
+    if (detail.code !== 200) throw new Error(detail.message)
     
-    const data = detail.data;
-    document.getElementById('prod-name').textContent = data.productName || '—';
-    document.getElementById('prod-status').textContent = data.status || '—';
+    const data = detail.data
+    document.getElementById('prod-name').textContent = data.productName || '—'
+    document.getElementById('prod-status').textContent = data.status || '—'
     document.getElementById('prod-term').textContent = 
-      `${data.minTerm || 0} ~ ${data.maxTerm || 0} 月 (步长: ${data.termStep || 1})`;
-    document.getElementById('prod-promo').textContent = data.promotionDetails || '—';
+      `${data.minTerm || 0} ~ ${data.maxTerm || 0} 月 (步长: ${data.termStep || 1})`
+    document.getElementById('prod-promo').textContent = data.promotionDetails || '—'
     
     // 渲染选项
-    const tbody = document.getElementById('prod-options-table').querySelector('tbody');
-    tbody.innerHTML = '';
+    const tbody = document.getElementById('prod-options-table').querySelector('tbody')
+    tbody.innerHTML = ''
     if (data.options && data.options.length) {
       data.options.forEach(opt => {
-        const tr = document.createElement('tr');
+        const tr = document.createElement('tr')
         tr.innerHTML = `
           <td>¥${opt.loanAmount.toLocaleString()}</td>
           <td>${opt.loanPeriod}</td>
           <td>${(opt.interestRate * 100).toFixed(2)}%</td>
           <td>${opt.repaidType}</td>
-        `;
-        tbody.appendChild(tr);
-      });
+        `
+        tbody.appendChild(tr)
+      })
     } else {
-      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">无方案</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">无方案</td></tr>'
     }
     
-    document.getElementById('product-detail').style.display = 'block';
+    document.getElementById('product-detail').style.display = 'block'
   } catch (error) {
-    console.error('获取产品详情失败:', error);
-    alert('加载产品详情失败');
+    console.error('获取产品详情失败:', error)
+    alert('加载产品详情失败')
   }
   // 渲染选项复选框用于批量删除
-  const checkboxContainer = document.getElementById('option-checkbox-container');
-  checkboxContainer.innerHTML = '';
+  const checkboxContainer = document.getElementById('option-checkbox-container')
+  checkboxContainer.innerHTML = ''
   if (data.options && data.options.length) {
     data.options.forEach(opt => {
-      const label = document.createElement('label');
-      label.style.display = 'block';
+      const label = document.createElement('label')
+      label.style.display = 'block'
       label.innerHTML = `
         <input type="checkbox" value="${opt.optionId}"> 额度: ¥${opt.loanAmount}, 期限: ${opt.loanPeriod}月, 利率: ${(opt.interestRate * 100).toFixed(2)}%, 方式: ${opt.repaidType}
-      `;
-      checkboxContainer.appendChild(label);
+      `
+      checkboxContainer.appendChild(label)
 
       // 单独删除按钮（可加在每行）
-      const row = tbody.querySelector(`tr:nth-child(${opt.index || 1})`);
+      const row = tbody.querySelector(`tr:nth-child(${opt.index || 1})`)
       // 或者在表格中加一列，这里简化：在复选框旁加
-      const delBtn = document.createElement('button');
-      delBtn.textContent = '删除';
-      delBtn.style.marginLeft = '10px';
+      const delBtn = document.createElement('button')
+      delBtn.textContent = '删除'
+      delBtn.style.marginLeft = '10px'
       delBtn.onclick = async () => {
         if (confirm('确定删除该选项？')) {
-          await deleteProductOption(opt.optionId);
-          showProductDetail(productId); // 刷新详情
+          await deleteProductOption(opt.optionId)
+          showProductDetail(productId) // 刷新详情
         }
-      };
-      label.appendChild(delBtn);
-    });
+      }
+      label.appendChild(delBtn)
+    })
   }
 
   // 批量添加选项 - 动态添加行
-  document.querySelectorAll('.add-option-row').forEach(btn => btn.remove()); // 清理旧按钮
-  const batchTableBody = document.querySelector('#batch-option-table tbody');
-  const addRowBtn = batchTableBody.querySelector('button.add-option-row');
-  if (addRowBtn) addRowBtn.remove();
+  document.querySelectorAll('.add-option-row').forEach(btn => btn.remove()) // 清理旧按钮
+  const batchTableBody = document.querySelector('#batch-option-table tbody')
+  const addRowBtn = batchTableBody.querySelector('button.add-option-row')
+  if (addRowBtn) addRowBtn.remove()
 
-  const newRowBtn = document.createElement('button');
-  newRowBtn.textContent = '+';
-  newRowBtn.className = 'add-option-row';
-  newRowBtn.style.marginLeft = '5px';
+  const newRowBtn = document.createElement('button')
+  newRowBtn.textContent = '+'
+  newRowBtn.className = 'add-option-row'
+  newRowBtn.style.marginLeft = '5px'
   newRowBtn.onclick = () => {
-    const newRow = document.createElement('tr');
+    const newRow = document.createElement('tr')
     newRow.innerHTML = `
       <td><input type="number" step="0.01" placeholder="如 10000.00"></td>
       <td><input type="number" placeholder="如 12"></td>
@@ -698,69 +679,69 @@ async function showProductDetail(productId) {
         </select>
       </td>
       <td><button class="add-option-row">+</button></td>
-    `;
-    batchTableBody.appendChild(newRow);
+    `
+    batchTableBody.appendChild(newRow)
     newRow.querySelector('.add-option-row').onclick = () => {
-      const tr = newRow.cloneNode(true);
-      batchTableBody.appendChild(tr);
-      tr.querySelector('.add-option-row').onclick = addRowBtn.onclick;
-    };
-  };
-  batchTableBody.lastElementChild?.querySelector('td:last-child')?.appendChild(newRowBtn);
+      const tr = newRow.cloneNode(true)
+      batchTableBody.appendChild(tr)
+      tr.querySelector('.add-option-row').onclick = addRowBtn.onclick
+    }
+  }
+  batchTableBody.lastElementChild?.querySelector('td:last-child')?.appendChild(newRowBtn)
 
   // 提交批量选项
   document.getElementById('submit-batch-options').onclick = async () => {
-    const rows = batchTableBody.querySelectorAll('tr');
-    const options = [];
+    const rows = batchTableBody.querySelectorAll('tr')
+    const options = []
     rows.forEach(row => {
-      const inputs = row.querySelectorAll('input, select');
+      const inputs = row.querySelectorAll('input, select')
       if (inputs.length >= 4) {
-        const loanAmount = parseFloat(inputs[0].value);
-        const loanPeriod = parseInt(inputs[1].value);
-        const interestRate = parseFloat(inputs[2].value);
-        const repaidType = inputs[3].value;
+        const loanAmount = parseFloat(inputs[0].value)
+        const loanPeriod = parseInt(inputs[1].value)
+        const interestRate = parseFloat(inputs[2].value)
+        const repaidType = inputs[3].value
         if (!isNaN(loanAmount) && !isNaN(loanPeriod) && !isNaN(interestRate)) {
-          options.push({ loanAmount, loanPeriod, interestRate, repaidType });
+          options.push({ loanAmount, loanPeriod, interestRate, repaidType })
         }
       }
-    });
+    })
     if (options.length === 0) {
-      alert('请填写至少一个有效选项');
-      return;
+      alert('请填写至少一个有效选项')
+      return
     }
-    await batchCreateProductOptions(productId, options);
-    showProductDetail(productId); // 刷新
-  };
+    await batchCreateProductOptions(productId, options)
+    showProductDetail(productId) // 刷新
+  }
 
   // 批量删除选项
   document.getElementById('batch-delete-options-btn').onclick = async () => {
-  const checked = checkboxContainer.querySelectorAll('input[type="checkbox"]:checked');
-  const ids = Array.from(checked).map(cb => parseInt(cb.value));
+  const checked = checkboxContainer.querySelectorAll('input[type="checkbox"]:checked')
+  const ids = Array.from(checked).map(cb => parseInt(cb.value))
   if (ids.length === 0) {
-    alert('请选择要删除的选项');
-    return;
+    alert('请选择要删除的选项')
+    return
   }
   if (confirm(`确定删除 ${ids.length} 个选项？`)) {
-    await AdminWeb.API_CLIENT.batchDeleteOptions(ids);
-    showProductDetail(productId);
+    await AdminWeb.API_CLIENT.batchDeleteOptions(ids)
+    showProductDetail(productId)
   }
-};
+}
 
   // 编辑产品信息
   document.getElementById('edit-product-btn').onclick = () => {
-    document.getElementById('edit-product-form').style.display = 'block';
-    document.getElementById('edit-productName').value = data.productName || '';
-    document.getElementById('edit-description').value = data.description || '';
-    document.getElementById('edit-loanUsage').value = data.usage || '';
-    document.getElementById('edit-minTerm').value = data.minTerm || '';
-    document.getElementById('edit-maxTerm').value = data.maxTerm || '';
-    document.getElementById('edit-termStep').value = data.termStep || '';
-    document.getElementById('edit-promotionDetails').value = data.promotionDetails || '';
-  };
+    document.getElementById('edit-product-form').style.display = 'block'
+    document.getElementById('edit-productName').value = data.productName || ''
+    document.getElementById('edit-description').value = data.description || ''
+    document.getElementById('edit-loanUsage').value = data.usage || ''
+    document.getElementById('edit-minTerm').value = data.minTerm || ''
+    document.getElementById('edit-maxTerm').value = data.maxTerm || ''
+    document.getElementById('edit-termStep').value = data.termStep || ''
+    document.getElementById('edit-promotionDetails').value = data.promotionDetails || ''
+  }
 
   document.getElementById('cancel-edit-btn').onclick = () => {
-    document.getElementById('edit-product-form').style.display = 'none';
-  };
+    document.getElementById('edit-product-form').style.display = 'none'
+  }
 
   document.getElementById('confirm-edit-btn').onclick = async () => {
     const updateData = {
@@ -771,28 +752,28 @@ async function showProductDetail(productId) {
       maxTerm: parseInt(document.getElementById('edit-maxTerm').value) || undefined,
       termStep: parseInt(document.getElementById('edit-termStep').value) || undefined,
       promotionDetails: document.getElementById('edit-promotionDetails').value.trim() || undefined
-    };
+    }
     // 过滤空值
-    Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
-    await AdminWeb.API_CLIENT.updateLoanProduct(productId, updateData);
-    document.getElementById('edit-product-form').style.display = 'none';
-    showProductDetail(productId);
-  };
+    Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key])
+    await AdminWeb.API_CLIENT.updateLoanProduct(productId, updateData)
+    document.getElementById('edit-product-form').style.display = 'none'
+    showProductDetail(productId)
+  }
 }
 // 产品列表初始化
 async function initProductList() {
-  if (productListInstance) return;
+  if (productListInstance) return
   
-  let allProducts = [];
+  let allProducts = []
   try {
-    const res = await AdminWeb.API_CLIENT.getAllLoanProducts();
-    if (res.code === 200) allProducts = res.data;
+    const res = await AdminWeb.API_CLIENT.getAllLoanProducts()
+    if (res.code === 200) allProducts = res.data
   } catch (err) {
-    console.error('获取产品列表失败', err);
+    console.error('获取产品列表失败', err)
   }
 
-  const pageSize = 5;
-  const totalPages = Math.ceil(allProducts.length / pageSize);
+  const pageSize = 5
+  const totalPages = Math.ceil(allProducts.length / pageSize)
 
   productListInstance = {
     currentPage: 1,
@@ -800,96 +781,96 @@ async function initProductList() {
     allData: allProducts,
     pageSize: pageSize,
     render: function() {
-      const start = (this.currentPage - 1) * this.pageSize;
-      const pageData = this.allData.slice(start, start + this.pageSize);
-      const tbody = document.getElementById('product-table').querySelector('tbody');
-      tbody.innerHTML = '';
+      const start = (this.currentPage - 1) * this.pageSize
+      const pageData = this.allData.slice(start, start + this.pageSize)
+      const tbody = document.getElementById('product-table').querySelector('tbody')
+      tbody.innerHTML = ''
       
       if (pageData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">暂无产品</td></tr>';
-        return;
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">暂无产品</td></tr>'
+        return
       }
       
       pageData.forEach(prod => {
-        const row = renderProductRow(prod);
-        tbody.appendChild(row);
-      });
+        const row = renderProductRow(prod)
+        tbody.appendChild(row)
+      })
       
       document.getElementById('product-page-info').textContent = 
-        `第 ${this.currentPage} 页，共 ${this.totalPages} 页`;
-      document.getElementById('prev-product-page').disabled = (this.currentPage <= 1);
-      document.getElementById('next-product-page').disabled = (this.currentPage >= this.totalPages);
+        `第 ${this.currentPage} 页，共 ${this.totalPages} 页`
+      document.getElementById('prev-product-page').disabled = (this.currentPage <= 1)
+      document.getElementById('next-product-page').disabled = (this.currentPage >= this.totalPages)
     },
     loadData: function() {
-      this.render();
+      this.render()
     }
-  };
+  }
   
-  productListInstance.render();
+  productListInstance.render()
 }
 // async function initProductList() {
 //   refreshProductList()
 // }
 // // 获取并渲染产品列表（可多次调用）
 // async function refreshProductList() {
-//   let allProducts = [];
+//   let allProducts = []
 //   try {
-//     const res = await AdminWeb.API_CLIENT.getAllLoanProducts();
-//     if (res.code === 200) allProducts = res.data;
+//     const res = await AdminWeb.API_CLIENT.getAllLoanProducts()
+//     if (res.code === 200) allProducts = res.data
 //   } catch (err) {
-//     console.error('获取产品列表失败', err);
+//     console.error('获取产品列表失败', err)
 //     allProducts = [] // 确保即使出错也能清空或保留旧数据
 //   }
 
 //   // 如果是首次初始化，创建实例
 //   if (!productListInstance) {
-//     const pageSize = 5;
-//     const totalPages = Math.ceil(allProducts.length / pageSize);
+//     const pageSize = 5
+//     const totalPages = Math.ceil(allProducts.length / pageSize)
 //     productListInstance = {
 //       currentPage: 1,
 //       totalPages,
 //       allData: all_products,
 //       pageSize,
 //       render: function() { /*...*/ },
-//       loadData: function() { this.render(); }
-//     };
-//     productListInstance.render();
+//       loadData: function() { this.render() }
+//     }
+//     productListInstance.render()
 //   } else {
 //     // 后续刷新：更新数据并重新渲染当前页
-//     productListInstance.allData = allProducts;
-//     productListInstance.totalPages = Math.ceil(allProducts.length / productListInstance.pageSize);
-//     productListInstance.currentPage = Math.min(productListInstance.currentPage, productListInstance.totalPages) || 1;
-//     productListInstance.render(); // 重新渲染
+//     productListInstance.allData = allProducts
+//     productListInstance.totalPages = Math.ceil(allProducts.length / productListInstance.pageSize)
+//     productListInstance.currentPage = Math.min(productListInstance.currentPage, productListInstance.totalPages) || 1
+//     productListInstance.render() // 重新渲染
 //   }
 // }
 // ============== 其他功能函数 ===============
 // 更新单个贷款产品
 async function updateLoanProduct(productId, updateData) {
-    const url = `/api/loan-products/admin/${productId}`;
-    console.log(`[PATCH] 更新产品: ${url}`, '请求体:', updateData);
+    const url = `/api/loan-products/admin/${productId}`
+    console.log(`[PATCH] 更新产品: ${url}`, '请求体:', updateData)
     try {
         const response = await AdminWeb.API_CLIENT.request(url, {
             method: 'PATCH',
             body: JSON.stringify(updateData)
-        });
-        console.log(`✅ [响应] 产品 ${productId} 更新成功:`, response);
-        alert('产品信息更新成功');
-        return response.data;
+        })
+        console.log(`✅ [响应] 产品 ${productId} 更新成功:`, response)
+        alert('产品信息更新成功')
+        return response.data
     } catch (error) {
-        console.error(`❌ [错误] 更新产品 ${productId} 失败:`, error);
-        alert('更新失败');
+        console.error(`❌ [错误] 更新产品 ${productId} 失败:`, error)
+        alert('更新失败')
     }
 }
 // 删除单个贷款产品
 // async function deleteLoanProduct(productId) {
-//   if (!confirm(`确定删除产品 ID=${productId}？`)) return;
+//   if (!confirm(`确定删除产品 ID=${productId}？`)) return
 //   try {
-//     await AdminWeb.API_CLIENT.deleteLoanProduct(productId); 
+//     await AdminWeb.API_CLIENT.deleteLoanProduct(productId) 
 //     alert('删除成功')
 //     initProductList()
 //   } catch (error) {
-//     console.error('删除失败:', error);
-//     alert('删除失败：' + (error.message || '请重试'));
+//     console.error('删除失败:', error)
+//     alert('删除失败：' + (error.message || '请重试'))
 //   }
 // }
 // 上下架单个贷款产品
@@ -910,43 +891,43 @@ async function toggleLoanProductStatus(productId, action) {
 }
 // 批量删除贷款产品
 async function batchDeleteLoanProducts(productIds) {
-    const url = '/api/loan-products/admin/products/batch-delete';
-    const payload = { productIds };
-    console.log(`📡 [POST] 批量删除产品: ${url}`, '请求体:', payload);
+    const url = '/api/loan-products/admin/products/batch-delete'
+    const payload = { productIds }
+    console.log(`📡 [POST] 批量删除产品: ${url}`, '请求体:', payload)
     try {
-        const response = await AdminWeb.API_CLIENT.post(url, payload);
-        console.log(`✅ [响应] 批量删除产品成功:`, response);
-        alert('批量删除成功');
-        return response.data;
+        const response = await AdminWeb.API_CLIENT.post(url, payload)
+        console.log(`✅ [响应] 批量删除产品成功:`, response)
+        alert('批量删除成功')
+        return response.data
     } catch (error) {
-        console.error(`❌ [错误] 批量删除产品失败:`, error);
-        alert('批量删除失败');
+        console.error(`❌ [错误] 批量删除产品失败:`, error)
+        alert('批量删除失败')
     }
 }
 // 批量创建产品选项
 async function batchCreateProductOptions(productId, options) {
-    const url = '/api/loan-products/admin/options/batch-create';
-    const payload = { productId, options };
-    console.log(`[POST] 批量添加选项: ${url}`, '请求体:', payload);
+    const url = '/api/loan-products/admin/options/batch-create'
+    const payload = { productId, options }
+    console.log(`[POST] 批量添加选项: ${url}`, '请求体:', payload)
     try {
-        const response = await AdminWeb.API_CLIENT.post(url, payload);
-        console.log(`✅ [响应] 批量添加选项成功:`, response);
-        return response.data;
+        const response = await AdminWeb.API_CLIENT.post(url, payload)
+        console.log(`✅ [响应] 批量添加选项成功:`, response)
+        return response.data
     } catch (error) {
-        console.error(`❌ [错误] 批量添加选项失败:`, error);
-        alert('添加选项失败');
+        console.error(`❌ [错误] 批量添加选项失败:`, error)
+        alert('添加选项失败')
     }
 }
 // 批量更新产品选项
 async function deleteProductOption(optionId) {
-    const url = `/api/loan-products/admin/options/${optionId}`;
-    console.log(`[DELETE] 删除选项: ${url}`);
+    const url = `/api/loan-products/admin/options/${optionId}`
+    console.log(`[DELETE] 删除选项: ${url}`)
     try {
-        const response = await AdminWeb.API_CLIENT.request(url, { method: 'DELETE' });
-        console.log(`✅ [响应] 选项 ${optionId} 删除成功:`, response);
-        return response;
+        const response = await AdminWeb.API_CLIENT.request(url, { method: 'DELETE' })
+        console.log(`✅ [响应] 选项 ${optionId} 删除成功:`, response)
+        return response
     } catch (error) {
-        console.error(`❌ [错误] 删除选项 ${optionId} 失败:`, error);
+        console.error(`❌ [错误] 删除选项 ${optionId} 失败:`, error)
     }
 }
 
@@ -955,8 +936,8 @@ async function deleteProductOption(optionId) {
 // ==================== 用户管理面板处理 ====================
 // 渲染单行用户
 function renderUserRow(user) {
-  const tr = document.createElement('tr');
-  tr.setAttribute('data-user-id', user.userId);
+  const tr = document.createElement('tr')
+  tr.setAttribute('data-user-id', user.userId)
   
   tr.innerHTML = `
     <td>${user.userId}</td>
@@ -967,7 +948,7 @@ function renderUserRow(user) {
     <td>¥${(user.totalLoanAmount || 0).toLocaleString()}</td>
     <td>¥${(user.totalRepaidAmount || 0).toLocaleString()}</td>
     <td><button id="black-btn">加入黑名单</button></td>
-  `;
+  `
   // 行点击事件：查看详情
   tr.addEventListener('click', () => showUserDetail(user.userId))
   
@@ -987,33 +968,33 @@ function renderUserRow(user) {
     }
   })
 
-  return tr;
+  return tr
 }
 // 初始化用户列表（在 switchToPanel 中调用）
 async function initUserList() {
-  if (userListInstance) return; // 避免重复初始化
+  if (userListInstance) return // 避免重复初始化
   
   const fetchData = async (page, pageSize) => {
-    const response = await AdminWeb.API_CLIENT.getUserStats();
+    const response = await AdminWeb.API_CLIENT.getUserStats()
     if (response.code === 200) {
-      return response.data; // 注意：这个接口返回的是全量，不分页！
+      return response.data // 注意：这个接口返回的是全量，不分页！
     } else {
-      throw new Error(response.message);
+      throw new Error(response.message)
     }
-  };
+  }
 
   // 分页
-  let allUsers = [];
+  let allUsers = []
   try {
-    const res = await AdminWeb.API_CLIENT.getUserStats();
-    if (res.code === 200) allUsers = res.data;
+    const res = await AdminWeb.API_CLIENT.getUserStats()
+    if (res.code === 200) allUsers = res.data
   } catch (err) {
-    console.error('获取用户列表失败', err);
+    console.error('获取用户列表失败', err)
   }
 
   // 自定义分页逻辑
-  const pageSize = 5;
-  const totalPages = Math.ceil(allUsers.length / pageSize);
+  const pageSize = 5
+  const totalPages = Math.ceil(allUsers.length / pageSize)
 
   userListInstance = {
     currentPage: 1,
@@ -1021,33 +1002,33 @@ async function initUserList() {
     allData: allUsers,
     pageSize: pageSize,
     render: function() {
-      const start = (this.currentPage - 1) * this.pageSize;
-      const pageData = this.allData.slice(start, start + this.pageSize);
-      const tbody = document.getElementById('user-table').querySelector('tbody');
-      tbody.innerHTML = '';
+      const start = (this.currentPage - 1) * this.pageSize
+      const pageData = this.allData.slice(start, start + this.pageSize)
+      const tbody = document.getElementById('user-table').querySelector('tbody')
+      tbody.innerHTML = ''
       
       if (pageData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">暂无用户</td></tr>';
-        return;
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">暂无用户</td></tr>'
+        return
       }
       
       pageData.forEach(user => {
-        const row = renderUserRow(user);
-        tbody.appendChild(row);
-      });
+        const row = renderUserRow(user)
+        tbody.appendChild(row)
+      })
       
       // 更新分页信息
       document.getElementById('user-page-info').textContent = 
-        `第 ${this.currentPage} 页，共 ${this.totalPages} 页`;
-      document.getElementById('prev-user-page').disabled = (this.currentPage <= 1);
-      document.getElementById('next-user-page').disabled = (this.currentPage >= this.totalPages);
+        `第 ${this.currentPage} 页，共 ${this.totalPages} 页`
+      document.getElementById('prev-user-page').disabled = (this.currentPage <= 1)
+      document.getElementById('next-user-page').disabled = (this.currentPage >= this.totalPages)
     },
     loadData: function() {
-      this.render();
+      this.render()
     }
-  };
+  }
   
-  userListInstance.render();
+  userListInstance.render()
 }
 // 显示用户详情
 async function showUserDetail(userId) {
@@ -1086,7 +1067,7 @@ async function showUserDetail(userId) {
       const uploaded = userCert[key] != null
       const color = uploaded ? '#27ae60' : '#e74c3c'
       const statusText = uploaded ? '已上传' : '未上传'
-      html += `<div class="material-item"><span>${label}</span><span style="color:${color}">${statusText}</span></div>`
+      html += `<div class="material-item"><span>${label}</span><span style="color:${color};">${statusText}</span></div>`
     }
     materialsContainer.innerHTML = html
     
@@ -1151,34 +1132,34 @@ async function showUserDetail(userId) {
 
 // 通过申请ID获取用户申请详情
 async function fetchApplicationById(applicationId) {
-    const url = `/api/loan-applications/${applicationId}`;
-    console.log(`📡 [GET] 请求申请详情: ${url}`);
+    const url = `/api/loan-applications/${applicationId}`
+    console.log(`📡 [GET] 请求申请详情: ${url}`)
     try {
-        const response = await AdminWeb.API_CLIENT.get(url);
-        console.log(`✅ [响应] 申请 ${applicationId} 详情:`, response);
-        return response.data;
+        const response = await AdminWeb.API_CLIENT.get(url)
+        console.log(`✅ [响应] 申请 ${applicationId} 详情:`, response)
+        return response.data
     } catch (error) {
-        console.error(`❌ [错误] 获取申请 ${applicationId} 失败:`, error);
-        alert('申请详情加载失败');
+        console.error(`❌ [错误] 获取申请 ${applicationId} 失败:`, error)
+        alert('申请详情加载失败')
     }
 }
 // 通过用户ID获取用户所有申请
 async function fetchApplicationsByUser(userId) {
-    const url = `/api/loan-applications/user/${userId}`;
-    console.log(`📡 [GET] 请求用户所有申请: ${url}`);
+    const url = `/api/loan-applications/user/${userId}`
+    console.log(`📡 [GET] 请求用户所有申请: ${url}`)
     try {
-        const response = await AdminWeb.API_CLIENT.get(url);
-        console.log(`✅ [响应] 用户 ${userId} 的所有申请:`, response);
-        return response.data;
+        const response = await AdminWeb.API_CLIENT.get(url)
+        console.log(`✅ [响应] 用户 ${userId} 的所有申请:`, response)
+        return response.data
     } catch (error) {
-        console.error(`❌ [错误] 获取用户 ${userId} 的申请失败:`, error);
-        alert('申请记录加载失败');
+        console.error(`❌ [错误] 获取用户 ${userId} 的申请失败:`, error)
+        alert('申请记录加载失败')
     }
 }
 
 // 初始化黑名单列表
 async function initBlacklist() {
-  if (blacklistInstance) return // 避免重复初始化（建议新建一个 blacklistInstance）
+  if (blacklistInstance) return // 避免重复初始化
 
   let allBlacklist = []
   try {
@@ -1192,8 +1173,8 @@ async function initBlacklist() {
   }
 
   // 分页逻辑（复用 userListInstance 结构，或新建 blacklistInstance）
-  const pageSize = 5;
-  const totalPages = Math.ceil(allBlacklist.length / pageSize);
+  const pageSize = 5
+  const totalPages = Math.ceil(allBlacklist.length / pageSize)
 
   blacklistInstance = {
     currentPage: 1,
@@ -1201,25 +1182,25 @@ async function initBlacklist() {
     allData: allBlacklist,
     pageSize,
     render: function() {
-      const start = (this.currentPage - 1) * this.pageSize;
-      const pageData = this.allData.slice(start, start + this.pageSize);
-      const tbody = document.getElementById('black-user-table').querySelector('tbody'); // 注意：需确认表格 ID
+      const start = (this.currentPage - 1) * this.pageSize
+      const pageData = this.allData.slice(start, start + this.pageSize)
+      const tbody = document.getElementById('black-user-table').querySelector('tbody') // 注意：需确认表格 ID
       tbody.innerHTML = ''
 
       if (pageData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">暂无黑名单用户</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">暂无黑名单用户</td></tr>'
         return
       }
 
       pageData.forEach(item => {
         const row = renderBlacklistRow(item)
         tbody.appendChild(row)
-      });
+      })
 
       // 更新分页信息（需对应黑名单的分页元素 ID）
-      document.getElementById('blacklist-page-info').textContent = `第 ${this.currentPage} 页，共 ${this.totalPages} 页`;
-      document.getElementById('prev-blacklist-page').disabled = (this.currentPage <= 1);
-      document.getElementById('next-blacklist-page').disabled = (this.currentPage >= this.totalPages);
+      document.getElementById('blacklist-page-info').textContent = `第 ${this.currentPage} 页，共 ${this.totalPages} 页`
+      document.getElementById('prev-blacklist-page').disabled = (this.currentPage <= 1)
+      document.getElementById('next-blacklist-page').disabled = (this.currentPage >= this.totalPages)
     },
     loadData: function() {
       this.render()
@@ -1230,8 +1211,8 @@ async function initBlacklist() {
 }
 // 渲染单行黑名单
 function renderBlacklistRow(item) {
-  const tr = document.createElement('tr');
-  tr.setAttribute('data-user-id', item.userId);
+  const tr = document.createElement('tr')
+  tr.setAttribute('data-user-id', item.userId)
   tr.innerHTML = `
     <td>${item.id}</td>
     <td>${item.userId || '—'}</td>
@@ -1244,29 +1225,128 @@ function renderBlacklistRow(item) {
     <td>
       <button class="remove-black-btn" data-user-id="${item.userId}">解除黑名单</button>
     </td>
-  `;
+  `
 
   // 绑定解除黑名单事件
-  const removeBtn = tr.querySelector('.remove-black-btn');
+  const removeBtn = tr.querySelector('.remove-black-btn')
   removeBtn?.addEventListener('click', async (e) => {
-    e.stopPropagation();
+    e.stopPropagation()
     if (confirm(`确定解除用户【${item.userName}】的黑名单？`)) {
       try {
-        await AdminWeb.API_CLIENT.removeFromBlacklist(item.userId);
-        alert('已解除黑名单');
+        await AdminWeb.API_CLIENT.removeFromBlacklist(item.userId)
+        alert('已解除黑名单')
         // 重新加载黑名单列表
-        blacklistInstance = null;
-        initBlacklist();
+        blacklistInstance = null
+        initBlacklist()
       } catch (error) {
-        alert('操作失败：' + error.message);
+        alert('操作失败：' + error.message)
       }
     }
-  });
+  })
 
   // 可选：点击行查看详情
-  tr.addEventListener('click', () => showUserDetail(item.userId));
+  tr.addEventListener('click', () => showBlackUserDetail(item.userId))
 
-  return tr;
+  return tr
+}
+// 显示黑名单用户详情
+async function showBlackUserDetail(userId) {
+  // 显示模态框
+  document.getElementById('black-user-detail').style.display = 'block'
+
+  try {
+    const detail = await AdminWeb.API_CLIENT.getUserDetail(userId)
+    if (detail.code !== 200) throw new Error(detail.message || '获取失败')
+    
+    const user = detail.data.user
+    const userCert = detail.data.userCert||{}
+    const loanApplications = detail.data.loanApplication||{}
+    const orders = detail.data.order||{}
+    // 填充基本信息
+    document.getElementById('user-real-name').textContent = user.userName || '—'
+    document.getElementById('user-phone').textContent = user.phone || '—'
+    document.getElementById('user-register-time').textContent = 
+      user.createTime ? new Date(user.createTime).toLocaleString() : '—'
+        document.getElementById('user-update-time').textContent = 
+      user.updateTime ? new Date(user.updateTime).toLocaleString() : '—'
+    
+    // 认证材料（简化：只显示是否上传）
+    document.getElementById('user-credit-score').textContent = 
+      (userCert.creditScore != null) ? userCert.creditScore : '—'
+    const materialsContainer = document.getElementById('user-materials-container')
+    const materialMap = {
+      idCard: '身份证',
+      bankCardId: '银行卡',
+      workCertId: '工作证明',
+      triCertId: '三证合一',
+      immovableCertId: '不动产证明'
+    }
+    let html = ''
+    for (const [key, label] of Object.entries(materialMap)) {
+      const uploaded = userCert[key] != null
+      const color = uploaded ? '#27ae60' : '#e74c3c'
+      const statusText = uploaded ? '已上传' : '未上传'
+      html += `<div class="material-item"><span>${label}</span><span style="color:${color};">${statusText}</span></div>`
+    }
+    materialsContainer.innerHTML = html
+    
+    // 显示贷款申请
+    if (loanApplications) {
+      const tbody = document.getElementById('application-table').querySelector('tbody')
+      tbody.innerHTML = ''
+      loanApplications.forEach((app, i) => {  
+        const row = document.createElement('tr')
+        const rejectReason = app.rejectReason?.trim() || '—'
+        row.innerHTML = `
+          <td>${i+1}</td>
+          <td>${app.productId}</td>
+          <td>${app.loanAmount}</td>
+          <td>${app.term}</td>
+          <td>${app.repaidType}</td>
+          <td>${app.interestRate}</td>
+          <td>${app.applyTime}</td>
+          <td>${app.status}</td>
+          <td>${rejectReason}</td>
+          <td>${app.reviewTime}</td>
+        `
+        tbody.appendChild(row)
+      })
+    } else {
+      const tbody = document.getElementById('application-table').querySelector('tbody')
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">暂无申请</td></tr>'
+    }
+  
+    // 显示订单列表
+    if (orders) {
+      const tbody = document.getElementById('order-table').querySelector('tbody')
+      tbody.innerHTML = ''
+      orders.forEach((order, id) => {  
+        const row = document.createElement('tr')
+        row.innerHTML = `
+          <td>${id+1}</td>
+          <td>${order.productId}</td>
+          <td>${order.status}</td>
+          <td>${order.repaidAmount}</td>
+          <td>${order.loanAmount}</td>
+          <td>${order.interestRate}</td>
+          <td>${order.repaidType}</td>
+          <td>${order.loanPeriod}</td>
+          <td>${order.term}</td>
+          <td>${order.currentTerm}</td>
+          <td>${order.contract}</td>
+          <td>${order.overdueDays}</td>
+          <td>${order.startTime}</td>
+        `
+        tbody.appendChild(row)
+      })
+    } else {
+      const tbody = document.getElementById('application-table').querySelector('tbody')
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">暂无申请</td></tr>'
+    }
+  } catch (error) {
+    console.error('获取黑名单用户详情失败:', error)
+    alert('加载黑名单用户详情失败')
+  }
 }
 
 // ========================= 可复用部件 ================================
@@ -1282,46 +1362,46 @@ class PaginatedList {
     detailHandler,
     pageSize = 10
   }) {
-    this.container = document.getElementById(containerId);
-    this.tbody = document.getElementById(tableBodyId);
-    this.renderRow = renderRow;
-    this.fetchData = fetchData;
-    this.detailHandler = detailHandler;
-    this.pageSize = pageSize;
-    this.currentPage = 1;
+    this.container = document.getElementById(containerId)
+    this.tbody = document.getElementById(tableBodyId)
+    this.renderRow = renderRow
+    this.fetchData = fetchData
+    this.detailHandler = detailHandler
+    this.pageSize = pageSize
+    this.currentPage = 1
 
-    this.initPagination();
-    this.bindEvents();
-    this.loadData();
+    this.initPagination()
+    this.bindEvents()
+    this.loadData()
   }
 
   async loadData() {
     try {
-      const data = await this.fetchData(this.currentPage, this.pageSize);
-      this.render(data.records || data); // 兼容两种结构
+      const data = await this.fetchData(this.currentPage, this.pageSize)
+      this.render(data.records || data) // 兼容两种结构
     } catch (err) {
-      console.error('加载失败', err);
-      this.tbody.innerHTML = `<tr><td colspan="6">加载失败</td></tr>`;
+      console.error('加载失败', err)
+      this.tbody.innerHTML = `<tr><td colspan="6">加载失败</td></tr>`
     }
   }
 
   render(records) {
-    this.tbody.innerHTML = '';
+    this.tbody.innerHTML = ''
     records.forEach(item => {
-      const row = this.renderRow(item);
-      row.addEventListener('click', () => this.detailHandler(item));
-      this.tbody.appendChild(row);
-    });
+      const row = this.renderRow(item)
+      row.addEventListener('click', () => this.detailHandler(item))
+      this.tbody.appendChild(row)
+    })
   }
 
   initPagination() {
-    this.paginationEl = this.container.querySelector('.pagination');
+    this.paginationEl = this.container.querySelector('.pagination')
     if (!this.paginationEl) {
-      this.paginationEl = document.createElement('div');
-      this.paginationEl.className = 'pagination';
-      this.container.appendChild(this.paginationEl);
+      this.paginationEl = document.createElement('div')
+      this.paginationEl.className = 'pagination'
+      this.container.appendChild(this.paginationEl)
     }
-    this.updatePagination();
+    this.updatePagination()
   }
 
   updatePagination() {
@@ -1329,22 +1409,22 @@ class PaginatedList {
       <button id="prev-page" ${this.currentPage <= 1 ? 'disabled' : ''}>上一页</button>
       <span>第 ${this.currentPage} 页</span>
       <button id="next-page">下一页</button>
-    `;
+    `
   }
 
   bindEvents() {
     this.container.addEventListener('click', (e) => {
       if (e.target.id === 'prev-page' && this.currentPage > 1) {
-        this.currentPage--;
-        this.loadData();
-        this.updatePagination();
+        this.currentPage--
+        this.loadData()
+        this.updatePagination()
       }
       if (e.target.id === 'next-page') {
-        this.currentPage++;
-        this.loadData();
-        this.updatePagination();
+        this.currentPage++
+        this.loadData()
+        this.updatePagination()
       }
-    });
+    })
   }
 }
 
