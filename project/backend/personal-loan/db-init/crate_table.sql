@@ -45,7 +45,8 @@ CREATE TABLE immovables_cert(
 CREATE TABLE user_certification(
     user_id INT PRIMARY KEY COMMENT '用户ID',
     id_card CHAR(18) COMMENT '身份证号',
-    credit_score INT COMMENT '信誉分',
+    credit_score INT DEFAULT 0 COMMENT '信誉分',
+    max_loan_amount DECIMAL(12,2) COMMENT '最高额度',
     bank_card_id CHAR(16) COMMENT '银行卡号',
     work_cert_id INT UNIQUE COMMENT '工作证明',
     tri_cert_id INT UNIQUE COMMENT '第三方证明',

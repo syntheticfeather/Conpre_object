@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import com.example.personal_loan.dto.UserOrderListResponse;
 import com.example.personal_loan.entity.Order;
 
 @Mapper
@@ -66,4 +67,7 @@ public interface OrderMapper {
     // 更新订单状态
     @Update("UPDATE orders SET status = #{status} WHERE id = #{orderId}")
     int updateStatus(@Param("orderId") Long orderId, @Param("status") String status);
+
+    // 获取订单列表
+    List<UserOrderListResponse> selectOrderListByUserId(@Param("userId") Long userId);
 }

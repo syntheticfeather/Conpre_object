@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.personal_loan.dto.AdminGetOrderResponse;
 import com.example.personal_loan.dto.ApiResponse;
 import com.example.personal_loan.dto.UserGetOrderResponse;
+import com.example.personal_loan.dto.UserOrderListResponse;
 import com.example.personal_loan.service.OrderService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,11 +40,11 @@ public class OrderController {
     }
 
     @GetMapping("/my")
-    public ResponseEntity<ApiResponse<List<UserGetOrderResponse>>> getAllUserOrders(
+    public ResponseEntity<ApiResponse<List<UserOrderListResponse>>> getAllUserOrders(
             HttpServletRequest request) {
 
         Long userId = (Long) request.getAttribute("userId");
-        List<UserGetOrderResponse> responses = orderService.userGetAllOrders(userId);
+        List<UserOrderListResponse> responses = orderService.userGetAllOrders(userId);
         log.info("/api/orders/my success called for user {} to get all orders", userId);
         return ResponseEntity.ok(ApiResponse.success(responses));
     }
@@ -60,21 +60,4 @@ public class OrderController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    // ========== 管理员接口 ==========
-
-    @GetMapping("/admin/{orderId}")
-    public ResponseEntity<ApiResponse<AdminGetOrderResponse>> getAdminOrder(
-            @PathVariable Long orderId) {
-        AdminGetOrderResponse response = orderService.adminGetOrder(orderId);
-        log.info("/api/orders/admin/{} success called for admin to get order {} ", orderId, orderId);
-        return ResponseEntity.ok(ApiResponse.success(response));
-    }
-
-    @GetMapping("/admin/user/{userId}")
-    public ResponseEntity<ApiResponse<List<AdminGetOrderResponse>>> getAdminAllOrdersByUser(
-            @PathVariable Long userId) {
-        List<AdminGetOrderResponse> responses = orderService.adminGetAllOrdersByUser(userId);
-        log.info("/api/orders/admin/user/{} success called for admin to get user {} 's orders",userId,  userId);
-        return ResponseEntity.ok(ApiResponse.success(responses));
-    }
 }
