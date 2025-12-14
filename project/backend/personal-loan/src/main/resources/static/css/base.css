@@ -189,15 +189,13 @@ td {
     background-color: transparent;
     cursor: pointer;
 }
+.data-table table button:hover {
+    text-decoration: underline;
+}
 .data-table table {
     table-layout: fixed;        /* 固定表格布局，使得列宽可控 */
     width: 100%;
     border-collapse: collapse;
-}
-/* 表格操作列宽度 */
-#user-table td:last-child,
-#product-table td:last-child {
-  width: 100px;
 }
 
 /*分页按钮*/

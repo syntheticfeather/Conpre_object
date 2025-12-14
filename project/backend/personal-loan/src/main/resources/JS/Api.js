@@ -315,24 +315,24 @@ AdminWeb.API_CLIENT = {
     },
     //删除单个产品
     deleteLoanProduct: function(productId) {
-        return this.delete(`/api/loan-products/admin/products/${productId}`);
+        return this.delete(`/api/loan-products/admin/products/${productId}`)
     },
     //上架产品
     LoanProduct: function(productId) {
-        return this.delete(`/api/loan-products/admin/${productId}/active`);
+        return this.delete(`/api/loan-products/admin/${productId}/active`)
     },
     // 新增贷款产品
     addLoanProduct: function (productData) {
-    const url = AdminWeb.API_CONFIG.baseUrl + AdminWeb.API_CONFIG.endpoints.addLoanProduct;
-    return this.post(url, productData);
+    const url = AdminWeb.API_CONFIG.baseUrl + AdminWeb.API_CONFIG.endpoints.addLoanProduct
+    return this.post(url, productData)
     },
     // 修改产品信息
     updateLoanProduct: function(productId, productData) {
-        return this.patch(`/api/loan-products/admin/products/${productId}`, productData);
+        return this.patch(`/api/loan-products/admin/products/${productId}`, productData)
     },
     //批量删除产品
     batchDeleteLoanProducts: function(ids) {
-        return this.post('/api/loan-products/admin/products/batch-delete', { ids });
+        return this.post('/api/loan-products/admin/products/batch-delete', { ids })
     },
     //批量增加产品选项
     batchCreateOptions: function(productId, options) {

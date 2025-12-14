@@ -245,7 +245,31 @@ body {
     width: 100%;
     height: 350px;
 }
+#product-table tr > td:nth-child(3),
+td:nth-child(6),
+td:nth-child(7) {
+  white-space: nowrap;        /* 不换行 */
+  overflow: hidden;          /* 隐藏溢出内容 */
+  text-overflow: ellipsis;   /* 显示省略号 */
+}
+
 /* 产品详情区域 */
+.prod-base-info {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+
+    border-bottom: 1px dashed #ccc;
+}
+.prod-base-info p {
+    display: flex;
+    justify-content: space-between;
+    width: 400px;
+}
 .product-detail #prod-option-table {
      width:100%; 
      margin-top:10px; 

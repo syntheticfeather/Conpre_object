@@ -247,21 +247,21 @@ function bindEventListeners() {
     const updateStartInput = document.getElementById('update-start-date')
     const updateEndInput = document.getElementById('update-end-date')
 
-    // 点击创建时间输入框 → 清空更新时间
-    [createStartInput, createEndInput].forEach(input => {
-      input.addEventListener('focus', () => {
-        updateStartInput.value = ''
-        updateEndInput.value = ''
-      })
-    })
+    // // 点击创建时间输入框 → 清空更新时间
+    // [createStartInput, createEndInput].forEach(input => {
+    //   input.addEventListener('focus', () => {
+    //     updateStartInput.value = ''
+    //     updateEndInput.value = ''
+    //   })
+    // })
 
-    // 点击更新时间输入框 → 清空创建时间
-    [updateStartInput, updateEndInput].forEach(input => {
-      input.addEventListener('focus', () => {
-        createStartInput.value = ''
-        createEndInput.value = ''
-      })
-      })
+    // // 点击更新时间输入框 → 清空创建时间
+    // [updateStartInput, updateEndInput].forEach(input => {
+    //   input.addEventListener('focus', () => {
+    //     createStartInput.value = ''
+    //     createEndInput.value = ''
+    //   })
+    //   })
 }
 
 // 面板显示切换
@@ -543,17 +543,17 @@ document.getElementById('add-product-btn').addEventListener('click', () => {
 function renderProductRow(product) {
   const tr = document.createElement('tr')
   tr.setAttribute('data-product-id', product.productId)
-  const usage = (product.usage || '').length > 15 ? product.usage.substring(0, 15) + '...' : product.usage
   
   tr.innerHTML = `
     <td>${product.productId}</td>
     <td>${product.productName || '—'}</td>
     <td>${product.description || '—'}</td>
-    <td>${usage}</td>
+    <td>${product.LoanUsage || '—'}</td>
+    <td>${product.status || '—'}</td>
     <td>${product.updateTime ? new Date(product.updateTime).toLocaleString() : '—'}</td>
     <td>${product.createTime ? new Date(product.createTime).toLocaleString() : '—'}</td>
     <td>
-      ${product.status === 'ACTIVE' 
+      ${product.status === '上架中' 
         ? '<button class="toggle-status-btn" data-action="deactive">下架</button>' 
         : '<button class="toggle-status-btn" data-action="active">上架</button>'}
       <button class="delete-prod-btn">删除</button>
@@ -571,22 +571,44 @@ function renderProductRow(product) {
   toggleBtn?.addEventListener('click', async (e) => {
     e.stopPropagation()
     const action = toggleBtn.dataset.action // 'active' 或 'deactive'
-    await toggleLoanProductStatus(product.productId, action)
+    initProductList() // 刷新列表
+    try {
+      await toggleLoanProductStatus(product.productId, action)
+      initProductList() // 刷新列表
+    } catch (error) {
+      alert(`${action === 'active' ? '上架' : '下架'}失败：`+ error.message)
+    }
   })
 
   // 删除按钮
   const deleteBtn = tr.querySelector('.delete-prod-btn')
   deleteBtn?.addEventListener('click', async (e) => {
     e.stopPropagation()
-    if (confirm(`确定删除产品【${product.productName}】？`)) {
     try {
-      await AdminWeb.API_CLIENT.deleteLoanProduct(product.productId) 
-      initProductList() // 刷新列表
-    } catch (error) {
-      alert('删除失败：' + error.message)
-    }
-    }
-  })
+        // 获取待审申请列表
+        const response = await AdminWeb.API_CLIENT.getPendingApplications()
+        const applications = response.data
+
+        // 检查是否存在关联的待审申请（通过产品名称匹配）
+        const hasPending = applications.some(app => 
+          app.productName === product.productName
+        )
+
+        if (hasPending) {
+          alert('该产品存在待审核申请，无法删除！')
+          return
+        }
+
+        // 无待审申请时弹出确认框
+        if (confirm(`确定删除产品【${product.productName}】？`)) {
+          await AdminWeb.API_CLIENT.deleteLoanProduct(product.productId)
+          initProductList()
+        }
+      } catch (error) {
+        console.error('删除检查失败:', error)
+        alert('操作失败：' + (error.message || '网络错误'))
+      }
+    })
 
   return tr
 }
@@ -930,8 +952,6 @@ async function deleteProductOption(optionId) {
         console.error(`❌ [错误] 删除选项 ${optionId} 失败:`, error)
     }
 }
-
-
 
 // ==================== 用户管理面板处理 ====================
 // 渲染单行用户
