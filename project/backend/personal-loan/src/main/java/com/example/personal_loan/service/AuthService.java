@@ -4,20 +4,31 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface AuthService {
 
-    // 银行账户认证
-    void bankAccountAuth(Long userId, String bankCardId); 
+    // // 银行账户认证
+    // void bankAccountAuth(Long userId, String bankCardId); 
     
-    // 身份证号验证
-    void idCardAuth(Long userId, String idCard);
+    // // 身份证号验证
+    // void idCardAuth(Long userId, String idCard);
     
-    // 不动产认证
-    void immovablesAuth(Long userId, MultipartFile propertyFile, MultipartFile carFile); 
+    // // 不动产认证
+    // void immovablesAuth(Long userId, MultipartFile propertyFile, MultipartFile carFile); 
     
-    // 工作认证
-    void occupationAuth(Long userId, MultipartFile employmentFile, MultipartFile salaryFile);
+    // // 工作认证
+    // void occupationAuth(Long userId, MultipartFile employmentFile, MultipartFile salaryFile);
     
-    // 第三方信用分认证
-    void thirdPartyAuth(Long userId, MultipartFile socialSecurityFile, MultipartFile creditReportFile);
+    // // 第三方信用分认证
+    // void thirdPartyAuth(Long userId, MultipartFile socialSecurityFile, MultipartFile creditReportFile);
+
+    void submitAllAuth(
+            Long userId,
+            String idCard,
+            String bankCardId,
+            MultipartFile propertyFile,
+            MultipartFile carFile,
+            MultipartFile employmentFile,
+            MultipartFile salaryFile,
+            MultipartFile socialSecurityFile,
+            MultipartFile creditReportFile); 
     
     // 计算贷款认证分数
     int calScore(Long userId); 

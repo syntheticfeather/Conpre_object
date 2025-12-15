@@ -18,6 +18,8 @@ import com.example.personal_loan.mapper.UserMapper;
 import com.example.personal_loan.mapper.WorkCertMapper;
 import com.example.personal_loan.service.AuthService;
 import com.example.personal_loan.service.LocalFileStorageService;
+import com.example.personal_loan.utils.BankCardUtils;
+import com.example.personal_loan.utils.IdCardUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,125 +49,52 @@ public class AuthServiceImpl implements AuthService{
     private FileStorageConfig fileStorageConfig;
 
 
-    // 不动产认证
     @Override
-    @Transactional
-    public void immovablesAuth(Long userId, MultipartFile propertyFile, MultipartFile carFile){
+    @Transactional(rollbackFor = Exception.class)
+    public void submitAllAuth(
+            Long userId,
+            String idCard,
+            String bankCardId,
+            MultipartFile propertyFile,
+            MultipartFile carFile,
+            MultipartFile employmentFile,
+            MultipartFile salaryFile,
+            MultipartFile socialSecurityFile,
+            MultipartFile creditReportFile) {
 
-        UserCert cert = userCertMapper.selectByUserId(userId);
-
-        // 房产证
-        String propertyPath = null;
-        if (propertyFile != null && !propertyFile.isEmpty()) {
-            propertyPath = fileStorageService.storeFile(propertyFile,"property", userId, fileStorageConfig.getPaths().getPropertyProof());
-        }else{
-            throw new BusinessException(400,"上传的房产证图片为空");
+        // 1. 验证身份证号和银行卡号
+        if (idCard.isBlank() || !IdCardUtils.isValid(idCard)) {
+            throw new BusinessException(400, "身份证号不能为空或格式无效");
         }
-
-        // 车产证明
-        String carPath = null;
-        if (carFile != null && !carFile.isEmpty()) {
-            carPath = fileStorageService.storeFile(carFile,"car", userId, fileStorageConfig.getPaths().getCarProof());
-        }else{
-            throw new BusinessException(400,"上传的车产证图片为空");
-        }
-
-        // 判断是插入还是更新
-        Integer existingImmoCertId = cert.getImmovableCertId();
-
-        if (existingImmoCertId == null) {
-            // 插入新记录
-            ImmovablesCert newImmoCert = new ImmovablesCert();
-            newImmoCert.setPropertyCertPath(propertyPath);
-            newImmoCert.setCarCertPath(carPath);
-
-            // totalValue 后续计算，此处暂不设
-
-            immovablesCertMapper.insert(newImmoCert); 
-
-            // 回填 ID 到主表
-            cert.setImmovableCertId(newImmoCert.getImmovableCertId());
-            userCertMapper.update(cert); // 只更新该字段，更安全
+        if (!bankCardId.isBlank() && BankCardUtils.isValid(bankCardId)) {
         } else {
-            // 更新已有记录
-            ImmovablesCert updateImmoCert = new ImmovablesCert();
-            updateImmoCert.setImmovableCertId(existingImmoCertId);
-            updateImmoCert.setPropertyCertPath(propertyPath);
-            updateImmoCert.setCarCertPath(carPath);
-
-            immovablesCertMapper.update(updateImmoCert);
+            throw new BusinessException(400, "银行卡号不能为空或格式无效");
         }
-    } 
 
-    
-    // 工作认证
-    @Override
-    @Transactional
-    public void occupationAuth(Long userId, MultipartFile employmentFile, MultipartFile salaryFile){
+        // 2. 获取用户认证主记录（user_certification）
+        UserCert userCert = userCertMapper.selectByUserId(userId);
 
-        UserCert cert = userCertMapper.selectByUserId(userId);
-        
-        String empPath = fileStorageService.storeFile(employmentFile, "employment", userId, fileStorageConfig.getPaths().getEmploymentProof());
-        String salPath = fileStorageService.storeFile(salaryFile, "salary", userId, fileStorageConfig.getPaths().getSalaryProof());
+        // 3. 存储所有文件（任一失败则整体回滚）
+        String propertyPath = storeRequiredFile(propertyFile, "property", userId, fileStorageConfig.getPaths().getPropertyProof());
+        String carPath = storeRequiredFile(carFile, "car", userId, fileStorageConfig.getPaths().getCarProof());
+        String empPath = storeRequiredFile(employmentFile, "employment", userId, fileStorageConfig.getPaths().getEmploymentProof());
+        String salPath = storeRequiredFile(salaryFile, "salary", userId, fileStorageConfig.getPaths().getSalaryProof());
+        String ssPath = storeRequiredFile(socialSecurityFile, "social", userId, fileStorageConfig.getPaths().getSocialSecurity());
+        String crPath = storeRequiredFile(creditReportFile, "credit", userId, fileStorageConfig.getPaths().getCreditReport());
 
-        Integer existingWorkCertId = cert.getWorkCertId();
-        if (existingWorkCertId == null) {
-            // 插入新工作证明
-            WorkCert newWorkCert = new WorkCert();
-            newWorkCert.setEmploymentCertPath(empPath);
-            newWorkCert.setSalaryCertPath(salPath);
-            workCertMapper.insert(newWorkCert); // ID 自动回填
+        // 4. 处理不动产认证
+        handleImmovablesCert(userCert, propertyPath, carPath);
 
-            // 更新 work_cert_id
-            cert.setWorkCertId(newWorkCert.getWorkCertId());
-            userCertMapper.update(cert); 
-        } else {
-            // 更新已有记录
-            WorkCert updateWorkCert = new WorkCert();
-            updateWorkCert.setWorkCertId(existingWorkCertId);
-            updateWorkCert.setEmploymentCertPath(empPath);
-            updateWorkCert.setSalaryCertPath(salPath);
-            workCertMapper.update(updateWorkCert);
-        }
-    }
-    
-    // 第三方信用分认证
-    @Override
-    @Transactional
-    public void thirdPartyAuth(Long userId, MultipartFile socialSecurityFile, MultipartFile creditReportFile){
-        UserCert cert = userCertMapper.selectByUserId(userId);
+        // 5. 处理工作认证
+        handleWorkCert(userCert, empPath, salPath);
 
-        String ssPath = fileStorageService.storeFile(socialSecurityFile, "social", userId, fileStorageConfig.getPaths().getSocialSecurity());
-        String crPath = fileStorageService.storeFile(creditReportFile, "credit", userId, fileStorageConfig.getPaths().getCreditReport());
+        // 6. 处理第三方认证
+        handleTriCert(userCert, ssPath, crPath);
 
-        TriCert triCert = new TriCert();
-        triCert.setTriCertId(cert.getTriCertId());
-        triCert.setSocialSecurityPath(ssPath);
-        triCert.setCreditReportPath(crPath);
-
-        if (triCert.getTriCertId() == null) {
-            triCertMapper.insert(triCert);
-            cert.setTriCertId(triCert.getTriCertId());
-            userCertMapper.update(cert);
-        } else {
-            triCertMapper.update(triCert);
-        }
-    }
-
-    // 银行卡
-    @Override
-    public void bankAccountAuth(Long userId, String bankCardId){ 
-        UserCert cert = userCertMapper.selectByUserId(userId);
-        cert.setBankCardId(bankCardId);
-        userCertMapper.update(cert);
-    }
-
-    // 身份证
-    @Override
-    public void idCardAuth(Long userId, String idCard){
-        UserCert cert = userCertMapper.selectByUserId(userId);
-        cert.setIdCard(idCard);
-        userCertMapper.update(cert);
+        // 7. 更新主表中的文本字段
+        userCert.setIdCard(idCard);
+        userCert.setBankCardId(bankCardId);
+        userCertMapper.update(userCert);
     }
 
     // 计算贷款分数
@@ -232,4 +161,58 @@ public class AuthServiceImpl implements AuthService{
     // public void creditAuth(){ 
 
     // }
+
+
+    private String storeRequiredFile(MultipartFile file, String type, Long userId, String basePath) {
+        if (file == null || file.isEmpty()) {
+            return null;
+        }
+        return fileStorageService.storeFile(file, type, userId, basePath);
+    }
+
+    private void handleImmovablesCert(UserCert userCert, String propertyPath, String carPath) {
+        ImmovablesCert cert = new ImmovablesCert();
+        cert.setPropertyCertPath(propertyPath);
+        cert.setCarCertPath(carPath);
+        // total_value 可后续计算，暂不设
+
+        Integer existingId = userCert.getImmovableCertId();
+        if (existingId == null) {
+            immovablesCertMapper.insert(cert);
+            userCert.setImmovableCertId(cert.getImmovableCertId());
+        } else {
+            cert.setImmovableCertId(existingId);
+            immovablesCertMapper.update(cert);
+        }
+    }
+
+    private void handleWorkCert(UserCert userCert, String empPath, String salPath) {
+        WorkCert cert = new WorkCert();
+        cert.setEmploymentCertPath(empPath);
+        cert.setSalaryCertPath(salPath);
+
+        Integer existingId = userCert.getWorkCertId();
+        if (existingId == null) {
+            workCertMapper.insert(cert);
+            userCert.setWorkCertId(cert.getWorkCertId());
+        } else {
+            cert.setWorkCertId(existingId);
+            workCertMapper.update(cert);
+        }
+    }
+
+    private void handleTriCert(UserCert userCert, String ssPath, String crPath) {
+        TriCert cert = new TriCert();
+        cert.setSocialSecurityPath(ssPath);
+        cert.setCreditReportPath(crPath);
+
+        Integer existingId = userCert.getTriCertId();
+        if (existingId == null) {
+            triCertMapper.insert(cert);
+            userCert.setTriCertId(cert.getTriCertId());
+        } else {
+            cert.setTriCertId(existingId);
+            triCertMapper.update(cert);
+        }
+    }
 }

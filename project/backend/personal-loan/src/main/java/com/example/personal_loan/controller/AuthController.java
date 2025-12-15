@@ -49,63 +49,30 @@ public class AuthController {
 
     // --- 认证上传接口 ---
 
-    @PostMapping("/immovables")
-    public ResponseEntity<ApiResponse<Void>> immovablesAuth(
+    @PostMapping("/submit-all")
+    public ResponseEntity<ApiResponse<Void>> submitAllAuth(
             HttpServletRequest request,
-            @RequestPart(required = false) MultipartFile propertyFile,
-            @RequestPart(required = false) MultipartFile carFile) {
+            @RequestParam String idCard,
+            @RequestParam String bankCardId,
+            @RequestPart(required=false) MultipartFile propertyFile,
+            @RequestPart(required=false) MultipartFile carFile,
+            @RequestPart(required=false) MultipartFile employmentFile,
+            @RequestPart(required=false) MultipartFile salaryFile,
+            @RequestPart(required=false) MultipartFile socialSecurityFile,
+            @RequestPart(required=false) MultipartFile creditReportFile) {
 
         Long userId = (Long) request.getAttribute("userId");
-        log.info("/api/auth/immovables success called with user {}",userId);
-        authService.immovablesAuth(userId, propertyFile, carFile);
-        return ResponseEntity.ok(ApiResponse.success((Void) null, "不动产认证提交成功"));
-    }
+        log.info("/api/auth/submit-all success called for user {} to authorize", userId);
 
-    @PostMapping("/work")
-    public ResponseEntity<ApiResponse<Void>> occupationAuth(
-            HttpServletRequest request,
-            @RequestPart MultipartFile employmentFile,
-            @RequestPart MultipartFile salaryFile) {
+        authService.submitAllAuth(
+                userId, idCard, bankCardId,
+                propertyFile, carFile,
+                employmentFile, salaryFile,
+                socialSecurityFile, creditReportFile
+        );
 
-        log.info("/api/auth/work success called");
-        Long userId = (Long) request.getAttribute("userId");
-        authService.occupationAuth(userId, employmentFile, salaryFile);
-        return ResponseEntity.ok(ApiResponse.success((Void) null, "工作认证提交成功"));
-    }
-
-    @PostMapping("/third-party")
-    public ResponseEntity<ApiResponse<Void>> thirdPartyAuth(
-            HttpServletRequest request,
-            @RequestPart MultipartFile socialSecurityFile,
-            @RequestPart MultipartFile creditReportFile) {
-
-        log.info("/api/auth/third-party success called");
-        Long userId = (Long) request.getAttribute("userId");
-        authService.thirdPartyAuth(userId, socialSecurityFile, creditReportFile);
-        return ResponseEntity.ok(ApiResponse.success((Void) null, "第三方认证提交成功"));
-    }
-
-    @PostMapping("/bank-card")
-    public ResponseEntity<ApiResponse<Void>> bankAccountAuth(
-            HttpServletRequest request,
-            @RequestParam String bankCardId) {
-
-        log.info("/api/auth/bank-card success called");
-        Long userId = (Long) request.getAttribute("userId");
-        authService.bankAccountAuth(userId, bankCardId);
-        return ResponseEntity.ok(ApiResponse.success((Void) null, "银行卡认证成功"));
-    }
-
-    @PostMapping("/id-card")
-    public ResponseEntity<ApiResponse<Void>> idCardAuth(
-            HttpServletRequest request,
-            @RequestParam String idCard) {
-
-        log.info("/api/auth/id-card success called");
-        Long userId = (Long) request.getAttribute("userId");
-        authService.idCardAuth(userId, idCard);
-        return ResponseEntity.ok(ApiResponse.success((Void) null, "身份证认证成功"));
-    }
+        return ResponseEntity.ok(ApiResponse.success(null, "全部认证材料提交成功"));
+    }   
 
     /**
      * 计算贷款分数

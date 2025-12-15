@@ -42,6 +42,7 @@ CREATE TABLE immovables_cert(
 )COMMENT '不动产认证表';
 
 
+/* bank_card_id 后续改为 VARCHAR(19) 国内借记卡有16 19位*/
 CREATE TABLE user_certification(
     user_id INT PRIMARY KEY COMMENT '用户ID',
     id_card CHAR(18) COMMENT '身份证号',
