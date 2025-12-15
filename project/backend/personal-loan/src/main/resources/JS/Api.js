@@ -44,7 +44,8 @@ AdminWeb.API_CONFIG = {
         // 人工审核相关接口
         getPendingApprovals: '/api/approval/pending', // 查看代办审核列表
         getApprovalDetail: '/api/approval/detail/{loanApplicationId}',//查看单个代办审核申请详情
-        submitApproval: '/api/approval/check' // 返回审核结果
+        submitApproval: '/api/approval/check', // 返回审核结果
+        getPendedApprovals: '/api/approval/completed' // 查看已提交待审核列表
     },
     storageKeys: {
         token: 'admin_token',
@@ -298,6 +299,12 @@ AdminWeb.API_CLIENT = {
             approved: approved ? "true" : "false"  // 布尔转字符串
         }
         return this.post(url, payload)
+    },
+
+    //获取已审核的贷款申请列表
+    getPendedApplications: function() {
+        const url = AdminWeb.API_CONFIG.baseUrl + AdminWeb.API_CONFIG.endpoints.getPendedApprovals
+        return this.get(url)
     },
 
     // ==================== 贷款管理面板快捷请求 ====================

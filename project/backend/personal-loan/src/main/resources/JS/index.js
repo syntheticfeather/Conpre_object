@@ -8,6 +8,8 @@ const JWT_UTILS = AdminWeb.JWT_UTILS
 let _allPendingApps = [] // 待办申请
 let _currentPage = 1
 const PENDING_PAGE_SIZE = 5
+let _allPendedApps = [] // 已办申请
+const PENDED_PAGE_SIZE = 5
 
 let userListInstance = null     // 用户列表实例
 let blacklistInstance = null    // 黑名单列表实例
@@ -32,6 +34,7 @@ async function init() {
         // 初始化所有数据
         // 加载待审核列表
         await fetchAndRenderPendingList()
+        await fetchAndRenderPendedList()
 
         console.log('初始化完成')
     } catch (error) {
@@ -147,6 +150,11 @@ function bindEventListeners() {
       document.getElementById('user-detail').style.display = 'none'
     })
 
+    // 增加项目按钮绑定
+    document.getElementById('add-product-btn').addEventListener('click', () => {
+      window.location.href = '/addProduct'
+    })
+
     // 搜索产品按钮
     document.getElementById('search-products-btn').addEventListener('click', async () => {
       const createStart = document.getElementById('create-start-date').value
@@ -211,18 +219,6 @@ function bindEventListeners() {
       document.getElementById('search-result-info').style.display = 'none'
       document.getElementById('close-search-result-btn').style.display = 'none'
     })
-
-    // 关闭产品搜索结果按钮
-    document.getElementById('close-search-result-btn').addEventListener('click', () => {
-      // 重新加载全部产品列表
-      if (productListInstance) {
-        productListInstance.currentPage = 1
-        productListInstance.loadData()
-      }
-      // document.getElementById('search-result-info').style.display = 'none'
-      document.getElementById('close-search-result-btn').style.display = 'none'
-      })
-
     
     // 退出登录
     document.getElementById('logout-btn').addEventListener('click', async function() {
@@ -319,6 +315,17 @@ function switchToPanel(target) {
 // 子面板显示切换
 function switchToContent(target) {
   switch (target) {
+    // 待办审核面板
+    case 'pending-apply-content':
+      document.getElementById('pending-apply-content').style.display = 'flex'
+      document.getElementById('pended-apply-content').style.display = 'none'
+      break
+    case 'pended-apply-content':
+      document.getElementById('pending-apply-content').style.display = 'none'
+      document.getElementById('pended-apply-content').style.display = 'flex'
+      break
+    
+      // 用户管理面板
     case 'user-main-content':
       document.getElementById('user-main-content').style.display = 'flex'
       document.getElementById('black-main-content').style.display = 'none'
@@ -329,18 +336,52 @@ function switchToContent(target) {
       // 初始化黑名单列表
       if (!blacklistInstance) initBlacklist()
       break
-    case 'pending-apply-content':
-      document.getElementById('pending-apply-content').style.display = 'flex'
-      document.getElementById('pended-apply-content').style.display = 'none'
+    
+      // 贷款管理面板
+    case 'product-content':
+      document.getElementById('product-content').style.display = 'flex'
+      document.getElementById('product-content1').style.display = 'none'
       break
-    case 'pended-apply-content':
-      document.getElementById('pending-apply-content').style.display = 'none'
-      document.getElementById('pended-apply-content').style.display = 'flex'
+    case 'product-content1':
+      document.getElementById('product-content').style.display = 'none'
+      document.getElementById('product-content1').style.display = 'flex'
       break
-    // case 'product-main-content':
-    //   document.getElementById('user-main-content').style.display = 'none'
-    //   document.getElementById('user-detail').style.display = 'flex'
-    //   break
+
+      // 风控管理面板
+    case 'risk-content1':
+      document.getElementById('risk-content1').style.display = 'none'
+      document.getElementById('risk-content2').style.display = 'flex'
+      break
+    case 'risk-content2':
+      document.getElementById('risk-content1').style.display = 'none'
+      document.getElementById('risk-content2').style.display = 'flex'
+      break
+    case 'collection-content1':
+      document.getElementById('collection-content1').style.display = 'none'
+      document.getElementById('collection-content2').style.display = 'flex'
+      break
+    case 'collection-content2':
+      document.getElementById('collection-content1').style.display = 'none'
+      document.getElementById('collection-content2').style.display = 'flex'
+      break
+
+      // 数据管理面板
+    case 'data-content1':
+      document.getElementById('data-content1').style.display = 'none'
+      document.getElementById('data-content2').style.display = 'flex'
+      break
+    case 'data-content2':
+      document.getElementById('data-content1').style.display = 'none'
+      document.getElementById('data-content2').style.display = 'flex'
+      break
+    case 'system-content1':
+      document.getElementById('system-content1').style.display = 'none'
+      document.getElementById('system-content2').style.display = 'flex'
+      break
+    case 'system-content2':
+      document.getElementById('system-content1').style.display = 'none'
+      document.getElementById('system-content2').style.display = 'flex'
+      break
     default:
       console.error('未知内容:', target)
   }
@@ -531,13 +572,165 @@ async function submitReview(applicationId, isApproved) {
     }
 }
 
+// 加载已审核列表
+async function fetchAndRenderPendedList() {
+  try {
+    const response = await AdminWeb.API_CLIENT.getPendedApplications()
+    if (response.code === 200 && Array.isArray(response.data)) {
+        _allPendedApps = response.data
+        _currentPage = 1
+        renderPendedApplications(_allPendedApps.length)
+    } else {
+        throw new Error(response.message || '数据格式异常')
+    }
+  } catch (error) {
+    console.error('获取已办列表失败:', error)
+    document.getElementById('applied-table').querySelector('tbody').innerHTML = '<tr><td colspan="6" style="text-align:centercolor:#e74c3c;">加载失败</td></tr>'
+    updatePendingPagination(0)
+  }
+}
+
+// 渲染已审核列表分页信息
+function updatePendedPagination(total) {
+  const totalPages = Math.ceil(total / PENDED_PAGE_SIZE) || 1
+  const pageInfoEl = document.getElementById('pended-page-info')
+  if (pageInfoEl) {
+    pageInfoEl.textContent = total === 0 ? '共 0 条' : `第 ${_currentPage} 页，共 ${totalPages} 页`
+  }
+
+  // 控制按钮状态
+  const prevBtn = document.getElementById('prev-pended-page')
+  const nextBtn = document.getElementById('next-pended-page')
+  if (prevBtn) prevBtn.disabled = (_currentPage <= 1)
+  if (nextBtn) nextBtn.disabled = (_currentPage >= totalPages)
+}
+
+// 渲染已审核列表当前页表格
+function renderPendedApplications(total) {
+    const start = (_currentPage - 1) * PENDED_PAGE_SIZE
+    const pageData = _allPendedApps.slice(start, start + PENDED_PAGE_SIZE)
+    const tbody = document.getElementById('applied-table').querySelector('tbody')
+    tbody.innerHTML = '' // 清空旧内容
+
+    if (pageData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">暂无已审核申请</td></tr>'
+        updatePendedPagination(0)
+        return
+    }
+    pageData.forEach(app => {
+        const row = document.createElement('tr')
+        row.setAttribute('data-application-id', app.applicationId)
+
+        // 格式化金额
+        const amount = new Intl.NumberFormat('zh-CN', {
+            style: 'currency',
+            currency: 'CNY',
+            minimumFractionDigits: 2
+        }).format(app.loanAmount)
+
+        // 格式化时间
+        const time = new Date(app.applyTime).toLocaleString('zh-CN')
+
+        row.innerHTML = `
+            <td>${app.userName || '—'}</td>
+            <td>${app.productName || '—'}</td>
+            <td>${app.status || '—'}</td>
+            <td>${amount}</td>
+            <td>${app.loanPeriod || 0} 年</td>
+            <td>${app.term || 0} 期</td>
+            <td>${time}</td>
+        `
+        row.addEventListener('click', () => showPendedApplicationDetail(app.applicationId))
+        tbody.appendChild(row)
+    })
+    updatePendedPagination(total) // 更新分页信息
+}
+
+// 显示已审核申请详情
+async function showPendedApplicationDetail(applicationId) {
+  console.log('显示申请详情:', applicationId)
+  try {
+    const detail = await AdminWeb.API_CLIENT.getApprovalDetail(applicationId)
+    if (detail.code !== 200) throw new Error(detail.message || '获取详情失败')
+
+    const data = detail.data
+    const user = data.user || {}
+    const userCert = data.userCert || {}
+    const app = data.application || {}
+
+    // 显示详情容器
+    document.getElementById('applied-detail').style.display = 'block'
+
+    // 用户信息
+    document.getElementById('realName1').textContent = user.userName || '—'
+    document.getElementById('phone1').textContent = user.phone || '—'
+
+    // 注册时间
+    const registerTime = user.createTime 
+        ? new Date(user.createTime).toLocaleString('zh-CN') 
+        : '—'
+    document.getElementById('register-time1').textContent = registerTime
+
+    // 信誉分
+    document.getElementById('credit-score1').textContent = 
+        (userCert.creditScore != null) ? userCert.creditScore : '—'
+
+    // 渲染认证材料（字段都在 userCert 下）
+    const materialsContainer = document.getElementById('materials-container1')
+    const materialMap = {
+        idCard: '身份证',
+        bankCardId: '银行卡',         
+        workCertId: '工作证明',
+        triCertId: '三证合一',
+        immovableCertId: '不动产证明'
+    }
+
+    let html = ''
+    for (const [key, label] of Object.entries(materialMap)) {
+        const uploaded = userCert[key] != null
+        const color = uploaded ? '#27ae60' : '#e74c3c'
+        const statusText = uploaded ? '已上传' : '未上传'
+        html += `<div class="detail-item"><span>${label}</span><span style="color:${color};">${statusText}</span></div>`
+    }
+    materialsContainer.innerHTML = html
+
+    // 贷款信息
+    // 如果后端不能提供 productName，可暂时显示 productId 或留空
+    document.getElementById('product-name1').textContent = 
+      app.productId != null ? app.productId : '—'
+
+    document.getElementById('loan-amount1').textContent = 
+      app.loanAmount != null 
+        ? `¥${Number(app.loanAmount).toLocaleString('zh-CN')}` 
+        : '—'
+
+    document.getElementById('term-period1').textContent = app.loanPeriod != null ? `${app.loanPeriod}年` : '—'
+    document.getElementById('loan-term1').textContent = app.term != null ? `${app.term}期` : '—'
+
+    // 利率和还款方式
+    const interestRateEl = document.getElementById('interest-rate1')
+    if (interestRateEl) {
+      interestRateEl.textContent = app.interestRate != null ? `${(app.interestRate * 100).toFixed(2)}%` : '—'
+    }
+
+    const repayTypeEl = document.getElementById('repay-type1')
+    if (repayTypeEl) {
+      repayTypeEl.textContent = app.repaidType || '—'
+    }
+
+    // 拒绝原因
+    const rejectReasonEl = document.getElementById('reject-reason1')
+    if (rejectReasonEl) {
+        rejectReasonEl.textContent = app.rejectReason || '暂无'
+    }
+  } catch (error) {
+    console.error('获取申请详情失败:', error)
+    alert('获取详情失败：' + (error.message || '请重试'))
+  }
+}
 /*
 *==================== 贷款项目管理面板处理 ====================
 */ 
-// 增加项目按钮绑定
-document.getElementById('add-product-btn').addEventListener('click', () => {
-  window.location.href = '/addProduct'
-})
 // ============== 贷款项目展示 ===============
 // 贷款产品列表事件绑定
 function renderProductRow(product) {
@@ -612,6 +805,7 @@ function renderProductRow(product) {
 
   return tr
 }
+
 // 显示产品详情
 async function showProductDetail(productId) {
   try {
@@ -626,7 +820,7 @@ async function showProductDetail(productId) {
     document.getElementById('prod-promo').textContent = data.promotionDetails || '—'
     
     // 渲染选项
-    const tbody = document.getElementById('prod-options-table').querySelector('tbody')
+    const tbody = document.getElementById('options-table').querySelector('tbody')
     tbody.innerHTML = ''
     if (data.options && data.options.length) {
       data.options.forEach(opt => {
@@ -636,6 +830,9 @@ async function showProductDetail(productId) {
           <td>${opt.loanPeriod}</td>
           <td>${(opt.interestRate * 100).toFixed(2)}%</td>
           <td>${opt.repaidType}</td>
+          <td>
+            <button class="delete-option-btn" data-option-id="${opt.optionId}">删除</button>
+          </td>
         `
         tbody.appendChild(tr)
       })
@@ -648,47 +845,10 @@ async function showProductDetail(productId) {
     console.error('获取产品详情失败:', error)
     alert('加载产品详情失败')
   }
-  // 渲染选项复选框用于批量删除
-  const checkboxContainer = document.getElementById('option-checkbox-container')
-  checkboxContainer.innerHTML = ''
-  if (data.options && data.options.length) {
-    data.options.forEach(opt => {
-      const label = document.createElement('label')
-      label.style.display = 'block'
-      label.innerHTML = `
-        <input type="checkbox" value="${opt.optionId}"> 额度: ¥${opt.loanAmount}, 期限: ${opt.loanPeriod}月, 利率: ${(opt.interestRate * 100).toFixed(2)}%, 方式: ${opt.repaidType}
-      `
-      checkboxContainer.appendChild(label)
-
-      // 单独删除按钮（可加在每行）
-      const row = tbody.querySelector(`tr:nth-child(${opt.index || 1})`)
-      // 或者在表格中加一列，这里简化：在复选框旁加
-      const delBtn = document.createElement('button')
-      delBtn.textContent = '删除'
-      delBtn.style.marginLeft = '10px'
-      delBtn.onclick = async () => {
-        if (confirm('确定删除该选项？')) {
-          await deleteProductOption(opt.optionId)
-          showProductDetail(productId) // 刷新详情
-        }
-      }
-      label.appendChild(delBtn)
-    })
-  }
-
-  // 批量添加选项 - 动态添加行
-  document.querySelectorAll('.add-option-row').forEach(btn => btn.remove()) // 清理旧按钮
-  const batchTableBody = document.querySelector('#batch-option-table tbody')
-  const addRowBtn = batchTableBody.querySelector('button.add-option-row')
-  if (addRowBtn) addRowBtn.remove()
-
-  const newRowBtn = document.createElement('button')
-  newRowBtn.textContent = '+'
-  newRowBtn.className = 'add-option-row'
-  newRowBtn.style.marginLeft = '5px'
-  newRowBtn.onclick = () => {
+    // 增加单个选项事件绑定
+    document.getElementById('add-option-btn').addEventListener('click', () => {
     const newRow = document.createElement('tr')
-    newRow.innerHTML = `
+    newRow.innerHTML = newRow.innerHTML = `
       <td><input type="number" step="0.01" placeholder="如 10000.00"></td>
       <td><input type="number" placeholder="如 12"></td>
       <td><input type="number" step="0.0001" placeholder="如 0.049"></td>
@@ -700,88 +860,131 @@ async function showProductDetail(productId) {
           <option value="一次性还本付息">一次性还本付息</option>
         </select>
       </td>
-      <td><button class="add-option-row">+</button></td>
-    `
-    batchTableBody.appendChild(newRow)
-    newRow.querySelector('.add-option-row').onclick = () => {
-      const tr = newRow.cloneNode(true)
-      batchTableBody.appendChild(tr)
-      tr.querySelector('.add-option-row').onclick = addRowBtn.onclick
-    }
-  }
-  batchTableBody.lastElementChild?.querySelector('td:last-child')?.appendChild(newRowBtn)
+      <button class="delete-option-btn" data-option-id="${opt.optionId}">删除</button>
+    ` 
+  })
+//   // 渲染选项复选框用于批量删除
+//   const checkboxContainer = document.getElementById('option-checkbox-container')
+//   checkboxContainer.innerHTML = ''
+//   if (data.options && data.options.length) {
+//     data.options.forEach(opt => {
+//       const label = document.createElement('label')
+//       label.style.display = 'block'
+//       label.innerHTML = `
+//         <input type="checkbox" value="${opt.optionId}"> 额度: ¥${opt.loanAmount}, 期限: ${opt.loanPeriod}月, 利率: ${(opt.interestRate * 100).toFixed(2)}%, 方式: ${opt.repaidType}
+//       `
+//       checkboxContainer.appendChild(label)
 
-  // 提交批量选项
-  document.getElementById('submit-batch-options').onclick = async () => {
-    const rows = batchTableBody.querySelectorAll('tr')
-    const options = []
-    rows.forEach(row => {
-      const inputs = row.querySelectorAll('input, select')
-      if (inputs.length >= 4) {
-        const loanAmount = parseFloat(inputs[0].value)
-        const loanPeriod = parseInt(inputs[1].value)
-        const interestRate = parseFloat(inputs[2].value)
-        const repaidType = inputs[3].value
-        if (!isNaN(loanAmount) && !isNaN(loanPeriod) && !isNaN(interestRate)) {
-          options.push({ loanAmount, loanPeriod, interestRate, repaidType })
-        }
-      }
-    })
-    if (options.length === 0) {
-      alert('请填写至少一个有效选项')
-      return
-    }
-    await batchCreateProductOptions(productId, options)
-    showProductDetail(productId) // 刷新
-  }
+//       // 单独删除按钮（可加在每行）
+//       const row = tbody.querySelector(`tr:nth-child(${opt.index || 1})`)
+//       // 或者在表格中加一列，这里简化：在复选框旁加
+//       const delBtn = document.createElement('button')
+//       delBtn.textContent = '删除'
+//       delBtn.style.marginLeft = '10px'
+//       delBtn.onclick = async () => {
+//         if (confirm('确定删除该选项？')) {
+//           await deleteProductOption(opt.optionId)
+//           showProductDetail(productId) // 刷新详情
+//         }
+//       }
+//       label.appendChild(delBtn)
+//     })
+//   }
 
-  // 批量删除选项
-  document.getElementById('batch-delete-options-btn').onclick = async () => {
-  const checked = checkboxContainer.querySelectorAll('input[type="checkbox"]:checked')
-  const ids = Array.from(checked).map(cb => parseInt(cb.value))
-  if (ids.length === 0) {
-    alert('请选择要删除的选项')
-    return
-  }
-  if (confirm(`确定删除 ${ids.length} 个选项？`)) {
-    await AdminWeb.API_CLIENT.batchDeleteOptions(ids)
-    showProductDetail(productId)
-  }
-}
+//   // 批量添加选项 - 动态添加行
+//   document.querySelectorAll('.add-option-row').forEach(btn => btn.remove()) // 清理旧按钮
+//   const batchTableBody = document.querySelector('#batch-option-table tbody')
+//   const addRowBtn = batchTableBody.querySelector('button.add-option-row')
+//   if (addRowBtn) addRowBtn.remove()
+
+//   const newRowBtn = document.createElement('button')
+//   newRowBtn.textContent = '+'
+//   newRowBtn.className = 'add-option-row'
+//   newRowBtn.style.marginLeft = '5px'
+//   newRowBtn.onclick = () => {
+//     const newRow = document.createElement('tr')
+//     
+//     batchTableBody.appendChild(newRow)
+//     newRow.querySelector('.add-option-row').onclick = () => {
+//       const tr = newRow.cloneNode(true)
+//       batchTableBody.appendChild(tr)
+//       tr.querySelector('.add-option-row').onclick = addRowBtn.onclick
+//     }
+//   }
+//   batchTableBody.lastElementChild?.querySelector('td:last-child')?.appendChild(newRowBtn)
+
+//   // 提交批量选项
+//   document.getElementById('submit-batch-options').onclick = async () => {
+//     const rows = batchTableBody.querySelectorAll('tr')
+//     const options = []
+//     rows.forEach(row => {
+//       const inputs = row.querySelectorAll('input, select')
+//       if (inputs.length >= 4) {
+//         const loanAmount = parseFloat(inputs[0].value)
+//         const loanPeriod = parseInt(inputs[1].value)
+//         const interestRate = parseFloat(inputs[2].value)
+//         const repaidType = inputs[3].value
+//         if (!isNaN(loanAmount) && !isNaN(loanPeriod) && !isNaN(interestRate)) {
+//           options.push({ loanAmount, loanPeriod, interestRate, repaidType })
+//         }
+//       }
+//     })
+//     if (options.length === 0) {
+//       alert('请填写至少一个有效选项')
+//       return
+//     }
+//     await batchCreateProductOptions(productId, options)
+//     showProductDetail(productId) // 刷新
+//   }
+
+//   // 批量删除选项
+//   document.getElementById('batch-delete-options-btn').onclick = async () => {
+//   const checked = checkboxContainer.querySelectorAll('input[type="checkbox"]:checked')
+//   const ids = Array.from(checked).map(cb => parseInt(cb.value))
+//   if (ids.length === 0) {
+//     alert('请选择要删除的选项')
+//     return
+//   }
+//   if (confirm(`确定删除 ${ids.length} 个选项？`)) {
+//     await AdminWeb.API_CLIENT.batchDeleteOptions(ids)
+//     showProductDetail(productId)
+//   }
+// }
 
   // 编辑产品信息
-  document.getElementById('edit-product-btn').onclick = () => {
-    document.getElementById('edit-product-form').style.display = 'block'
-    document.getElementById('edit-productName').value = data.productName || ''
-    document.getElementById('edit-description').value = data.description || ''
-    document.getElementById('edit-loanUsage').value = data.usage || ''
-    document.getElementById('edit-minTerm').value = data.minTerm || ''
-    document.getElementById('edit-maxTerm').value = data.maxTerm || ''
-    document.getElementById('edit-termStep').value = data.termStep || ''
-    document.getElementById('edit-promotionDetails').value = data.promotionDetails || ''
-  }
+  // document.getElementById('edit-product-btn').onclick = () => {
+  //   document.getElementById('edit-product-form').style.display = 'block'
+  //   document.getElementById('edit-productName').value = data.productName || ''
+  //   document.getElementById('edit-description').value = data.description || ''
+  //   document.getElementById('edit-loanUsage').value = data.usage || ''
+  //   document.getElementById('edit-minTerm').value = data.minTerm || ''
+  //   document.getElementById('edit-maxTerm').value = data.maxTerm || ''
+  //   document.getElementById('edit-termStep').value = data.termStep || ''
+  //   document.getElementById('edit-promotionDetails').value = data.promotionDetails || ''
+  // }
 
-  document.getElementById('cancel-edit-btn').onclick = () => {
-    document.getElementById('edit-product-form').style.display = 'none'
-  }
+  // document.getElementById('cancel-edit-btn').onclick = () => {
+  //   document.getElementById('edit-product-form').style.display = 'none'
+  // }
 
-  document.getElementById('confirm-edit-btn').onclick = async () => {
-    const updateData = {
-      productName: document.getElementById('edit-productName').value.trim(),
-      description: document.getElementById('edit-description').value.trim(),
-      loanUsage: document.getElementById('edit-loanUsage').value.trim(),
-      minTerm: parseInt(document.getElementById('edit-minTerm').value) || undefined,
-      maxTerm: parseInt(document.getElementById('edit-maxTerm').value) || undefined,
-      termStep: parseInt(document.getElementById('edit-termStep').value) || undefined,
-      promotionDetails: document.getElementById('edit-promotionDetails').value.trim() || undefined
-    }
-    // 过滤空值
-    Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key])
-    await AdminWeb.API_CLIENT.updateLoanProduct(productId, updateData)
-    document.getElementById('edit-product-form').style.display = 'none'
-    showProductDetail(productId)
-  }
+  // document.getElementById('confirm-edit-btn').onclick = async () => {
+  //   const updateData = {
+  //     productName: document.getElementById('edit-productName').value.trim(),
+  //     description: document.getElementById('edit-description').value.trim(),
+  //     loanUsage: document.getElementById('edit-loanUsage').value.trim(),
+  //     minTerm: parseInt(document.getElementById('edit-minTerm').value) || undefined,
+  //     maxTerm: parseInt(document.getElementById('edit-maxTerm').value) || undefined,
+  //     termStep: parseInt(document.getElementById('edit-termStep').value) || undefined,
+  //     promotionDetails: document.getElementById('edit-promotionDetails').value.trim() || undefined
+  //   }
+  //   // 过滤空值
+  //   Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key])
+  //   await AdminWeb.API_CLIENT.updateLoanProduct(productId, updateData)
+  //   document.getElementById('edit-product-form').style.display = 'none'
+  //   showProductDetail(productId)
+  // }
 }
+
 // 产品列表初始化
 async function initProductList() {
   if (productListInstance) return
@@ -831,7 +1034,6 @@ async function initProductList() {
   productListInstance.render()
 }
 
-// ============== 其他功能函数 ===============
 // 更新单个贷款产品
 async function updateLoanProduct(productId, updateData) {
     const url = `/api/loan-products/admin/${productId}`
@@ -865,6 +1067,7 @@ async function toggleLoanProductStatus(productId, action) {
     alert('操作失败：' + (error.message || '请重试'))
   }
 }
+
 // 批量删除贷款产品
 async function batchDeleteLoanProducts(productIds) {
     const url = '/api/loan-products/admin/products/batch-delete'
@@ -880,6 +1083,7 @@ async function batchDeleteLoanProducts(productIds) {
         alert('批量删除失败')
     }
 }
+
 // 批量创建产品选项
 async function batchCreateProductOptions(productId, options) {
     const url = '/api/loan-products/admin/options/batch-create'
@@ -894,6 +1098,7 @@ async function batchCreateProductOptions(productId, options) {
         alert('添加选项失败')
     }
 }
+
 // 批量更新产品选项
 async function deleteProductOption(optionId) {
     const url = `/api/loan-products/admin/options/${optionId}`

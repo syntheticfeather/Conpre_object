@@ -124,7 +124,7 @@ body {
     justify-content: space-between;
 }
 /* 认证信息 */
-#materials-container {
+#materials-container, #materials-container1 {
     width: 320px;
 }
 
@@ -167,7 +167,11 @@ body {
 .btn-danger:hover {
     background-color: #c0392b;
 }
-
+/* 拒绝理由换行处理 */
+#reject-reason1 {
+    white-space: pre-line; /* 保留换行符并自动换行 */
+    word-break: break-word; /* 防止长单词溢出 */
+}
 /************* 贷款管理面板 *************/
 .loan-dashboard {
   display: none;
@@ -324,7 +328,6 @@ td:nth-child(7) {
 /************* 用户管理面板 *************/  
 .user-dashboard .main-content{
     display: flex;
-    flex-direction: column;
 }
 .user-dashboard .main-content .header {
     display: flex;
