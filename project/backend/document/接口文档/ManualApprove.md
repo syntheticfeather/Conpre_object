@@ -70,8 +70,8 @@
             "loanAmount": 30000.00,
             "loanPeriod": 24,
             "term": 6,
-            "applyTime": "2025-12-13 17:52:20",
-            "rejectReason": "无"
+            "status": "已通过",
+            "applyTime": "2025-12-13 17:52:20"
         },
         {
             "applicationId": 45,
@@ -80,8 +80,8 @@
             "loanAmount": 30000.00,
             "loanPeriod": 24,
             "term": 6,
-            "applyTime": "2025-12-13 17:41:37",
-            "rejectReason": "AI审核未通过\n人工审核未通过: 未填写原因"
+            "status": "人工拒绝",
+            "applyTime": "2025-12-13 17:41:37"
         },
         {
             "applicationId": 41,
@@ -90,8 +90,8 @@
             "loanAmount": 30000.00,
             "loanPeriod": 24,
             "term": 6,
-            "applyTime": "2025-12-13 17:38:23",
-            "rejectReason": "AI审核未通过\n人工审核未通过: 认证材料未上传"
+            "status": "人工拒绝",
+            "applyTime": "2025-12-13 17:38:23"
         }
     ],
     "message": "操作成功"
