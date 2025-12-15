@@ -71,3 +71,4 @@ public class RedisUtil {
         return redisTemplate.keys(pattern);
     }
 }
+

@@ -315,6 +315,7 @@ public class UserServiceImpl implements UserService {
             BigDecimal totalLoanAmount = CalculateUtil.getTotalLoanAmount(orders);
 
             // 判断用户有无借贷, 逾期状态
+            // 当成字段存储
             String loanStatus;
             if (orders.isEmpty()) {
                 loanStatus = "无借贷";

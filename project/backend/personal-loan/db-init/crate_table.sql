@@ -165,4 +165,4 @@ INSERT INTO users (user_name, password, phone, role) VALUES
 ('gcc', '$2a$10$tgL5vVw82nDYyqMhiS0BJeYyl.Ar7ox6N6RMEUmggBD1Tvo5Z0FiK', '17777777777', 1),
 ('zff', '$2a$10$60kyX/HezEaHChvKpZB9j.fByPl8is6etEiay0oqusri6zA5/Pl1C', '19999999999', 1),
 ('wt', '$2a$10$ODq7dU6Bvz8Ks9b7mNGt5OLExUV3gmY2wPHXrXICJi0j.pjCfyuYC', '18888888888', 1),
-('qyx', '$2a$10$UDcyeEjze0A3K8pNSzMoFOyoaN.G3/v/ilQpMv2/6J28.6GxvhhTK', '16666666666', 1),
+('qyx', '$2a$10$UDcyeEjze0A3K8pNSzMoFOyoaN.G3/v/ilQpMv2/6J28.6GxvhhTK', '16666666666', 1)

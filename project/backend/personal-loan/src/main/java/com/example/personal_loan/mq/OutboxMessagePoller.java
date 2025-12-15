@@ -32,6 +32,7 @@ public class OutboxMessagePoller {
      * 每 5 秒轮询一次待发送消息
      */
     @Scheduled(fixedDelay = 5000)
+    @Transactional
     public void pollAndSendOutboxMessages() {
 //        log.info("🔎 轮询器开始工作...");
         try {
@@ -55,7 +56,6 @@ public class OutboxMessagePoller {
         return new Message(outbox.getPayload().getBytes(), props);
     }
 
-    @Transactional
     public void sendAndMarkMessage (OutboxMessage message){
         try {
             // 发送消息到 RabbitMQ
@@ -74,3 +74,4 @@ public class OutboxMessagePoller {
         }
     }
 }
+

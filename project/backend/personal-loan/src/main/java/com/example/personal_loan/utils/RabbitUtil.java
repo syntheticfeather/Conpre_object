@@ -22,6 +22,7 @@ public class RabbitUtil {
         rabbitTemplate.convertAndSend(queueName, routingKey,message);
     }
 
+    // 向loan.exchange发送消息
     public void sendToApp(String routingKey ,Object message) {
         rabbitTemplate.convertAndSend(RabbitMQConfig.LOAN_EXCHANGE,routingKey,message);
     }
@@ -35,3 +36,4 @@ public class RabbitUtil {
         return message.getMessageProperties().getDeliveryTag();
     }
 }
+
