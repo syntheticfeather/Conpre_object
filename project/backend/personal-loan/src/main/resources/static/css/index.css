@@ -254,6 +254,18 @@ td:nth-child(7) {
 }
 
 /* 产品详情区域 */
+.header-edit {
+    display: flex;
+    justify-content: right;
+}
+.header-edit > span {
+    margin-right: 460px;
+    font-size: 20px;
+    font-weight: 600;
+}
+.header-edit > button {
+    margin-right: 0px;
+}
 .prod-base-info {
     display: flex;
     justify-content: space-around;
@@ -338,15 +350,6 @@ td:nth-child(7) {
 .user-dashboard .header button:hover {
     background-color: #2a88e6;
 }
-
-/* 用户列表 */
-#user-table #black-btn {
-    color: #474747;
-}
-#user-table #black-btn:hover {
-    text-decoration: underline;
-    color: #000;
-}
 /* 按信誉分查询用户 */
 .credit-search {
     display: flex;
@@ -371,7 +374,87 @@ td:nth-child(7) {
     font-size: 18px;
     line-height: 18px;
 }
+/* 用户列表 */
+#user-table #black-btn {
+    color: #474747;
+}
+#user-table #black-btn:hover {
+    text-decoration: underline;
+    color: #000;
+}
+/* 用户详情页 */
+.user-info {
+    display: flex;
+    justify-content: space-between;
 
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px dashed #ccc;
+}
+#user-info-section1 {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px 10px;
+
+    width: 500px;
+    height: 177px;
+}
+#user-info-section1 p {
+   
+}
+#user-auth-section {
+    width: 500px;
+    padding: 10px 10px;
+}
+#user-auth-section .material-item {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    
+}
+/* 贷款申请列表 */
+#applications {
+    margin-bottom: 15px;
+    border: 1px solid #000;
+    max-height: 350px;
+    overflow-y: auto;
+}
+#application-table {
+    width:100%; 
+    border:1px solid #000;
+    border-collapse:collapse; 
+}
+hr {
+    border: 1px dashed #ccc;
+}
+#application-table thead tr > th {
+    border:1px solid #000; 
+    padding:8px;
+}
+#application-table tbody tr > td {
+    border:1px solid #000; 
+    padding:8px;
+}
+/* 贷款订单列表 */
+#orders {
+    border: 1px solid #000;
+    max-height: 350px;
+    overflow-y: auto;
+}
+#order-table {
+    width:100%; 
+    border:1px solid #000;
+    border-collapse:collapse; 
+}
+#order-table thead tr > th {
+    border:1px solid #000; 
+    padding:8px;
+}
+#order-table tbody tr > td {
+    border:1px solid #000; 
+    padding:8px;
+}
 /* 表格内容样式 */
 .table-body {
     font-size: 15px;
@@ -388,6 +471,9 @@ td:nth-child(7) {
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
 }
+.side-bar .submenu {
+    display: none;
+}
 
 /************* 数据统计与系统管理面板特定样式 *************/
 .data-dashboard {
@@ -396,93 +482,6 @@ td:nth-child(7) {
   gap: 20px;
 }
 
-.card {
-    background-color: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    padding: 20px;
-    transition: transform 0.3s;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-}
-
-.card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #eee;
-}
-
-.card-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--primary-color);
-}
-
-.card-content {
-    min-height: 120px;
-}
-.data-dashboard .main-content {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-
-    width: 100%;
-    height: auto;
-
-    border-radius: 5px;
-    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
-}
-/* 卡片统一样式 */
-.data-dashboard  .card {
-    width: 200px;
-    height: 250px;
-}
-/* 用户数据概览卡片 */
-.feature-item {
-    padding: 8px 0;
-    border-bottom: 1px solid #f0f0f0;
-    display: flex;
-    align-items: center;
-}
-/* 用户数据概览饼图 */
-.data-dashboard  .left .chart-container {
-    position: relative;
-    top: 30%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-
-    width: 450px;
-    height: 225px;
-    margin: 0;
-}
-/* 月度交易量、额度折线图 */
-.data-dashboard .right {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-
-    width: 400px;
-    height: 600px;
-    background-color: #fff;
-
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    transition: transform 0.3s;
-}
-.data-dashboard  .right #line-chart-1 {
-    margin-top: 20px;
-    width: 100%;
-    height: 250px;
-}
-.data-dashboard .right #line-chart-2 {
-    width: 100%;
-    height: 250px;
-}
 
 /************* 弹窗样式 *************/
 /* 弹窗容器基础样式 */

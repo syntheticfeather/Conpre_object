@@ -830,41 +830,7 @@ async function initProductList() {
   
   productListInstance.render()
 }
-// async function initProductList() {
-//   refreshProductList()
-// }
-// // 获取并渲染产品列表（可多次调用）
-// async function refreshProductList() {
-//   let allProducts = []
-//   try {
-//     const res = await AdminWeb.API_CLIENT.getAllLoanProducts()
-//     if (res.code === 200) allProducts = res.data
-//   } catch (err) {
-//     console.error('获取产品列表失败', err)
-//     allProducts = [] // 确保即使出错也能清空或保留旧数据
-//   }
 
-//   // 如果是首次初始化，创建实例
-//   if (!productListInstance) {
-//     const pageSize = 5
-//     const totalPages = Math.ceil(allProducts.length / pageSize)
-//     productListInstance = {
-//       currentPage: 1,
-//       totalPages,
-//       allData: all_products,
-//       pageSize,
-//       render: function() { /*...*/ },
-//       loadData: function() { this.render() }
-//     }
-//     productListInstance.render()
-//   } else {
-//     // 后续刷新：更新数据并重新渲染当前页
-//     productListInstance.allData = allProducts
-//     productListInstance.totalPages = Math.ceil(allProducts.length / productListInstance.pageSize)
-//     productListInstance.currentPage = Math.min(productListInstance.currentPage, productListInstance.totalPages) || 1
-//     productListInstance.render() // 重新渲染
-//   }
-// }
 // ============== 其他功能函数 ===============
 // 更新单个贷款产品
 async function updateLoanProduct(productId, updateData) {
@@ -883,19 +849,7 @@ async function updateLoanProduct(productId, updateData) {
         alert('更新失败')
     }
 }
-// 删除单个贷款产品
-// async function deleteLoanProduct(productId) {
-//   if (!confirm(`确定删除产品 ID=${productId}？`)) return
-//   try {
-//     await AdminWeb.API_CLIENT.deleteLoanProduct(productId) 
-//     alert('删除成功')
-//     initProductList()
-//   } catch (error) {
-//     console.error('删除失败:', error)
-//     alert('删除失败：' + (error.message || '请重试'))
-//   }
-// }
-// 上下架单个贷款产品
+
 async function toggleLoanProductStatus(productId, action) {
   // action: 'active' 或 'deactive'
   const url = `${AdminWeb.API_CONFIG.baseUrl}/api/loan-products/admin/${productId}/${action}`
@@ -1072,17 +1026,18 @@ async function showUserDetail(userId) {
       user.updateTime ? new Date(user.updateTime).toLocaleString() : '—'
     
     // 认证材料（简化：只显示是否上传）
-    document.getElementById('user-credit-score').textContent = 
-      (userCert.creditScore != null) ? userCert.creditScore : '—'
-    const materialsContainer = document.getElementById('user-materials-container')
+    // document.getElementById('user-credit-score').textContent = 
+    //   (userCert.creditScore != null) ? userCert.creditScore : '—'
+    const materialsContainer = document.getElementById('user-auth-section')
     const materialMap = {
+      creditScore: '信誉分',
       idCard: '身份证',
       bankCardId: '银行卡',
       workCertId: '工作证明',
       triCertId: '三证合一',
       immovableCertId: '不动产证明'
     }
-    let html = ''
+    let html = `<div class="material-item"><span>信誉分:</span><span style="color:red;"> ${(userCert.creditScore != null) ? userCert.creditScore : '—  '}</span></div>`
     for (const [key, label] of Object.entries(materialMap)) {
       const uploaded = userCert[key] != null
       const color = uploaded ? '#27ae60' : '#e74c3c'
@@ -1101,14 +1056,14 @@ async function showUserDetail(userId) {
         row.innerHTML = `
           <td>${i+1}</td>
           <td>${app.productId}</td>
-          <td>${app.loanAmount}</td>
-          <td>${app.term}</td>
-          <td>${app.repaidType}</td>
-          <td>${app.interestRate}</td>
-          <td>${app.applyTime}</td>
-          <td>${app.status}</td>
-          <td>${rejectReason}</td>
-          <td>${app.reviewTime}</td>
+          <td>${app.loanAmount || '—'}</td>
+          <td>${app.term || '—'}</td>
+          <td>${app.repaidType || '—'}</td>
+          <td>${app.interestRate || '—'}</td>
+          <td>${app.applyTime || '—'}</td>
+          <td>${app.status || '—'}</td>
+          <td>${rejectReason || '—'}</td>
+          <td>${app.reviewTime || '—'}</td>
         `
         tbody.appendChild(row)
       })
@@ -1126,17 +1081,17 @@ async function showUserDetail(userId) {
         row.innerHTML = `
           <td>${id+1}</td>
           <td>${order.productId}</td>
-          <td>${order.status}</td>
-          <td>${order.repaidAmount}</td>
-          <td>${order.loanAmount}</td>
-          <td>${order.interestRate}</td>
-          <td>${order.repaidType}</td>
-          <td>${order.loanPeriod}</td>
-          <td>${order.term}</td>
-          <td>${order.currentTerm}</td>
-          <td>${order.contract}</td>
-          <td>${order.overdueDays}</td>
-          <td>${order.startTime}</td>
+          <td>${order.status || '—'}</td>
+          <td>${order.repaidAmount || '—'}</td>
+          <td>${order.loanAmount || '—'}</td>
+          <td>${order.interestRate || '—'}</td>
+          <td>${order.repaidType || '—'}</td>
+          <td>${order.loanPeriod || '—'}</td>
+          <td>${order.term || '—'}</td>
+          <td>${order.currentTerm || '—'}</td>
+          <td>${order.contract || '—'}</td>
+          <td>${order.overdueDays || '—'}</td>
+          <td>${order.startTime || '—'}</td>
         `
         tbody.appendChild(row)
       })

@@ -276,53 +276,41 @@
                 </div>
                 <!-- 产品详情模态框 -->
                 <div id="product-detail" class="detail-container">
-                    <h2 class="detail-title1">产品详情</h2>          
+                    <div class="header-edit">
+                        <span class="detail-title1">产品详情</span>
+                        <button id="edit-product-btn" class="btn">编辑</button>  
+                    </div>        
                     <!-- 基本信息 -->
-                    <div class="prod-base-info">
-                        <p><strong>产品名称：</strong><span id="prod-name">—</span></p>
-                        <p><strong>产品描述：</strong><span id="prod-desc">—</span></p>
-                        <p><strong>产品用途：</strong><span id="prod-usage">—</span></p>
-                        <p><strong>期限范围：</strong><span id="prod-term">—</span></p>
-                        <p><strong>促销信息：</strong><span id="prod-promo">—</span></p>
-                        <p><strong>状态：</strong><span id="prod-status">—</span></p>
-                        <p><strong>创建时间：</strong><span id="prod-create-time">—</span></p>
-                        <p><strong>更新时间：</strong><span id="prod-update-time">—</span></p>
-                    </div>
+                    <form action="base-info">
+                        <div class="prod-base-info">
+                            <p><strong>产品名称：</strong><span id="prod-name">—</span></p>
+                            <p><strong>产品描述：</strong><span id="prod-desc">—</span></p>
+                            <p><strong>产品用途：</strong><span id="prod-usage">—</span></p>
+                            <p><strong>期限范围：</strong><span id="prod-term">—</span></p>
+                            <p><strong>促销信息：</strong><span id="prod-promo">—</span></p>
+                            <p><strong>状态：</strong><span id="prod-status">—</span></p>
+                            <p><strong>创建时间：</strong><span id="prod-create-time">—</span></p>
+                            <p><strong>更新时间：</strong><span id="prod-update-time">—</span></p>
+                        </div>
+                    </form>
                     <!-- 可选方案表格 -->
                     <h4 class="detail-title2">贷款可选方案</h4>
-                    <div class="options-content table-content">
-                        <div class="options-table data-table">
-                            <table id="options-table">
-                                <thead>
-                                    <tr>
-                                    <th>额度</th>
-                                    <th>期限(月)</th>
-                                    <th>利率</th>
-                                    <th>还款方式</th>
-                                    <th><button>增加</button></th>
-                                    <th><button>批量删除</button></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- JS填充 -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <!-- 编辑产品信息 -->
-                    <div class="edit-product">
-                        <button id="edit-product-btn">编辑产品信息</button>
-                        <div id="edit-product-form" style="display:none; margin-top:10px; padding:15px; border:1px solid #eee; background:#f9f9f9;">
-                        <label>产品名称：<input id="edit-productName" type="text"></label><br>
-                        <label>描述：<textarea id="edit-description" style="width:100%; height:60px; margin:5px 0;"></textarea></label><br>
-                        <label>用途：<input id="edit-loanUsage" type="text"></label><br>
-                        <label>最短期限（月）：<input id="edit-minTerm" type="number"></label><br>
-                        <label>最长期限（月）：<input id="edit-maxTerm" type="number"></label><br>
-                        <label>期限步长（月）：<input id="edit-termStep" type="number"></label><br>
-                        <label>促销信息：<input id="edit-promotionDetails" type="text"></label><br>
-                        <button id="confirm-edit-btn detail-btn">确认修改</button>
-                        <button id="cancel-edit-btn detail-btn">取消</button>
-                        </div>
+                    <div class="options-table data-table">
+                        <table id="options-table">
+                            <thead>
+                                <tr>
+                                <th>额度</th>
+                                <th>期限(月)</th>
+                                <th>利率</th>
+                                <th>还款方式</th>
+                                <th><button>增加</button></th>
+                                <th><button>批量删除</button></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- JS填充 -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
                 </div>
@@ -425,28 +413,6 @@
             </div>
         </div>
 
-        <!-- 日历弹窗 -->
-        <div id="calendar" class="calendar">
-            <div class="calendar-header">
-                <button class="prev-month">&lt;&lt;</button>
-                <span class="month-year">2025年11月</span>
-                <button class="next-month">&gt;&gt;</button>
-            </div>
-            <div class="calendar-body">
-                <div class="month">
-                    11月
-                    <div class="weekdays">日 一 二 三 四 五 六</div>
-                    <div class="days"></div>
-                </div>
-                <div class="month">
-                    12月
-                    <div class="weekdays">日 一 二 三 四 五 六</div>
-                    <div class="days"></div>
-                </div>
-            </div>
-        </div>
-
-
         <!-- 用户管理面板 -->
         <div class="user-dashboard dashboard" id="user-management-content">
             <!-- 左侧子导航栏 -->
@@ -497,20 +463,25 @@
                 
                 <!-- 用户详情模态框（复用 audition-detail 结构，改 ID） -->
                 <div id="user-detail" class="detail-container">
-                    <div id="user-info-section">
-                        <h3>用户基本信息</h3>
-                        <p><strong>真实姓名：</strong><span id="user-real-name">—</span></p>
-                        <p><strong>手机号：</strong><span id="user-phone">—</span></p>
-                        <p><strong>注册时间：</strong><span id="user-register-time">—</span></p>
-                        <p><strong>最近上线时间：</strong><span id="user-update-time">—</span></p>
-                        <p><strong>信誉分：</strong><span id="user-credit-score" class="credit-score">—</span></p>
+                    <h2 class="detail-title1">用户详情</h2>
+                    <div class="user-info">
+                        <div class="left">
+                            <h3 class="detail-title2">基本信息</h3>
+                            <div id="user-info-section1">
+                                <p><strong>真实姓名：</strong><span id="user-real-name">—</span></p>
+                                <p><strong>手机号：</strong><span id="user-phone">—</span></p>
+                                <p><strong>注册时间：</strong><span id="user-register-time">—</span></p>
+                                <p><strong>最近上线时间：</strong><span id="user-update-time">—</span></p>
+                            </div>
+                        </div>
+                        <div class="right">
+                            <h3 class="detail-title2">认证材料</h3>
+                            <div id="user-auth-section">
+                            </div>
+                        </div>
                     </div>
-                    <div id="user-auth-section">
-                        <h3>认证材料</h3>
-                        <div id="user-materials-container"></div>
-                    </div>
+                    <h3 class="detail-title2" style="margin-bottom: 10px;">贷款申请列表</h3>
                     <div id="applications">
-                        <h3>贷款申请列表</h3>
                         <table id="application-table">
                             <thead>
                                 <tr>
@@ -531,8 +502,9 @@
                             </tbody>
                         </table>
                     </div>
+                    <hr>
+                    <h3 class="detail-title2" style="margin-bottom: 10px;">贷款订单列表</h3>
                     <div id="orders">
-                        <h3>贷款订单列表</h3>
                         <table id="order-table">
                             <thead>
                                 <tr>
@@ -622,20 +594,24 @@
             <!-- 左侧子导航栏 -->
             <div class="side-bar">
                 <ul>
-                    <li class="side-item">
-                        <button class="side-link active side-menu" data-target="risk-content">风险管理</button>
+                    <li class="side-menu">
+                        <button class="side-link active">风险管理</button>
                         <i class="iconfont icon-jinru"></i>
                         <ul class="submenu">
-                            <li><a href="#">风险评估</a></li>
-                            <li><a href="#">风险预警</a></li>
+                            <li><button data-target="risk-content">风险评估</button></li>
+                            <i class="iconfont icon-jinru"></i>
+                            <li><button data-target="risk-content">风险预警</button></li>
+                            <i class="iconfont icon-jinru"></i>
                         </ul>
                     </li>
-                    <li class="side-item">
-                        <button class="side-link side-menu" data-target="collection-content">催收管理</button>
+                    <li class="side-menu">
+                        <button class="side-link" data-target="collection-content">催收管理</button>
                         <i class="iconfont icon-jinru"></i>
                         <ul class="submenu">
-                            <li><a href="#">催收任务</a></li>
-                            <li><a href="#">催收记录</a></li>
+                            <li><button data-target="risk-content">催收任务</button></li>
+                            <i class="iconfont icon-jinru"></i>
+                            <li><button data-target="risk-content">催收记录</button></li>
+                            <i class="iconfont icon-jinru"></i>
                         </ul>
                     </li>
                 </ul>
