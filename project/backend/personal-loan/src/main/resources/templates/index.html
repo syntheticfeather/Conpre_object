@@ -200,6 +200,9 @@
                         <div class="detail-item"><strong>还款方式：</strong><span id="repay-type1"></span></div>
                         <div class="detail-item"><strong>拒绝原因：</strong><pre id="reject-reason1"></pre></div>
                     </div>
+                    <div class="action-button">
+                        <button class="btn btn-primary" onclick="document.getElementById('applied-detail').style.display='none'">关闭</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -211,11 +214,11 @@
             <div class="side-bar">
                 <ul>
                     <li class="side-item" data-target="product-content">
-                        <button class="side-link active">贷款管理</button>
+                        <button class="active">贷款管理</button>
                         <i class="iconfont icon-jinru"></i>
                     </li>
                     <li class="side-item" data-target="product-content1">
-                        <button class="side-link">子功能</button>
+                        <button class=>子功能</button>
                         <i class="iconfont icon-jinru"></i>
                     </li>
                 </ul>
@@ -277,18 +280,26 @@
                         <button id="edit-product-btn" class="btn">编辑</button>  
                     </div>        
                     <!-- 基本信息 -->
-                    <form action="base-info">
-                        <div class="prod-base-info">
-                            <p><strong>产品名称：</strong><span id="prod-name">—</span></p>
-                            <p><strong>产品描述：</strong><span id="prod-desc">—</span></p>
-                            <p><strong>产品用途：</strong><span id="prod-usage">—</span></p>
-                            <p><strong>期限范围：</strong><span id="prod-term">—</span></p>
-                            <p><strong>促销信息：</strong><span id="prod-promo">—</span></p>
-                            <p><strong>状态：</strong><span id="prod-status">—</span></p>
-                            <p><strong>创建时间：</strong><span id="prod-create-time">—</span></p>
-                            <p><strong>更新时间：</strong><span id="prod-update-time">—</span></p>
-                        </div>
-                    </form>
+                    <div class="prod-base-info">
+                        <p><strong>产品名称：</strong><span id="prod-name">—</span></p>
+                        <p><strong>产品描述：</strong><span id="prod-desc">—</span></p>
+                        <p><strong>产品用途：</strong><span id="prod-usage">—</span></p>
+                        <p><strong>期限范围：</strong><span id="prod-term">—</span></p>
+                        <p><strong>促销信息：</strong><span id="prod-promo">—</span></p>
+                        <p><strong>状态：</strong><span id="prod-status">—</span></p>
+                        <p><strong>创建时间：</strong><span id="prod-create-time">—</span></p>
+                        <p><strong>更新时间：</strong><span id="prod-update-time">—</span></p>
+                    </div>
+                    <!-- 编辑表单（初始隐藏） -->
+                    <div id="edit-product-form" style="display:none; margin-top:15px;">
+                        <input id="edit-productName" placeholder="产品名称">
+                        <textarea id="edit-description" placeholder="描述"></textarea>
+                        <textarea id="edit-loanUsage" placeholder="用途"></textarea>
+                        <input id="edit-minTerm" type="number" placeholder="最短期限">
+                        <input id="edit-maxTerm" type="number" placeholder="最长期限">
+                        <input id="edit-termStep" type="number" placeholder="期限步长">
+                        <textarea id="edit-promotionDetails" placeholder="促销文案"></textarea>
+                    </div>
                     <!-- 可选方案表格 -->
                     <h4 class="detail-title2">贷款可选方案</h4>
                     <div class="options-table data-table">
@@ -306,8 +317,16 @@
                                 <!-- JS填充 -->
                             </tbody>
                         </table>
+                        <!-- 确认提交按钮 -->
+                        <div style="margin-top:15px; text-align:center;">
+                            <button id="confirm-changes-btn" class="btn-success">确认修改</button>
+                        </div>
                     </div>
-                    <button>批量删除</button>
+                    <button id="cancel-edit-btn" style="display:none;">取消</button>
+                    
+                    <div class="action-button">
+                        <button class="btn btn-primary" onclick="document.getElementById('product-detail').style.display='none'">关闭</button>
+                    </div>
                 </div>
             </div>
             <!-- 待定子功能内容 -->
@@ -434,7 +453,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="action-buttons">
+                    <div class="action-button">
                         <button class="btn btn-primary" onclick="document.getElementById('user-detail').style.display='none'">关闭</button>
                     </div>
                 </div>
@@ -459,7 +478,7 @@
                                     <th>加入黑名单时间</th>
                                     <th>更新时间</th>
                                     <th>解除时间</th>
-                                    <th colspan="4">快捷操作</th>
+                                    <th>快捷操作</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -476,19 +495,73 @@
                 </div>                
                 <!-- 黑名单用户详情框 -->
                 <div id="black-user-detail" class="detail-container">
-                    <div id="user-info-section">
-                        <h3>用户基本信息</h3>
-                        <p><strong>真实姓名：</strong><span id="user-real-name">—</span></p>
-                        <p><strong>手机号：</strong><span id="user-phone">—</span></p>
-                        <p><strong>注册时间：</strong><span id="user-register-time">—</span></p>
-                        <p><strong>信誉分：</strong><span id="user-credit-score">—</span></p>
+                    <h2 class="detail-title1">用户详情</h2>
+                    <div class="user-info">
+                        <div class="left">
+                            <h3 class="detail-title2">基本信息</h3>
+                            <div id="user-info-section1">
+                                <p><strong>真实姓名：</strong><span id="user-real-name1">—</span></p>
+                                <p><strong>手机号：</strong><span id="user-phone1">—</span></p>
+                                <p><strong>注册时间：</strong><span id="user-register-time1">—</span></p>
+                                <p><strong>最近上线时间：</strong><span id="user-update-time1">—</span></p>
+                            </div>
+                        </div>
+                        <div class="right">
+                            <h3 class="detail-title2">认证材料</h3>
+                            <div id="user-auth-section1">
+                            </div>
+                        </div>
                     </div>
-                    <div id="user-auth-section">
-                        <h3>认证材料</h3>
-                        <div id="user-materials-container"></div>
+                    <h3 class="detail-title2" style="margin-bottom: 10px;">贷款申请列表</h3>
+                    <div id="applications">
+                        <table id="application-table1">
+                            <thead>
+                                <tr>
+                                    <th>序号</th>
+                                    <th>贷款产品</th>
+                                    <th>申请金额（元）</th>
+                                    <th>期限（月）</th>
+                                    <th>还款方式</th>
+                                    <th>年利率</th>
+                                    <th>申请时间</th>
+                                    <th>状态</th>
+                                    <th>拒绝原因</th>
+                                    <th>人工审核时间</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- JS填充 -->
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="action-buttons">
-                        <button class="btn btn-primary" onclick="document.getElementById('user-detail').style.display='none'">关闭</button>
+                    <hr>
+                    <h3 class="detail-title2" style="margin-bottom: 10px;">贷款订单列表</h3>
+                    <div id="orders">
+                        <table id="order-table1">
+                            <thead>
+                                <tr>
+                                    <th>序号</th>
+                                    <th>贷款产品</th>
+                                    <th>状态</th>
+                                    <th>已还金额（元）</th>
+                                    <th>贷款金额（元）</th>
+                                    <th>年利率</th>
+                                    <th>还款方式</th>
+                                    <th>年限</th>
+                                    <th>期数</th>
+                                    <th>已还期数</th>
+                                    <th>合同</th>
+                                    <th>逾期天数</th>
+                                    <th>起始时间</th> 
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- JS填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="action-button">
+                        <button class="btn btn-primary" onclick="document.getElementById('black-user-detail').style.display='none'">关闭</button>
                     </div>
                 </div>
             </div>
@@ -499,28 +572,27 @@
         <div class="risk-dashboard dashboard" id="riskAndCollection-management-content">
             <!-- 左侧子导航栏 -->
             <div class="side-bar">
-                <ul>
-                    <li class="side-menu">
-                        <button class="side-link active">风险管理</button>
-                        <i class="iconfont icon-jinru"></i>
-                        <ul class="submenu">
-                            <li class="side-item active" data-target="risk-content1"><button>风险评估</button></li>
-                            <i class="iconfont icon-jinru"></i>
-                            <li class="side-item" data-target="risk-content2"><button>风险预警</button></li>
-                            <i class="iconfont icon-jinru"></i>
-                        </ul>
-                    </li>
-                    <li class="side-menu">
-                        <button class="side-link" data-target="collection-content">催收管理</button>
-                        <i class="iconfont icon-jinru"></i>
-                        <ul class="submenu">
-                            <li class="side-item active" data-target="collection-content1"><button>催收任务</button></li>
-                            <i class="iconfont icon-jinru"></i>
-                            <li class="side-item" data-target="collection-content2"><button>催收记录</button></li>
-                            <i class="iconfont icon-jinru"></i>
-                        </ul>
-                    </li>
+            <ul class="side-menu-container">
+                <!-- 风险管理 -->
+                <li id="side-menu">
+                <button class="side-link">风险管理</button>
+                <i class="iconfont icon-jinru"></i>
+                <ul class="submenu">
+                    <li class="side-item" data-target="risk-content1"><button>风险评估</button></li>
+                    <li class="side-item" data-target="risk-content2"><button>风险预警</button></li>
                 </ul>
+                </li>
+
+                <!-- 催收管理 -->
+                <li class="side-menu">
+                <button class="side-link">催收管理</button>
+                <i class="iconfont icon-jinru"></i>
+                <ul class="submenu">
+                    <li class="side-item" data-target="collection-content1"><button>催收任务</button></li>
+                    <li class="side-item" data-target="collection-content2"><button>催收记录</button></li>
+                </ul>
+                </li>
+            </ul>
             </div>
             <!-- 右侧内容面板 -->
             <div class="main-content" id="risk-content1">
@@ -542,26 +614,29 @@
         <div class="data-dashboard dashboard" id="dataAndSystem-management-content"> 
             <!-- 左侧子导航栏 -->
             <div class="side-bar">
-                <ul>
+                <ul class="side-menu-container">
+                    <!-- 数据统计 -->
                     <li class="side-menu">
-                        <button class="side-link active" data-target="data-content">数据统计</button>
-                        <i class="iconfont icon-jinru"></i>
-                        <ul class="submenu">
-                            <li class="side-item active" data-target="data-content1"><button>基础数据显示</button></li>
-                            <i class="iconfont icon-jinru"></i>
-                            <li class="side-item" data-target="data-content2"><button>异常数据显示</button></li>
-                            <i class="iconfont icon-jinru"></i>
-                        </ul>
+                        <div class="side-link">
+                            <button>数据统计</button>
+                            <i class="iconfont icon-jinru toggle-icon"></i>
+                        </div>
+                        <div class="menu-list">
+                            <ul class="submenu">
+                                <li class="side-item" data-target="data-content1"><button>基础数据显示</button></li>
+                                <li class="side-item" data-target="data-content2"><button>异常数据显示</button></li>
+                            </ul>
+                        </div>
                     </li>
+
+                    <!-- 系统管理 -->
                     <li class="side-menu">
-                        <button class="side-link" data-target="system-content">系统管理</button>
-                        <i class="iconfont icon-jinru"></i>
+                        <button class="side-link">系统管理</button>
+                        <i class="iconfont icon-jinru toggle-icon"></i>
                         <ul class="submenu">
-                            <li class="side-item active" data-target="system-content1"><button>系统设置</button></li>
-                            <i class="iconfont icon-jinru"></i>
+                            <li class="side-item" data-target="system-content1"><button>系统设置</button></li>
                             <li class="side-item" data-target="system-content2"><button>系统日志</button></li>
-                            <i class="iconfont icon-jinru"></i>
-                        </ul>                        
+                        </ul>
                     </li>
                 </ul>
             </div>

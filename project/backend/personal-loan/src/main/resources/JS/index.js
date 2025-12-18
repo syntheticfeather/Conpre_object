@@ -70,14 +70,19 @@ function bindEventListeners() {
     })
 
     // 侧边栏导航展开/收起
-    document.querySelectorAll('.side-link.side-menu').forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault()
-            const sideItem = this.closest('.side-item')
-            // 切换 expanded 类
-            sideItem.classList.toggle('expanded')
-        })
+    document.querySelectorAll('.side-menu > .side-link').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault()
+        const menu = this.closest('.side-menu')
+        menu.classList.toggle('expanded')
+        // 旋转箭头
+        const icon = menu.querySelector('.toggle-icon')
+        if (icon) {
+          icon.style.transform = menu.classList.contains('expanded') ? 'rotate(90deg)' : 'rotate(0deg)'
+        }
+      })
     })
+
     // 弹窗控制
     document.querySelectorAll('[data-modal]').forEach(button => {
         button.addEventListener('click', function() {
@@ -721,7 +726,8 @@ async function showPendedApplicationDetail(applicationId) {
     // 拒绝原因
     const rejectReasonEl = document.getElementById('reject-reason1')
     if (rejectReasonEl) {
-        rejectReasonEl.textContent = app.rejectReason || '暂无'
+      const reason = app.rejectReason || '—'
+      rejectReasonEl.innerHTML = reason.replace(/\n/g, '<br>')
     }
   } catch (error) {
     console.error('获取申请详情失败:', error)
@@ -806,183 +812,240 @@ function renderProductRow(product) {
   return tr
 }
 
-// 显示产品详情
+// 显示产品详情（仅展示，不含编辑）
 async function showProductDetail(productId) {
   try {
     const detail = await AdminWeb.API_CLIENT.getLoanProductById(productId)
     if (detail.code !== 200) throw new Error(detail.message)
-    
+
     const data = detail.data
+    currentProductId = productId // 全局缓存用于后续操作
+
+    // 渲染基本信息（只读）
     document.getElementById('prod-name').textContent = data.productName || '—'
     document.getElementById('prod-status').textContent = data.status || '—'
     document.getElementById('prod-term').textContent = 
       `${data.minTerm || 0} ~ ${data.maxTerm || 0} 月 (步长: ${data.termStep || 1})`
     document.getElementById('prod-promo').textContent = data.promotionDetails || '—'
-    
-    // 渲染选项
-    const tbody = document.getElementById('options-table').querySelector('tbody')
-    tbody.innerHTML = ''
-    if (data.options && data.options.length) {
-      data.options.forEach(opt => {
-        const tr = document.createElement('tr')
-        tr.innerHTML = `
-          <td>¥${opt.loanAmount.toLocaleString()}</td>
-          <td>${opt.loanPeriod}</td>
-          <td>${(opt.interestRate * 100).toFixed(2)}%</td>
-          <td>${opt.repaidType}</td>
-          <td>
-            <button class="delete-option-btn" data-option-id="${opt.optionId}">删除</button>
-          </td>
-        `
-        tbody.appendChild(tr)
-      })
-    } else {
-      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">无方案</td></tr>'
-    }
-    
+
+    // 渲染可编辑的可选方案（即初始数据）
+    renderEditableOptionTable(data.options || [])
+
+    // 绑定事件（现在只需绑定一次，且无状态切换）
+    bindOptionManagementEvents()
+
+    document.getElementById('edit-product-btn').addEventListener('click', () => {
+      document.getElementById('product-detail').style.display = 'none'
+      showProductEditForm(data)
+    })
+
     document.getElementById('product-detail').style.display = 'block'
   } catch (error) {
     console.error('获取产品详情失败:', error)
-    alert('加载产品详情失败')
+    alert('加载失败')
   }
-    // 增加单个选项事件绑定
-    document.getElementById('add-option-btn').addEventListener('click', () => {
-    const newRow = document.createElement('tr')
-    newRow.innerHTML = newRow.innerHTML = `
-      <td><input type="number" step="0.01" placeholder="如 10000.00"></td>
-      <td><input type="number" placeholder="如 12"></td>
-      <td><input type="number" step="0.0001" placeholder="如 0.049"></td>
-      <td>
-        <select>
-          <option value="等额本息">等额本息</option>
-          <option value="等额本金">等额本金</option>
-          <option value="先息后本">先息后本</option>
-          <option value="一次性还本付息">一次性还本付息</option>
-        </select>
-      </td>
-      <button class="delete-option-btn" data-option-id="${opt.optionId}">删除</button>
-    ` 
+}
+
+//渲染可编辑的可选方案列表
+function renderEditableOptionTable(options) {
+  const tbody = document.getElementById('options-table').querySelector('tbody')
+  tbody.innerHTML = ''
+
+  if (options.length === 0) {
+    // 如果无方案，默认加一行空白（可选）
+    tbody.appendChild(createOptionRow())
+  } else {
+    options.forEach(opt => {
+      tbody.appendChild(createOptionRow(opt))
+    })
+  }
+}
+// 绑定可选方案的独立增删改逻辑
+function bindOptionManagementEvents() {
+  const addBtn = document.getElementById('add-option-btn')
+  const confirmBtn = document.getElementById('confirm-changes-btn')
+  const table = document.getElementById('options-table')
+
+  if (!addBtn || !confirmBtn || !table) return
+
+  // 增加新行
+  addBtn.onclick = () => {
+    const tbody = table.querySelector('tbody')
+    const newRow = createOptionRow()
+    tbody.appendChild(newRow)
+  }
+
+  // 删除行（事件委托）
+  table.onclick = function(e) {
+    if (e.target.classList.contains('delete-option-row')) {
+      const row = e.target.closest('tr')
+      row.remove()
+    }
+  }
+
+  // 确认提交
+  confirmBtn.onclick = async () => {
+    // 在 showProductDetail 中获取数据
+    const originalOptions = window.originalProductOptions || []
+
+    const rows = table.querySelectorAll('tbody tr')
+    const toCreate = []
+    const toDeleteIds = []
+
+    // 收集当前数据
+    const currentData = []
+    for (const row of rows) {
+      const [inpAmt, inpTerm, inpRate, sel] = row.querySelectorAll('input, select')
+      const loanAmount = parseFloat(inpAmt.value)
+      const loanPeriod = parseInt(inpTerm.value)
+      const interestRate = parseFloat(inpRate.value)
+      const repaidType = sel.value?.trim()
+
+      if (isNaN(loanAmount) && isNaN(loanPeriod) && isNaN(interestRate) && !repaidType) {
+        continue // 跳过空白行
+      }
+      if (isNaN(loanAmount) || isNaN(loanPeriod) || isNaN(interestRate) || !repaidType) {
+        alert('请填写完整的方案信息')
+        return
+      }
+
+      currentData.push({
+        id: row.dataset.optionId || null,
+        loanAmount,
+        loanPeriod,
+        interestRate,
+        repaidType
+      })
+    }
+
+    // 当前存在的有效 ID 集合
+    const currentIds = new Set(
+      currentData
+        .filter(d => d.id != null)
+        .map(d => Number(d.id))
+        .filter(n => !isNaN(n) && n > 0)
+    )
+
+    // 找出要删除的（仅限原始数据中 id 有效的项）
+    originalOptions.forEach(opt => {
+      if (opt.id != null) {
+        const idNum = Number(opt.id)
+        if (!isNaN(idNum) && idNum > 0 && !currentIds.has(idNum)) {
+          toDeleteIds.push(opt.id)
+        }
+      }
+    })
+
+    // 过滤待删除 ID
+    const validDeleteIds = toDeleteIds.filter(id => {
+      const n = Number(id)
+      return !isNaN(n) && n > 0 && Number.isInteger(n)
+    })
+
+    // 找出要新增的
+    currentData.forEach(item => {
+      if (!item.id) {
+        toCreate.push({
+          loanAmount: item.loanAmount,
+          loanPeriod: item.loanPeriod,
+          interestRate: item.interestRate,
+          repaidType: item.repaidType
+        })
+      }
+    })
+
+    try {
+      if (validDeleteIds.length > 0) {
+        if (validDeleteIds.length === 1) {
+          await AdminWeb.API_CLIENT.deleteOption(validDeleteIds[0])
+        } else {
+          await AdminWeb.API_CLIENT.batchDeleteOptions(validDeleteIds)
+        }
+      }
+
+      if (toCreate.length > 0) {
+        await AdminWeb.API_CLIENT.batchCreateOptions(currentProductId, toCreate)
+      }
+
+      alert('更新成功')
+      optionEventsInitialized = false // 重置
+      showProductDetail(currentProductId)
+    } catch (err) {
+      console.error('失败:', err)
+      alert('操作失败：' + (err.message || '请重试'))
+      optionEventsInitialized = false
+    }
+  }
+}
+// 渲染可编辑的可选方案行
+function renderProductOptions(options) {
+  const tbody = document.getElementById('prod-option-table').querySelector('tbody')
+  tbody.innerHTML = ''
+
+  if (!options || options.length === 0) {
+    // 默认空行
+    addOptionRow(tbody)
+    return
+  }
+
+  options.forEach(opt => {
+    const row = createOptionRow(opt)
+    tbody.appendChild(row)
   })
-//   // 渲染选项复选框用于批量删除
-//   const checkboxContainer = document.getElementById('option-checkbox-container')
-//   checkboxContainer.innerHTML = ''
-//   if (data.options && data.options.length) {
-//     data.options.forEach(opt => {
-//       const label = document.createElement('label')
-//       label.style.display = 'block'
-//       label.innerHTML = `
-//         <input type="checkbox" value="${opt.optionId}"> 额度: ¥${opt.loanAmount}, 期限: ${opt.loanPeriod}月, 利率: ${(opt.interestRate * 100).toFixed(2)}%, 方式: ${opt.repaidType}
-//       `
-//       checkboxContainer.appendChild(label)
+}
+// 创建可编辑的可选方案行
+function createOptionRow(opt = {}){
+  // 原始值（用于 placeholder）
+  const origAmount = opt.loanAmount != null ? opt.loanAmount : ''
+  const origPeriod = opt.loanPeriod != null ? opt.loanPeriod : ''
+  const origRate = opt.interestRate != null ? opt.interestRate : ''
+  const origRepay = opt.repaidType || '等额本息'
+  const placeholderRate = isNaN(origRate) 
+      ? "如 0.05" 
+      : (origRate * 100).toFixed(2)
 
-//       // 单独删除按钮（可加在每行）
-//       const row = tbody.querySelector(`tr:nth-child(${opt.index || 1})`)
-//       // 或者在表格中加一列，这里简化：在复选框旁加
-//       const delBtn = document.createElement('button')
-//       delBtn.textContent = '删除'
-//       delBtn.style.marginLeft = '10px'
-//       delBtn.onclick = async () => {
-//         if (confirm('确定删除该选项？')) {
-//           await deleteProductOption(opt.optionId)
-//           showProductDetail(productId) // 刷新详情
-//         }
-//       }
-//       label.appendChild(delBtn)
-//     })
-//   }
+  const tr = document.createElement('tr')
+  tr.dataset.optionId = opt.id || ''
 
-//   // 批量添加选项 - 动态添加行
-//   document.querySelectorAll('.add-option-row').forEach(btn => btn.remove()) // 清理旧按钮
-//   const batchTableBody = document.querySelector('#batch-option-table tbody')
-//   const addRowBtn = batchTableBody.querySelector('button.add-option-row')
-//   if (addRowBtn) addRowBtn.remove()
-
-//   const newRowBtn = document.createElement('button')
-//   newRowBtn.textContent = '+'
-//   newRowBtn.className = 'add-option-row'
-//   newRowBtn.style.marginLeft = '5px'
-//   newRowBtn.onclick = () => {
-//     const newRow = document.createElement('tr')
-//     
-//     batchTableBody.appendChild(newRow)
-//     newRow.querySelector('.add-option-row').onclick = () => {
-//       const tr = newRow.cloneNode(true)
-//       batchTableBody.appendChild(tr)
-//       tr.querySelector('.add-option-row').onclick = addRowBtn.onclick
-//     }
-//   }
-//   batchTableBody.lastElementChild?.querySelector('td:last-child')?.appendChild(newRowBtn)
-
-//   // 提交批量选项
-//   document.getElementById('submit-batch-options').onclick = async () => {
-//     const rows = batchTableBody.querySelectorAll('tr')
-//     const options = []
-//     rows.forEach(row => {
-//       const inputs = row.querySelectorAll('input, select')
-//       if (inputs.length >= 4) {
-//         const loanAmount = parseFloat(inputs[0].value)
-//         const loanPeriod = parseInt(inputs[1].value)
-//         const interestRate = parseFloat(inputs[2].value)
-//         const repaidType = inputs[3].value
-//         if (!isNaN(loanAmount) && !isNaN(loanPeriod) && !isNaN(interestRate)) {
-//           options.push({ loanAmount, loanPeriod, interestRate, repaidType })
-//         }
-//       }
-//     })
-//     if (options.length === 0) {
-//       alert('请填写至少一个有效选项')
-//       return
-//     }
-//     await batchCreateProductOptions(productId, options)
-//     showProductDetail(productId) // 刷新
-//   }
-
-//   // 批量删除选项
-//   document.getElementById('batch-delete-options-btn').onclick = async () => {
-//   const checked = checkboxContainer.querySelectorAll('input[type="checkbox"]:checked')
-//   const ids = Array.from(checked).map(cb => parseInt(cb.value))
-//   if (ids.length === 0) {
-//     alert('请选择要删除的选项')
-//     return
-//   }
-//   if (confirm(`确定删除 ${ids.length} 个选项？`)) {
-//     await AdminWeb.API_CLIENT.batchDeleteOptions(ids)
-//     showProductDetail(productId)
-//   }
-// }
-
-  // 编辑产品信息
-  // document.getElementById('edit-product-btn').onclick = () => {
-  //   document.getElementById('edit-product-form').style.display = 'block'
-  //   document.getElementById('edit-productName').value = data.productName || ''
-  //   document.getElementById('edit-description').value = data.description || ''
-  //   document.getElementById('edit-loanUsage').value = data.usage || ''
-  //   document.getElementById('edit-minTerm').value = data.minTerm || ''
-  //   document.getElementById('edit-maxTerm').value = data.maxTerm || ''
-  //   document.getElementById('edit-termStep').value = data.termStep || ''
-  //   document.getElementById('edit-promotionDetails').value = data.promotionDetails || ''
-  // }
-
-  // document.getElementById('cancel-edit-btn').onclick = () => {
-  //   document.getElementById('edit-product-form').style.display = 'none'
-  // }
-
-  // document.getElementById('confirm-edit-btn').onclick = async () => {
-  //   const updateData = {
-  //     productName: document.getElementById('edit-productName').value.trim(),
-  //     description: document.getElementById('edit-description').value.trim(),
-  //     loanUsage: document.getElementById('edit-loanUsage').value.trim(),
-  //     minTerm: parseInt(document.getElementById('edit-minTerm').value) || undefined,
-  //     maxTerm: parseInt(document.getElementById('edit-maxTerm').value) || undefined,
-  //     termStep: parseInt(document.getElementById('edit-termStep').value) || undefined,
-  //     promotionDetails: document.getElementById('edit-promotionDetails').value.trim() || undefined
-  //   }
-  //   // 过滤空值
-  //   Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key])
-  //   await AdminWeb.API_CLIENT.updateLoanProduct(productId, updateData)
-  //   document.getElementById('edit-product-form').style.display = 'none'
-  //   showProductDetail(productId)
-  // }
+  tr.innerHTML = `
+    <td>
+      <input 
+        type="number" 
+        step="0.01" 
+        placeholder="${origAmount.toLocaleString() || "如 10000"}" 
+        value="${opt.loanAmount || ''}" 
+      />
+    </td>
+    <td>
+      <input 
+        type="number" 
+        placeholder="${origPeriod||"如 12"}" 
+        value="${opt.loanPeriod || ''}" 
+      />
+    </td>
+    <td>
+      <input 
+        type="number" 
+        step="0.0001" 
+        placeholder="${placeholderRate}%"
+        value="${opt.interestRate || ''}" 
+      />
+    </td>
+    <td>
+      <select>
+        <option value="等额本息" ${opt.repaidType === '等额本息' ? 'selected' : ''}>等额本息</option>
+        <option value="等额本金" ${opt.repaidType === '等额本金' ? 'selected' : ''}>等额本金</option>
+        <option value="先息后本" ${opt.repaidType === '先息后本' ? 'selected' : ''}>先息后本</option>
+        <option value="一次性还本付息" ${opt.repaidType === '一次性还本付息' ? 'selected' : ''}>一次性还本付息</option>
+      </select>
+    </td>
+    <td><button class="delete-option-row">删除</button></td>
+  `
+  return tr
+}
+function addOptionRow(tbody) {
+  const row = createOptionRow()
+  tbody.appendChild(row)
 }
 
 // 产品列表初始化
@@ -1033,7 +1096,6 @@ async function initProductList() {
   
   productListInstance.render()
 }
-
 // 更新单个贷款产品
 async function updateLoanProduct(productId, updateData) {
     const url = `/api/loan-products/admin/${productId}`
@@ -1051,7 +1113,7 @@ async function updateLoanProduct(productId, updateData) {
         alert('更新失败')
     }
 }
-
+// 切换产品状态（上架/下架）
 async function toggleLoanProductStatus(productId, action) {
   // action: 'active' 或 'deactive'
   const url = `${AdminWeb.API_CONFIG.baseUrl}/api/loan-products/admin/${productId}/${action}`
@@ -1068,49 +1130,6 @@ async function toggleLoanProductStatus(productId, action) {
   }
 }
 
-// 批量删除贷款产品
-async function batchDeleteLoanProducts(productIds) {
-    const url = '/api/loan-products/admin/products/batch-delete'
-    const payload = { productIds }
-    console.log(`📡 [POST] 批量删除产品: ${url}`, '请求体:', payload)
-    try {
-        const response = await AdminWeb.API_CLIENT.post(url, payload)
-        console.log(`✅ [响应] 批量删除产品成功:`, response)
-        alert('批量删除成功')
-        return response.data
-    } catch (error) {
-        console.error(`❌ [错误] 批量删除产品失败:`, error)
-        alert('批量删除失败')
-    }
-}
-
-// 批量创建产品选项
-async function batchCreateProductOptions(productId, options) {
-    const url = '/api/loan-products/admin/options/batch-create'
-    const payload = { productId, options }
-    console.log(`[POST] 批量添加选项: ${url}`, '请求体:', payload)
-    try {
-        const response = await AdminWeb.API_CLIENT.post(url, payload)
-        console.log(`✅ [响应] 批量添加选项成功:`, response)
-        return response.data
-    } catch (error) {
-        console.error(`❌ [错误] 批量添加选项失败:`, error)
-        alert('添加选项失败')
-    }
-}
-
-// 批量更新产品选项
-async function deleteProductOption(optionId) {
-    const url = `/api/loan-products/admin/options/${optionId}`
-    console.log(`[DELETE] 删除选项: ${url}`)
-    try {
-        const response = await AdminWeb.API_CLIENT.request(url, { method: 'DELETE' })
-        console.log(`✅ [响应] 选项 ${optionId} 删除成功:`, response)
-        return response
-    } catch (error) {
-        console.error(`❌ [错误] 删除选项 ${optionId} 失败:`, error)
-    }
-}
 
 // ==================== 用户管理面板处理 ====================
 // 渲染单行用户
@@ -1156,7 +1175,7 @@ async function initUserList() {
   const fetchData = async (page, pageSize) => {
     const response = await AdminWeb.API_CLIENT.getUserStats()
     if (response.code === 200) {
-      return response.data // 注意：这个接口返回的是全量，不分页！
+      return response.data // 接口返回的是全量
     } else {
       throw new Error(response.message)
     }
@@ -1206,7 +1225,6 @@ async function initUserList() {
       this.render()
     }
   }
-  
   userListInstance.render()
 }
 // 显示用户详情
@@ -1368,7 +1386,7 @@ async function initBlacklist() {
       tbody.innerHTML = ''
 
       if (pageData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">暂无黑名单用户</td></tr>'
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">暂无黑名单用户</td></tr>'
         return
       }
 
@@ -1378,9 +1396,14 @@ async function initBlacklist() {
       })
 
       // 更新分页信息（需对应黑名单的分页元素 ID）
-      document.getElementById('blacklist-page-info').textContent = `第 ${this.currentPage} 页，共 ${this.totalPages} 页`
-      document.getElementById('prev-blacklist-page').disabled = (this.currentPage <= 1)
-      document.getElementById('next-blacklist-page').disabled = (this.currentPage >= this.totalPages)
+      const pageInfoEl = document.getElementById('blacklist-page-info')
+      if (pageInfoEl) {
+        pageInfoEl.textContent = `第 ${this.currentPage} 页，共 ${this.totalPages} 页`
+      }
+      const prevBtn = document.getElementById('prev-blacklist-page')
+      const nextBtn = document.getElementById('next-blacklist-page')
+      if (prevBtn) prevBtn.disabled = this.currentPage <= 1
+      if (nextBtn) nextBtn.disabled = this.currentPage >= this.totalPages
     },
     loadData: function() {
       this.render()
@@ -1388,7 +1411,32 @@ async function initBlacklist() {
   }
 
   blacklistInstance.render()
+
+  // 绑定分页按钮事件（仅首次初始化时绑定）
+  const prevBtn = document.getElementById('prev-blacklist-page')
+  const nextBtn = document.getElementById('next-blacklist-page')
+
+  if (prevBtn && !prevBtn.hasBlacklistListener) {
+    prevBtn.addEventListener('click', () => {
+      if (blacklistInstance.currentPage > 1) {
+        blacklistInstance.currentPage--
+        blacklistInstance.loadData()
+      }
+    })
+    prevBtn.hasBlacklistListener = true
+  }
+
+  if (nextBtn && !nextBtn.hasBlacklistListener) {
+    nextBtn.addEventListener('click', () => {
+      if (blacklistInstance.currentPage < blacklistInstance.totalPages) {
+        blacklistInstance.currentPage++
+        blacklistInstance.loadData()
+      }
+    })
+    nextBtn.hasBlacklistListener = true
+  }
 }
+
 // 渲染单行黑名单
 function renderBlacklistRow(item) {
   const tr = document.createElement('tr')
@@ -1429,6 +1477,7 @@ function renderBlacklistRow(item) {
 
   return tr
 }
+
 // 显示黑名单用户详情
 async function showBlackUserDetail(userId) {
   // 显示模态框
@@ -1438,23 +1487,24 @@ async function showBlackUserDetail(userId) {
     const detail = await AdminWeb.API_CLIENT.getUserDetail(userId)
     if (detail.code !== 200) throw new Error(detail.message || '获取失败')
     
-    const user = detail.data.user
+    const user = detail.data.user || {}
     const userCert = detail.data.userCert||{}
     const loanApplications = detail.data.loanApplication||{}
     const orders = detail.data.order||{}
     // 填充基本信息
-    document.getElementById('user-real-name').textContent = user.userName || '—'
-    document.getElementById('user-phone').textContent = user.phone || '—'
-    document.getElementById('user-register-time').textContent = 
-      user.createTime ? new Date(user.createTime).toLocaleString() : '—'
-        document.getElementById('user-update-time').textContent = 
-      user.updateTime ? new Date(user.updateTime).toLocaleString() : '—'
+    document.getElementById('user-real-name1').textContent = user.userName || '—'
+    document.getElementById('user-phone1').textContent = user.phone || '—'
+    document.getElementById('user-register-time1').textContent = 
+      user.createTime ? new Date(user.createTime).toLocaleString('zh-CN') : '—'
+        document.getElementById('user-update-time1').textContent = 
+      user.updateTime ? new Date(user.updateTime).toLocaleString('zh-CN') : '—'
     
     // 认证材料（简化：只显示是否上传）
-    document.getElementById('user-credit-score').textContent = 
-      (userCert.creditScore != null) ? userCert.creditScore : '—'
-    const materialsContainer = document.getElementById('user-materials-container')
+    // document.getElementById('user-credit-score').textContent = 
+    //   (userCert.creditScore != null) ? userCert.creditScore : '—'
+    const materialsContainer = document.getElementById('user-auth-section1')
     const materialMap = {
+      creditScore: '信誉分',
       idCard: '身份证',
       bankCardId: '银行卡',
       workCertId: '工作证明',
@@ -1463,65 +1513,72 @@ async function showBlackUserDetail(userId) {
     }
     let html = ''
     for (const [key, label] of Object.entries(materialMap)) {
-      const uploaded = userCert[key] != null
-      const color = uploaded ? '#27ae60' : '#e74c3c'
-      const statusText = uploaded ? '已上传' : '未上传'
-      html += `<div class="material-item"><span>${label}</span><span style="color:${color};">${statusText}</span></div>`
+      if (key === 'creditScore') {
+        const score = userCert.creditScore != null ? userCert.creditScore : '—'
+        html += `<div class="material-item"><span>${label}:</span><span style="color:${score === '—' ? '#e74c3c' : '#27ae60'};">${score}</span></div>`
+      } else {
+        const uploaded = userCert[key] != null
+        const color = uploaded ? '#27ae60' : '#e74c3c'
+        const statusText = uploaded ? '已上传' : '未上传'
+        html += `<div class="material-item"><span>${label}</span><span style="color:${color};">${statusText}</span></div>`
+      }
     }
     materialsContainer.innerHTML = html
     
     // 显示贷款申请
-    if (loanApplications) {
-      const tbody = document.getElementById('application-table').querySelector('tbody')
-      tbody.innerHTML = ''
-      loanApplications.forEach((app, i) => {  
+    const appTbody = document.getElementById('application-table1').querySelector('tbody')
+    appTbody.innerHTML = ''
+    if (loanApplications.length > 0) {
+      loanApplications.forEach((app, i) => {
         const row = document.createElement('tr')
-        const rejectReason = app.rejectReason?.trim() || '—'
+        const amount = app.loanAmount != null ? `¥${Number(app.loanAmount).toLocaleString('zh-CN')}` : '—'
+        const rate = app.interestRate != null ? `${(app.interestRate * 100).toFixed(2)}%` : '—'
+        const rejectReason = (app.rejectReason || '').trim() || '—'
         row.innerHTML = `
-          <td>${i+1}</td>
-          <td>${app.productId}</td>
-          <td>${app.loanAmount}</td>
-          <td>${app.term}</td>
-          <td>${app.repaidType}</td>
-          <td>${app.interestRate}</td>
-          <td>${app.applyTime}</td>
-          <td>${app.status}</td>
+          <td>${i + 1}</td>
+          <td>${app.productId || '—'}</td>
+          <td>${amount}</td>
+          <td>${app.term || '—'} 期</td>
+          <td>${app.repaidType || '—'}</td>
+          <td>${rate}</td>
+          <td>${app.applyTime ? new Date(app.applyTime).toLocaleString('zh-CN') : '—'}</td>
+          <td>${app.status || '—'}</td>
           <td>${rejectReason}</td>
-          <td>${app.reviewTime}</td>
+          <td>${app.reviewTime ? new Date(app.reviewTime).toLocaleString('zh-CN') : '—'}</td>
         `
-        tbody.appendChild(row)
+        appTbody.appendChild(row)
       })
-    } else {
-      const tbody = document.getElementById('application-table').querySelector('tbody')
-      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">暂无申请</td></tr>'
-    }
-  
-    // 显示订单列表
-    if (orders) {
-      const tbody = document.getElementById('order-table').querySelector('tbody')
-      tbody.innerHTML = ''
-      orders.forEach((order, id) => {  
-        const row = document.createElement('tr')
+      } else {
+        appTbody.innerHTML = '<tr><td colspan="10" style="text-align:center;">暂无贷款申请</td></tr>'
+      }
+    
+      // 显示订单列表
+    const orderTbody = document.getElementById('order-table1').querySelector('tbody')
+    orderTbody.innerHTML = ''
+    if (orders.length > 0) {
+      orders.forEach((order, i) => {
+        const repaidAmount = order.repaidAmount != null ? `¥${Number(order.repaidAmount).toLocaleString('zh-CN')}` : '—'
+        const loanAmount = order.loanAmount != null ? `¥${Number(order.loanAmount).toLocaleString('zh-CN')}` : '—'
+        const rate = order.interestRate != null ? `${(order.interestRate * 100).toFixed(2)}%` : '—'
         row.innerHTML = `
-          <td>${id+1}</td>
-          <td>${order.productId}</td>
-          <td>${order.status}</td>
-          <td>${order.repaidAmount}</td>
-          <td>${order.loanAmount}</td>
-          <td>${order.interestRate}</td>
-          <td>${order.repaidType}</td>
-          <td>${order.loanPeriod}</td>
-          <td>${order.term}</td>
-          <td>${order.currentTerm}</td>
-          <td>${order.contract}</td>
-          <td>${order.overdueDays}</td>
-          <td>${order.startTime}</td>
+          <td>${i + 1}</td>
+          <td>${order.productId || '—'}</td>
+          <td>${order.status || '—'}</td>
+          <td>${repaidAmount}</td>
+          <td>${loanAmount}</td>
+          <td>${rate}</td>
+          <td>${order.repaidType || '—'}</td>
+          <td>${order.loanPeriod || '—'} 年</td>
+          <td>${order.term || '—'} 期</td>
+          <td>${order.currentTerm || '—'}</td>
+          <td>${order.contract || '—'}</td>
+          <td>${order.overdueDays || '—'}</td>
+          <td>${order.startTime ? new Date(order.startTime).toLocaleString('zh-CN') : '—'}</td>
         `
-        tbody.appendChild(row)
+        orderTbody.appendChild(row)
       })
     } else {
-      const tbody = document.getElementById('application-table').querySelector('tbody')
-      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">暂无申请</td></tr>'
+      orderTbody.innerHTML = '<tr><td colspan="13" style="text-align:center;">暂无贷款订单</td></tr>'
     }
   } catch (error) {
     console.error('获取黑名单用户详情失败:', error)

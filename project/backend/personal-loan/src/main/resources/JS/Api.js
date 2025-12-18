@@ -284,7 +284,7 @@ AdminWeb.API_CLIENT = {
         return this.get(url)
     },
 
-    // 根据申请ID获取完整详情
+    // 根据申请ID获取完整详情（已办待办通用）
     getApprovalDetail: function(applicationId) {
         const url = `/api/approval/detail/${applicationId}`
         return this.get(url)
