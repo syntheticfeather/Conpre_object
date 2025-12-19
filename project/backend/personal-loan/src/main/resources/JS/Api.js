@@ -191,7 +191,7 @@ AdminWeb.API_CLIENT = {
         AdminWeb.JWT_UTILS.clearTokens();
         // 如果是登录页面，不清除，否则跳转到登录页
         if (!window.location.href.includes('/login')) {
-            alert('登录已过期，请重新登录');
+            console.log('登录已过期，请重新登录');
             window.location.href = '/login'
         }
     },

@@ -91,7 +91,7 @@ function checkLoginStatus() {
         // 在登录页面，如果已登录且token有效，跳转到首页
         const isLogged = localStorage.getItem(API_CONFIG.storageKeys.isLogged)
         if (isLogged === 'true' && JWT_UTILS.isTokenValid()) {
-            alert('您已登录，无需重复登录')
+            console.log('您已登录，无需重复登录')
             setTimeout(() => {
                 window.location.href = "/index"
             }, 1500)
@@ -104,7 +104,7 @@ function checkLoginStatus() {
         // 在非登录页面，检查token有效性
         if (!JWT_UTILS.isTokenValid()) {
             JWT_UTILS.clearTokens()
-            alert('登录已过期，请重新登录')
+            console.log('登录已过期，请重新登录')
             window.location.href = '/login'
         }
     }

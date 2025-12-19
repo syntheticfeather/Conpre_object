@@ -180,11 +180,6 @@ function bindEventListeners() {
 
         if (response.code === 200) {
           const products = response.data || []
-          
-          // 显示搜索结果数量
-          // const infoEl = document.getElementById('search-result-info')
-          // infoEl.textContent = `搜索到 ${products.length} 个产品`
-          // infoEl.style.display = 'block'
 
           // 渲染到现有表格（复用 product-table）
           const tbody = document.querySelector('#product-table tbody')
@@ -199,9 +194,6 @@ function bindEventListeners() {
             })
           }
 
-          // 隐藏分页（因为不分页），显示关闭按钮
-          // document.querySelector('.product-pagination')?.style.display = 'none'
-          document.getElementById('close-search-result-btn').style.display = 'inline-block'
         } else {
           throw new Error(response.message || '搜索失败')
         }
@@ -221,8 +213,6 @@ function bindEventListeners() {
         productListInstance.currentPage = 1
         productListInstance.loadData()
       }
-      document.getElementById('search-result-info').style.display = 'none'
-      document.getElementById('close-search-result-btn').style.display = 'none'
     })
     
     // 退出登录
@@ -243,26 +233,32 @@ function bindEventListeners() {
     })
 
     // ============ 日期输入互斥逻辑 ============
-    const createStartInput = document.getElementById('create-start-date')
-    const createEndInput = document.getElementById('create-end-date')
-    const updateStartInput = document.getElementById('update-start-date')
-    const updateEndInput = document.getElementById('update-end-date')
+    document.addEventListener('DOMContentLoaded', () => {
+      const createStartInput = document.getElementById('create-start-date')
+      const createEndInput = document.getElementById('create-end-date')
+      const updateStartInput = document.getElementById('update-start-date')
+      const updateEndInput = document.getElementById('update-end-date')
 
-    // // 点击创建时间输入框 → 清空更新时间
-    // [createStartInput, createEndInput].forEach(input => {
-    //   input.addEventListener('focus', () => {
-    //     updateStartInput.value = ''
-    //     updateEndInput.value = ''
-    //   })
-    // })
+      // 安全检查：确保所有元素都存在
+      if (!createStartInput || !createEndInput || !updateStartInput || !updateEndInput) {
+        console.error('日期输入框未找到，请检查 HTML 结构和 ID 是否正确')
+        return
+      }
 
-    // // 点击更新时间输入框 → 清空创建时间
-    // [updateStartInput, updateEndInput].forEach(input => {
-    //   input.addEventListener('focus', () => {
-    //     createStartInput.value = ''
-    //     createEndInput.value = ''
-    //   })
-    //   })
+      [createStartInput, createEndInput].forEach(input => {
+        input.addEventListener('focus', () => {
+          updateStartInput.value = ''
+          updateEndInput.value = ''
+        })
+      })
+
+      [updateStartInput, updateEndInput].forEach(input => {
+        input.addEventListener('focus', () => {
+          createStartInput.value = ''
+          createEndInput.value = ''
+        })
+      })
+    })
 }
 
 // 面板显示切换
@@ -286,7 +282,15 @@ function switchToPanel(target) {
     if (activeNav) {
         activeNav.classList.add('active')
     }
-    
+    // 更新侧边栏激活状态
+    document.querySelectorAll('.side-item').forEach(item => {
+        item.classList.remove('active')
+    })
+    const activeItem = document.querySelectorAll(`#${target}-content .side-item`)
+    if (activeItem) {
+      activeItem[0].classList.add('active')
+    }
+
     // 显示目标面板
     const targetPanel = document.getElementById(`${target}-content`)
     if (targetPanel) {
@@ -319,6 +323,12 @@ function switchToPanel(target) {
 }
 // 子面板显示切换
 function switchToContent(target) {
+    document.querySelectorAll('.side-item').forEach(item => {
+        item.classList.remove('active')
+    })
+    const activeItem = document.querySelector(`.side-item[data-target="${target}"]`)
+    if (activeItem) activeItem.classList.add('active')
+
   switch (target) {
     // 待办审核面板
     case 'pending-apply-content':
@@ -825,19 +835,24 @@ async function showProductDetail(productId) {
     document.getElementById('prod-name').textContent = data.productName || '—'
     document.getElementById('prod-status').textContent = data.status || '—'
     document.getElementById('prod-term').textContent = 
-      `${data.minTerm || 0} ~ ${data.maxTerm || 0} 月 (步长: ${data.termStep || 1})`
+      `${data.terms || 0}个月 `
     document.getElementById('prod-promo').textContent = data.promotionDetails || '—'
+    document.getElementById('prod-desc').textContent = data.description || '—'
+    document.getElementById('prod-usage').textContent = data.loanUsage || '—'
+    document.getElementById('prod-create-time').textContent = data.createTime ? new Date(data.createTime).toLocaleString() : '—'
+    document.getElementById('prod-update-time').textContent = data.updateTime ? new Date(data.updateTime).toLocaleString() : '—'
 
     // 渲染可编辑的可选方案（即初始数据）
     renderEditableOptionTable(data.options || [])
 
     // 绑定事件（现在只需绑定一次，且无状态切换）
-    bindOptionManagementEvents()
+    bindOptionManagementEvents(data.options || [])
 
-    document.getElementById('edit-product-btn').addEventListener('click', () => {
-      document.getElementById('product-detail').style.display = 'none'
-      showProductEditForm(data)
-    })
+    // 绑定编辑按钮
+    // document.getElementById('edit-product-btn').addEventListener('click', () => {
+    //   document.getElementById('product-detail').style.display = 'none'
+    //   showProductEditForm(data)
+    // })
 
     document.getElementById('product-detail').style.display = 'block'
   } catch (error) {
@@ -845,7 +860,6 @@ async function showProductDetail(productId) {
     alert('加载失败')
   }
 }
-
 //渲染可编辑的可选方案列表
 function renderEditableOptionTable(options) {
   const tbody = document.getElementById('options-table').querySelector('tbody')
@@ -876,10 +890,23 @@ function bindOptionManagementEvents() {
   }
 
   // 删除行（事件委托）
-  table.onclick = function(e) {
+  table.onclick = async function(e) {
     if (e.target.classList.contains('delete-option-row')) {
       const row = e.target.closest('tr')
-      row.remove()
+      const optionId = row.dataset.optionId
+
+      if (optionId=='-') {
+        row.remove()
+        return
+      }else{
+        const response = await AdminWeb.API_CLIENT.deleteOption(optionId)
+        if (response.code === 200) {
+          row.remove()
+          console.log('删除成功')
+        } else {
+          console.error('删除失败，请重试')
+        }
+      }
     }
   }
 
@@ -1005,7 +1032,7 @@ function createOptionRow(opt = {}){
       : (origRate * 100).toFixed(2)
 
   const tr = document.createElement('tr')
-  tr.dataset.optionId = opt.id || ''
+  tr.dataset.optionId = opt.optionId || '-'
 
   tr.innerHTML = `
     <td>
@@ -1047,6 +1074,7 @@ function addOptionRow(tbody) {
   const row = createOptionRow()
   tbody.appendChild(row)
 }
+
 
 // 产品列表初始化
 async function initProductList() {
@@ -1249,11 +1277,8 @@ async function showUserDetail(userId) {
       user.updateTime ? new Date(user.updateTime).toLocaleString() : '—'
     
     // 认证材料（简化：只显示是否上传）
-    // document.getElementById('user-credit-score').textContent = 
-    //   (userCert.creditScore != null) ? userCert.creditScore : '—'
     const materialsContainer = document.getElementById('user-auth-section')
     const materialMap = {
-      creditScore: '信誉分',
       idCard: '身份证',
       bankCardId: '银行卡',
       workCertId: '工作证明',

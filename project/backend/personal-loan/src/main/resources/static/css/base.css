@@ -108,6 +108,14 @@ a {
     margin-right: 20px;
     margin-top: 10px;
 }
+
+.side-bar ul li.active {
+    background-image: linear-gradient(to left, #6a92ba, #3d5369);
+    color: #fff;
+}
+.side-bar ul li.active button {
+    color: #fff;
+}
 /*侧栏展开收起*/
 .side-item.expanded .icon-jinru {
   transform: rotate(90deg);

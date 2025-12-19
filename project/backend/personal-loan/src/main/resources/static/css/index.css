@@ -286,8 +286,12 @@ td:nth-child(7) {
     justify-content: space-between;
     width: 400px;
 }
+.options-table {
+    max-height: 300px;
+    overflow-y: auto;
+}
 .product-detail #options-table {
-    width:100%; 
+    width:85%; 
     margin-top:10px; 
     border-collapse: collapse;
 }
@@ -295,7 +299,16 @@ td:nth-child(7) {
     background-color: #fff;
     cursor: pointer;
 }
-
+#options-table thead tr > th {
+    border: 1px solid #000;
+}
+#options-table tbody tr > td {
+    border: 1px solid #000;
+}
+#options-table tbody tr td >input[type="number"] {
+    border: none;
+    width: 125px;
+} 
 /* 编辑产品信息 */
 .edit-product {
   margin-top:20px;
