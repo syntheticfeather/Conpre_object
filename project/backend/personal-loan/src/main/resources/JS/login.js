@@ -231,8 +231,6 @@ function handleLoginSuccess(result, phone) {
     
     // 保存管理员信息
     const adminInfo = {
-        // id: result.data.id,
-        // name: result.data.name,
         registerTime: result.data.createTime || new Date().toISOString()
     }
     localStorage.setItem(API_CONFIG.storageKeys.adminInfo, JSON.stringify(adminInfo))

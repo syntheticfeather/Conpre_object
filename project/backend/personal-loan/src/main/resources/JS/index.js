@@ -895,7 +895,7 @@ function bindOptionManagementEvents() {
       const row = e.target.closest('tr')
       const optionId = row.dataset.optionId
 
-      if (optionId=='-') {
+      if (optionId=='') {
         row.remove()
         return
       }else{
@@ -913,13 +913,12 @@ function bindOptionManagementEvents() {
   // 确认提交
   confirmBtn.onclick = async () => {
     // 在 showProductDetail 中获取数据
-    const originalOptions = window.originalProductOptions || []
-
+      const originalOptions = window.originalProductOptions || []
     const rows = table.querySelectorAll('tbody tr')
     const toCreate = []
     const toDeleteIds = []
 
-    // 收集当前数据
+    // 收集当前表格中的有效数据
     const currentData = []
     for (const row of rows) {
       const [inpAmt, inpTerm, inpRate, sel] = row.querySelectorAll('input, select')
@@ -928,16 +927,27 @@ function bindOptionManagementEvents() {
       const interestRate = parseFloat(inpRate.value)
       const repaidType = sel.value?.trim()
 
+      // 跳过完全空白的行
       if (isNaN(loanAmount) && isNaN(loanPeriod) && isNaN(interestRate) && !repaidType) {
-        continue // 跳过空白行
+        continue
       }
+
+      // 校验完整性
       if (isNaN(loanAmount) || isNaN(loanPeriod) || isNaN(interestRate) || !repaidType) {
         alert('请填写完整的方案信息')
         return
       }
 
+      // 正确解析 ID
+      let id = null
+      const rawId = row.dataset.optionId
+      if (rawId && rawId !== '' && !isNaN(Number(rawId)) && Number(rawId) > 0) {
+        id = Number(rawId)
+      }
+      // 否则 id 保持为 null（表示新建）
+
       currentData.push({
-        id: row.dataset.optionId || null,
+        id,
         loanAmount,
         loanPeriod,
         interestRate,
@@ -1032,7 +1042,7 @@ function createOptionRow(opt = {}){
       : (origRate * 100).toFixed(2)
 
   const tr = document.createElement('tr')
-  tr.dataset.optionId = opt.optionId || '-'
+  tr.dataset.optionId = opt.optionId != null ? String(opt.optionId) : ''
 
   tr.innerHTML = `
     <td>
@@ -1585,6 +1595,8 @@ async function showBlackUserDetail(userId) {
         const repaidAmount = order.repaidAmount != null ? `¥${Number(order.repaidAmount).toLocaleString('zh-CN')}` : '—'
         const loanAmount = order.loanAmount != null ? `¥${Number(order.loanAmount).toLocaleString('zh-CN')}` : '—'
         const rate = order.interestRate != null ? `${(order.interestRate * 100).toFixed(2)}%` : '—'
+        
+        const row = document.createElement('tr')
         row.innerHTML = `
           <td>${i + 1}</td>
           <td>${order.productId || '—'}</td>
