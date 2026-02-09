@@ -1,0 +1,226 @@
+<template>
+  <!-- 如果是弹窗模式，则包裹一层遮罩和定位 -->
+  <div v-if="shouldShow" class="inline-detail-panel">
+    <div class="detail-header">
+      <h3>申请详情</h3>
+      <button class="close-btn" @click="handleClose">&times;</button>
+    </div>
+
+    <!-- 用户基本信息 -->
+    <div class="section">
+      <h4>用户基本信息</h4>
+      <div class="detail-grid">
+        <div class="detail-item">
+          <span>真实姓名：</span>
+          <span>{{ applicationDetail?.data?.user?.userName || '—' }}</span>
+        </div>
+        <div class="detail-item">
+          <span>手机号：</span>
+          <span>{{ applicationDetail?.data?.user?.phone || '—' }}</span>
+        </div>
+        <div class="detail-item">
+          <span>注册时间：</span>
+          <span>{{ formatDate(applicationDetail?.data?.user?.createTime) || '—' }}</span>
+        </div>
+        <div class="detail-item">
+          <span>信誉分：</span>
+          <span>{{ applicationDetail?.userCert?.creditScore || '—' }}</span>
+        </div>
+      </div>
+      <div class="materials-section">
+        <span>认证材料：</span>
+        <div class="materials-list">
+          <div 
+            v-for="(label, key) in materialMap" 
+            :key="key"
+            class="material-item"
+          >
+            <span>{{ label }}</span>
+            <span :style="{ color: isMaterialUploaded(key) ? '#27ae60' : '#e74c3c' }">
+              {{ isMaterialUploaded(key) ? '已上传' : '未上传' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 贷款申请信息 -->
+    <div class="section">
+      <h4>贷款申请信息</h4>
+      <div class="detail-grid">
+        <div class="detail-item">
+          <span>贷款项目：</span>
+          <span>{{ applicationDetail?.data?.application?.productName || '—' }}</span>
+        </div>
+        <div class="detail-item">
+          <span>申请金额：</span>
+          <span>{{ formatCurrency(applicationDetail?.data?.application?.loanAmount) || '—' }}</span>
+        </div>
+        <div class="detail-item">
+          <span>总期数：</span>
+          <span>{{ applicationDetail?.data?.application?.term || '—' }} 期</span>
+        </div>
+        <div class="detail-item">
+          <span>贷款年限：</span>
+          <span>{{ applicationDetail?.data?.application?.loanPeriod || '—' }} 年</span>
+        </div>
+        <div class="detail-item">
+          <span>年利率：</span>
+          <span>{{ formatRate(applicationDetail?.data?.application?.interestRate) || '—' }}</span>
+        </div>
+        <div class="detail-item">
+          <span>还款方式：</span>
+          <span>{{ applicationDetail?.data?.application?.repaidType || '—' }}</span>
+        </div>
+      </div>
+
+      <!-- 拒绝理由 -->
+      <div v-if="applicationDetail?.data?.application?.rejectReason" class="rejectReasons">
+        <span>拒绝原因：</span>
+        <span>{{ applicationDetail.data.application.rejectReason }}</span>
+      </div>
+    </div>
+
+    <!-- 审核操作按钮 (仅在待办审核状态下显示) -->
+    <div v-if="isPending" class="action-buttons">
+      <button class="btn-pass" @click="handleSubmit(true)">通过</button>
+      <button class="btn-reject" @click="handleSubmit(false)">不通过</button>
+    </div>
+    <div v-else class="status-display">
+      <span>状态: {{ formatStatus(applicationDetail?.data?.application?.status) || '—' }}</span>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, watch, computed } from 'vue';
+import { applicationAPI } from '@/api';
+
+const props = defineProps({
+  // 控制显示/隐藏 (用于 v-model)
+  modelValue: {
+    type: Boolean,
+    default: false
+  },
+  // 申请 ID
+  applicationId: {
+    type: [String, Number, null],
+    required: true
+  },
+  // 是否为弹窗模式
+  modal: {
+    type: Boolean,
+    default: false
+  },
+  // 是否为待办审核状态
+  isPending: {
+    type: Boolean,
+    default: false
+  }
+});
+
+const emit = defineEmits(['update:modelValue', 'close', 'submit']);
+
+// 内部状态
+const applicationDetail = ref(null);
+const loading = ref(false);
+
+// 材料映射
+const materialMap = {
+  idCard: '身份证',
+  bankCardId: '银行卡',
+  workCertId: '工作证明',
+  triCertId: '三证合一',
+  immovableCertId: '不动产证明'
+};
+
+// 计算属性：是否应该显示
+const shouldShow = computed(() => props.modelValue && !!props.applicationId);
+
+// 监听 applicationId 变化，获取详情
+watch(() => props.applicationId, async (newId) => {
+  if (!newId) {
+    applicationDetail.value = null;
+    return;
+  }
+  await fetchApplicationDetail(newId);
+}, { immediate: true });
+
+// 监听 modelValue 变化，用于外部控制
+watch(() => props.modelValue, (newValue) => {
+  if (!newValue) {
+    // 关闭时清空数据
+    applicationDetail.value = null;
+  }
+});
+
+// 获取申请详情
+const fetchApplicationDetail = async (id) => {
+  loading.value = true
+  try {
+    const response = await applicationAPI.getApplicationDetail(id)
+    // 解析响应中的 data 字段
+    applicationDetail.value = response.data
+  } catch (error) {
+    console.error('Failed to fetch application detail:', error)
+    // 错误处理逻辑
+  } finally {
+    loading.value = false
+  }
+}
+
+// 检查材料是否已上传
+const isMaterialUploaded = (key) => {
+  return applicationDetail.value?.userCert?.[key] != null
+}
+
+// 格式化货币
+const formatCurrency = (amount) => {
+  if (amount == null) return '—'
+  return new Intl.NumberFormat('zh-CN', {
+    style: 'currency',
+    currency: 'CNY',
+    minimumFractionDigits: 2
+  }).format(amount)
+}
+
+// 格式化利率 (假设后端返回的是小数，如 0.05)
+const formatRate = (rate) => {
+  if (rate == null) return '—'
+  return `${(rate * 100).toFixed(2)}%`
+}
+
+// 格式化日期
+const formatDate = (date) => {
+  if (!date) return '—'
+  return new Date(date).toLocaleString('zh-CN')
+}
+
+// 格式化状态
+const formatStatus = (status) => {
+  if (!status) return '—'
+  const statusMap = {
+    'AI_REJECTED': 'AI拒绝',
+    'PENDING': '待审核',
+    'APPROVED': '已通过',
+    'MANUAL_REJECTED': '人工拒绝'
+  }
+  return statusMap[status] || status
+}
+
+// 处理关闭
+const handleClose = () => {
+  emit('update:modelValue', false)
+  emit('close')
+}
+
+// 处理审核提交
+const handleSubmit = (approved) => {
+  emit('submit', props.applicationId, approved)
+  // 父组件处理 submit 事件后应负责关闭此面板
+}
+</script>
+
+<style scoped>
+@import '@/assets/css/applicationDetailModal.css'
+</style>

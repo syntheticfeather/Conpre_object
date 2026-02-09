@@ -1,0 +1,129 @@
+/* 通用样式 */
+.modal-overlay,
+.inline-detail-panel {
+  background: white;
+  border: 1px solid #ebeef5;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid #ebeef5;
+  background-color: #f8f9fa;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #909399;
+}
+
+.section {
+  padding: 20px;
+}
+
+.section h4 {
+  margin-bottom: 15px;
+  font-size: 16px;
+  color: #303133;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(200px, 1fr));
+  gap: 10px 75px;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+}
+
+.rejectReasons {
+  margin-top: 20px;
+
+  justify-self: center;
+}
+
+.materials-section {
+  margin-top: 15px;
+}
+
+.materials-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.material-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  background-color: #f0f2f5;
+  border-radius: 4px;
+}
+
+/* 操作按钮 */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  padding: 0 20px 20px;
+  gap: 30px;
+}
+
+.btn-pass {
+  background-color: #67c23a;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-reject {
+  background-color: #f56c6c;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.status-display {
+  text-align: right;
+  padding: 0 20px 20px;
+  font-weight: bold;
+}
+
+/* 弹窗特有样式 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.modal-content {
+  width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* 内联面板特有样式 */
+.inline-detail-panel {
+  margin-top: 20px;
+}
