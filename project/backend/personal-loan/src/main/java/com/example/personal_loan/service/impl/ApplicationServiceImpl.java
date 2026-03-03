@@ -85,7 +85,7 @@ public class ApplicationServiceImpl implements ApplicationService{
         application.setUserId(userId);
         application.setProductId(request.getProductId());
         application.setStatus(ApplicationStatus.审核中);
-        application.setLoanAmount(option.getLoanAmount());
+        application.setLoanAmount(request.getLoanAmount());
         application.setInterestRate(option.getInterestRate());
         application.setLoanPeriod(option.getLoanPeriod());
         application.setTerm(request.getTerm());
@@ -135,10 +135,6 @@ public class ApplicationServiceImpl implements ApplicationService{
         application.setStatus(ApplicationStatus.已取消);
         applicationMapper.update(application);
     }
-
-    // @Override
-    // public void updateApplication(Long userId, Long proId){
-    // }
 
     /**
      * 用户获取指定贷款申请

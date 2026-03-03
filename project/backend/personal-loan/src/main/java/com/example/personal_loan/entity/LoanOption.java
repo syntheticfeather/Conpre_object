@@ -28,9 +28,9 @@ public class LoanOption {
     @Min(value = 1, message = "贷款期限至少为1个月")
     private Integer loanPeriod;
 
-    @DecimalMin(value = "1000.00", message = "贷款金额不能低于1000元")
-    @DecimalMax(value = "10000000.00", message = "贷款金额不能超过1000万元")
-    private BigDecimal loanAmount;
+    // @DecimalMin(value = "1000.00", message = "贷款金额不能低于1000元")
+    // @DecimalMax(value = "10000000.00", message = "贷款金额不能超过1000万元")
+    // private BigDecimal loanAmount;
 
     @NotNull(message = "利率不能为空")
     @DecimalMin(value = "0.0001", message = "利率必须大于0")

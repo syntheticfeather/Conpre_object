@@ -199,13 +199,15 @@
 **请求参数**:
 
 |字段名|类型|是否必填|说明|示例值|
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 |  productName  |  string  |是|  贷款产品名称     |极速贷|
 |  description  |  string  |是|  产品描述         |  审批快，放贷快|
 |  loanUsage    |  string  |是|  产品用途         |   消费、装修、教育|
 |  minTerm      |  integer  |是|   最短借款期限（单位：月）  | 3|
 |  maxTerm      |  integer  |是|  最长借款期限（单位：月）  | 24 |
 |  termStep     |  integer  |是|   期限递增步长（单位：月）  | 3 |
+|  minAmount    |  number   |是|   最小可借额度           | 10000.00|
+|  maxAmount    |  number   |是|   最大可借额度           | 50000.00|
 |  promotionDetails |  string |否|   促销描述，用于展示给用户  |无|
 |  options      |  array   |是|    可选方案列表，每个选项代表一种方案组合  |见下表|
 
@@ -213,7 +215,6 @@
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
-|  loanAmount | number | 是 | 贷款额度（单位：元）,最多12位数字，其中小数部分2位 | 10000.00 |
 |  loanPeriod | integer | 是 | 贷款期限（单位：月） | 12 |
 | interestRate | number | 是 | 年化利率,最多6位数字，其中小数部分4位 | 0.049 |
 |  repaidType | string | 是 | 还款方式，目前支持："等额本金"、"等额本息" 、"一次性还本付息" | "等额本息" |
@@ -222,19 +223,20 @@
 
 ``` json
 {
-  "productName": "极速贷",
-  "description": "审批快，放款快",
-  "loanUsage": "消费、装修、教育",
+  "productName": "小微经营贷",
+  "description": "助力小微企业发展，快速审批，灵活还款",
+  "loanUsage": "进货周转、设备采购、门店扩张",
   "minTerm": 3,
-  "maxTerm": 24,
+  "maxTerm": 36,
   "termStep": 3,
-  "promotionDetails": "无",
+  "minAmount": 10000,
+  "maxAmount": 50000,
+  "promotionDetails": "前2期只还利息",
   "options": [
     {
-      "loanAmount": 10000.00,
-      "interestRate": 0.049,
+      "interestRate": 0.0650,
       "loanPeriod": 12,
-      "repaidType": "等额本息"
+      "repaidType": "先息后本"
     }
   ]
 }
@@ -247,27 +249,29 @@
     "code": 200,
     "data": {
         "id": 2,
-        "productName": "极速贷",
-        "description": "审批快，放款快",
-        "loanUsage": "消费、装修、教育",
+        "productName": "小微经营贷",
+        "description": "助力小微企业发展，快速审批，灵活还款",
+        "loanUsage": "进货周转、设备采购、门店扩张",
+        "status": "已下架",
         "minTerm": 3,
-        "maxTerm": 24,
+        "maxTerm": 36,
         "termStep": 3,
-        "promotionDetails": "无",
+        "minAmount": 10000,
+        "maxAmount": 50000,
+        "promotionDetails": "前2期只还利息",
         "options": [
             {
-                "id": 2,
+                "optionId": 4,
                 "productId": 2,
                 "loanPeriod": 12,
-                "loanAmount": 10000,
-                "interestRate": 0.049,
-                "repaidType": "等额本息",
-                "createTime": "2025-11-18T17:10:45.9331697",
-                "updateTime": "2025-11-18T17:10:45.9331697"
+                "interestRate": 0.0650,
+                "repaidType": "先息后本",
+                "createTime": "2026-03-03 15:53:12",
+                "updateTime": "2026-03-03 15:53:12"
             }
         ],
-        "createTime": "2025-11-18T17:10:45.8932953",
-        "updateTime": "2025-11-18T17:10:45.8932953"
+        "createTime": "2026-03-03 15:53:12",
+        "updateTime": "2026-03-03 15:53:12"
     },
     "message": "贷款产品创建成功"
 }
@@ -287,7 +291,7 @@
 
 ![](../loanProductImgs/logCreate.png)
 
-### 为指定产品批量增加选项
+### 为指定产品批量增加选项（待修改）
 
 **网址** /api/loan-products/admin/options/batch-create
 

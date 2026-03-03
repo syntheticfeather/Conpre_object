@@ -10,6 +10,8 @@
         <result property="description" column="description"/>
         <result property="loanUsage" column="loan_usage"/>
         <result property="status" column="status"/>
+        <result property="minAmount" column="min_amount"/>
+        <result property="maxAmount" column="max_amount"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
     </resultMap>
@@ -22,6 +24,8 @@
             description,
             loan_usage, 
             status,
+            min_amount,
+            max_amount,
             create_time,
             update_time
         FROM loan_products
@@ -42,5 +46,71 @@
           </if>
         ORDER BY create_time DESC, update_time DESC
     </select>
+
+    <!-- 定义可复用的列映射片段 (ResultMap 也可以，这里演示 SqlFragment) -->
+    <sql id="Base_Column_List">
+        id, product_name, description, loan_usage, status, 
+        min_term, max_term, term_step, 
+        min_amount, max_amount, 
+        promotion_details, create_time, update_time
+    </sql>
+
+    <!-- 定义可复用的列别名映射片段 (用于 SELECT 查询结果映射到实体类) -->
+    <sql id="Base_Column_Alias">
+        id, 
+        product_name AS productName, 
+        description, 
+        loan_usage AS loanUsage, 
+        status, 
+        min_term AS minTerm, 
+        max_term AS maxTerm, 
+        term_step AS termStep, 
+        min_amount AS minAmount, 
+        max_amount AS maxAmount, 
+        promotion_details AS promotionDetails, 
+        create_time AS createTime, 
+        update_time AS updateTime
+    </sql>
+
+    <!-- ================= 修改 (动态更新非空字段) ================= -->
+    <update id="update" parameterType="com.example.personal_loan.entity.LoanProduct">
+        UPDATE loan_products
+        <set>
+            <if test="productName != null">
+                product_name = #{productName},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            <if test="loanUsage != null">
+                loan_usage = #{loanUsage},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="minTerm != null">
+                min_term = #{minTerm},
+            </if>
+            <if test="maxTerm != null">
+                max_term = #{maxTerm},
+            </if>
+            <if test="termStep != null">
+                term_step = #{termStep},
+            </if>
+            <if test="minAmount != null">
+                min_amount = #{minAmount},
+            </if>
+            <if test="maxAmount != null">
+                max_amount = #{maxAmount},
+            </if>
+            <if test="promotionDetails != null">
+                promotion_details = #{promotionDetails},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
 
 </mapper>

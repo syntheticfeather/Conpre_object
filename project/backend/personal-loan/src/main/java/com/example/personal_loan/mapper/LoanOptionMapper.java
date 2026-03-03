@@ -14,25 +14,34 @@ import com.example.personal_loan.entity.LoanOption;
 @Mapper
 public interface LoanOptionMapper {
     
-    @Insert("INSERT INTO loan_options (product_id, loan_period, loan_amount, repaid_type, interest_rate, create_time, update_time) " +
-            "VALUES(#{productId}, #{loanPeriod}, #{loanAmount}, #{repaidType}, #{interestRate}, #{createTime}, #{updateTime})")
+    @Insert("INSERT INTO loan_options (" +
+        "  product_id, " +
+        "  loan_period, " +
+        "  repaid_type, " +
+        "  interest_rate, " +
+        "  create_time, " +
+        "  update_time" +
+        ") VALUES (" +
+        "  #{productId}, " +
+        "  #{loanPeriod}, " +
+        "  #{repaidType}, " +
+        "  #{interestRate}, " +
+        "  #{createTime}, " +
+        "  #{updateTime}" +
+        ")")
     @Options(useGeneratedKeys = true, keyProperty = "optionId")
     int insert(LoanOption option);
 
     @Insert({
         "<script>",
-        "INSERT INTO loan_options (product_id, loan_period, loan_amount, interest_rate, repaid_type, create_time, update_time)",
+        "INSERT INTO loan_options (product_id, loan_period, interest_rate, repaid_type, create_time, update_time)",
         "VALUES ",
         "<foreach collection='list' item='opt' separator=','>",
-        "(#{opt.productId}, #{opt.loanPeriod}, #{opt.loanAmount}, #{opt.interestRate}, #{opt.repaidType}, #{opt.createTime}, #{opt.updateTime})",
+        "(#{opt.productId}, #{opt.loanPeriod}, #{opt.interestRate}, #{opt.repaidType}, #{opt.createTime}, #{opt.updateTime})",
         "</foreach>",
         "</script>"
     })
     int insertBatch(List<LoanOption> list);
-    
-    // @Update("UPDATE loan_option SET loan_period=#{loanPeriod}, loan_amount=#{loanAmount}, " +
-    //         "repaid_type=#{repaidType}, interest_rate=#{interestRate} WHERE id=#{id}")
-    // int update(LoanOption option);
 
     // 更新
     void update(LoanOption option);
@@ -71,7 +80,6 @@ public interface LoanOptionMapper {
         "id as optionId, " +
         "product_id as productId, " +
         "loan_period as loanPeriod, " +
-        "loan_amount as loanAmount, " +
         "interest_rate as interestRate, " +
         "repaid_type as repaidType, " +
         "create_time as createTime, " +
@@ -83,7 +91,6 @@ public interface LoanOptionMapper {
         "id as optionId, " +
         "product_id as productId, " +
         "loan_period as loanPeriod, " +
-        "loan_amount as loanAmount, " +
         "interest_rate as interestRate, " +
         "repaid_type as repaidType, " +
         "create_time as createTime, " +

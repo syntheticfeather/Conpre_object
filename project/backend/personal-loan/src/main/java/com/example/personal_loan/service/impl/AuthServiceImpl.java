@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.personal_loan.config.FileStorageConfig;
+import com.example.personal_loan.dto.GetCertResponse;
 import com.example.personal_loan.entity.ImmovablesCert;
 import com.example.personal_loan.entity.TriCert;
 import com.example.personal_loan.entity.UserCert;
@@ -48,7 +49,7 @@ public class AuthServiceImpl implements AuthService{
     @Autowired
     private FileStorageConfig fileStorageConfig;
 
-
+    // 提交所有认证信息
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void submitAllAuth(
@@ -97,7 +98,7 @@ public class AuthServiceImpl implements AuthService{
         userCertMapper.update(userCert);
     }
 
-    // 计算贷款分数
+    // 计算贷款分数(125x6=750)
     @Override
     public int calScore(Long userId){ 
         UserCert userCert = userCertMapper.selectByUserId(userId);
@@ -151,9 +152,64 @@ public class AuthServiceImpl implements AuthService{
         return score;
     }
     
+    // 获取已经上传的认证信息
     @Override
-    public int getCert(Long userId){ 
-        return 0;
+    public GetCertResponse getCert(Long userId) {
+        UserCert userCert = userCertMapper.selectByUserId(userId);
+        
+        WorkCert workCert = null;
+        if (userCert.getWorkCertId() != null) {
+            workCert = workCertMapper.selectById(userCert.getWorkCertId());
+            // 转换路径为公开 URL
+            if (workCert.getEmploymentCertPath() != null) {
+                workCert.setEmploymentCertPath(buildPublicUrl(
+                    fileStorageConfig.getPaths().getEmploymentProof(),
+                    workCert.getEmploymentCertPath()
+                ));
+            }
+            if (workCert.getSalaryCertPath() != null) {
+                workCert.setSalaryCertPath(buildPublicUrl(
+                    fileStorageConfig.getPaths().getSalaryProof(),
+                    workCert.getSalaryCertPath()
+                ));
+            }
+        }
+
+        TriCert triCert = null;
+        if (userCert.getTriCertId() != null) {
+            triCert = triCertMapper.selectById(userCert.getTriCertId());
+            if (triCert.getSocialSecurityPath() != null) {
+                triCert.setSocialSecurityPath(buildPublicUrl(
+                    fileStorageConfig.getPaths().getSocialSecurity(),
+                    triCert.getSocialSecurityPath()
+                ));
+            }
+            if (triCert.getCreditReportPath() != null) {
+                triCert.setCreditReportPath(buildPublicUrl(
+                    fileStorageConfig.getPaths().getCreditReport(),
+                    triCert.getCreditReportPath()
+                ));
+            }
+        }
+
+        ImmovablesCert immovablesCert = null;
+        if (userCert.getImmovableCertId() != null) {
+            immovablesCert = immovablesCertMapper.selectById(userCert.getImmovableCertId());
+            if (immovablesCert.getPropertyCertPath() != null) {
+                immovablesCert.setPropertyCertPath(buildPublicUrl(
+                    fileStorageConfig.getPaths().getPropertyProof(),
+                    immovablesCert.getPropertyCertPath()
+                ));
+            }
+            if (immovablesCert.getCarCertPath() != null) {
+                immovablesCert.setCarCertPath(buildPublicUrl(
+                    fileStorageConfig.getPaths().getCarProof(),
+                    immovablesCert.getCarCertPath()
+                ));
+            }
+        }
+        userCert.setCreditScore(calScore(userId));
+        return new GetCertResponse(userCert, workCert, triCert, immovablesCert);
     }
 
     // 个人征信认证
@@ -162,6 +218,8 @@ public class AuthServiceImpl implements AuthService{
 
     // }
 
+
+    // 工具方法
 
     private String storeRequiredFile(MultipartFile file, String type, Long userId, String basePath) {
         if (file == null || file.isEmpty()) {
@@ -214,5 +272,15 @@ public class AuthServiceImpl implements AuthService{
             cert.setTriCertId(existingId);
             triCertMapper.update(cert);
         }
+    }
+
+    /**
+     * 构建前端可直接访问的 URL：/uploads/{relativeBasePath}/{filename}
+     */
+    private String buildPublicUrl(String relativeBasePath, String filename) {
+        // 确保路径不以 / 开头或结尾，避免双斜杠
+        String cleanBase = relativeBasePath.replaceAll("/+$", "").replaceAll("^/+", "");
+        String cleanFile = filename.replaceAll("^/+", "");
+        return "/uploads/" + cleanBase + "/" + cleanFile;
     }
 }

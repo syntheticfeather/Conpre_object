@@ -1,5 +1,6 @@
 package com.example.personal_loan.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import com.example.personal_loan.enums.ProductStatus;
@@ -43,6 +44,10 @@ public class LoanProduct {
     @NotNull(message = "期数步长不能为空")
     @Min(value = 1, message = "期数步长不能小于1")
     private Integer termStep;
+
+    private BigDecimal minAmount;
+    
+    private BigDecimal maxAmount;
 
     @Size(max = 1000, message = "促销详情不能超过1000个字符")
     private String promotionDetails;

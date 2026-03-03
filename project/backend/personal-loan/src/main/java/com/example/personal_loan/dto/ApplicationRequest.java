@@ -1,5 +1,7 @@
 package com.example.personal_loan.dto;
 
+import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,4 +13,5 @@ public class ApplicationRequest {
     private Long productId;
     private Long optionId;
     private Integer term;
+    private BigDecimal loanAmount;
 }

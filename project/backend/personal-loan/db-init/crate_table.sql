@@ -1,5 +1,4 @@
 
-USE `person-loan`;
 CREATE TABLE users(  
     id int NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT 'Primary Key',
     user_name VARCHAR(16),
@@ -70,25 +69,30 @@ CREATE TABLE user_certification(
 
 /*
 * 评论功能？二期工程
+新增了最大和最小额度
 */
 CREATE TABLE loan_products(
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
     product_name VARCHAR(50) COMMENT '产品名称',
     description VARCHAR(255) COMMENT '产品描述',
     loan_usage VARCHAR(100) COMMENT '贷款用途(目前不需要)',
-    status VARCHAR(100) COMMENT 'ACTIVE, INACTIVE 表示已上架，已下架',
+    status VARCHAR(100) COMMENT '状态：上架中，已下架',
     min_term INT COMMENT '最短期数',
     max_term INT COMMENT '最长期数',
     term_step INT COMMENT '期限步长',
+    min_amount DECIMAL(12,2) NOT NULL COMMENT '最小贷款金额',
+    max_amount DECIMAL(12,2) NOT NULL COMMENT '最大贷款金额',
     promotion_details VARCHAR(255) COMMENT '促销详情',
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
 )COMMENT '贷款产品表';
 
+/* 
+* 删除了loan_amount DECIMAL(12,2) COMMENT '贷款金额'
+ */
 CREATE TABLE loan_options(
     id INT PRIMARY KEY AUTO_INCREMENT,
     product_id INT NOT NULL,
-    loan_amount DECIMAL(12,2) COMMENT '贷款金额',
     interest_rate DECIMAL(6,4) COMMENT '利率',
     loan_period INT COMMENT '年限',
     repaid_type VARCHAR(50) COMMENT '还款方式,等额本息, 等额本金, 先息后本, 一次性还本付息',
@@ -105,7 +109,7 @@ CREATE TABLE orders(
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
     user_id INT NOT NULL COMMENT '用户ID',
     product_id INT NOT NULL COMMENT '产品ID',
-    status VARCHAR(50) COMMENT '贷款状态,NORMAL,OVERDUE,SETTLED',
+    status VARCHAR(50) COMMENT '贷款状态,正常,已逾期,已完成',
     repaid_amount DECIMAL(12,2) COMMENT '已还金额',
     loan_amount DECIMAL(12,2) COMMENT '总贷款金额',
     interest_rate DECIMAL(6,4) COMMENT '利率',
@@ -124,7 +128,7 @@ CREATE TABLE loan_applications(
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '申请ID',
     user_id INT NOT NULL COMMENT '用户id',
     product_id INT NOT NULL COMMENT '产品id',
-    status VARCHAR(50) COMMENT '申请状态,PENDING,APPROVED,AI_REJECTED,MANUAL_REJECTED,CANCELLED',
+    status VARCHAR(50) COMMENT '申请状态,审核中,已通过,AI拒绝,人工拒绝,已取消',
     loan_amount DECIMAL(12,2) NOT NULL COMMENT '申请金额',
     interest_rate DECIMAL(6,4) COMMENT '申请时的利率 (审核后填写)',
     loan_period INT NOT NULL COMMENT '年限',

@@ -1,5 +1,6 @@
 package com.example.personal_loan.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import com.example.personal_loan.enums.ProductStatus;
@@ -19,6 +20,9 @@ public class ListProductResponse {
     private String description;
     private String loanUsage;
     private ProductStatus status;
+
+    private BigDecimal minAmount;
+    private BigDecimal maxAmount;
     
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;

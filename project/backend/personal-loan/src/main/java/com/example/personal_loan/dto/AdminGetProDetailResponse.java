@@ -1,5 +1,6 @@
 package com.example.personal_loan.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,6 +22,10 @@ public class AdminGetProDetailResponse {
     private String description;
     private String loanUsage;
     private List<Integer> terms;
+
+    private BigDecimal minAmount;
+    private BigDecimal maxAmount;
+
     private String promotionDetails;
     private ProductStatus status;
 

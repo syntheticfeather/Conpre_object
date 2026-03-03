@@ -7,9 +7,6 @@
         UPDATE loan_options
         <set>
             update_time = #{updateTime},
-            <if test="loanAmount != null">
-                loan_amount = #{loanAmount},
-            </if>
             <if test="interestRate != null">
                 interest_rate = #{interestRate},
             </if>

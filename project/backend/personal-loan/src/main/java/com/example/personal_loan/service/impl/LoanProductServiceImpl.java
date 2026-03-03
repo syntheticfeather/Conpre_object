@@ -1,5 +1,6 @@
 package com.example.personal_loan.service.impl;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,11 +51,22 @@ public class LoanProductServiceImpl implements LoanProductService{
         dto.setUpdateTime(LocalDateTime.now());
         BeanUtils.copyProperties(dto, product);
 
-        loanProductMapper.create(product); // MyBatis 会回填 id
+        loanProductMapper.create(product);
         dto.setId(product.getId());
 
+        // 期数判空?
         if (dto.getMinTerm() != null && dto.getMaxTerm() != null && dto.getMinTerm() > dto.getMaxTerm()) {
             throw new BusinessException(400, "最短期数不能大于最长期数");
+        }
+
+        if (dto.getMinAmount() == null || dto.getMaxAmount() == null) {
+            throw new BusinessException(400, "最小贷款金额和最大贷款金额不能为空");
+        }
+        if (dto.getMinAmount().compareTo(dto.getMaxAmount()) >= 0) {
+            throw new BusinessException(400, "最小贷款金额必须小于最大贷款金额");
+        }
+        if (dto.getMinAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessException(400, "最小贷款金额必须大于0");
         }
 
         // 批量插入选项
@@ -162,35 +174,27 @@ public class LoanProductServiceImpl implements LoanProductService{
         if (existing == null) {
             throw new BusinessException(404,"该产品不存在");
         }
-
-        // 只更新非空字段（避免覆盖为 null）
-        if (dto.getProductName() != null) {
-            existing.setProductName(dto.getProductName());
+        //校验期数和金额
+        if (dto.getMinTerm() != null && dto.getMaxTerm() != null) {
+            if (dto.getMinTerm() > dto.getMaxTerm()) {
+                throw new BusinessException(400, "最短期数不能大于最长期数");
+            }
         }
-        if (dto.getDescription() != null) {
-            existing.setDescription(dto.getDescription());
+        if (dto.getMinAmount() != null && dto.getMaxAmount() != null) {
+            if (dto.getMinAmount().compareTo(dto.getMaxAmount()) >= 0) {
+                throw new BusinessException(400, "最小贷款金额必须小于最大贷款金额");
+            }
+            if (dto.getMinAmount().compareTo(BigDecimal.ZERO) <= 0) {
+                throw new BusinessException(400, "最小贷款金额必须大于0");
+            }
         }
-        if (dto.getLoanUsage() != null) {
-            existing.setLoanUsage(dto.getLoanUsage());
+        if ((dto.getMinAmount() != null && dto.getMaxAmount() == null) || 
+            (dto.getMinAmount() == null && dto.getMaxAmount() != null)) {
+            throw new BusinessException(400, "最小贷款金额和最大贷款金额必须同时提供");
         }
-        if (dto.getMinTerm() != null) {
-            existing.setMinTerm(dto.getMinTerm());
-        }
-        if (dto.getMaxTerm() != null) {
-            existing.setMaxTerm(dto.getMaxTerm());
-        }
-        if (dto.getTermStep() != null) {
-            existing.setTermStep(dto.getTermStep());
-        }
-        if (dto.getPromotionDetails() != null) {
-            existing.setPromotionDetails(dto.getPromotionDetails());
-        }
-        if (dto.getMinTerm() != null && dto.getMaxTerm() != null 
-            && dto.getMinTerm() > dto.getMaxTerm()) {
-            throw new BusinessException(400, "最短期数不能大于最长期数");
-        }
+        // 更新
+        BeanUtils.copyProperties(dto, existing);
         existing.setUpdateTime(LocalDateTime.now());
-
         loanProductMapper.update(existing);
 
         // 处理 options：仅更新已存在的选项（带 id）
@@ -250,6 +254,8 @@ public class LoanProductServiceImpl implements LoanProductService{
         response.setDescription(product.getDescription());
         response.setLoanUsage(product.getLoanUsage());
         response.setTerms(terms);
+        response.setMinAmount(product.getMinAmount());
+        response.setMaxAmount(product.getMaxAmount());
         response.setPromotionDetails(product.getPromotionDetails());
         response.setStatus(product.getStatus());
         response.setCreateTime(product.getCreateTime());
@@ -271,6 +277,8 @@ public class LoanProductServiceImpl implements LoanProductService{
             response.setDescription(product.getDescription());
             response.setLoanUsage(product.getLoanUsage());
             response.setStatus(product.getStatus());
+            response.setMinAmount(product.getMinAmount());
+            response.setMaxAmount(product.getMaxAmount());
             response.setCreateTime(product.getCreateTime());
             response.setUpdateTime(product.getUpdateTime());
 
@@ -317,7 +325,6 @@ public class LoanProductServiceImpl implements LoanProductService{
                 .map(opt -> {
                     LoanOptionResponse resp = new LoanOptionResponse();
                     resp.setOptionId(opt.getOptionId());
-                    resp.setLoanAmount(opt.getLoanAmount());
                     resp.setInterestRate(opt.getInterestRate());
                     resp.setLoanPeriod(opt.getLoanPeriod());
                     resp.setRepaidType(opt.getRepaidType());
@@ -332,6 +339,7 @@ public class LoanProductServiceImpl implements LoanProductService{
             response.setDescription(product.getDescription());
             response.setLoanUsage(product.getLoanUsage());
             response.setPromotionDetails(product.getPromotionDetails());
+            response.setMaxAmount(product.getMaxAmount());
             response.setTerms(terms);
             response.setOptions(optionResponses);
 
@@ -361,7 +369,6 @@ public class LoanProductServiceImpl implements LoanProductService{
                 .map(opt -> {
                     LoanOptionResponse resp = new LoanOptionResponse();
                     resp.setOptionId(opt.getOptionId());
-                    resp.setLoanAmount(opt.getLoanAmount());
                     resp.setInterestRate(opt.getInterestRate());
                     resp.setLoanPeriod(opt.getLoanPeriod());
                     resp.setRepaidType(opt.getRepaidType());
@@ -376,6 +383,7 @@ public class LoanProductServiceImpl implements LoanProductService{
             response.setDescription(product.getDescription()); 
             response.setLoanUsage(product.getLoanUsage()); 
             response.setPromotionDetails(product.getPromotionDetails());
+            response.setMaxAmount(product.getMaxAmount());
             response.setTerms(terms);
             response.setOptions(optionResponses);
 

@@ -1,5 +1,6 @@
 package com.example.personal_loan.dto;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -17,6 +18,8 @@ public class UserGetProductResponse {
     private String description;
     private String loanUsage;
     private String promotionDetails;
+
+    private BigDecimal maxAmount;
 
     private List<Integer> terms;
     private List<LoanOptionResponse> options;   

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.personal_loan.dto.ApiResponse;
+import com.example.personal_loan.dto.GetCertResponse;
 import com.example.personal_loan.dto.LoginRequest;
 import com.example.personal_loan.dto.LoginResponse;
 import com.example.personal_loan.dto.RegisterRequest;
@@ -47,8 +48,9 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success(userService.userRegister(request),"注册成功"));
     }
 
-    // --- 认证上传接口 ---
-
+    /**
+     * 上传认证信息
+     */
     @PostMapping("/submit-all")
     public ResponseEntity<ApiResponse<Void>> submitAllAuth(
             HttpServletRequest request,
@@ -83,5 +85,21 @@ public class AuthController {
         Long userId = (Long) request.getAttribute("userId");
         int score = authService.calScore(userId);
         return ResponseEntity.ok(ApiResponse.success(score));
+    }
+
+    /**
+     * 获取已经上传的认证信息
+     */
+    @GetMapping("/cert-info")
+    public ResponseEntity<ApiResponse<GetCertResponse>> getCertInfo(HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        log.info("/api/auth/cert-info success called for user {} get cert information", userId);
+        try {
+            GetCertResponse certInfo = authService.getCert(userId);
+            return ResponseEntity.ok(ApiResponse.success(certInfo, "认证信息获取成功"));
+        } catch (Exception e) {
+            log.error("user {} get info failed", userId, e);
+            return ResponseEntity.status(500).body(ApiResponse.fail(500, "系统内部错误"));
+        }
     }
 }
