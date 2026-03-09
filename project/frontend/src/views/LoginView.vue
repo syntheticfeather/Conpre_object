@@ -231,17 +231,17 @@ const handlePasswordLogin = async () => {
     // 调用 API 登录
     const res = await authAPI.loginByPassword(formData.phone, formData.password)
     
-    if (res.data.code === 200) {
+    if (res.code === 200) {
       // 保存认证信息
       authStore.setAuthInfo({
-        token: res.data.data.token,
-        user: res.data.data.user
+        token: res.data.token,
+        user: res.data.user
       })
       
       success.value = true
       setTimeout(() => router.push('/dashboard'), 1500)
     } else {
-      errors.password = res.data.message || '用户名或密码错误'
+      errors.password = res.message || '用户名或密码错误'
     }
   } catch (err) {
     console.error('登录失败:', err)
@@ -258,12 +258,12 @@ const handleSmsLogin = async () => {
   loading.value = true
   try {
     const res = await authAPI.loginBySms(formData.phone, formData.smsCode)
-    if (res.data.code === 200) {
-      authStore.setToken(res.data.data.token, formData.phone)
+    if (res.code === 200) {
+      authStore.setToken(res.data.token, formData.phone)
       success.value = true
       setTimeout(() => router.push('/dashboard'), 1500)
     } else {
-      errors.smsCode = res.data.message || '验证码错误'
+      errors.smsCode = res.message || '验证码错误'
     }
   } catch (err) {
     console.error('登录失败:', err)
