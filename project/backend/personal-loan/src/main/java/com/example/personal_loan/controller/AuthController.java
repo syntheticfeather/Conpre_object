@@ -77,17 +77,6 @@ public class AuthController {
     }   
 
     /**
-     * 计算贷款分数
-     */
-    @GetMapping("/score")
-    public ResponseEntity<ApiResponse<Integer>> calScore(HttpServletRequest request) {
-        log.info("/api/auth/score success called");
-        Long userId = (Long) request.getAttribute("userId");
-        int score = authService.calScore(userId);
-        return ResponseEntity.ok(ApiResponse.success(score));
-    }
-
-    /**
      * 获取已经上传的认证信息
      */
     @GetMapping("/cert-info")

@@ -35,6 +35,30 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Map<String, Object>> handleRuntimeException(RuntimeException e) {
+        log.error("运行时异常: {}", e.getMessage(), e);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("code", 500);
+        response.put("message", "系统内部错误: " + e.getMessage());
+        response.put("data", null);
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> handleException(Exception e) {
+        log.error("系统异常: {}", e.getMessage(), e);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("code", 500);
+        response.put("message", "系统内部错误: " + e.getMessage());
+        response.put("data", null);
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<Map<String, Object>> handleAuthError(InvalidCredentialsException e) {
         Map<String, Object> body = new HashMap<>();

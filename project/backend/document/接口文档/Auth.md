@@ -136,3 +136,50 @@
 **postman测试结果**
 
 ![](../AuthImgs/submitAll.png "用户上传认证材料成功")
+
+## 获取已经上传的认证信息
+
+**网址**：/api/auth/cert-info
+
+**请求方式** GET
+
+**返回数据**：
+
+``` json
+{
+    "code": 200,
+    "data": {
+        "userCert": {
+            "userId": 10,
+            "idCard": "110101199003072316",
+            "creditScore": 625,
+            "bankCardId": "6214850200001234",
+            "workCertId": 2,
+            "triCertId": 2,
+            "immovableCertId": 2
+        },
+        "workCert": {
+            "workCertId": 2,
+            "employmentCertPath": "/uploads/work/employment/uploads/work/employment/employment_10_20260310_ipmkqw.png",
+            "salaryCertPath": "/uploads/work/salary/uploads/work/salary/salary_10_20260310_gkkvl6.png"
+        },
+        "triCert": {
+            "triCertId": 2,
+            "socialSecurityPath": "/uploads/tri/social-security/uploads/tri/social-security/social_10_20260310_zy4bwa.png",
+            "creditReportPath": null
+        },
+        "immovablesCert": {
+            "immovableCertId": 2,
+            "propertyCertPath": "/uploads/immovables/property/uploads/immovables/property/property_10_20260310_aab3id.png",
+            "carCertPath": "/uploads/immovables/car/uploads/immovables/car/car_10_20260310_ugodx5.png",
+            "totalValue": null
+        }
+    },
+    "message": "认证信息获取成功"
+}
+```
+
+**postman测试结果**：
+
+**成功**
+![](../AuthImgs/getCert.png "获取认证信息成功")

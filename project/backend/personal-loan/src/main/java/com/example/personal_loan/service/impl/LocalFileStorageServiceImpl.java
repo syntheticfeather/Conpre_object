@@ -57,6 +57,7 @@ public class LocalFileStorageServiceImpl implements LocalFileStorageService{
             return "/uploads/" + subDirPath + "/" + filename;
 
         } catch (IOException e) {
+            log.error("文件存储失败: prefix={}, userId={}, error={}", prefix, userId, e.getMessage(), e);
             throw new RuntimeException("文件存储失败: " + e.getMessage(), e);
         }
     }
