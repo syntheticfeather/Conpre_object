@@ -21,11 +21,42 @@
     "code": 200,
     "data": [
         {
+            "productId": 2,
+            "productName": "小微经营贷",
+            "description": "助力小微企业发展，快速审批，灵活还款",
+            "loanUsage": "进货周转、设备采购、门店扩张",
+            "promotionDetails": "前2期只还利息",
+            "maxAmount": 50000.00,
+            "terms": [
+                3,
+                6,
+                9,
+                12,
+                15,
+                18,
+                21,
+                24,
+                27,
+                30,
+                33,
+                36
+            ],
+            "options": [
+                {
+                    "optionId": 4,
+                    "interestRate": 0.0650,
+                    "loanPeriod": 12,
+                    "repaidType": "先息后本"
+                }
+            ]
+        },
+        {
             "productId": 1,
             "productName": "优享贷",
             "description": "专为信用良好用户定制，利率优惠，期限灵活",
             "loanUsage": "教育、购车、旅游、大额消费",
             "promotionDetails": "首年利率85折",
+            "maxAmount": 100000.00,
             "terms": [
                 6,
                 12,
@@ -41,59 +72,18 @@
             "options": [
                 {
                     "optionId": 1,
-                    "loanAmount": 30000.00,
                     "interestRate": 0.0390,
                     "loanPeriod": 24,
                     "repaidType": "等额本息"
                 },
                 {
                     "optionId": 2,
-                    "loanAmount": 80000.00,
                     "interestRate": 0.0410,
                     "loanPeriod": 36,
                     "repaidType": "等额本金"
                 },
                 {
                     "optionId": 3,
-                    "loanAmount": 150000.00,
-                    "interestRate": 0.0430,
-                    "loanPeriod": 60,
-                    "repaidType": "等额本息"
-                }
-            ]
-        },
-        {
-            "productId": 2,
-            "productName": "极速贷",
-            "description": "专为信用良好用户定制，利率优惠，期限灵活",
-            "loanUsage": "教育、购车、旅游、大额消费",
-            "promotionDetails": "首年利率85折",
-            "terms": [
-                6,
-                12,
-                18,
-                24,
-                30,
-                36
-            ],
-            "options": [
-                {
-                    "optionId": 4,
-                    "loanAmount": 30000.00,
-                    "interestRate": 0.0390,
-                    "loanPeriod": 24,
-                    "repaidType": "等额本息"
-                },
-                {
-                    "optionId": 5,
-                    "loanAmount": 80000.00,
-                    "interestRate": 0.0410,
-                    "loanPeriod": 36,
-                    "repaidType": "等额本金"
-                },
-                {
-                    "optionId": 6,
-                    "loanAmount": 150000.00,
                     "interestRate": 0.0430,
                     "loanPeriod": 60,
                     "repaidType": "等额本息"
@@ -123,9 +113,9 @@
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
-|name|string|是|贷款产品名称|优享贷|
+|name|string|是|贷款产品名称|小微经营贷|
 
-**请求示例（网址）** /api/loan-products/user/search?name=优享贷
+**请求示例（网址）** /api/loan-products/user/search?name=小微经营贷
 
 **返回数据**：
 
@@ -134,44 +124,32 @@
     "code": 200,
     "data": [
         {
-            "productId": 1,
-            "productName": "优享贷",
-            "description": "专为信用良好用户定制，利率优惠，期限灵活",
-            "loanUsage": "教育、购车、旅游、大额消费",
-            "promotionDetails": "首年利率85折",
+            "productId": 2,
+            "productName": "小微经营贷",
+            "description": "助力小微企业发展，快速审批，灵活还款",
+            "loanUsage": "进货周转、设备采购、门店扩张",
+            "promotionDetails": "前2期只还利息",
+            "maxAmount": 50000.00,
             "terms": [
+                3,
                 6,
+                9,
                 12,
+                15,
                 18,
+                21,
                 24,
+                27,
                 30,
-                36,
-                42,
-                48,
-                54,
-                60
+                33,
+                36
             ],
             "options": [
                 {
-                    "optionId": 1,
-                    "loanAmount": 30000.00,
-                    "interestRate": 0.0390,
-                    "loanPeriod": 24,
-                    "repaidType": "等额本息"
-                },
-                {
-                    "optionId": 2,
-                    "loanAmount": 80000.00,
-                    "interestRate": 0.0410,
-                    "loanPeriod": 36,
-                    "repaidType": "等额本金"
-                },
-                {
-                    "optionId": 3,
-                    "loanAmount": 150000.00,
-                    "interestRate": 0.0430,
-                    "loanPeriod": 60,
-                    "repaidType": "等额本息"
+                    "optionId": 4,
+                    "interestRate": 0.0650,
+                    "loanPeriod": 12,
+                    "repaidType": "先息后本"
                 }
             ]
         }
@@ -291,7 +269,7 @@
 
 ![](../loanProductImgs/logCreate.png)
 
-### 为指定产品批量增加选项（待修改）
+### 为指定产品批量增加选项
 
 **网址** /api/loan-products/admin/options/batch-create
 
@@ -308,8 +286,7 @@
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
-| loanAmount | number | 是 | 贷款额度（单位：元），最多12位数字，其中小数部分2位 | 20000.00, 50000.00 |
-| loanPeriod | integer | 是 | 贷款期限（单位：月）  | 18，24 |
+|loanPeriod|integer|是|贷款期限（单位：月）|18，24|
 | interestRate | number | 是 | 年化利率，最多6位数字，其中小数部分4位 | 0.055, 0.06 |
 | repaidType | string | 是 | 还款方式 | "等额本金","先息后本" |
 
@@ -320,13 +297,11 @@
   "productId": 2,
   "options": [
     {
-      "loanAmount": 20000.00,
       "interestRate": 0.055,
       "loanPeriod": 18,
       "repaidType": "等额本金"
     },
     {
-      "loanAmount": 50000.00,
       "interestRate": 0.06,
       "loanPeriod": 24,
       "repaidType": "先息后本"
@@ -581,7 +556,6 @@
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
 | id  | integer | 是 | 该产品需要更改的选项id | 2 |
-| loanAmount | number | 否 | 贷款额度（单位：元）,最多12位数字，其中小数部分2位|   |
 | loanPeriod |integer | 否 | 贷款期限（单位：月）|   |
 | interestRate | number | 否 | 年化利率,最多6位数字，其中小数部分4位 | 0.045  |
 | repaidType | string | 否 | 还款方式，"等额本金"、"等额本息"、"一次性还本付息" |  |
@@ -678,49 +652,26 @@
     "code": 200,
     "data": [
         {
-            "productId": 9,
-            "productName": "学子启航贷",
-            "description": "支持青年创业与技能提升，低门槛申请",
-            "loanUsage": "技能培训、创业启动、留学准备、电脑设备购置",
+            "productId": 4,
+            "productName": "灵活周转贷",
+            "description": "随借随还，按日计息，满足短期资金流动性需求",
+            "loanUsage": "应付账款垫付、临时库存补货、节日促销备货",
             "status": "已下架",
-            "createTime": "2025-12-10T14:26:22",
-            "updateTime": "2025-12-10T14:26:22"
-        },
-        {
-            "productId": 8,
-            "productName": "绿色生活贷",
-            "description": "鼓励购买新能源车、节能家电、安装光伏设备等绿色消费",
-            "loanUsage": "新能源电动车、节能空调、太阳能热水器、垃圾分类设备",
-            "status": "已下架",
-            "createTime": "2025-12-10T14:25:17",
-            "updateTime": "2025-12-10T06:29:09"
-        },
-        {
-            "productId": 7,
-            "productName": "乡村振兴助农贷",
-            "description": "支持农业生产、养殖扩建、农产品加工与销售",
-            "loanUsage": "购买种子化肥、农机设备、建设大棚、冷链仓储",
-            "status": "已下架",
-            "createTime": "2025-12-09T20:48:58",
-            "updateTime": "2025-12-10T06:29:09"
-        },
-        {
-            "productId": 2,
-            "productName": "小微经营贷",
-            "description": "助力小微企业发展，快速审批，灵活还款",
-            "loanUsage": "进货周转、设备采购、门店扩张",
-            "status": "上架中",
-            "createTime": "2025-12-05T09:46:05",
-            "updateTime": "2025-12-10T06:29:09"
+            "minAmount": 5000.00,
+            "maxAmount": 30000.00,
+            "createTime": "2026-03-10 10:25:00",
+            "updateTime": "2026-03-10 10:25:00"
         },
         {
             "productId": 1,
-            "productName": "优享贷 Pro",
+            "productName": "优享贷",
             "description": "专为信用良好用户定制，利率优惠，期限灵活",
             "loanUsage": "教育、购车、旅游、大额消费",
             "status": "上架中",
-            "createTime": "2025-12-02T09:40:40",
-            "updateTime": "2025-12-10T06:29:09"
+            "minAmount": 3000.00,
+            "maxAmount": 100000.00,
+            "createTime": "2026-03-03 15:49:04",
+            "updateTime": "2026-03-10 09:44:35"
         }
     ],
     "message": "操作成功"
@@ -758,7 +709,7 @@
         "productId": 1,
         "productName": "优享贷",
         "description": "专为信用良好用户定制，利率优惠，期限灵活",
-        "usage": "教育、购车、旅游、大额消费",
+        "loanUsage": "教育、购车、旅游、大额消费",
         "terms": [
             6,
             12,
@@ -771,40 +722,30 @@
             54,
             60
         ],
+        "minAmount": 3000.00,
+        "maxAmount": 100000.00,
         "promotionDetails": "首年利率85折",
-        "status": "INACTIVE",
-        "createTime": "2025-11-21T13:22:05",
-        "updateTime": "2025-12-01T13:26:08",
+        "status": "上架中",
+        "createTime": "2026-03-03 15:49:04",
+        "updateTime": "2026-03-10 09:44:35",
         "options": [
             {
                 "optionId": 1,
                 "productId": 1,
                 "loanPeriod": 24,
-                "loanAmount": 30000.00,
                 "interestRate": 0.0390,
                 "repaidType": "等额本息",
-                "createTime": "2025-11-21T13:22:05",
-                "updateTime": "2025-11-21T13:22:05"
+                "createTime": "2026-03-03 15:49:04",
+                "updateTime": "2026-03-03 15:49:04"
             },
             {
                 "optionId": 2,
                 "productId": 1,
                 "loanPeriod": 36,
-                "loanAmount": 80000.00,
                 "interestRate": 0.0410,
                 "repaidType": "等额本金",
-                "createTime": "2025-11-21T13:22:05",
-                "updateTime": "2025-11-21T13:22:05"
-            },
-            {
-                "optionId": 3,
-                "productId": 1,
-                "loanPeriod": 60,
-                "loanAmount": 150000.00,
-                "interestRate": 0.0430,
-                "repaidType": "等额本息",
-                "createTime": "2025-11-21T13:22:05",
-                "updateTime": "2025-11-21T13:22:05"
+                "createTime": "2026-03-03 15:49:04",
+                "updateTime": "2026-03-03 15:49:04"
             }
         ]
     },
@@ -835,7 +776,7 @@
 | updateStartDate   | String | 否 | 更新开始日期，格式yyyy-mm-dd | 2025-12-10                 |
 | updateEndDate    | String | 否 | 更新结束日期，格式yyyy-mm-dd | 2025-12-10                 |
 
-**请求示例（网址）**  localhost:8080/api/loan-products?createStartDate=2025-12-09&createEndDate=2025-12-09
+**请求示例（网址）**  localhost:8080/api/loan-products?createStartDate=2026-03-09&createEndDate=2026-03-10
 
 **返回数据**
 
@@ -844,13 +785,15 @@
     "code": 200,
     "data": [
         {
-            "productId": 7,
-            "productName": "乡村振兴助农贷",
-            "description": "支持农业生产、养殖扩建、农产品加工与销售",
-            "loanUsage": "购买种子化肥、农机设备、建设大棚、冷链仓储",
+            "productId": 4,
+            "productName": "灵活周转贷",
+            "description": "随借随还，按日计息，满足短期资金流动性需求",
+            "loanUsage": "应付账款垫付、临时库存补货、节日促销备货",
             "status": "已下架",
-            "createTime": "2025-12-09T20:48:58",
-            "updateTime": "2025-12-10T06:29:09"
+            "minAmount": 5000.00,
+            "maxAmount": 30000.00,
+            "createTime": "2026-03-10 10:25:00",
+            "updateTime": "2026-03-10 10:25:00"
         }
     ],
     "message": "操作成功"

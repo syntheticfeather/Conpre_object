@@ -9,7 +9,6 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
 
 import com.example.personal_loan.dto.ListProductResponse;
 import com.example.personal_loan.entity.LoanProduct;
@@ -97,7 +96,6 @@ public interface LoanProductMapper {
             "min_term as minTerm, " +
             "max_term as maxTerm, " +
             "term_step as termStep, " +
-            "min_amount AS minAmount, " +
             "max_amount AS maxAmount, " +
             "promotion_details as promotionDetails, " +
             "create_time as createTime, " +
