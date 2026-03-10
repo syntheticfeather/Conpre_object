@@ -1,32 +1,14 @@
-JavaStudy/Strin/L.java
-*.drawio.bkp
+# IDE
+.idea/
 .vscode/
-project/backend/.idea/vcs.xml
-project/backend/.idea/modules.xml
-project/backend/.idea/misc.xml
-project/backend/.idea/jarRepositories.xml
-project/backend/.idea/encodings.xml
-project/backend/.idea/compiler.xml
-project/backend/.idea/backend.iml
-project/backend/.idea/backend.iml
-project/backend/.idea/compiler.xml
-project/backend/.idea/encodings.xml
-project/backend/.idea/jarRepositories.xml
-project/backend/.idea/misc.xml
-project/backend/.idea/modules.xml
-project/backend/.idea/vcs.xml
-project/backend/.idea/backend.iml
-project/backend/.idea/compiler.xml
-project/backend/.idea/backend.iml
-/project/backend/.idea
-/project/backend/.idea
-.idea/sqldialects.xml
-.idea/misc.xml
-.idea/dataSources.xml
-.idea/data_source_mapping.xml
-.idea/compiler.xml
-需求分析/.idea/需求分析.iml
-需求分析/.idea/vcs.xml
-需求分析/.idea/modules.xml
-需求分析/.idea/misc.xml
-project/frontend/document/3.10计划.md
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# JavaStudy (学习笔记，不纳入版本控制)
+JavaStudy/
+
+# Misc
+*.drawio.bkp
