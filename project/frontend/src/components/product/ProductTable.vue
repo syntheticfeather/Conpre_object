@@ -42,6 +42,7 @@
             <th>贷款名称</th>
             <th>贷款描述</th>
             <th>贷款用途</th>
+            <th>金额范围</th>
             <th>产品状态</th>
             <th>更新时间</th>
             <th>创建时间</th>
@@ -59,6 +60,7 @@
             <td>{{ product.productName || '—' }}</td>
             <td :title="product.description" class="ellipsis">{{ product.description || '—' }}</td>
             <td>{{ product.loanUsage || '—' }}</td>
+            <td>{{ product.minAmount || 0 }} - {{ product.maxAmount || 0 }} 元</td>
             <td>{{ product.status || '—' }}</td>
             <td>{{ formatDate(product.updateTime) }}</td>
             <td>{{ formatDate(product.createTime) }}</td>
@@ -83,7 +85,7 @@
             </td>
           </tr>
           <tr v-if="loanStore.products.length === 0">
-            <td colspan="8" style="text-align: center;">
+            <td colspan="9" style="text-align: center;">
               {{ hasSearchCriteria ? '未找到符合条件的商品' : '暂无产品' }}
             </td>
           </tr>
@@ -91,23 +93,12 @@
       </table>
 
       <!-- 分页 -->
-      <div class="pagination">
-        <button 
-          :disabled="currentPage <= 1" 
-          @click="currentPage--"
-          class="page-btn"
-        >
-          上一页
-        </button>
-        <span>第 {{ currentPage }} 页，共 {{ totalPages }} 页</span>
-        <button 
-          :disabled="currentPage >= totalPages" 
-          @click="currentPage++"
-          class="page-btn"
-        >
-          下一页
-        </button>
-      </div>
+      <BasePagination
+        :current-page="currentPage"
+        :total="loanStore.products.length"
+        :page-size="pageSize"
+        @page-change="handlePageChange"
+      />
     </div>
 
     <!-- 产品详情展示区域 -->
@@ -125,8 +116,9 @@
 import { ref, computed, onMounted } from 'vue'
 import { useLoanStore } from '@/stores/loan'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { loanAPI } from '@/api'
+import { loanAPI, applicationAPI } from '@/api'
 import ProductDetailPanel from './ProductDetailPanel.vue'
+import BasePagination from '@/components/shared/BasePagination.vue'
 
 const loanStore = useLoanStore()
 
@@ -141,11 +133,15 @@ const hasSearchCriteria = computed(() => {
 // 分页
 const currentPage = ref(1)
 const pageSize = 5
-const totalPages = computed(() => Math.ceil(loanStore.products.length / pageSize))
 const paginatedProducts = computed(() => {
   const start = (currentPage.value - 1) * pageSize
   return loanStore.products.slice(start, start + pageSize)
 })
+
+// 分页变化处理
+const handlePageChange = (page) => {
+  currentPage.value = page
+}
 
 // 选中状态
 const selectedProductId = ref(null)
@@ -180,8 +176,8 @@ const searchProducts = async () => {
     // 直接调用 API 获取数据
     const response = await loanAPI.searchProductsByTime(params)
     
-    if (response.data?.code === 200 && response.data?.data) {
-      loanStore.products = response.data.data
+    if (response.code === 200 && response.data) {
+      loanStore.products = response.data
       
       // 显示搜索结果信息
       if (loanStore.products.length > 0) {
@@ -239,8 +235,7 @@ const handleProductSaved = () => {
 }
 
 // 切换产品状态
-const toggleProductStatus = async (product, action, event) => {
-  event.stopPropagation()
+const toggleProductStatus = async (product, action) => {
   try {
     await ElMessageBox.confirm(
       `确定要${action === 'active' ? '上架' : '下架'}产品【${product.productName}】吗？`,
@@ -262,8 +257,7 @@ const toggleProductStatus = async (product, action, event) => {
 }
 
 // 删除产品
-const deleteProduct = async (product, event) => {
-  event.stopPropagation()
+const deleteProduct = async (product) => {
   try {
     await ElMessageBox.confirm(
       `确定删除产品【${product.productName}】？`,
@@ -298,7 +292,7 @@ const deleteProduct = async (product, event) => {
 // 检查待审申请
 const checkPendingApplications = async (productId) => {
   try {
-    const response = await loanAPI.getPendingApplications()
+    const response = await applicationAPI.getPendingApplications()
     return response.data?.some(app => app.productId === productId) || false
   } catch (error) {
     console.error('检查待审申请失败:', error)

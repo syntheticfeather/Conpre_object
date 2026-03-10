@@ -14,8 +14,8 @@ export const useLoanStore = defineStore('loan', {
       this.loading = true
       try {
         const response = await loanAPI.getProducts()
-        if (response.data.code === 200) {
-          this.products = response.data.data || []
+        if (response.code === 200) {
+          this.products = response.data || []
         }
       } catch (error) {
         this.error = error.message
@@ -29,8 +29,8 @@ export const useLoanStore = defineStore('loan', {
       this.loading = true
       try {
         const response = await loanAPI.getProduct(productId)
-        if (response.data.code === 200) {
-          this.currentProduct = response.data.data
+        if (response.code === 200) {
+          this.currentProduct = response.data
         }
       } catch (error) {
         this.error = error.message
@@ -44,16 +44,16 @@ export const useLoanStore = defineStore('loan', {
       this.loading = true
       try {
         const response = await loanAPI.addProduct(productData)
-        if (response.data.code === 200) {
+        if (response.code === 200) {
           await this.fetchProducts()
           return { success: true }
         }
-        return { success: false, message: response.data.message }
+        return { success: false, message: response.message }
       } catch (error) {
         this.error = error.message
         return { 
           success: false, 
-          message: error.response?.data?.message || '添加失败' 
+          message: error.response?.message || '添加失败' 
         }
       } finally {
         this.loading = false
@@ -64,16 +64,16 @@ export const useLoanStore = defineStore('loan', {
       this.loading = true
       try {
         const response = await loanAPI.updateProduct(productId, productData)
-        if (response.data.code === 200) {
+        if (response.code === 200) {
           await this.fetchProducts()
           return { success: true }
         }
-        return { success: false, message: response.data.message }
+        return { success: false, message: response.message }
       } catch (error) {
         this.error = error.message
         return { 
           success: false, 
-          message: error.response?.data?.message || '更新失败' 
+          message: error.response?.message || '更新失败' 
         }
       } finally {
         this.loading = false
@@ -84,16 +84,16 @@ export const useLoanStore = defineStore('loan', {
       this.loading = true
       try {
         const response = await loanAPI.deleteProduct(productId)
-        if (response.data.code === 200) {
+        if (response.code === 200) {
           await this.fetchProducts()
           return { success: true }
         }
-        return { success: false, message: response.data.message }
+        return { success: false, message: response.message }
       } catch (error) {
         this.error = error.message
         return { 
           success: false, 
-          message: error.response?.data?.message || '删除失败' 
+          message: error.response?.message || '删除失败' 
         }
       } finally {
         this.loading = false
@@ -104,16 +104,16 @@ export const useLoanStore = defineStore('loan', {
       this.loading = true
       try {
         const response = await loanAPI.toggleStatus(productId, action)
-        if (response.data.code === 200) {
+        if (response.code === 200) {
           await this.fetchProducts()
           return { success: true }
         }
-        return { success: false, message: response.data.message }
+        return { success: false, message: response.message }
       } catch (error) {
         this.error = error.message
         return { 
           success: false, 
-          message: error.response?.data?.message || '操作失败' 
+          message: error.response?.message || '操作失败' 
         }
       } finally {
         this.loading = false

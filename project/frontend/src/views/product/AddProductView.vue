@@ -74,6 +74,33 @@
             </el-col>
           </el-row>
           
+          <el-row :gutter="20" style="max-width: 500px;">
+            <el-col :span="12">
+              <el-form-item label="最小金额" prop="minAmount">
+                <el-input-number
+                  v-model="form.minAmount"
+                  :min="0"
+                  :step="1000"
+                  controls-position="right"
+                  style="width: 100%;"
+                  placeholder="最小金额"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="最大金额" prop="maxAmount">
+                <el-input-number
+                  v-model="form.maxAmount"
+                  :min="form.minAmount"
+                  :step="1000"
+                  controls-position="right"
+                  style="width: 100%;"
+                  placeholder="最大金额"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          
           <el-form-item label="促销信息">
             <el-input
               v-model="form.promotionDetails"
@@ -99,7 +126,6 @@
           <table class="options-table">
             <thead>
               <tr>
-                <th>额度</th>
                 <th>期限(月)</th>
                 <th>利率(%)</th>
                 <th>还款方式</th>
@@ -108,16 +134,6 @@
             </thead>
             <tbody>
               <tr v-for="(option, index) in form.options" :key="index">
-                <td>
-                  <el-input-number
-                    v-model="option.loanAmount"
-                    :min="0"
-                    :step="1000"
-                    controls-position="right"
-                    style="width: 120px;"
-                    placeholder="额度"
-                  />
-                </td>
                 <td>
                   <el-input-number
                     v-model="option.loanPeriod"
@@ -163,7 +179,7 @@
                 </td>
               </tr>
               <tr v-if="form.options.length === 0">
-                <td colspan="5" class="empty-table">
+                <td colspan="4" class="empty-table">
                   <div>
                     <span style="color: #999; display: block; margin-bottom: 10px;">
                       暂无方案，请点击"增加方案"按钮添加
@@ -211,9 +227,11 @@ const form = reactive({
   productName: '',
   description: '',
   loanUsage: '',
-  minTerm: 0,
-  maxTerm: 0,
-  termStep: 1,
+  minTerm: 3,
+  maxTerm: 24,
+  termStep: 3,
+  minAmount: 10000,
+  maxAmount: 50000,
   promotionDetails: '',
   options: []
 })
@@ -280,7 +298,6 @@ const handleCancel = () => {
 // 添加方案行
 const addOptionRow = () => {
   form.options.push({
-    loanAmount: 10000,
     loanPeriod: 12,
     interestRate: 5.0,
     repaidType: '等额本息'
@@ -331,11 +348,6 @@ const validateForm = () => {
   for (let i = 0; i < form.options.length; i++) {
     const option = form.options[i]
     
-    if (!option.loanAmount || option.loanAmount <= 0) {
-      ElMessage.warning(`第 ${i + 1} 个方案：请输入有效的额度`)
-      return false
-    }
-    
     if (!option.loanPeriod || option.loanPeriod <= 0) {
       ElMessage.warning(`第 ${i + 1} 个方案：请输入有效的期限`)
       return false
@@ -369,9 +381,10 @@ const handleSubmit = async () => {
       minTerm: Number(form.minTerm),
       maxTerm: Number(form.maxTerm),
       termStep: Number(form.termStep),
+      minAmount: Number(form.minAmount),
+      maxAmount: Number(form.maxAmount),
       promotionDetails: form.promotionDetails.trim(),
       options: form.options.map(opt => ({
-        loanAmount: Number(opt.loanAmount),
         loanPeriod: Number(opt.loanPeriod),
         interestRate: Number(opt.interestRate) / 100, // 转换为小数
         repaidType: opt.repaidType

@@ -15,8 +15,8 @@ export const useApplicationStore = defineStore('application', {
       this.loading = true
       try {
         const response = await applicationAPI.getPendingApplications()
-        if (response.data.code === 200) {
-          this.pendingApplications = response.data.data || []
+        if (response.code === 200) {
+          this.pendingApplications = response.data || []
         }
       } catch (error) {
         this.error = error.message
@@ -30,8 +30,8 @@ export const useApplicationStore = defineStore('application', {
       this.loading = true
       try {
         const response = await applicationAPI.getCompletedApplications()
-        if (response.data.code === 200) {
-          this.completedApplications = response.data.data || []
+        if (response.code === 200) {
+          this.completedApplications = response.data || []
         }
       } catch (error) {
         this.error = error.message
@@ -45,8 +45,8 @@ export const useApplicationStore = defineStore('application', {
       this.loading = true
       try {
         const response = await applicationAPI.getApplicationDetail(applicationId)
-        if (response.data.code === 200) {
-          this.currentApplication = response.data.data
+        if (response.code === 200) {
+          this.currentApplication = response.data
         }
       } catch (error) {
         this.error = error.message
@@ -60,18 +60,18 @@ export const useApplicationStore = defineStore('application', {
       this.loading = true
       try {
         const response = await applicationAPI.submitReview(reviewData)
-        if (response.data.code === 200) {
+        if (response.code === 200) {
           // 刷新列表
           await this.fetchPendingApplications()
           await this.fetchCompletedApplications()
           return { success: true }
         }
-        return { success: false, message: response.data.message }
+        return { success: false, message: response.message }
       } catch (error) {
         this.error = error.message
         return { 
           success: false, 
-          message: error.response?.data?.message || '提交失败' 
+          message: error.response?.message || '提交失败' 
         }
       } finally {
         this.loading = false

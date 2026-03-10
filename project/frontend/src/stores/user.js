@@ -50,11 +50,11 @@ export const useUserStore = defineStore('user', {
     async fetchUserStats() {
       try {
         const res = await userAPI.getUserStats()
-        if (res.data?.code === 200) {
-          this.users = res.data.data || []
+        if (res.code === 200) {
+          this.users = res.data || []
           this.currentPage = 1
         } else {
-          console.warn('获取用户列表失败:', res.data?.message)
+          console.warn('获取用户列表失败:', res.message)
         }
       } catch (error) {
         console.error('请求用户列表出错:', error)
@@ -66,11 +66,11 @@ export const useUserStore = defineStore('user', {
     async fetchBlacklist() {
       try {
         const res = await userAPI.getBlacklist()
-        if (res.data?.code === 200) {
-          this.blacklist = res.data.data || []
+        if (res.code === 200) {
+          this.blacklist = res.data || []
           this.blacklistPage = 1
         } else {
-          console.warn('获取黑名单失败:', res.data?.message)
+          console.warn('获取黑名单失败:', res.message)
         }
       } catch (error) {
         console.error('请求黑名单出错:', error)
@@ -82,11 +82,11 @@ export const useUserStore = defineStore('user', {
     async fetchUserDetail(userId) {
       try {
         const res = await userAPI.getUserDetail(userId)
-        if (res.data?.code === 200) {
-          this.userDetail = res.data.data
+        if (res.code === 200) {
+          this.userDetail = res.data
           this.selectedUserId = userId
         } else {
-          console.warn('获取用户详情失败:', res.data?.message)
+          console.warn('获取用户详情失败:', res.message)
         }
       } catch (error) {
         console.error('获取用户详情出错:', error)
@@ -98,11 +98,11 @@ export const useUserStore = defineStore('user', {
     async fetchBlacklistUserDetail(userId) {
       try {
         const res = await userAPI.getUserDetail(userId)
-        if (res.data?.code === 200) {
-          this.blacklistUserDetail = res.data.data
+        if (res.code === 200) {
+          this.blacklistUserDetail = res.data
           this.selectedBlacklistUserId = userId
         } else {
-          console.warn('获取黑名单用户详情失败:', res.data?.message)
+          console.warn('获取黑名单用户详情失败:', res.message)
         }
       } catch (error) {
         console.error('获取黑名单用户详情出错:', error)
@@ -115,13 +115,13 @@ export const useUserStore = defineStore('user', {
       try {
         // 注意：后端期望接收一个对象，如 { userId, level }
         const res = await userAPI.addToBlacklist({ userId, blackLevel })
-        if (res.data?.code === 200) {
+        if (res.code === 200) {
           // 刷新两个列表
           await this.fetchUserStats()
           await this.fetchBlacklist()
         } else {
-          console.warn('加入黑名单失败:', res.data?.message)
-          throw new Error(res.data?.message || '操作失败')
+          console.warn('加入黑名单失败:', res.message)
+          throw new Error(res.message || '操作失败')
         }
       } catch (error) {
         console.error('加入黑名单出错:', error)
@@ -133,12 +133,12 @@ export const useUserStore = defineStore('user', {
     async removeFromBlacklist(userId) {
       try {
         const res = await userAPI.removeFromBlacklist(userId)
-        if (res.data?.code === 200) {
+        if (res.code === 200) {
           await this.fetchUserStats()
           await this.fetchBlacklist()
         } else {
-          console.warn('解除黑名单失败:', res.data?.message)
-          throw new Error(res.data?.message || '操作失败')
+          console.warn('解除黑名单失败:', res.message)
+          throw new Error(res.message || '操作失败')
         }
       } catch (error) {
         console.error('解除黑名单出错:', error)

@@ -159,8 +159,8 @@ const fetchApplicationDetail = async (id) => {
   loading.value = true
   try {
     const response = await applicationAPI.getApplicationDetail(id)
-    // 解析响应中的 data 字段
-    applicationDetail.value = response.data
+    // 直接使用响应，因为response已经是response.data
+    applicationDetail.value = response
   } catch (error) {
     console.error('Failed to fetch application detail:', error)
     // 错误处理逻辑

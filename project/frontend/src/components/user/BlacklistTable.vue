@@ -47,23 +47,12 @@
       </table>
 
       <!-- 分页 -->
-      <div class="pagination">
-        <button
-          :disabled="currentPage <= 1"
-          @click="currentPage--"
-          class="page-btn"
-        >
-          上一页
-        </button>
-        <span>第 {{ currentPage }} 页，共 {{ totalPages }} 页</span>
-        <button
-          :disabled="currentPage >= totalPages"
-          @click="currentPage++"
-          class="page-btn"
-        >
-          下一页
-        </button>
-      </div>
+      <BasePagination
+        :current-page="currentPage"
+        :total="userStore.blacklist.length"
+        :page-size="pageSize"
+        @page-change="handlePageChange"
+      />
     </div>
   </div>
 </template>
@@ -72,6 +61,7 @@
 import { ref, computed, onMounted, defineEmits } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import BasePagination from '@/components/shared/BasePagination.vue'
 
 // 定义 emits
 const emit = defineEmits(['user-selected'])
@@ -81,11 +71,15 @@ const userStore = useUserStore()
 // 分页控制（由组件管理）
 const currentPage = ref(1)
 const pageSize = 5
-const totalPages = computed(() => Math.ceil(userStore.blacklist.length / pageSize))
 const paginatedBlacklist = computed(() => {
   const start = (currentPage.value - 1) * pageSize
   return userStore.blacklist.slice(start, start + pageSize)
 })
+
+// 分页变化处理
+const handlePageChange = (page) => {
+  currentPage.value = page
+}
 
 // 选中用户（仅用于高亮显示）
 const selectedUserId = ref(null)

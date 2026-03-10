@@ -28,6 +28,10 @@
           <span class="value">{{ productData.minTerm || 0 }} - {{ productData.maxTerm || 0 }} 个月</span>
         </div>
         <div class="info-row">
+          <span class="label">金额范围：</span>
+          <span class="value">{{ productData.minAmount || 0 }} - {{ productData.maxAmount || 0 }} 元</span>
+        </div>
+        <div class="info-row">
           <span class="label">促销信息：</span>
           <span class="value">{{ productData.promotionDetails || '—' }}</span>
         </div>
@@ -71,6 +75,12 @@
         <el-form-item label="期限步长" prop="termStep">
           <el-input-number v-model="editForm.termStep" :min="1" />
         </el-form-item>
+        <el-form-item label="最小金额" prop="minAmount">
+          <el-input-number v-model="editForm.minAmount" :min="0" :step="1000" />
+        </el-form-item>
+        <el-form-item label="最大金额" prop="maxAmount">
+          <el-input-number v-model="editForm.maxAmount" :min="editForm.minAmount" :step="1000" />
+        </el-form-item>
         <el-form-item label="促销信息">
           <el-input v-model="editForm.promotionDetails" type="textarea" rows="2" />
         </el-form-item>
@@ -88,7 +98,6 @@
         <table class="options-table">
           <thead>
             <tr>
-              <th>额度</th>
               <th>期限(月)</th>
               <th>利率</th>
               <th>还款方式</th>
@@ -97,15 +106,6 @@
           </thead>
           <tbody>
             <tr v-for="(option, index) in options" :key="index">
-              <td v-if="isEditMode">
-                <el-input-number
-                  v-model="option.loanAmount"
-                  :min="0"
-                  step="1000"
-                />
-              </td>
-              <td v-else>{{ option.loanAmount }}</td>
-              
               <td v-if="isEditMode">
                 <el-input-number
                   v-model="option.loanPeriod"
@@ -141,7 +141,7 @@
               </td>
             </tr>
             <tr v-if="options.length === 0">
-              <td :colspan="isEditMode ? 5 : 4" style="text-align: center;">
+              <td :colspan="isEditMode ? 4 : 3" style="text-align: center;">
                 暂无可选方案
               </td>
             </tr>
@@ -200,13 +200,13 @@ const editRules = {
 const loadProductDetail = async () => {
   try {
     const response = await loanAPI.getProduct(props.productId)
-    if (response.data?.code === 200) {
-      productData.value = response.data.data || {}
+    if (response.code === 200) {
+      productData.value = response.data || {}
       editForm.value = { ...productData.value }
       originalOptions.value = productData.value.options || []
       options.value = [...originalOptions.value]
     } else {
-      ElMessage.error('加载产品详情失败: ' + (response.data?.message || '未知错误'))
+      ElMessage.error('加载产品详情失败: ' + (response.message || '未知错误'))
     }
   } catch (error) {
     ElMessage.error('加载产品详情失败: ' + (error.message || '请重试'))
@@ -228,7 +228,6 @@ const cancelEdit = () => {
 // 添加方案行
 const addOptionRow = () => {
   options.value.push({
-    loanAmount: 0,
     loanPeriod: 12,
     interestRate: 0.05,
     repaidType: '等额本息'
