@@ -19,24 +19,24 @@
     "code": 200,
     "data": [
         {
-            "applicationId": 5,
-            "userName": "alice",
-            "productName": "优享贷 Pro",
-            "loanAmount": 80000,
-            "loanPeriod": 36,
-            "term": 12,
-            "applyTime": "2025-12-09T20:55:36",
-            "rejectReason": "AI rejected\n"
+            "applicationId": 4,
+            "userName": "Alice",
+            "productName": "优享贷",
+            "loanAmount": 5000.00,
+            "loanPeriod": 24,
+            "term": 6,
+            "status": "AI拒绝",
+            "applyTime": "2026-03-10 14:36:10"
         },
         {
-            "applicationId": 4,
-            "userName": "alice",
-            "productName": "优享贷 Pro",
-            "loanAmount": 30000,
+            "applicationId": 1,
+            "userName": "Alice",
+            "productName": "优享贷",
+            "loanAmount": 5000.00,
             "loanPeriod": 24,
-            "term": 12,
-            "applyTime": "2025-12-09T20:55:25",
-            "rejectReason": "AI rejected\n"
+            "term": 6,
+            "status": "AI拒绝",
+            "applyTime": "2026-03-10 14:34:40"
         }
     ],
     "message": "操作成功"

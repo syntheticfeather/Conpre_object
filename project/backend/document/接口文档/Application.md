@@ -18,17 +18,19 @@
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
-| productId | integer | 是 | 产品id | 1 |
-| optionId |  integer | 是 | 产品某选项id | 3 |
-| term  | integer  |  是  | 用户选择的期数，只能从产品指定的terms数组里选择 | 6 |
+|productId|integer|是|产品id|1|
+|optionId|integer|是|产品某选项id|3|
+|term|integer|是|用户选择的期数，只能从产品指定的terms数组里选择|6|
+|loanAmount|number|是|用户贷款的金额，不能高于最高额度|5000.00|
 
 **请求示例（请求体）**:
 
 ``` json
 {
     "productId":1,
-    "optionId":3,
-    "term":6
+    "optionId":1,
+    "term":6,
+    "loanAmount":5000.00
 }
 ```
 
@@ -60,9 +62,9 @@
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
-| applicationId | integer | 是 | 申请id | 4 |
+|applicationId|integer|是|申请id|1|
 
-**请求示例（网址）** /api/loan-applications/my/4
+**请求示例（网址）** /api/loan-applications/my/1
 
 **返回数据**:
 
@@ -70,21 +72,17 @@
 {
     "code": 200,
     "data": {
-        "id": 4,
-        "userId": 1,
-        "productId": 1,
-        "userName": "alice",
-        "phoneNumber": "13800138000",
-        "productName": "优享贷 Pro",
-        "loanAmount": 30000,
-        "interestRate": 0.039,
+        "applicationId": 1,
+        "productName": "优享贷",
+        "loanAmount": 5000.00,
+        "interestRate": 0.0390,
         "loanPeriod": 24,
-        "term": 12,
+        "term": 6,
         "repaidType": "等额本息",
-        "status": "AI_REJECTED",
-        "applyTime": "2025-12-09T20:55:25",
-        "reviewTime": "2025-12-09T20:55:27",
-        "rejectReason": "AI rejected\n"
+        "status": "AI拒绝",
+        "applyTime": "2026-03-10 14:34:40",
+        "reviewTime": null,
+        "rejectReason": "AI审核未通过\n"
     },
     "message": "操作成功"
 }
@@ -98,7 +96,7 @@
 
 ![](../ApplicationImgs/logUserGetOne.png)
 
-### 查看所有申请
+### 查看所有申请（待修改）
 
 **网址** /api/loan-applications/my
 
@@ -181,7 +179,7 @@
 
 ![](../ApplicationImgs/logWithdraw.png)
 
-## 管理员使用
+## 管理员使用（待修改）
 
 ### 获取任意用户的单个贷款申请详情
 
