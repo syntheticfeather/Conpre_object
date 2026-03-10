@@ -35,8 +35,9 @@
               <button
                 class="remove-btn"
                 @click.stop="removeFromBlacklist(user)"
+                :disabled="user.removeTime !== null"
               >
-                解除黑名单
+                {{ user.removeTime !== null ? '已解除' : '解除黑名单' }}
               </button>
             </td>
           </tr>
@@ -211,6 +212,11 @@ tbody td {
 
 .remove-btn:hover {
   background-color: #218838;
+}
+
+.remove-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }
 
 /* 分页 */

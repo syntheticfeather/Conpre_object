@@ -11,9 +11,14 @@ const userAPI = {
   // 添加到黑名单
   addToBlacklist: (blacklistData) => request.post('/users/blacklist/add', blacklistData),
   // 从黑名单移除
-  removeFromBlacklist: (userId) => request.post('/users/blacklist/remove', { userId }),
+  removeFromBlacklist: (userId) =>
+    request.post('/users/blacklist/remove', `userId=${userId}`, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    }),
   // 根据信誉分从高到低查询用户
-  searchUsersByCredit: () => request.get('/api/users/search-by-credit'),
+  searchUsersByCredit: () => request.get('/users/search-by-credit'),
 }
 
 export default userAPI
