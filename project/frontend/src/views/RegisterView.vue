@@ -261,8 +261,8 @@ const handleSubmit = async () => {
     })
 
     // 检查返回 code
-    if (result.data.code !== 200) {
-      throw new Error(result.data.message || '注册失败')
+    if (result.code !== 200) {
+      throw new Error(result.message || '注册失败')
     }
 
     // 显示成功
