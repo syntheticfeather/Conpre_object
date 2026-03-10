@@ -34,18 +34,18 @@ public class OutboxMessagePoller {
     @Scheduled(fixedDelay = 5000)
     @Transactional
     public void pollAndSendOutboxMessages() {
-//        log.info("🔎 轮询器开始工作...");
+        // log.info("轮询器开始工作...");
         try {
             List<OutboxMessage> pendingMessages = outboxMapper.selectPendingMessages(BATCH_SIZE);
             if (pendingMessages.isEmpty()) {
                 return;
             }
-            log.info("🔍 找到 {} 条待发送消息，开始处理...", pendingMessages.size());
+            log.info("找到 {} 条待发送消息，开始处理...", pendingMessages.size());
             for (OutboxMessage message : pendingMessages) {
                 sendAndMarkMessage(message);
             }
         } catch (Exception e) {
-            log.error("🚨 轮询器异常", e);
+            log.error("轮询器异常", e);
         }
     }
 
@@ -65,10 +65,10 @@ public class OutboxMessagePoller {
             );
             // 标记为已发送（在独立事务中）
             outboxMapper.markAsSent(message.getMessageId());
-            log.info("✅ 消息发送成功: messageId={}, topic={}",
+            log.info("消息发送成功: messageId={}, topic={}",
                     message.getMessageId(), message.getTopic());
         } catch (Exception e) {
-            log.info("❌ 发送消息失败，标记为 FAILED: messageId={}",
+            log.info("发送消息失败，标记为 FAILED: messageId={}",
                     message.getMessageId(), e);
             outboxMapper.markAsFailed(message.getMessageId());
         }

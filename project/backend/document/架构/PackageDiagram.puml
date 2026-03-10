@@ -1,0 +1,92 @@
+@startuml
+skinparam packageStyle rectangle
+title Personal Loan Backend - 包图设计
+
+package "com.example.personal_loan" {
+  package controller {
+    [AuthController]
+    [UserController]
+    [LoanProductController]
+    [ApplicationController]
+    [ManualApproveController]
+    [OrderController]
+  }
+  package service {
+    [AIApproveService]
+    [ApplicationService]
+    [AuthService]
+    [LoanProductService]
+    [LocalFileStorageService]
+    [ManualApproveService]
+    [OrderService]
+    [PayService]
+    package impl {
+      [AIApproveServiceImpl]
+      [ApplicationServiceImpl]
+      [AuthServiceImpl]
+      [LoanProductServiceImpl]
+      [LocalFileStorageServiceImpl]
+      [ManualApproveServiceImpl]
+      [OrderServiceImpl]
+      [UserServiceImpl]
+    }
+  }
+  package config {
+    [SecurityConfig]
+    [WebConfig]
+    [CorsConfig]
+    [RedisConfig]
+    [RabbitMQConfig]
+    [FileStorageConfig]
+  }
+  package security {
+    [JwtAuthenticationFilter]
+  }
+  package handler {
+    [GlobalExceptionHandler]
+    [JwtInterceptor]
+  }
+  package mapper {
+    [ApplicationMapper]
+    [LoanProductMapper]
+    [LoanOptionMapper]
+    [OrderMapper]
+    [UserMapper]
+  }
+  package dto
+  package entity
+  package enums
+  package mq {
+    [LoanApplicationConsumer]
+    [OutboxMessagePoller]
+  }
+  package utils
+}
+
+package resources {
+  package templates
+  package static {
+    package css
+    package images
+    package iconfont
+  }
+  package JS
+  package mapper
+  [application.yml]
+}
+
+' 依赖关系
+controller --> service
+service.impl --> mapper
+controller --> dto
+service --> dto
+mapper --> entity
+service --> utils
+config --> security
+config --> handler
+mq --> utils
+
+note "上下文路径: /api\nThymeleaf: classpath:/templates/" as N1
+resources .. N1
+
+@enduml

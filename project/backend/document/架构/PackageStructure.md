@@ -1,0 +1,86 @@
+# 包结构与资源分布
+
+根目录：`d:/Study/Conpre_object/project/backend/personal-loan/src/main`
+
+## Java 包结构
+- `com.example.personal_loan`
+  - `PersonalLoanApplication.java`
+  - `config/`
+    - `SecurityConfig.java`
+    - `WebConfig.java`
+    - `CorsConfig.java`
+    - `RedisConfig.java`
+    - `RabbitMQConfig.java`
+    - `FileStorageConfig.java`
+  - `controller/`
+    - `AuthController.java`
+    - `UserController.java`
+    - `LoanProductController.java`
+    - `ApplicationController.java`
+    - `ManualApproveController.java`
+    - `OrderController.java`
+  - `service/`
+    - `AIApproveService.java`
+    - `ApplicationService.java`
+    - `AuthService.java`
+    - `LoanProductService.java`
+    - `LocalFileStorageService.java`
+    - `ManualApproveService.java`
+    - `OrderService.java`
+    - `PayService.java`
+    - `UserService.java`
+    - `impl/`
+      - `AIApproveServiceImpl.java`
+      - `ApplicationServiceImpl.java`
+      - `AuthServiceImpl.java`
+      - `LoanProductServiceImpl.java`
+      - `LocalFileStorageServiceImpl.java`
+      - `ManualApproveServiceImpl.java`
+      - `OrderServiceImpl.java`
+      - `UserServiceImpl.java`
+  - `security/`
+    - `JwtAuthenticationFilter.java`
+  - `handler/`
+    - `GlobalExceptionHandler.java`
+    - `JwtInterceptor.java`
+  - `mapper/`
+    - `ApplicationMapper.java`
+    - `LoanOptionMapper.java`
+    - `LoanProductMapper.java`
+    - `OrderMapper.java`
+    - `UserMapper.java`
+    - 其他 Mapper
+  - `entity/`
+    - `User.java`
+    - `LoanProduct.java`
+    - `LoanOption.java`
+    - `LoanApplication.java`
+    - `Order.java`
+    - `OutboxMessage.java`
+    - 其他实体
+  - `dto/`
+    - `LoginRequest.java`、`LoginResponse.java`
+    - `RegisterRequest.java`、`RegisterResponse.java`
+    - `ProductDto.java`、`UserSelfResponse.java` 等
+  - `enums/`
+    - `ApplicationStatus.java`、`OrderStatus.java`、`ProductStatus.java`、`RepaidType.java`
+  - `mq/`
+    - `LoanApplicationConsumer.java`
+    - `OutboxMessagePoller.java`
+  - `utils/`
+    - `JwtUtil.java`、`RedisUtil.java`、`RabbitUtil.java`、`MaskUtil.java` 等
+
+## Resources 分布
+- `application.yml`（包含 `server.servlet.context-path: /api` 与 Thymeleaf 配置）
+- `templates/`
+  - `login.html`、`registration.html`、`index.html`
+  - `addProduct.html`、`userDetail.html`
+- `static/`
+  - `css/`：`base.css`、`login.css`、`index.css`、`registration.css`、`DateRangePicker.css`、`addProduct.css`
+  - `images/`：`login.jpg`、`registration.jpg`、`index.jpg`、`logo.jpg`、`search.png` 等
+  - `iconfont/`：`iconfont.css`、`iconfont.js`、`iconfont.ttf`、`iconfont.woff*` 等
+- `JS/`
+  - `login.js`、`registration.js`、`index.js`、`Api.js`、`addProduct.js`、`dateRangePicker.js`
+- `mapper/`
+  - `ApplicationMapper.xml`、`LoanProductMapper.xml`、`LoanOptionMapper.xml`、`OrderMapper.xml`、`UserMapper.xml`
+

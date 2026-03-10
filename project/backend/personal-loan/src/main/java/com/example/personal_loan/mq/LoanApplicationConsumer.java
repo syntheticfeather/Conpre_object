@@ -46,7 +46,6 @@ public class LoanApplicationConsumer {
             log.info("🔄 消息已处理: {}", messageId);
             return;
         }
-
         try {
             // 进入业务逻辑
             LoanApplication app = objectMapper.readValue(payload, LoanApplication.class);

@@ -1,11 +1,11 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.2.5 Chrome/138.0.7204.251 Electron/37.6.1 Safari/537.36" version="28.2.5">
   <diagram id="Z7AZ5NOM8IHrbMHdXDCH" name="第 1 页">
-    <mxGraphModel dx="7466" dy="1294" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2000" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="4480" dy="-829" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2000" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="aCcr_Hm88RFixHhdxZty-1" value="AuthService(认证服务层)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;" parent="1" vertex="1">
-          <mxGeometry x="-1720" y="3740" width="480" height="520" as="geometry" />
+          <mxGeometry x="-1020" y="1840" width="480" height="520" as="geometry" />
         </mxCell>
         <mxCell id="aCcr_Hm88RFixHhdxZty-2" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;UserService userService; // 用户认证信息类&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;ThirdSerivce thirdService; // 三方认证信息类&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;ValuationService valuationSerivce // 计算贷款分数的机器学习模型API类&lt;/font&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=Helvetica;" parent="aCcr_Hm88RFixHhdxZty-1" vertex="1">
           <mxGeometry y="26" width="480" height="154" as="geometry" />
@@ -17,7 +17,7 @@
           <mxGeometry y="188" width="480" height="332" as="geometry" />
         </mxCell>
         <mxCell id="aCcr_Hm88RFixHhdxZty-5" value="ApplicationService(用户贷款申请服务层)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;" parent="1" vertex="1">
-          <mxGeometry x="-1720" y="3320" width="480" height="340" as="geometry" />
+          <mxGeometry x="-570" y="2990" width="480" height="340" as="geometry" />
         </mxCell>
         <mxCell id="aCcr_Hm88RFixHhdxZty-6" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;UserService // 用户服务类&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;LoanProductService // 贷款项目类&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;AuthService&lt;/font&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=Helvetica;" parent="aCcr_Hm88RFixHhdxZty-5" vertex="1">
           <mxGeometry y="26" width="480" height="114" as="geometry" />
@@ -65,7 +65,7 @@
           <mxGeometry y="98" width="480" height="122" as="geometry" />
         </mxCell>
         <mxCell id="aCcr_Hm88RFixHhdxZty-21" value="OrderService(用户已贷款服务层)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;" parent="1" vertex="1">
-          <mxGeometry x="-1720" y="2840" width="520" height="410" as="geometry" />
+          <mxGeometry x="-1100" y="2450" width="520" height="410" as="geometry" />
         </mxCell>
         <mxCell id="aCcr_Hm88RFixHhdxZty-22" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;UserService // 用户服务类&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;OrderMapper // 用户已贷款数据层&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;span style=&quot;text-align: center; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;LoanProductService&lt;/span&gt;&amp;nbsp;// 贷款项目服务类&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;PayService // 支付宝付款注册类&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;AuthService // 延期审核服务类&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=Helvetica;" parent="aCcr_Hm88RFixHhdxZty-21" vertex="1">
           <mxGeometry y="26" width="520" height="184" as="geometry" />
@@ -89,7 +89,7 @@
           <mxGeometry y="118" width="517.5" height="252" as="geometry" />
         </mxCell>
         <mxCell id="CILtH4HkwIWlJEUAXkLH-17" value="&lt;span style=&quot;font-weight: 400; text-align: left;&quot;&gt;ManualApproveService&lt;/span&gt;(审核员审核服务层)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;" parent="1" vertex="1">
-          <mxGeometry x="60" y="4212" width="525" height="318" as="geometry" />
+          <mxGeometry x="56.25" y="4212" width="525" height="318" as="geometry" />
         </mxCell>
         <mxCell id="CILtH4HkwIWlJEUAXkLH-18" value="&lt;div style=&quot;font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;ApproveMapper &lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;ApproveMapper&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;// 审核贷款数据层&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;AuthService authService&lt;/span&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=Helvetica;" parent="CILtH4HkwIWlJEUAXkLH-17" vertex="1">
           <mxGeometry y="26" width="525" height="84" as="geometry" />
@@ -113,16 +113,16 @@
           <mxGeometry y="118" width="440" height="202" as="geometry" />
         </mxCell>
         <mxCell id="A5A90PffaEz84Lgx0g2x-6" value="&lt;span style=&quot;font-size: 14px; font-weight: 400; text-align: left; white-space: pre;&quot;&gt;AIApproveService&lt;/span&gt;(AI自动审核服务类)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;" parent="1" vertex="1">
-          <mxGeometry x="60" y="3290" width="565" height="370" as="geometry" />
+          <mxGeometry x="60" y="3290" width="440" height="370" as="geometry" />
         </mxCell>
         <mxCell id="A5A90PffaEz84Lgx0g2x-7" value="&lt;div style=&quot;font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;span style=&quot;font-size: 12px; font-weight: 700; text-align: center; white-space: normal;&quot;&gt;AuthService&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;span style=&quot;font-size: 12px; font-weight: 700; text-align: center; white-space: normal;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;ApproveMapper &lt;span style=&quot;font-size: 12px; font-weight: 700; text-align: center; white-space: normal;&quot;&gt;&lt;/span&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=Helvetica;" parent="A5A90PffaEz84Lgx0g2x-6" vertex="1">
-          <mxGeometry y="26" width="565" height="84" as="geometry" />
+          <mxGeometry y="26" width="440" height="84" as="geometry" />
         </mxCell>
         <mxCell id="A5A90PffaEz84Lgx0g2x-8" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;fontFamily=Helvetica;" parent="A5A90PffaEz84Lgx0g2x-6" vertex="1">
-          <mxGeometry y="110" width="565" height="8" as="geometry" />
+          <mxGeometry y="110" width="440" height="8" as="geometry" />
         </mxCell>
         <mxCell id="A5A90PffaEz84Lgx0g2x-9" value="&lt;div style=&quot;font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;div style=&quot;&quot;&gt;Boolean AICheck()&lt;/div&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=Helvetica;" parent="A5A90PffaEz84Lgx0g2x-6" vertex="1">
-          <mxGeometry y="118" width="565" height="252" as="geometry" />
+          <mxGeometry y="118" width="440" height="252" as="geometry" />
         </mxCell>
         <mxCell id="A5A90PffaEz84Lgx0g2x-12" value="&lt;span style=&quot;text-align: left;&quot;&gt;SmsService&lt;/span&gt;(短信服务类)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;" parent="1" vertex="1">
           <mxGeometry x="-2345" y="3070" width="400" height="360" as="geometry" />
@@ -172,22 +172,23 @@
         <mxCell id="QkokL-L6gnkhp3S-un7x-50" value="&lt;h1&gt;业务逻辑服务层&lt;/h1&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;horizontal=1;" parent="1" vertex="1">
           <mxGeometry x="-1555" y="1740" width="190" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="QkokL-L6gnkhp3S-un7x-52" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;horizontal=1;entryX=0.536;entryY=-0.002;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.489;exitY=0.999;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="A5A90PffaEz84Lgx0g2x-9" target="CILtH4HkwIWlJEUAXkLH-13" edge="1">
+        <mxCell id="QkokL-L6gnkhp3S-un7x-52" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;horizontal=1;exitX=0.489;exitY=0.999;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="A5A90PffaEz84Lgx0g2x-9" edge="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="330" y="3750" as="targetPoint" />
+            <mxPoint x="275" y="3759" as="targetPoint" />
             <Array as="points">
-              <mxPoint x="336" y="3710" />
-              <mxPoint x="337" y="3710" />
-              <mxPoint x="337" y="3759" />
+              <mxPoint x="275" y="3759" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="QkokL-L6gnkhp3S-un7x-53" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;horizontal=1;exitX=0.507;exitY=0.997;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="CILtH4HkwIWlJEUAXkLH-16" target="CILtH4HkwIWlJEUAXkLH-17" edge="1">
+        <mxCell id="QkokL-L6gnkhp3S-un7x-53" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;horizontal=1;exitX=0.485;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="CILtH4HkwIWlJEUAXkLH-16" edge="1">
           <mxGeometry relative="1" as="geometry">
-            <Array as="points" />
+            <Array as="points">
+              <mxPoint x="310" y="4130" />
+            </Array>
+            <mxPoint x="310" y="4210" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="QkokL-L6gnkhp3S-un7x-55" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.647;entryY=1.006;entryDx=0;entryDy=0;entryPerimeter=0;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;horizontal=1;" parent="1" source="A5A90PffaEz84Lgx0g2x-6" target="QkokL-L6gnkhp3S-un7x-33" edge="1">
+        <mxCell id="QkokL-L6gnkhp3S-un7x-55" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;horizontal=1;" parent="1" source="A5A90PffaEz84Lgx0g2x-6" target="QkokL-L6gnkhp3S-un7x-33" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="QkokL-L6gnkhp3S-un7x-56" value="&lt;h1&gt;三方服务层&lt;/h1&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;horizontal=1;" parent="1" vertex="1">
@@ -266,7 +267,7 @@
           <mxGeometry y="44" width="370" height="200" as="geometry" />
         </mxCell>
         <mxCell id="QkokL-L6gnkhp3S-un7x-81" value="OutBoxPoller" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;" parent="1" vertex="1">
-          <mxGeometry x="-1090" y="3309" width="410" height="362" as="geometry">
+          <mxGeometry x="-550" y="3370" width="410" height="362" as="geometry">
             <mxRectangle x="-1100" y="3110" width="160" height="50" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -277,7 +278,7 @@
           <mxGeometry y="110" width="410" height="252" as="geometry" />
         </mxCell>
         <mxCell id="QkokL-L6gnkhp3S-un7x-92" value="LoanApplicationConsumer" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;" parent="1" vertex="1">
-          <mxGeometry x="-570" y="3309" width="460" height="362" as="geometry">
+          <mxGeometry x="-575" y="3788" width="460" height="362" as="geometry">
             <mxRectangle x="-1100" y="3110" width="160" height="50" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -287,14 +288,19 @@
         <mxCell id="QkokL-L6gnkhp3S-un7x-94" value="&lt;div style=&quot;line-height: 19px; white-space: pre;&quot;&gt;&lt;div style=&quot;&quot;&gt;&lt;div style=&quot;&quot;&gt;&lt;pre style=&quot;&quot;&gt;&lt;div&gt;&lt;pre style=&quot;&quot;&gt;&lt;font face=&quot;Helvetica&quot; style=&quot;color: rgb(0, 0, 0);&quot;&gt;consume(Message message, Channel channel)&lt;br&gt;markAsProcessed(String messageId, String businessType, Long loanApplicationId)&lt;/font&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=Helvetica;" parent="QkokL-L6gnkhp3S-un7x-92" vertex="1">
           <mxGeometry y="110" width="460" height="252" as="geometry" />
         </mxCell>
-        <mxCell id="QkokL-L6gnkhp3S-un7x-95" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.001;entryY=0.278;entryDx=0;entryDy=0;entryPerimeter=0;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;horizontal=1;" parent="1" source="aCcr_Hm88RFixHhdxZty-5" target="QkokL-L6gnkhp3S-un7x-84" edge="1">
+        <mxCell id="QkokL-L6gnkhp3S-un7x-95" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.534;entryY=0.001;entryDx=0;entryDy=0;entryPerimeter=0;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;horizontal=1;" parent="1" source="aCcr_Hm88RFixHhdxZty-5" target="QkokL-L6gnkhp3S-un7x-81" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="QkokL-L6gnkhp3S-un7x-96" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.002;entryY=0.278;entryDx=0;entryDy=0;entryPerimeter=0;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;horizontal=1;" parent="1" source="QkokL-L6gnkhp3S-un7x-81" target="QkokL-L6gnkhp3S-un7x-94" edge="1">
+        <mxCell id="QkokL-L6gnkhp3S-un7x-96" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;horizontal=1;" parent="1" source="QkokL-L6gnkhp3S-un7x-81" target="QkokL-L6gnkhp3S-un7x-92" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="QkokL-L6gnkhp3S-un7x-97" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.001;entryY=0.325;entryDx=0;entryDy=0;entryPerimeter=0;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;horizontal=1;" parent="1" source="QkokL-L6gnkhp3S-un7x-92" target="A5A90PffaEz84Lgx0g2x-9" edge="1">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="QkokL-L6gnkhp3S-un7x-97" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.001;entryY=0.325;entryDx=0;entryDy=0;entryPerimeter=0;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;horizontal=1;" parent="1" source="QkokL-L6gnkhp3S-un7x-92" target="A5A90PffaEz84Lgx0g2x-9" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-50" y="3969" />
+              <mxPoint x="-50" y="3490" />
+            </Array>
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>
