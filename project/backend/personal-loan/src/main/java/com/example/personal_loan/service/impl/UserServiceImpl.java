@@ -132,8 +132,6 @@ public class UserServiceImpl implements UserService {
         return new RegisterResponse(user.getId(), user.getUserName(), user.getCreateTime());
     }
 
-
-
     @Override
     public void deleteUser(Long id) {
         userMapper.delete(id);
@@ -255,6 +253,7 @@ public class UserServiceImpl implements UserService {
 
     // 上传头像
     @Override
+    @Transactional
     public String uploadAvatar(Long userId, MultipartFile file){
         // 1. 校验文件非空
         if (file.isEmpty()) {
@@ -363,6 +362,10 @@ public class UserServiceImpl implements UserService {
         }
 
         // 检查level范围
+        if (blackLevel < 1 || blackLevel > 3) {
+            throw new BusinessException(400, "黑名单级别必须在1-3之间");
+        }
+
         BlackUser blackUser = new BlackUser();
         blackUser.setUserId(userId);
         blackUser.setBlackLevel(blackLevel);
@@ -381,7 +384,7 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException(403,"权限不足");
         }
 
-        BlackUser blackUser = blackListMapper.selectByUserId(userId);
+        BlackUser blackUser = blackListMapper.selectActiveByUserId(userId);
         if (blackUser == null) {
             throw new BusinessException(404,"用户不在黑名单中");
         }

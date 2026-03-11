@@ -171,3 +171,94 @@ INSERT INTO users (user_name, password, phone, role) VALUES
 ('zff', '$2a$10$60kyX/HezEaHChvKpZB9j.fByPl8is6etEiay0oqusri6zA5/Pl1C', '19999999999', 1),
 ('wt', '$2a$10$ODq7dU6Bvz8Ks9b7mNGt5OLExUV3gmY2wPHXrXICJi0j.pjCfyuYC', '18888888888', 1),
 ('qyx', '$2a$10$UDcyeEjze0A3K8pNSzMoFOyoaN.G3/v/ilQpMv2/6J28.6GxvhhTK', '16666666666', 1)
+
+-- 插入产品
+INSERT INTO loan_products (
+    product_name, description, loan_usage, status,
+    min_term, max_term, term_step,
+    min_amount, max_amount, promotion_details
+) VALUES (
+    '小微经营贷',
+    '助力小微企业发展，快速审批，灵活还款',
+    '进货周转、设备采购、门店扩张',
+    '上架中',
+    3, 36, 3,
+    10000.00, 500000.00,
+    '前2期只还利息'
+);
+
+INSERT INTO loan_options (product_id, interest_rate, loan_period, repaid_type) VALUES
+(1, 0.0650, 12, '先息后本'),
+(1, 0.0720, 24, '等额本息');
+
+INSERT INTO loan_products (
+    product_name, description, loan_usage, status,
+    min_term, max_term, term_step,
+    min_amount, max_amount, promotion_details
+) VALUES (
+    '创业启航贷',
+    '专为初创企业设计，低门槛准入，快速放款',
+    '办公租赁、人员工资、品牌推广',
+    '上架中',
+    6, 24, 6,
+    20000.00, 100000.00,
+    '首月免息，赠财务咨询'
+);
+
+INSERT INTO loan_options (product_id, interest_rate, loan_period, repaid_type) VALUES
+(2, 0.0720, 12, '等额本息'),
+(2, 0.0780, 24, '等额本息');
+
+INSERT INTO loan_products (
+    product_name, description, loan_usage, status,
+    min_term, max_term, term_step,
+    min_amount, max_amount, promotion_details
+) VALUES (
+    '灵活周转贷',
+    '随借随还，按日计息，满足短期流动性需求',
+    '应付账款垫付、临时补货',
+    '上架中',
+    1, 12, 1,
+    5000.00, 30000.00,
+    '首次借款7天免息'
+);
+
+INSERT INTO loan_options (product_id, interest_rate, loan_period, repaid_type) VALUES
+(3, 0.0800, 6, '先息后本'),
+(3, 0.0900, 12, '先息后本');
+
+INSERT INTO loan_products (
+    product_name, description, loan_usage, status,
+    min_term, max_term, term_step,
+    min_amount, max_amount, promotion_details
+) VALUES (
+    '设备升级贷',
+    '专项用于购置或更新生产设备，支持制造业转型',
+    '购买数控机床、自动化设备等',
+    '上架中',
+    12, 60, 6,
+    50000.00, 1000000.00,
+    '合作厂商可享利率优惠0.5%'
+);
+
+INSERT INTO loan_options (product_id, interest_rate, loan_period, repaid_type) VALUES
+(4, 0.0580, 24, '等额本息'),
+(4, 0.0620, 36, '等额本息'),
+(4, 0.0650, 60, '等额本金');
+
+INSERT INTO loan_products (
+    product_name, description, loan_usage, status,
+    min_term, max_term, term_step,
+    min_amount, max_amount, promotion_details
+) VALUES (
+    '季节备货贷',
+    '针对零售、餐饮等行业旺季前的集中备货需求',
+    '节日商品采购、原材料囤积',
+    '已下架',
+    3, 12, 3,
+    10000.00, 200000.00,
+    '旺季专享，审批加急通道'
+);
+
+INSERT INTO loan_options (product_id, interest_rate, loan_period, repaid_type) VALUES
+(5, 0.0750, 6, '先息后本');

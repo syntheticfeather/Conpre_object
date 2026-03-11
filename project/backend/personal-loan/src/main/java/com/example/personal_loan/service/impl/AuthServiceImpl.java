@@ -63,8 +63,6 @@ public class AuthServiceImpl implements AuthService{
             MultipartFile socialSecurityFile,
             MultipartFile creditReportFile) {
 
-        log.info("开始提交认证材料: userId={}, idCard={}, bankCardId={}", userId, idCard, bankCardId);
-
         // 1. 验证身份证号和银行卡号
         if (idCard.isBlank() || !IdCardUtils.isValid(idCard)) {
             throw new BusinessException(400, "身份证号不能为空或格式无效");
@@ -78,34 +76,39 @@ public class AuthServiceImpl implements AuthService{
         UserCert userCert = userCertMapper.selectByUserId(userId);
 
         // 3. 存储所有文件（任一失败则整体回滚）
-        log.info("开始存储所有认证文件...");
+        log.info("begin store all auth files:...");
         String propertyPath = storeRequiredFile(propertyFile, "property", userId, fileStorageConfig.getPaths().getPropertyProof());
         String carPath = storeRequiredFile(carFile, "car", userId, fileStorageConfig.getPaths().getCarProof());
         String empPath = storeRequiredFile(employmentFile, "employment", userId, fileStorageConfig.getPaths().getEmploymentProof());
         String salPath = storeRequiredFile(salaryFile, "salary", userId, fileStorageConfig.getPaths().getSalaryProof());
         String ssPath = storeRequiredFile(socialSecurityFile, "social", userId, fileStorageConfig.getPaths().getSocialSecurity());
         String crPath = storeRequiredFile(creditReportFile, "credit", userId, fileStorageConfig.getPaths().getCreditReport());
-        log.info("所有文件存储完成: propertyPath={}, carPath={}, empPath={}, salPath={}, ssPath={}, crPath={}", 
+        log.info("all auth files are stored successfully: propertyPath={}, carPath={}, empPath={}, salPath={}, ssPath={}, crPath={}", 
             propertyPath, carPath, empPath, salPath, ssPath, crPath);
 
         // 4. 处理不动产认证
         handleImmovablesCert(userCert, propertyPath, carPath);
-        log.info("不动产认证处理完成: immovableCertId={}", userCert.getImmovableCertId());
+        log.info("immovable cert is handled successfully: immovableCertId={}", userCert.getImmovableCertId());
 
         // 5. 处理工作认证
         handleWorkCert(userCert, empPath, salPath);
-        log.info("工作认证处理完成: workCertId={}", userCert.getWorkCertId());
+        log.info("work cert is handled successfully: workCertId={}", userCert.getWorkCertId());
 
         // 6. 处理第三方认证
         handleTriCert(userCert, ssPath, crPath);
-        log.info("第三方认证处理完成: triCertId={}", userCert.getTriCertId());
+        log.info("tri cert is handled successfully: triCertId={}", userCert.getTriCertId());
 
-        // 7. 更新主表中的文本字段
+        int score = calScore(userId);
+
+        // 8. 更新主表中的贷款分数
+        userCert.setCreditScore(score);
+
+        // 9. 更新主表中的文本字段
         userCert.setIdCard(idCard);
         userCert.setBankCardId(bankCardId);
         userCertMapper.update(userCert);
         
-        log.info("认证材料提交成功: userId={}", userId);
+        log.info("all auth materials are submitted successfully: userId={}", userId);
     }
 
     // 计算贷款分数(125x6=750)
@@ -218,7 +221,6 @@ public class AuthServiceImpl implements AuthService{
                 ));
             }
         }
-        userCert.setCreditScore(calScore(userId));
         return new GetCertResponse(userCert, workCert, triCert, immovablesCert);
     }
 
@@ -228,22 +230,25 @@ public class AuthServiceImpl implements AuthService{
 
     // }
 
-
     // 工具方法
-
+    // 存储文件
     private String storeRequiredFile(MultipartFile file, String type, Long userId, String basePath) {
         if (file == null || file.isEmpty()) {
-            log.warn("文件为空，跳过存储: type={}, userId={}", type, userId);
+            log.warn("file is empty: type={}, userId={}", type, userId);
             return null;
         }
-        log.info("开始存储文件: type={}, userId={}, originalFilename={}, size={}", 
+        log.info("begin store file: type={}, userId={}, originalFilename={}, size={}", 
             type, userId, file.getOriginalFilename(), file.getSize());
         String storedPath = fileStorageService.storeFile(file, type, userId, basePath);
-        log.info("文件存储成功: type={}, userId={}, storedPath={}", type, userId, storedPath);
+        log.info("The file is stored successfully: type={}, userId={}, storedPath={}", type, userId, storedPath);
         return storedPath;
     }
 
+    // 处理不动产认证
     private void handleImmovablesCert(UserCert userCert, String propertyPath, String carPath) {
+        if (propertyPath == null && carPath == null) {
+            return; // 无有效数据，跳过处理
+        }
         ImmovablesCert cert = new ImmovablesCert();
         cert.setPropertyCertPath(propertyPath);
         cert.setCarCertPath(carPath);
@@ -259,7 +264,12 @@ public class AuthServiceImpl implements AuthService{
         }
     }
 
+    // 处理工作认证
     private void handleWorkCert(UserCert userCert, String empPath, String salPath) {
+        if (empPath == null && salPath == null) {
+            return; // 无有效数据，跳过处理
+        }
+
         WorkCert cert = new WorkCert();
         cert.setEmploymentCertPath(empPath);
         cert.setSalaryCertPath(salPath);
@@ -274,7 +284,12 @@ public class AuthServiceImpl implements AuthService{
         }
     }
 
+    // 处理第三方认证
     private void handleTriCert(UserCert userCert, String ssPath, String crPath) {
+        if (ssPath == null && crPath == null) {
+            return; // 无有效数据，跳过处理
+        }
+
         TriCert cert = new TriCert();
         cert.setSocialSecurityPath(ssPath);
         cert.setCreditReportPath(crPath);

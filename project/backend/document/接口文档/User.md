@@ -148,6 +148,7 @@
 **postman测试结果**
 
 ![](../UserImgs/addBlackList.png "添加用户进黑名单成功")
+![](../UserImgs/blackLevelFalse.png "黑名单等级错误,必须在1-3之间")
 
 **日志**
 
@@ -235,32 +236,16 @@
     "code": 200,
     "data": [
         {
-            "userId": 1,
-            "userName": "alice",
-            "creditScore": null,
-            "loanStatus": "逾期",
+            "userId": 10,
+            "userName": "王芳",
+            "creditScore": 625,
+            "loanStatus": "正常",
             "totalTransactionCount": 0,
-            "totalLoanAmount": 90000.00
+            "totalLoanAmount": 15000.00
         },
         {
-            "userId": 2,
+            "userId": 11,
             "userName": "张伟",
-            "creditScore": null,
-            "loanStatus": "无借贷",
-            "totalTransactionCount": 0,
-            "totalLoanAmount": 0
-        },
-        {
-            "userId": 7,
-            "userName": "李华",
-            "creditScore": null,
-            "loanStatus": "无借贷",
-            "totalTransactionCount": 0,
-            "totalLoanAmount": 0
-        },
-        {
-            "userId": 8,
-            "userName": "李四",
             "creditScore": null,
             "loanStatus": "无借贷",
             "totalTransactionCount": 0,

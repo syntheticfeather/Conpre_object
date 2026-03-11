@@ -112,9 +112,9 @@
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
-| loanApplicationId | integer | 是 | 申请id | 23 |
+| loanApplicationId | integer | 是 | 申请id | 7 |
 
-**请求示例（网址）** /api/approval/detail/23
+**请求示例（网址）** /api/approval/detail/7
 
 **返回数据**
 
@@ -123,37 +123,37 @@
     "code": 200,
     "data": {
         "user": {
-            "id": 1,
-            "userName": "alice",
+            "id": 10,
+            "userName": "王芳",
             "avatar": null,
-            "phone": "13800138000",
-            "password": "$2a$10$otTD6KpzXlbblLqzZmqNIOR4vwNcSLKUAt0Um3rh85KPWM89Xvpr2",
+            "phone": "13100001111",
+            "password": "$2a$10$3f87CkalQZzeTYKVV8msMeAYOiDF/0FYX4mRLia5LEjUp.DnGIxmW",
             "role": 0,
-            "createTime": "2025-12-08T09:20:20",
-            "updateTime": "2025-12-08T13:42:03"
+            "createTime": "2026-03-10 21:05:11",
+            "updateTime": "2026-03-10 21:05:11"
         },
         "userCert": {
-            "userId": 1,
-            "idCard": null,
-            "creditScore": null,
-            "bankCardId": null,
-            "workCertId": null,
-            "triCertId": null,
-            "immovableCertId": null
+            "userId": 10,
+            "idCard": "110101199003072316",
+            "creditScore": 625,
+            "bankCardId": "6214850200001234",
+            "workCertId": 2,
+            "triCertId": 2,
+            "immovableCertId": 2
         },
         "application": {
-            "id": 23,
-            "userId": 1,
+            "id": 7,
+            "userId": 10,
             "productId": 1,
-            "status": "AI_REJECTED",
-            "loanAmount": 30000.00,
+            "status": "已通过",
+            "loanAmount": 5000.00,
             "interestRate": 0.0390,
             "loanPeriod": 24,
             "term": 6,
             "repaidType": "等额本息",
-            "rejectReason": "AI rejected\n",
-            "applyTime": "2025-12-10T14:59:49",
-            "reviewTime": null
+            "rejectReason": "无",
+            "applyTime": "2026-03-10 21:51:23",
+            "reviewTime": "2026-03-10 21:51:25"
         }
     },
     "message": "操作成功"
