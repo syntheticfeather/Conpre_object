@@ -313,4 +313,70 @@ public class AuthServiceImpl implements AuthService{
         String cleanFile = filename.replaceAll("^/+", "");
         return "/uploads/" + cleanBase + "/" + cleanFile;
     }
+
+    // 根据 workCertId 查询工作认证信息
+    @Override
+    public WorkCert getWorkCertById(Integer workCertId) {
+        WorkCert workCert = workCertMapper.selectById(workCertId);
+        if (workCert != null) {
+            // 转换路径为公开 URL
+            if (workCert.getEmploymentCertPath() != null) {
+                workCert.setEmploymentCertPath(buildPublicUrl(
+                    fileStorageConfig.getPaths().getEmploymentProof(),
+                    workCert.getEmploymentCertPath()
+                ));
+            }
+            if (workCert.getSalaryCertPath() != null) {
+                workCert.setSalaryCertPath(buildPublicUrl(
+                    fileStorageConfig.getPaths().getSalaryProof(),
+                    workCert.getSalaryCertPath()
+                ));
+            }
+        }
+        return workCert;
+    }
+
+    // 根据 triCertId 查询第三方认证信息
+    @Override
+    public TriCert getTriCertById(Integer triCertId) {
+        TriCert triCert = triCertMapper.selectById(triCertId);
+        if (triCert != null) {
+            // 转换路径为公开 URL
+            if (triCert.getSocialSecurityPath() != null) {
+                triCert.setSocialSecurityPath(buildPublicUrl(
+                    fileStorageConfig.getPaths().getSocialSecurity(),
+                    triCert.getSocialSecurityPath()
+                ));
+            }
+            if (triCert.getCreditReportPath() != null) {
+                triCert.setCreditReportPath(buildPublicUrl(
+                    fileStorageConfig.getPaths().getCreditReport(),
+                    triCert.getCreditReportPath()
+                ));
+            }
+        }
+        return triCert;
+    }
+
+    // 根据 immovableCertId 查询不动产认证信息
+    @Override
+    public ImmovablesCert getImmovablesCertById(Integer immovableCertId) {
+        ImmovablesCert immovablesCert = immovablesCertMapper.selectById(immovableCertId);
+        if (immovablesCert != null) {
+            // 转换路径为公开 URL
+            if (immovablesCert.getPropertyCertPath() != null) {
+                immovablesCert.setPropertyCertPath(buildPublicUrl(
+                    fileStorageConfig.getPaths().getPropertyProof(),
+                    immovablesCert.getPropertyCertPath()
+                ));
+            }
+            if (immovablesCert.getCarCertPath() != null) {
+                immovablesCert.setCarCertPath(buildPublicUrl(
+                    fileStorageConfig.getPaths().getCarProof(),
+                    immovablesCert.getCarCertPath()
+                ));
+            }
+        }
+        return immovablesCert;
+    }
 }

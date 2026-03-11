@@ -3,6 +3,9 @@ package com.example.personal_loan.service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.personal_loan.dto.GetCertResponse;
+import com.example.personal_loan.entity.ImmovablesCert;
+import com.example.personal_loan.entity.TriCert;
+import com.example.personal_loan.entity.WorkCert;
 
 public interface AuthService {
 
@@ -39,6 +42,15 @@ public interface AuthService {
     
     // 获取已经上传的认证信息
     GetCertResponse getCert(Long userId); 
+    
+    // 根据 workCertId 查询工作认证信息
+    WorkCert getWorkCertById(Integer workCertId);
+    
+    // 根据 triCertId 查询第三方认证信息
+    TriCert getTriCertById(Integer triCertId);
+    
+    // 根据 immovableCertId 查询不动产认证信息
+    ImmovablesCert getImmovablesCertById(Integer immovableCertId);
     
     // 个人征信认证
     // void creditAuth(); 

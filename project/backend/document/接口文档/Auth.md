@@ -1,6 +1,8 @@
 # 认证接口说明
 
-## 登录
+## 用户使用
+
+### 登录
 
 **网址**：http://localhost:8080/api/auth/login
 
@@ -42,7 +44,7 @@
 **失败**
 ![](../AuthImgs/loginFail.png "登录失败，用户名或密码错误")
 
-## 注册
+### 注册
 
 **网址**：/api/auth/register
 
@@ -96,7 +98,7 @@
 
 ![](../AuthImgs/registerPhoneExist.png "注册失败，该手机号已被注册")
 
-## 上传认证材料
+### 上传认证材料
 
 **网址** /api/auth/submit-all
 
@@ -137,7 +139,7 @@
 
 ![](../AuthImgs/submitAll.png "用户上传认证材料成功")
 
-## 获取已经上传的认证信息
+### 获取已经上传的认证信息
 
 **网址**：/api/auth/cert-info
 
@@ -181,5 +183,97 @@
 
 **postman测试结果**：
 
-**成功**
 ![](../AuthImgs/getCert.png "获取认证信息成功")
+
+## 管理员使用
+
+### 根据 workCertId 查询工作认证信息
+
+**网址**：/api/auth/work-cert
+
+**请求方式**：GET
+
+**请求参数**：
+
+|字段名|类型|是否必填|说明|示例值|
+|---|---|---|---|---|
+|workCertId|integer|是|工作认证ID|2|
+
+**返回数据**：
+
+``` json
+{
+    "code": 200,
+    "data": {
+        "workCertId": 2,
+        "employmentCertPath": "/uploads/work/employment/uploads/work/employment/employment_10_20260311_cz77r0.png",
+        "salaryCertPath": "/uploads/work/salary/uploads/work/salary/salary_10_20260310_gkkvl6.png"
+    },
+    "message": "工作认证信息获取成功"
+}
+```
+
+**postman测试结果**：
+
+![](../AuthImgs/getWorkCert.png "获取工作认证信息成功")
+
+### 根据 triCertId 查询第三方认证信息
+
+**网址**：/api/auth/tri-cert
+
+**请求方式**：GET
+
+**请求参数**：
+
+|字段名|类型|是否必填|说明|示例值|
+|---|---|---|---|---|
+triCertId|integer|是|第三方认证ID|2|
+
+**返回数据**：
+
+``` json
+{
+    "code": 200,
+    "data": {
+        "triCertId": 2,
+        "socialSecurityPath": "/uploads/tri/social-security/uploads/tri/social-security/social_10_20260311_yne0co.png",
+        "creditReportPath": null
+    },
+    "message": "第三方认证信息获取成功"
+}
+```
+
+**postman测试结果**：
+
+![](../AuthImgs/getTriCert.png "获取第三方认证信息成功")
+
+### 根据 immovableCertId 查询不动产认证信息
+
+**网址**：/api/auth/immovables-cert
+
+**请求方式**：GET
+
+**请求参数**：
+
+|字段名|类型|是否必填|说明|示例值|
+|---|---|---|---|---|
+|immovableCertId|integer|是|不动产认证ID|2|
+
+**返回数据**：
+
+``` json
+{
+    "code": 200,
+    "data": {
+        "immovableCertId": 2,
+        "propertyCertPath": "/uploads/immovables/property/uploads/immovables/property/property_10_20260311_jtsfab.png",
+        "carCertPath": "/uploads/immovables/car/uploads/immovables/car/car_10_20260311_gwgs90.png",
+        "totalValue": null
+    },
+    "message": "不动产认证信息获取成功"
+}
+```
+
+**postman测试结果**：
+
+![](../AuthImgs/getImmovableCert.png "获取不动产认证信息成功")

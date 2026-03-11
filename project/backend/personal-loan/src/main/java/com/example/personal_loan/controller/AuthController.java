@@ -91,4 +91,49 @@ public class AuthController {
             return ResponseEntity.status(500).body(ApiResponse.fail(500, "系统内部错误"));
         }
     }
+
+    /**
+     * 管理员根据 workCertId 查询工作认证信息
+     */
+    @GetMapping("/work-cert")
+    public ResponseEntity<ApiResponse<?>> getWorkCert(@RequestParam("workCertId") Integer workCertId) {
+        log.info("/api/auth/work-cert success called for workCertId {}", workCertId);
+        try {
+            Object workCert = authService.getWorkCertById(workCertId);
+            return ResponseEntity.ok(ApiResponse.success(workCert, "工作认证信息获取成功"));
+        } catch (Exception e) {
+            log.error("get work cert failed for workCertId {}", workCertId, e);
+            return ResponseEntity.status(500).body(ApiResponse.fail(500, "系统内部错误"));
+        }
+    }
+
+    /**
+     * 管理员根据 triCertId 查询第三方认证信息
+     */
+    @GetMapping("/tri-cert")
+    public ResponseEntity<ApiResponse<?>> getTriCert(@RequestParam("triCertId") Integer triCertId) {
+        log.info("/api/auth/tri-cert success called for triCertId {}", triCertId);
+        try {
+            Object triCert = authService.getTriCertById(triCertId);
+            return ResponseEntity.ok(ApiResponse.success(triCert, "第三方认证信息获取成功"));
+        } catch (Exception e) {
+            log.error("get tri cert failed for triCertId {}", triCertId, e);
+            return ResponseEntity.status(500).body(ApiResponse.fail(500, "系统内部错误"));
+        }
+    }
+
+    /**
+     * 管理员根据 immovableCertId 查询不动产认证信息
+     */
+    @GetMapping("/immovables-cert")
+    public ResponseEntity<ApiResponse<?>> getImmovablesCert(@RequestParam("immovableCertId") Integer immovableCertId) {
+        log.info("/api/auth/immovables-cert success called for immovableCertId {}", immovableCertId);
+        try {
+            Object immovablesCert = authService.getImmovablesCertById(immovableCertId);
+            return ResponseEntity.ok(ApiResponse.success(immovablesCert, "不动产认证信息获取成功"));
+        } catch (Exception e) {
+            log.error("get immovables cert failed for immovableCertId {}", immovableCertId, e);
+            return ResponseEntity.status(500).body(ApiResponse.fail(500, "系统内部错误"));
+        }
+    }
 }
