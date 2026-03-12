@@ -1,5 +1,8 @@
 package com.example.personal_loan.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.personal_loan.dto.ApiResponse;
+import com.example.personal_loan.dto.ApiResult;
 import com.example.personal_loan.dto.UserGetOrderResponse;
 import com.example.personal_loan.dto.UserOrderListResponse;
 import com.example.personal_loan.service.OrderService;
@@ -21,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/orders")
 @Slf4j
+@Tag(name = "订单管理", description = "贷款订单相关接口")
 public class OrderController {
 
     @Autowired
@@ -28,36 +32,39 @@ public class OrderController {
 
     // ========== 用户端接口 ==========
 
-    @GetMapping("/{orderId}")
-    public ResponseEntity<ApiResponse<UserGetOrderResponse>> getUserOrder(
+    @GetMapping(value = "/{orderId}", produces = "application/json")
+    @Operation(summary = "获取订单详情", description = "用户获取指定贷款订单的详细信息")
+    public ResponseEntity<ApiResult<UserGetOrderResponse>> getUserOrder(
             HttpServletRequest request,
-            @PathVariable Long orderId) {
+            @Parameter(description = "订单ID") @PathVariable Long orderId) {
 
         Long userId = (Long) request.getAttribute("userId");
         log.info("/api/orders/{} success called for user {} to get order {} ", orderId, userId, orderId);
         UserGetOrderResponse response = orderService.userGetOrder(userId, orderId);
-        return ResponseEntity.ok(ApiResponse.success(response));
+        return ResponseEntity.ok(ApiResult.success(response));
     }
 
-    @GetMapping("/my")
-    public ResponseEntity<ApiResponse<List<UserOrderListResponse>>> getAllUserOrders(
+    @GetMapping(value = "/my", produces = "application/json")
+    @Operation(summary = "获取所有订单", description = "用户获取自己的所有贷款订单")
+    public ResponseEntity<ApiResult<List<UserOrderListResponse>>> getAllUserOrders(
             HttpServletRequest request) {
 
         Long userId = (Long) request.getAttribute("userId");
         List<UserOrderListResponse> responses = orderService.userGetAllOrders(userId);
         log.info("/api/orders/my success called for user {} to get all orders", userId);
-        return ResponseEntity.ok(ApiResponse.success(responses));
+        return ResponseEntity.ok(ApiResult.success(responses));
     }
 
-    @PostMapping("/{orderId}/repay")
-    public ResponseEntity<ApiResponse<UserGetOrderResponse>> repayOrder(
+    @PostMapping(value = "/{orderId}/repay", produces = "application/json")
+    @Operation(summary = "还款操作", description = "用户对指定贷款订单进行还款操作")
+    public ResponseEntity<ApiResult<UserGetOrderResponse>> repayOrder(
             HttpServletRequest request,
-            @PathVariable Long orderId) {
+            @Parameter(description = "订单ID") @PathVariable Long orderId) {
     
         Long currentUserId = (Long) request.getAttribute("userId"); 
         UserGetOrderResponse response = orderService.repay(orderId);
         log.info("/api/orders/{}/repay success called for user {} to repay order {}", orderId, currentUserId, orderId);
-        return ResponseEntity.ok(ApiResponse.success(response));
+        return ResponseEntity.ok(ApiResult.success(response));
     }
 
 }

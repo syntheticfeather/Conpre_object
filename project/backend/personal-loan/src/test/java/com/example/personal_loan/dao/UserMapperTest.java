@@ -44,15 +44,6 @@ class UserMapperTest {
         System.out.println("插入后ID: " + user.getId());
     }
 
-    @Test
-    void testFindByPhoneAndPassword() {
-        User user = createTestUser();
-        userMapper.insert(user);
-
-        User found = userMapper.findByPhoneAndPassword("13800138000", "123456");
-        assertThat(found).isNotNull();
-        assertThat(found.getId()).isEqualTo(user.getId());
-    }
 
     @Test
     void testUpdate() {

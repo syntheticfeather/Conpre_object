@@ -1,5 +1,8 @@
 package com.example.personal_loan.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.personal_loan.dto.ApiResponse;
+import com.example.personal_loan.dto.ApiResult;
 import com.example.personal_loan.dto.ApplicationDetailResponse;
 import com.example.personal_loan.dto.ManualCheckRequest;
 import com.example.personal_loan.dto.ManualCheckResponse;
@@ -25,42 +28,47 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/approval")
 @Slf4j
+@Tag(name = "审批管理", description = "贷款审批相关接口")
 public class ManualApproveController {
 
     @Autowired
     private ManualApproveService manualApproveService;
 
-    @GetMapping("/pending")
-    public ResponseEntity<ApiResponse<List<PendingApprovalResponse>>> getPendingApprovals(HttpServletRequest request) {
+    @GetMapping(value = "/pending", produces = "application/json")
+    @Operation(summary = "获取待审批列表", description = "管理员获取待审批的贷款申请列表")
+    public ResponseEntity<ApiResult<List<PendingApprovalResponse>>> getPendingApprovals(HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("userId");
         log.info("/api/approval/pending success called for admin {} to get pending approvals list", userId);
         List<PendingApprovalResponse> list = manualApproveService.getApproves(userId);
-        return ResponseEntity.ok(ApiResponse.success(list));
+        return ResponseEntity.ok(ApiResult.success(list));
     }
 
-    @GetMapping("/completed")
-    public ResponseEntity<ApiResponse<List<PendingApprovalResponse>>> getCompletedApprovals(HttpServletRequest request) {
+    @GetMapping(value = "/completed", produces = "application/json")
+    @Operation(summary = "获取已完成审批列表", description = "管理员获取已完成审批的贷款申请列表")
+    public ResponseEntity<ApiResult<List<PendingApprovalResponse>>> getCompletedApprovals(HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("userId");
         log.info("/api/approval/completed success called for admin {} to get completed approvals list", userId);
         List<PendingApprovalResponse> list = manualApproveService.completedApproves(userId);
-        return ResponseEntity.ok(ApiResponse.success(list));
+        return ResponseEntity.ok(ApiResult.success(list));
     }
 
-    @GetMapping("/detail/{loanApplicationId}")
-    public ResponseEntity<ApiResponse<ApplicationDetailResponse>> getApplicationDetail(
+    @GetMapping(value = "/detail/{loanApplicationId}", produces = "application/json")
+    @Operation(summary = "获取申请详情", description = "管理员获取贷款申请的详细信息")
+    public ResponseEntity<ApiResult<ApplicationDetailResponse>> getApplicationDetail(
             HttpServletRequest request,
-            @PathVariable Long loanApplicationId) {
+            @Parameter(description = "申请ID") @PathVariable Long loanApplicationId) {
 
         log.info("/api/approval/detail/{} success called for admin to get applicaton {} details", loanApplicationId, loanApplicationId);
         Long userId = (Long) request.getAttribute("userId");
         ApplicationDetailResponse detail = manualApproveService.getApprove(userId, loanApplicationId);
-        return ResponseEntity.ok(ApiResponse.success(detail));
+        return ResponseEntity.ok(ApiResult.success(detail));
     }
 
-    @PostMapping("/check")
-    public ResponseEntity<ApiResponse<ManualCheckResponse>> manualCheck(@RequestBody ManualCheckRequest request) {
+    @PostMapping(value = "/check", produces = "application/json")
+    @Operation(summary = "审批操作", description = "管理员对贷款申请进行审批操作（批准/拒绝）")
+    public ResponseEntity<ApiResult<ManualCheckResponse>> manualCheck(@Parameter(description = "审批请求") @RequestBody ManualCheckRequest request) {
         log.info("/api/approval/check success called for admin to check application");
         ManualCheckResponse response = manualApproveService.manualCheck(request.getLoanApplicationId(), request.getApproved(), request.getManualRejectReason());
-        return ResponseEntity.ok(ApiResponse.success(response,"操作成功"));
+        return ResponseEntity.ok(ApiResult.success(response,"操作成功"));
     }
 }

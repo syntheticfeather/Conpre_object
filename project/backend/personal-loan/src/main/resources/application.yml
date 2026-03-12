@@ -100,3 +100,11 @@ file-storage:
     # 工作证明
     employment-proof: work/employment
     salary-proof: work/salary
+
+# SpringDoc 配置
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+  default-consumes-media-type: application/json

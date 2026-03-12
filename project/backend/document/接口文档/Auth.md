@@ -189,7 +189,7 @@
 
 ### 根据 workCertId 查询工作认证信息
 
-**网址**：/api/auth/work-cert
+**网址**：/api/auth/work-cert/{workCertId}
 
 **请求方式**：GET
 
@@ -219,7 +219,7 @@
 
 ### 根据 triCertId 查询第三方认证信息
 
-**网址**：/api/auth/tri-cert
+**网址**：/api/auth/tri-cert/{triCertId}
 
 **请求方式**：GET
 
@@ -227,7 +227,7 @@
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
-triCertId|integer|是|第三方认证ID|2|
+|triCertId|integer|是|第三方认证ID|2|
 
 **返回数据**：
 
@@ -249,7 +249,7 @@ triCertId|integer|是|第三方认证ID|2|
 
 ### 根据 immovableCertId 查询不动产认证信息
 
-**网址**：/api/auth/immovables-cert
+**网址**：/api/auth/immovables-cert/{immovableCertId}
 
 **请求方式**：GET
 

@@ -35,11 +35,6 @@ public interface UserMapper {
         "FROM users WHERE id = #{id}")
     User findById(@Param("id") Long id);
 
-    // 根据手机号和密码查询用户
-    @Select("SELECT id, user_name, avatar, password, phone, role, create_time, update_time " +
-        "FROM users WHERE phone = #{phone} AND password = #{password}")
-    User findByPhoneAndPassword(@Param("phone") String phone, @Param("password") String password);
-
     // 查询所有用户
     @Select("SELECT id, user_name as userName, avatar, password, "+
         "phone, role, create_time as createTime, update_time as updateTime " +
@@ -50,10 +45,6 @@ public interface UserMapper {
     @Select("SELECT id, user_name, avatar, password, phone, role, create_time, update_time " +
         "FROM users WHERE phone = #{phone}")
     User findByPhone(@Param("phone") String phone);
-
-    // 检查手机号是否已存在
-    @Select("SELECT COUNT(*) FROM users WHERE phone = #{phone} AND id != #{id}")
-    int findByPhoneExcludeId(@Param("phone") String phone, @Param("id") Long id);
 
     UserDetailResponse selectUserDetail(@Param("userId") Long userId);
 }

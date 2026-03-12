@@ -1,0 +1,3240 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "个人贷款管理系统 API",
+    "description": "个人贷款管理系统后端API文档",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://springdoc.org"
+    },
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Generated server url"
+    }
+  ],
+  "tags": [
+    {
+      "name": "用户管理",
+      "description": "用户相关接口"
+    },
+    {
+      "name": "认证管理",
+      "description": "用户认证相关接口"
+    },
+    {
+      "name": "贷款申请管理",
+      "description": "贷款申请相关接口"
+    },
+    {
+      "name": "贷款产品管理",
+      "description": "贷款产品相关接口"
+    },
+    {
+      "name": "订单管理",
+      "description": "贷款订单相关接口"
+    },
+    {
+      "name": "审批管理",
+      "description": "贷款审批相关接口"
+    }
+  ],
+  "paths": {
+    "/api/users/refresh-token": {
+      "post": {
+        "tags": [
+          "用户管理"
+        ],
+        "summary": "刷新token",
+        "description": "刷新用户的访问令牌",
+        "operationId": "refreshToken",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "integer",
+                "description": "用户ID",
+                "format": "int64"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/blacklist/remove": {
+      "post": {
+        "tags": [
+          "用户管理"
+        ],
+        "summary": "解除黑名单",
+        "description": "管理员将用户从黑名单中解除",
+        "operationId": "removeFromBlackList",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "用户ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultString"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/blacklist/add": {
+      "post": {
+        "tags": [
+          "用户管理"
+        ],
+        "summary": "加入黑名单",
+        "description": "管理员将用户加入黑名单",
+        "operationId": "addToBlackList",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddToBlackListRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultString"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/avatar": {
+      "post": {
+        "tags": [
+          "用户管理"
+        ],
+        "summary": "上传头像",
+        "description": "用户上传头像图片",
+        "operationId": "uploadAvatar",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "file"
+                ],
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "description": "头像文件",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultString"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/orders/{orderId}/repay": {
+      "post": {
+        "tags": [
+          "订单管理"
+        ],
+        "summary": "还款操作",
+        "description": "用户对指定贷款订单进行还款操作",
+        "operationId": "repayOrder",
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "description": "订单ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultUserGetOrderResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/loan-products/admin": {
+      "get": {
+        "tags": [
+          "贷款产品管理"
+        ],
+        "summary": "获取产品列表",
+        "description": "管理员获取所有贷款产品列表",
+        "operationId": "listForAdmin",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultListListProductResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "贷款产品管理"
+        ],
+        "summary": "创建贷款产品",
+        "description": "管理员创建新的贷款产品",
+        "operationId": "create",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultProductDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/loan-products/admin/{productId}/deactive": {
+      "post": {
+        "tags": [
+          "贷款产品管理"
+        ],
+        "summary": "下架贷款产品",
+        "description": "管理员下架指定的贷款产品",
+        "operationId": "deactiveProduct",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "description": "产品ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/loan-products/admin/{productId}/active": {
+      "post": {
+        "tags": [
+          "贷款产品管理"
+        ],
+        "summary": "上架贷款产品",
+        "description": "管理员上架指定的贷款产品",
+        "operationId": "activeProduct",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "description": "产品ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/loan-products/admin/products/batch-delete": {
+      "post": {
+        "tags": [
+          "贷款产品管理"
+        ],
+        "summary": "批量删除贷款产品",
+        "description": "管理员批量删除指定的贷款产品",
+        "operationId": "batchDeleteProducts",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchDeleteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultString"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/loan-products/admin/options/batch-create": {
+      "post": {
+        "tags": [
+          "贷款产品管理"
+        ],
+        "summary": "批量创建产品选项",
+        "description": "管理员为指定产品批量创建贷款选项",
+        "operationId": "batchCreateOptions",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchCreateOptionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultString"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/loan-applications": {
+      "post": {
+        "tags": [
+          "贷款申请管理"
+        ],
+        "summary": "提交贷款申请",
+        "description": "用户提交贷款申请",
+        "operationId": "apply",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplicationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultString"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/loan-applications/my/{applicationId}/withdraw": {
+      "post": {
+        "tags": [
+          "贷款申请管理"
+        ],
+        "summary": "撤回申请",
+        "description": "用户撤回自己的贷款申请",
+        "operationId": "withdrawApplication",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "description": "申请ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/submit-all": {
+      "post": {
+        "tags": [
+          "认证管理"
+        ],
+        "summary": "提交认证材料",
+        "description": "用户提交所有认证材料，包括身份证、银行卡、房产证明、车辆证明、工作证明、工资证明、社保证明、征信报告",
+        "operationId": "submitAllAuth",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "bankCardId",
+                  "idCard"
+                ],
+                "type": "object",
+                "properties": {
+                  "idCard": {
+                    "type": "string",
+                    "description": "身份证号"
+                  },
+                  "bankCardId": {
+                    "type": "string",
+                    "description": "银行卡号"
+                  },
+                  "propertyFile": {
+                    "type": "string",
+                    "description": "房产证明文件",
+                    "format": "binary"
+                  },
+                  "carFile": {
+                    "type": "string",
+                    "description": "车辆证明文件",
+                    "format": "binary"
+                  },
+                  "employmentFile": {
+                    "type": "string",
+                    "description": "工作证明文件",
+                    "format": "binary"
+                  },
+                  "salaryFile": {
+                    "type": "string",
+                    "description": "工资证明文件",
+                    "format": "binary"
+                  },
+                  "socialSecurityFile": {
+                    "type": "string",
+                    "description": "社保证明文件",
+                    "format": "binary"
+                  },
+                  "creditReportFile": {
+                    "type": "string",
+                    "description": "征信报告文件",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "tags": [
+          "认证管理"
+        ],
+        "summary": "用户注册",
+        "description": "用户注册新账号",
+        "operationId": "userRegister",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultRegisterResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "认证管理"
+        ],
+        "summary": "用户登录",
+        "description": "用户通过手机号和密码进行登录",
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultLoginResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/approval/check": {
+      "post": {
+        "tags": [
+          "审批管理"
+        ],
+        "summary": "审批操作",
+        "description": "管理员对贷款申请进行审批操作（批准/拒绝）",
+        "operationId": "manualCheck",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManualCheckRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultManualCheckResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/me": {
+      "get": {
+        "tags": [
+          "用户管理"
+        ],
+        "summary": "获取当前用户信息",
+        "description": "用户查看自己的详细信息",
+        "operationId": "getCurrentUserInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultUserSelfResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "用户管理"
+        ],
+        "summary": "更新用户信息",
+        "description": "用户更新自己的信息（仅限用户名和头像）",
+        "operationId": "updateCurrentUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultUserSelfResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/loan-products/admin/products/{id}": {
+      "patch": {
+        "tags": [
+          "贷款产品管理"
+        ],
+        "summary": "更新产品信息",
+        "description": "管理员更新指定贷款产品的信息",
+        "operationId": "update",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "产品ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultProductDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/{userId}/detail": {
+      "get": {
+        "tags": [
+          "用户管理"
+        ],
+        "summary": "获取用户详情",
+        "description": "管理员获取指定用户的详细信息",
+        "operationId": "getAdminUserDetail",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "用户ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultUserDetailResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/stats": {
+      "get": {
+        "tags": [
+          "用户管理"
+        ],
+        "summary": "获取用户统计信息",
+        "description": "管理员获取用户列表及其贷款状态和金额统计信息",
+        "operationId": "getAllUsersWithStats",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultListUserListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/search-by-credit": {
+      "get": {
+        "tags": [
+          "用户管理"
+        ],
+        "summary": "按信用分搜索用户",
+        "description": "按信用分表达式搜索用户",
+        "operationId": "searchByCreditScore",
+        "parameters": [
+          {
+            "name": "expr",
+            "in": "query",
+            "description": "信用分表达式",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserSearchDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/blacklist/list": {
+      "get": {
+        "tags": [
+          "用户管理"
+        ],
+        "summary": "获取黑名单列表",
+        "description": "管理员获取当前黑名单用户列表",
+        "operationId": "getBlackList",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultListBlackListDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/orders/{orderId}": {
+      "get": {
+        "tags": [
+          "订单管理"
+        ],
+        "summary": "获取订单详情",
+        "description": "用户获取指定贷款订单的详细信息",
+        "operationId": "getUserOrder",
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "description": "订单ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultUserGetOrderResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/orders/my": {
+      "get": {
+        "tags": [
+          "订单管理"
+        ],
+        "summary": "获取所有订单",
+        "description": "用户获取自己的所有贷款订单",
+        "operationId": "getAllUserOrders",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultListUserOrderListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/loan-products": {
+      "get": {
+        "tags": [
+          "贷款产品管理"
+        ],
+        "summary": "按日期范围搜索产品",
+        "description": "根据创建时间和更新时间范围搜索贷款产品",
+        "operationId": "listProducts",
+        "parameters": [
+          {
+            "name": "createStartDate",
+            "in": "query",
+            "description": "创建开始日期",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "createEndDate",
+            "in": "query",
+            "description": "创建结束日期",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "updateStartDate",
+            "in": "query",
+            "description": "更新开始日期",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "updateEndDate",
+            "in": "query",
+            "description": "更新结束日期",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultListListProductResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/loan-products/user": {
+      "get": {
+        "tags": [
+          "贷款产品管理"
+        ],
+        "summary": "获取所有贷款产品",
+        "description": "用户获取所有可用的贷款产品列表",
+        "operationId": "listForUser",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultListUserGetProductResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/loan-products/user/search": {
+      "get": {
+        "tags": [
+          "贷款产品管理"
+        ],
+        "summary": "搜索贷款产品",
+        "description": "用户根据产品名称搜索贷款产品",
+        "operationId": "searchProducts",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "产品名称",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultListUserGetProductResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/loan-products/admin/{productId}": {
+      "get": {
+        "tags": [
+          "贷款产品管理"
+        ],
+        "summary": "获取产品详情",
+        "description": "管理员获取指定贷款产品的详细信息",
+        "operationId": "getProductForAdmin",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "description": "产品ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultAdminGetProDetailResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/loan-applications/{applicationId}": {
+      "get": {
+        "tags": [
+          "贷款申请管理"
+        ],
+        "summary": "获取申请详情",
+        "description": "管理员获取任意用户的单个贷款申请详情",
+        "operationId": "getAdminApplication",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "description": "申请ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultAdminGetAppResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/loan-applications/user/{userId}": {
+      "get": {
+        "tags": [
+          "贷款申请管理"
+        ],
+        "summary": "获取用户申请列表",
+        "description": "管理员获取指定用户的所有贷款申请详情",
+        "operationId": "getAdminAllApplications",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "用户ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultListAdminGetAppResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/loan-applications/my": {
+      "get": {
+        "tags": [
+          "贷款申请管理"
+        ],
+        "summary": "查看所有申请",
+        "description": "用户查看自己的所有贷款申请",
+        "operationId": "getUserAllApplications",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultListUserGetAppResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/loan-applications/my/{applicationId}": {
+      "get": {
+        "tags": [
+          "贷款申请管理"
+        ],
+        "summary": "查看单个申请",
+        "description": "用户查看自己的单个贷款申请详情",
+        "operationId": "userGetApplication",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "description": "申请ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultUserGetAppResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/work-cert/{workCertId}": {
+      "get": {
+        "tags": [
+          "认证管理"
+        ],
+        "summary": "获取工作认证信息",
+        "description": "管理员根据工作认证ID查询工作认证详细信息",
+        "operationId": "getWorkCert",
+        "parameters": [
+          {
+            "name": "workCertId",
+            "in": "path",
+            "description": "工作认证ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/tri-cert/{triCertId}": {
+      "get": {
+        "tags": [
+          "认证管理"
+        ],
+        "summary": "获取第三方认证信息",
+        "description": "管理员根据第三方认证ID查询第三方认证详细信息",
+        "operationId": "getTriCert",
+        "parameters": [
+          {
+            "name": "triCertId",
+            "in": "path",
+            "description": "第三方认证ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/immovables-cert/{immovableCertId}": {
+      "get": {
+        "tags": [
+          "认证管理"
+        ],
+        "summary": "获取不动产认证信息",
+        "description": "管理员根据不动产认证ID查询不动产认证详细信息",
+        "operationId": "getImmovablesCert",
+        "parameters": [
+          {
+            "name": "immovableCertId",
+            "in": "path",
+            "description": "不动产认证ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/cert-info": {
+      "get": {
+        "tags": [
+          "认证管理"
+        ],
+        "summary": "获取认证信息",
+        "description": "获取用户已上传的认证信息",
+        "operationId": "getCertInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultGetCertResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/approval/pending": {
+      "get": {
+        "tags": [
+          "审批管理"
+        ],
+        "summary": "获取待审批列表",
+        "description": "管理员获取待审批的贷款申请列表",
+        "operationId": "getPendingApprovals",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultListPendingApprovalResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/approval/detail/{loanApplicationId}": {
+      "get": {
+        "tags": [
+          "审批管理"
+        ],
+        "summary": "获取申请详情",
+        "description": "管理员获取贷款申请的详细信息",
+        "operationId": "getApplicationDetail",
+        "parameters": [
+          {
+            "name": "loanApplicationId",
+            "in": "path",
+            "description": "申请ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultApplicationDetailResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/approval/completed": {
+      "get": {
+        "tags": [
+          "审批管理"
+        ],
+        "summary": "获取已完成审批列表",
+        "description": "管理员获取已完成审批的贷款申请列表",
+        "operationId": "getCompletedApprovals",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultListPendingApprovalResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/loan-products/admin/products/{productId}": {
+      "delete": {
+        "tags": [
+          "贷款产品管理"
+        ],
+        "summary": "删除贷款产品",
+        "description": "管理员删除指定的贷款产品",
+        "operationId": "deleteProduct",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "description": "产品ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultString"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/loan-products/admin/options/{optionId}": {
+      "delete": {
+        "tags": [
+          "贷款产品管理"
+        ],
+        "summary": "删除产品选项",
+        "description": "管理员删除指定的产品选项",
+        "operationId": "deleteOption",
+        "parameters": [
+          {
+            "name": "optionId",
+            "in": "path",
+            "description": "选项ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultString"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/loan-products/admin/options/batch-delete": {
+      "delete": {
+        "tags": [
+          "贷款产品管理"
+        ],
+        "summary": "批量删除产品选项",
+        "description": "管理员批量删除指定的产品选项",
+        "operationId": "batchDeleteOptions",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchDeleteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultString"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApiResultString": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "响应码",
+            "format": "int32",
+            "example": 200,
+            "refType": null
+          },
+          "data": {
+            "type": "string",
+            "description": "响应数据",
+            "refType": null
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息",
+            "example": "操作成功",
+            "refType": null
+          }
+        },
+        "description": "API响应结果"
+      },
+      "AddToBlackListRequest": {
+        "required": [
+          "blackLevel",
+          "userId"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "description": "用户ID",
+            "format": "int64",
+            "example": 1,
+            "refType": null
+          },
+          "blackLevel": {
+            "type": "integer",
+            "description": "黑名单等级（1: 轻度, 2: 中度, 3: 重度）",
+            "format": "int32",
+            "example": 2,
+            "enum": [
+              1,
+              2,
+              3
+            ],
+            "refType": null
+          }
+        },
+        "description": "加入黑名单请求"
+      },
+      "ApiResultUserGetOrderResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "响应码",
+            "format": "int32",
+            "example": 200
+          },
+          "data": {
+            "$ref": "#/components/schemas/UserGetOrderResponse"
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息",
+            "example": "操作成功"
+          }
+        },
+        "description": "API响应结果"
+      },
+      "Order": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "refType": null
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int64",
+            "refType": null
+          },
+          "productId": {
+            "type": "integer",
+            "format": "int64",
+            "refType": null
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "正常",
+              "已逾期",
+              "已完成"
+            ],
+            "refType": null
+          },
+          "repaidAmount": {
+            "type": "number",
+            "refType": null
+          },
+          "loanAmount": {
+            "type": "number",
+            "refType": null
+          },
+          "interestRate": {
+            "type": "number",
+            "refType": null
+          },
+          "repaidType": {
+            "type": "string",
+            "enum": [
+              "等额本息",
+              "等额本金",
+              "先息后本",
+              "一次性还本付息"
+            ],
+            "refType": null
+          },
+          "loanPeriod": {
+            "type": "integer",
+            "format": "int32",
+            "refType": null
+          },
+          "term": {
+            "type": "integer",
+            "format": "int32",
+            "refType": null
+          },
+          "currentTerm": {
+            "type": "integer",
+            "format": "int32",
+            "refType": null
+          },
+          "contract": {
+            "type": "string",
+            "refType": null
+          },
+          "overdueDays": {
+            "type": "integer",
+            "format": "int32",
+            "refType": null
+          },
+          "startTime": {
+            "type": "string",
+            "format": "date-time",
+            "refType": null
+          }
+        }
+      },
+      "UserGetOrderResponse": {
+        "type": "object",
+        "properties": {
+          "productName": {
+            "type": "string"
+          },
+          "order": {
+            "$ref": "#/components/schemas/Order"
+          }
+        },
+        "description": "响应数据"
+      },
+      "LoanOption": {
+        "required": [
+          "interestRate",
+          "loanPeriod",
+          "productId",
+          "repaidType"
+        ],
+        "type": "object",
+        "properties": {
+          "optionId": {
+            "type": "integer",
+            "format": "int64",
+            "refType": null
+          },
+          "productId": {
+            "type": "integer",
+            "format": "int64",
+            "refType": null
+          },
+          "loanPeriod": {
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32",
+            "refType": null
+          },
+          "interestRate": {
+            "maximum": 0.5,
+            "exclusiveMaximum": false,
+            "minimum": 0.0001,
+            "exclusiveMinimum": false,
+            "type": "number",
+            "refType": null
+          },
+          "repaidType": {
+            "type": "string",
+            "enum": [
+              "等额本息",
+              "等额本金",
+              "先息后本",
+              "一次性还本付息"
+            ],
+            "refType": null
+          },
+          "createTime": {
+            "type": "string",
+            "format": "date-time",
+            "refType": null
+          },
+          "updateTime": {
+            "type": "string",
+            "format": "date-time",
+            "refType": null
+          }
+        }
+      },
+      "ProductDto": {
+        "required": [
+          "maxTerm",
+          "minTerm",
+          "productName",
+          "termStep"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "refType": null
+          },
+          "productName": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string",
+            "refType": null
+          },
+          "description": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": "string",
+            "refType": null
+          },
+          "loanUsage": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string",
+            "refType": null
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "上架中",
+              "已下架"
+            ],
+            "refType": null
+          },
+          "minTerm": {
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32",
+            "refType": null
+          },
+          "maxTerm": {
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32",
+            "refType": null
+          },
+          "termStep": {
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32",
+            "refType": null
+          },
+          "minAmount": {
+            "type": "number",
+            "refType": null
+          },
+          "maxAmount": {
+            "type": "number",
+            "refType": null
+          },
+          "promotionDetails": {
+            "maxLength": 1000,
+            "minLength": 0,
+            "type": "string",
+            "refType": null
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LoanOption"
+            },
+            "refType": "LoanOption"
+          },
+          "createTime": {
+            "type": "string",
+            "format": "date-time",
+            "refType": null
+          },
+          "updateTime": {
+            "type": "string",
+            "format": "date-time",
+            "refType": null
+          }
+        },
+        "description": "产品信息"
+      },
+      "ApiResultProductDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "响应码",
+            "format": "int32",
+            "example": 200
+          },
+          "data": {
+            "$ref": "#/components/schemas/ProductDto"
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息",
+            "example": "操作成功"
+          }
+        },
+        "description": "API响应结果"
+      },
+      "ApiResultVoid": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "响应码",
+            "format": "int32",
+            "example": 200
+          },
+          "data": {
+            "type": "object",
+            "description": "响应数据"
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息",
+            "example": "操作成功"
+          }
+        },
+        "description": "API响应结果"
+      },
+      "BatchDeleteRequest": {
+        "type": "object",
+        "properties": {
+          "ids": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "refType": "integer"
+          }
+        },
+        "description": "批量删除请求"
+      },
+      "BatchCreateOptionRequest": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "integer",
+            "format": "int64",
+            "refType": null
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LoanOption"
+            },
+            "refType": "LoanOption"
+          }
+        },
+        "description": "批量创建选项请求"
+      },
+      "ApplicationRequest": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "optionId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "term": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "loanAmount": {
+            "type": "number"
+          }
+        },
+        "description": "贷款申请信息"
+      },
+      "RegisterRequest": {
+        "required": [
+          "name",
+          "password",
+          "phone"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "maxLength": 20,
+            "minLength": 2,
+            "type": "string",
+            "description": "用户姓名",
+            "example": "张三"
+          },
+          "phone": {
+            "pattern": "^1[3-9]\\d{9}$",
+            "type": "string",
+            "description": "用户手机号",
+            "example": "13800138000"
+          },
+          "password": {
+            "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%&*()_+=])[A-Za-z\\d!@#$%&*()_+=]{8,20}$",
+            "type": "string",
+            "description": "用户密码",
+            "example": "@Zff1234"
+          }
+        },
+        "description": "注册请求参数"
+      },
+      "ApiResultRegisterResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "响应码",
+            "format": "int32",
+            "example": 200
+          },
+          "data": {
+            "$ref": "#/components/schemas/RegisterResponse"
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息",
+            "example": "操作成功"
+          }
+        },
+        "description": "API响应结果"
+      },
+      "RegisterResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "createTime": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "description": "响应数据"
+      },
+      "LoginRequest": {
+        "required": [
+          "password",
+          "phone"
+        ],
+        "type": "object",
+        "properties": {
+          "phone": {
+            "pattern": "^1[3-9]\\d{9}$",
+            "type": "string",
+            "description": "用户手机号",
+            "example": "13800138000"
+          },
+          "password": {
+            "type": "string",
+            "description": "用户密码",
+            "example": "@Zff1234"
+          }
+        },
+        "description": "登录请求参数"
+      },
+      "ApiResultLoginResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "响应码",
+            "format": "int32",
+            "example": 200
+          },
+          "data": {
+            "$ref": "#/components/schemas/LoginResponse"
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息",
+            "example": "操作成功"
+          }
+        },
+        "description": "API响应结果"
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT令牌",
+            "example": "eyJhbGciOiJIUzI1NiJ9..."
+          }
+        },
+        "description": "登录响应"
+      },
+      "ManualCheckRequest": {
+        "type": "object",
+        "properties": {
+          "loanApplicationId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "approved": {
+            "type": "boolean"
+          },
+          "manualRejectReason": {
+            "type": "string"
+          }
+        },
+        "description": "审批请求"
+      },
+      "ApiResultManualCheckResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "响应码",
+            "format": "int32",
+            "example": 200
+          },
+          "data": {
+            "$ref": "#/components/schemas/ManualCheckResponse"
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息",
+            "example": "操作成功"
+          }
+        },
+        "description": "API响应结果"
+      },
+      "ManualCheckResponse": {
+        "type": "object",
+        "properties": {
+          "loanApplicationId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "审核中",
+              "已通过",
+              "AI拒绝",
+              "人工拒绝",
+              "已取消"
+            ]
+          },
+          "rejectReason": {
+            "type": "string"
+          },
+          "reviewTime": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "description": "响应数据"
+      },
+      "UserUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "userName": {
+            "type": "string",
+            "refType": null
+          },
+          "avatar": {
+            "type": "string",
+            "refType": null
+          }
+        },
+        "description": "用户更新信息"
+      },
+      "ApiResultUserSelfResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "响应码",
+            "format": "int32",
+            "example": 200
+          },
+          "data": {
+            "$ref": "#/components/schemas/UserSelfResponse"
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息",
+            "example": "操作成功"
+          }
+        },
+        "description": "API响应结果"
+      },
+      "UserSelfResponse": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "format": "int64",
+            "refType": null
+          },
+          "userName": {
+            "type": "string",
+            "refType": null
+          },
+          "avatar": {
+            "type": "string",
+            "refType": null
+          }
+        },
+        "description": "响应数据"
+      },
+      "ApiResultUserDetailResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "响应码",
+            "format": "int32",
+            "example": 200
+          },
+          "data": {
+            "$ref": "#/components/schemas/UserDetailResponse"
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息",
+            "example": "操作成功"
+          }
+        },
+        "description": "API响应结果"
+      },
+      "LoanApplication": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "refType": null
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int64",
+            "refType": null
+          },
+          "productId": {
+            "type": "integer",
+            "format": "int64",
+            "refType": null
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "审核中",
+              "已通过",
+              "AI拒绝",
+              "人工拒绝",
+              "已取消"
+            ],
+            "refType": null
+          },
+          "loanAmount": {
+            "type": "number",
+            "refType": null
+          },
+          "interestRate": {
+            "type": "number",
+            "refType": null
+          },
+          "loanPeriod": {
+            "type": "integer",
+            "format": "int32",
+            "refType": null
+          },
+          "term": {
+            "type": "integer",
+            "format": "int32",
+            "refType": null
+          },
+          "repaidType": {
+            "type": "string",
+            "enum": [
+              "等额本息",
+              "等额本金",
+              "先息后本",
+              "一次性还本付息"
+            ],
+            "refType": null
+          },
+          "rejectReason": {
+            "type": "string",
+            "refType": null
+          },
+          "applyTime": {
+            "type": "string",
+            "format": "date-time",
+            "refType": null
+          },
+          "reviewTime": {
+            "type": "string",
+            "format": "date-time",
+            "refType": null
+          }
+        }
+      },
+      "User": {
+        "required": [
+          "password",
+          "phone"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "refType": null
+          },
+          "userName": {
+            "maxLength": 20,
+            "minLength": 2,
+            "type": "string",
+            "refType": null
+          },
+          "avatar": {
+            "type": "string",
+            "refType": null
+          },
+          "phone": {
+            "pattern": "^1[3-9]\\d{9}$",
+            "type": "string",
+            "refType": null
+          },
+          "password": {
+            "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%&*()_+=])[A-Za-z\\d!@#$%&*()_+=]{8,20}$",
+            "type": "string",
+            "refType": null
+          },
+          "role": {
+            "type": "integer",
+            "format": "int32",
+            "refType": null
+          },
+          "createTime": {
+            "type": "string",
+            "format": "date-time",
+            "refType": null
+          },
+          "updateTime": {
+            "type": "string",
+            "format": "date-time",
+            "refType": null
+          }
+        }
+      },
+      "UserCert": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "format": "int64",
+            "refType": null
+          },
+          "idCard": {
+            "type": "string",
+            "refType": null
+          },
+          "creditScore": {
+            "type": "integer",
+            "format": "int32",
+            "refType": null
+          },
+          "bankCardId": {
+            "type": "string",
+            "refType": null
+          },
+          "workCertId": {
+            "type": "integer",
+            "format": "int32",
+            "refType": null
+          },
+          "triCertId": {
+            "type": "integer",
+            "format": "int32",
+            "refType": null
+          },
+          "immovableCertId": {
+            "type": "integer",
+            "format": "int32",
+            "refType": null
+          }
+        }
+      },
+      "UserDetailResponse": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/User",
+            "refType": "User"
+          },
+          "userCert": {
+            "$ref": "#/components/schemas/UserCert",
+            "refType": "UserCert"
+          },
+          "loanApplication": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LoanApplication"
+            },
+            "refType": "LoanApplication"
+          },
+          "order": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Order"
+            },
+            "refType": "Order"
+          }
+        },
+        "description": "响应数据"
+      },
+      "ApiResultListUserListResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "响应码",
+            "format": "int32",
+            "example": 200
+          },
+          "data": {
+            "type": "array",
+            "description": "响应数据",
+            "items": {
+              "$ref": "#/components/schemas/UserListResponse"
+            }
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息",
+            "example": "操作成功"
+          }
+        },
+        "description": "API响应结果"
+      },
+      "UserListResponse": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "format": "int64",
+            "refType": null
+          },
+          "userName": {
+            "type": "string",
+            "refType": null
+          },
+          "creditScore": {
+            "type": "integer",
+            "format": "int32",
+            "refType": null
+          },
+          "loanStatus": {
+            "type": "string",
+            "refType": null
+          },
+          "totalTransactionCount": {
+            "type": "integer",
+            "format": "int32",
+            "refType": null
+          },
+          "totalLoanAmount": {
+            "type": "number",
+            "refType": null
+          }
+        },
+        "description": "响应数据"
+      },
+      "UserSearchDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "creditScore": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "createTime": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ApiResultListBlackListDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "响应码",
+            "format": "int32",
+            "example": 200
+          },
+          "data": {
+            "type": "array",
+            "description": "响应数据",
+            "items": {
+              "$ref": "#/components/schemas/BlackListDto"
+            }
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息",
+            "example": "操作成功"
+          }
+        },
+        "description": "API响应结果"
+      },
+      "BlackListDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "refType": null
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int64",
+            "refType": null
+          },
+          "userName": {
+            "type": "string",
+            "refType": null
+          },
+          "phone": {
+            "type": "string",
+            "refType": null
+          },
+          "blackLevel": {
+            "type": "integer",
+            "format": "int32",
+            "refType": null
+          },
+          "createTime": {
+            "type": "string",
+            "format": "date-time",
+            "refType": null
+          },
+          "updateTime": {
+            "type": "string",
+            "format": "date-time",
+            "refType": null
+          },
+          "removeTime": {
+            "type": "string",
+            "format": "date-time",
+            "refType": null
+          }
+        },
+        "description": "响应数据"
+      },
+      "ApiResultListUserOrderListResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "响应码",
+            "format": "int32",
+            "example": 200
+          },
+          "data": {
+            "type": "array",
+            "description": "响应数据",
+            "items": {
+              "$ref": "#/components/schemas/UserOrderListResponse"
+            }
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息",
+            "example": "操作成功"
+          }
+        },
+        "description": "API响应结果"
+      },
+      "UserOrderListResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "loanAmount": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "正常",
+              "已逾期",
+              "已完成"
+            ]
+          },
+          "startTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "term": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "currentTerm": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "overdueDays": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "description": "响应数据"
+      },
+      "ApiResultListListProductResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "响应码",
+            "format": "int32",
+            "example": 200
+          },
+          "data": {
+            "type": "array",
+            "description": "响应数据",
+            "items": {
+              "$ref": "#/components/schemas/ListProductResponse"
+            }
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息",
+            "example": "操作成功"
+          }
+        },
+        "description": "API响应结果"
+      },
+      "ListProductResponse": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "integer",
+            "format": "int64",
+            "refType": null
+          },
+          "productName": {
+            "type": "string",
+            "refType": null
+          },
+          "description": {
+            "type": "string",
+            "refType": null
+          },
+          "loanUsage": {
+            "type": "string",
+            "refType": null
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "上架中",
+              "已下架"
+            ],
+            "refType": null
+          },
+          "minAmount": {
+            "type": "number",
+            "refType": null
+          },
+          "maxAmount": {
+            "type": "number",
+            "refType": null
+          },
+          "createTime": {
+            "type": "string",
+            "format": "date-time",
+            "refType": null
+          },
+          "updateTime": {
+            "type": "string",
+            "format": "date-time",
+            "refType": null
+          }
+        },
+        "description": "响应数据"
+      },
+      "ApiResultListUserGetProductResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "响应码",
+            "format": "int32",
+            "example": 200
+          },
+          "data": {
+            "type": "array",
+            "description": "响应数据",
+            "items": {
+              "$ref": "#/components/schemas/UserGetProductResponse"
+            }
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息",
+            "example": "操作成功"
+          }
+        },
+        "description": "API响应结果"
+      },
+      "LoanOptionResponse": {
+        "type": "object",
+        "properties": {
+          "optionId": {
+            "type": "integer",
+            "format": "int64",
+            "refType": null
+          },
+          "interestRate": {
+            "type": "number",
+            "refType": null
+          },
+          "loanPeriod": {
+            "type": "integer",
+            "format": "int32",
+            "refType": null
+          },
+          "repaidType": {
+            "type": "string",
+            "enum": [
+              "等额本息",
+              "等额本金",
+              "先息后本",
+              "一次性还本付息"
+            ],
+            "refType": null
+          }
+        }
+      },
+      "UserGetProductResponse": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "integer",
+            "format": "int64",
+            "refType": null
+          },
+          "productName": {
+            "type": "string",
+            "refType": null
+          },
+          "description": {
+            "type": "string",
+            "refType": null
+          },
+          "loanUsage": {
+            "type": "string",
+            "refType": null
+          },
+          "promotionDetails": {
+            "type": "string",
+            "refType": null
+          },
+          "minAmount": {
+            "type": "number",
+            "refType": null
+          },
+          "maxAmount": {
+            "type": "number",
+            "refType": null
+          },
+          "terms": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "refType": "integer"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LoanOptionResponse"
+            },
+            "refType": "LoanOptionResponse"
+          }
+        },
+        "description": "响应数据"
+      },
+      "AdminGetProDetailResponse": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "integer",
+            "format": "int64",
+            "refType": null
+          },
+          "productName": {
+            "type": "string",
+            "refType": null
+          },
+          "description": {
+            "type": "string",
+            "refType": null
+          },
+          "loanUsage": {
+            "type": "string",
+            "refType": null
+          },
+          "terms": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "refType": "integer"
+          },
+          "minAmount": {
+            "type": "number",
+            "refType": null
+          },
+          "maxAmount": {
+            "type": "number",
+            "refType": null
+          },
+          "promotionDetails": {
+            "type": "string",
+            "refType": null
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "上架中",
+              "已下架"
+            ],
+            "refType": null
+          },
+          "createTime": {
+            "type": "string",
+            "format": "date-time",
+            "refType": null
+          },
+          "updateTime": {
+            "type": "string",
+            "format": "date-time",
+            "refType": null
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LoanOption"
+            },
+            "refType": "LoanOption"
+          }
+        },
+        "description": "响应数据"
+      },
+      "ApiResultAdminGetProDetailResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "响应码",
+            "format": "int32",
+            "example": 200
+          },
+          "data": {
+            "$ref": "#/components/schemas/AdminGetProDetailResponse"
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息",
+            "example": "操作成功"
+          }
+        },
+        "description": "API响应结果"
+      },
+      "AdminGetAppResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "productId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "userName": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "productName": {
+            "type": "string"
+          },
+          "loanAmount": {
+            "type": "number"
+          },
+          "interestRate": {
+            "type": "number"
+          },
+          "loanPeriod": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "term": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "repaidType": {
+            "type": "string",
+            "enum": [
+              "等额本息",
+              "等额本金",
+              "先息后本",
+              "一次性还本付息"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "审核中",
+              "已通过",
+              "AI拒绝",
+              "人工拒绝",
+              "已取消"
+            ]
+          },
+          "applyTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reviewTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "rejectReason": {
+            "type": "string"
+          }
+        },
+        "description": "响应数据"
+      },
+      "ApiResultAdminGetAppResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "响应码",
+            "format": "int32",
+            "example": 200
+          },
+          "data": {
+            "$ref": "#/components/schemas/AdminGetAppResponse"
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息",
+            "example": "操作成功"
+          }
+        },
+        "description": "API响应结果"
+      },
+      "ApiResultListAdminGetAppResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "响应码",
+            "format": "int32",
+            "example": 200
+          },
+          "data": {
+            "type": "array",
+            "description": "响应数据",
+            "items": {
+              "$ref": "#/components/schemas/AdminGetAppResponse"
+            }
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息",
+            "example": "操作成功"
+          }
+        },
+        "description": "API响应结果"
+      },
+      "ApiResultListUserGetAppResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "响应码",
+            "format": "int32",
+            "example": 200
+          },
+          "data": {
+            "type": "array",
+            "description": "响应数据",
+            "items": {
+              "$ref": "#/components/schemas/UserGetAppResponse"
+            }
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息",
+            "example": "操作成功"
+          }
+        },
+        "description": "API响应结果"
+      },
+      "UserGetAppResponse": {
+        "type": "object",
+        "properties": {
+          "applicationId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "productName": {
+            "type": "string"
+          },
+          "loanAmount": {
+            "type": "number"
+          },
+          "interestRate": {
+            "type": "number"
+          },
+          "loanPeriod": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "term": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "repaidType": {
+            "type": "string",
+            "enum": [
+              "等额本息",
+              "等额本金",
+              "先息后本",
+              "一次性还本付息"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "审核中",
+              "已通过",
+              "AI拒绝",
+              "人工拒绝",
+              "已取消"
+            ]
+          },
+          "applyTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reviewTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "rejectReason": {
+            "type": "string"
+          }
+        },
+        "description": "响应数据"
+      },
+      "ApiResultUserGetAppResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "响应码",
+            "format": "int32",
+            "example": 200
+          },
+          "data": {
+            "$ref": "#/components/schemas/UserGetAppResponse"
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息",
+            "example": "操作成功"
+          }
+        },
+        "description": "API响应结果"
+      },
+      "ApiResultObject": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "响应码",
+            "format": "int32",
+            "example": 200
+          },
+          "data": {
+            "type": "object",
+            "description": "响应数据"
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息",
+            "example": "操作成功"
+          }
+        },
+        "description": "API响应结果"
+      },
+      "ApiResultGetCertResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "响应码",
+            "format": "int32",
+            "example": 200
+          },
+          "data": {
+            "$ref": "#/components/schemas/GetCertResponse"
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息",
+            "example": "操作成功"
+          }
+        },
+        "description": "API响应结果"
+      },
+      "GetCertResponse": {
+        "type": "object",
+        "properties": {
+          "userCert": {
+            "$ref": "#/components/schemas/UserCert"
+          },
+          "workCert": {
+            "$ref": "#/components/schemas/WorkCert"
+          },
+          "triCert": {
+            "$ref": "#/components/schemas/TriCert"
+          },
+          "immovablesCert": {
+            "$ref": "#/components/schemas/ImmovablesCert"
+          }
+        },
+        "description": "响应数据"
+      },
+      "ImmovablesCert": {
+        "type": "object",
+        "properties": {
+          "immovableCertId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "propertyCertPath": {
+            "type": "string"
+          },
+          "carCertPath": {
+            "type": "string"
+          },
+          "totalValue": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "TriCert": {
+        "type": "object",
+        "properties": {
+          "triCertId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "socialSecurityPath": {
+            "type": "string"
+          },
+          "creditReportPath": {
+            "type": "string"
+          }
+        }
+      },
+      "WorkCert": {
+        "type": "object",
+        "properties": {
+          "workCertId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "employmentCertPath": {
+            "type": "string"
+          },
+          "salaryCertPath": {
+            "type": "string"
+          }
+        }
+      },
+      "ApiResultListPendingApprovalResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "响应码",
+            "format": "int32",
+            "example": 200
+          },
+          "data": {
+            "type": "array",
+            "description": "响应数据",
+            "items": {
+              "$ref": "#/components/schemas/PendingApprovalResponse"
+            }
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息",
+            "example": "操作成功"
+          }
+        },
+        "description": "API响应结果"
+      },
+      "PendingApprovalResponse": {
+        "type": "object",
+        "properties": {
+          "applicationId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "userName": {
+            "type": "string"
+          },
+          "productName": {
+            "type": "string"
+          },
+          "loanAmount": {
+            "type": "number"
+          },
+          "loanPeriod": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "term": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "审核中",
+              "已通过",
+              "AI拒绝",
+              "人工拒绝",
+              "已取消"
+            ]
+          },
+          "applyTime": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "description": "响应数据"
+      },
+      "ApiResultApplicationDetailResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "响应码",
+            "format": "int32",
+            "example": 200
+          },
+          "data": {
+            "$ref": "#/components/schemas/ApplicationDetailResponse"
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息",
+            "example": "操作成功"
+          }
+        },
+        "description": "API响应结果"
+      },
+      "ApplicationDetailResponse": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "userCert": {
+            "$ref": "#/components/schemas/UserCert"
+          },
+          "application": {
+            "$ref": "#/components/schemas/LoanApplication"
+          }
+        },
+        "description": "响应数据"
+      }
+    }
+  }
+}

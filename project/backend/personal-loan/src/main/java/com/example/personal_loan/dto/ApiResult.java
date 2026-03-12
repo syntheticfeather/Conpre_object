@@ -1,12 +1,18 @@
 package com.example.personal_loan.dto;
 
-public class ApiResponse<T> {
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "API响应结果")
+public class ApiResult<T> {
+    @Schema(description = "响应码", example = "200")
     private int code;
+    @Schema(description = "响应数据")
     private T data;
+    @Schema(description = "响应消息", example = "操作成功")
     private String message;
 
     // 构造函数
-    public ApiResponse(int code, T data, String message) {
+    public ApiResult(int code, T data, String message) {
         this.code = code;
         this.data = data;
         this.message = message;
@@ -35,19 +41,19 @@ public class ApiResponse<T> {
     }
 
     // 静态工厂方法（方便使用）
-    public static <T> ApiResponse<T> success(T data, String message) {
-        return new ApiResponse<>(200, data, message);
+    public static <T> ApiResult<T> success(T data, String message) {
+        return new ApiResult<>(200, data, message);
     }
 
-    public static <T> ApiResponse<T> success(T data) {
+    public static <T> ApiResult<T> success(T data) {
         return success(data, "操作成功");
     }
 
-    public static <T> ApiResponse<T> fail(int code, String message) {
-        return new ApiResponse<>(code, null, message);
+    public static <T> ApiResult<T> fail(int code, String message) {
+        return new ApiResult<>(code, null, message);
     }
 
-    public static <T> ApiResponse<T> fail(int code, T data, String message) {
-        return new ApiResponse<>(code, data, message);
+    public static <T> ApiResult<T> fail(int code, T data, String message) {
+        return new ApiResult<>(code, data, message);
     }
 }
