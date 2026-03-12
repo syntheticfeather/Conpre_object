@@ -80,6 +80,15 @@ public class ApplicationServiceImpl implements ApplicationService{
             throw new BusinessException(400, "贷款选项与产品不匹配");
         }
 
+        // 校验金额是否符合范围
+        LoanProduct product = loanProductMapper.findById(request.getProductId());
+        if (product == null) {
+            throw new BusinessException(404, "贷款产品不存在");
+        }
+        if (request.getLoanAmount().compareTo(product.getMinAmount()) < 0 || request.getLoanAmount().compareTo(product.getMaxAmount()) > 0) {
+            throw new BusinessException(400, "贷款金额超出范围");
+        }
+
         // 构建申请记录
         LoanApplication application = new LoanApplication();
         application.setUserId(userId);

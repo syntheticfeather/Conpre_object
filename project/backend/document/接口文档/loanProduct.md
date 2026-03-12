@@ -21,11 +21,12 @@
     "code": 200,
     "data": [
         {
-            "productId": 2,
+            "productId": 5,
             "productName": "小微经营贷",
             "description": "助力小微企业发展，快速审批，灵活还款",
             "loanUsage": "进货周转、设备采购、门店扩张",
             "promotionDetails": "前2期只还利息",
+            "minAmount": 10000.00,
             "maxAmount": 50000.00,
             "terms": [
                 3,
@@ -43,7 +44,7 @@
             ],
             "options": [
                 {
-                    "optionId": 4,
+                    "optionId": 11,
                     "interestRate": 0.0650,
                     "loanPeriod": 12,
                     "repaidType": "先息后本"
@@ -56,6 +57,7 @@
             "description": "专为信用良好用户定制，利率优惠，期限灵活",
             "loanUsage": "教育、购车、旅游、大额消费",
             "promotionDetails": "首年利率85折",
+            "minAmount": 3000.00,
             "maxAmount": 100000.00,
             "terms": [
                 6,
@@ -81,12 +83,6 @@
                     "interestRate": 0.0410,
                     "loanPeriod": 36,
                     "repaidType": "等额本金"
-                },
-                {
-                    "optionId": 3,
-                    "interestRate": 0.0430,
-                    "loanPeriod": 60,
-                    "repaidType": "等额本息"
                 }
             ]
         }
@@ -124,32 +120,37 @@
     "code": 200,
     "data": [
         {
-            "productId": 2,
-            "productName": "小微经营贷",
-            "description": "助力小微企业发展，快速审批，灵活还款",
-            "loanUsage": "进货周转、设备采购、门店扩张",
-            "promotionDetails": "前2期只还利息",
-            "maxAmount": 50000.00,
+            "productId": 1,
+            "productName": "优享贷",
+            "description": "专为信用良好用户定制，利率优惠，期限灵活",
+            "loanUsage": "教育、购车、旅游、大额消费",
+            "promotionDetails": "首年利率85折",
+            "minAmount": 3000.00,
+            "maxAmount": 100000.00,
             "terms": [
-                3,
                 6,
-                9,
                 12,
-                15,
                 18,
-                21,
                 24,
-                27,
                 30,
-                33,
-                36
+                36,
+                42,
+                48,
+                54,
+                60
             ],
             "options": [
                 {
-                    "optionId": 4,
-                    "interestRate": 0.0650,
-                    "loanPeriod": 12,
-                    "repaidType": "先息后本"
+                    "optionId": 1,
+                    "interestRate": 0.0390,
+                    "loanPeriod": 24,
+                    "repaidType": "等额本息"
+                },
+                {
+                    "optionId": 2,
+                    "interestRate": 0.0410,
+                    "loanPeriod": 36,
+                    "repaidType": "等额本金"
                 }
             ]
         }

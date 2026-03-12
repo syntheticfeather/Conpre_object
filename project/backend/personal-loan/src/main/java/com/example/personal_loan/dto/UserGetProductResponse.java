@@ -19,6 +19,7 @@ public class UserGetProductResponse {
     private String loanUsage;
     private String promotionDetails;
 
+    private BigDecimal minAmount;
     private BigDecimal maxAmount;
 
     private List<Integer> terms;

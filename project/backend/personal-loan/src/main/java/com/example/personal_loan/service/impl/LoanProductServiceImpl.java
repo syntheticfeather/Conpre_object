@@ -339,6 +339,7 @@ public class LoanProductServiceImpl implements LoanProductService{
             response.setDescription(product.getDescription());
             response.setLoanUsage(product.getLoanUsage());
             response.setPromotionDetails(product.getPromotionDetails());
+            response.setMinAmount(product.getMinAmount());
             response.setMaxAmount(product.getMaxAmount());
             response.setTerms(terms);
             response.setOptions(optionResponses);
@@ -353,7 +354,6 @@ public class LoanProductServiceImpl implements LoanProductService{
     @Override
     public List<UserGetProductResponse> getAllLoanProducts(){
         List<LoanProduct> products = loanProductMapper.findAllActive();
-        System.out.println(products);
         return products.stream().map(product -> {
             // 生成 terms 列表
             List<Integer> terms = new ArrayList<>();
@@ -383,6 +383,7 @@ public class LoanProductServiceImpl implements LoanProductService{
             response.setDescription(product.getDescription()); 
             response.setLoanUsage(product.getLoanUsage()); 
             response.setPromotionDetails(product.getPromotionDetails());
+            response.setMinAmount(product.getMinAmount());
             response.setMaxAmount(product.getMaxAmount());
             response.setTerms(terms);
             response.setOptions(optionResponses);

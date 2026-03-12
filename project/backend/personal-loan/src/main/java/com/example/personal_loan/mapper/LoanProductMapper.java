@@ -96,6 +96,7 @@ public interface LoanProductMapper {
             "min_term as minTerm, " +
             "max_term as maxTerm, " +
             "term_step as termStep, " +
+            "min_amount AS minAmount, " +
             "max_amount AS maxAmount, " +
             "promotion_details as promotionDetails, " +
             "create_time as createTime, " +
