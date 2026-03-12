@@ -162,18 +162,18 @@
         },
         "workCert": {
             "workCertId": 2,
-            "employmentCertPath": "/uploads/work/employment/uploads/work/employment/employment_10_20260310_ipmkqw.png",
-            "salaryCertPath": "/uploads/work/salary/uploads/work/salary/salary_10_20260310_gkkvl6.png"
+            "employmentCertPath": "/uploads/work/employment/employment_10_20260311_cz77r0.png",
+            "salaryCertPath": "/uploads/work/salary/salary_10_20260310_gkkvl6.png"
         },
         "triCert": {
             "triCertId": 2,
-            "socialSecurityPath": "/uploads/tri/social-security/uploads/tri/social-security/social_10_20260310_zy4bwa.png",
+            "socialSecurityPath": "/uploads/tri/social-security/social_10_20260311_yne0co.png",
             "creditReportPath": null
         },
         "immovablesCert": {
             "immovableCertId": 2,
-            "propertyCertPath": "/uploads/immovables/property/uploads/immovables/property/property_10_20260310_aab3id.png",
-            "carCertPath": "/uploads/immovables/car/uploads/immovables/car/car_10_20260310_ugodx5.png",
+            "propertyCertPath": "/uploads/immovables/property/property_10_20260311_jtsfab.png",
+            "carCertPath": "/uploads/immovables/car/car_10_20260311_gwgs90.png",
             "totalValue": null
         }
     },
@@ -206,8 +206,8 @@
     "code": 200,
     "data": {
         "workCertId": 2,
-        "employmentCertPath": "/uploads/work/employment/uploads/work/employment/employment_10_20260311_cz77r0.png",
-        "salaryCertPath": "/uploads/work/salary/uploads/work/salary/salary_10_20260310_gkkvl6.png"
+        "employmentCertPath": "/uploads/work/employment/employment_10_20260311_cz77r0.png",
+        "salaryCertPath": "/uploads/work/salary/salary_10_20260310_gkkvl6.png"
     },
     "message": "工作认证信息获取成功"
 }
@@ -236,7 +236,7 @@ triCertId|integer|是|第三方认证ID|2|
     "code": 200,
     "data": {
         "triCertId": 2,
-        "socialSecurityPath": "/uploads/tri/social-security/uploads/tri/social-security/social_10_20260311_yne0co.png",
+        "socialSecurityPath": "/uploads/tri/social-security/social_10_20260311_yne0co.png",
         "creditReportPath": null
     },
     "message": "第三方认证信息获取成功"
@@ -266,8 +266,8 @@ triCertId|integer|是|第三方认证ID|2|
     "code": 200,
     "data": {
         "immovableCertId": 2,
-        "propertyCertPath": "/uploads/immovables/property/uploads/immovables/property/property_10_20260311_jtsfab.png",
-        "carCertPath": "/uploads/immovables/car/uploads/immovables/car/car_10_20260311_gwgs90.png",
+        "propertyCertPath": "/uploads/immovables/property/property_10_20260311_jtsfab.png",
+        "carCertPath": "/uploads/immovables/car/car_10_20260311_gwgs90.png",
         "totalValue": null
     },
     "message": "不动产认证信息获取成功"

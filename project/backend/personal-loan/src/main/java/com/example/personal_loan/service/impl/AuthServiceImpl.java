@@ -308,6 +308,10 @@ public class AuthServiceImpl implements AuthService{
      * 构建前端可直接访问的 URL：/uploads/{relativeBasePath}/{filename}
      */
     private String buildPublicUrl(String relativeBasePath, String filename) {
+        // 检查filename是否已经是完整的URL路径（包含/uploads/）
+        if (filename.startsWith("/uploads/")) {
+            return filename;
+        }
         // 确保路径不以 / 开头或结尾，避免双斜杠
         String cleanBase = relativeBasePath.replaceAll("/+$", "").replaceAll("^/+", "");
         String cleanFile = filename.replaceAll("^/+", "");
