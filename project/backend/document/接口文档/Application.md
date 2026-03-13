@@ -58,7 +58,7 @@
 
 ![](../ApplicationImgs/logUserApply.png)
 
-### 查看单个申请
+### 查看单个申请详情
 
 **网址** /api/loan-applications/my/{applicationId}
 
@@ -78,17 +78,18 @@
 {
     "code": 200,
     "data": {
-        "applicationId": 1,
-        "productName": "优享贷",
+        "id": 9,
+        "userId": 10,
+        "productId": 1,
+        "status": "AI拒绝",
         "loanAmount": 5000.00,
         "interestRate": 0.0390,
         "loanPeriod": 24,
         "term": 6,
         "repaidType": "等额本息",
-        "status": "AI拒绝",
-        "applyTime": "2026-03-10 14:34:40",
-        "reviewTime": null,
-        "rejectReason": "AI审核未通过\n"
+        "rejectReason": "AI审核未通过\n",
+        "applyTime": "2026-03-10 21:51:26",
+        "reviewTime": null
     },
     "message": "操作成功"
 }
@@ -102,7 +103,7 @@
 
 ![](../ApplicationImgs/logUserGetOne.png)
 
-### 查看所有申请（待修改）
+### 查看所有申请
 
 **网址** /api/loan-applications/my
 
@@ -115,30 +116,44 @@
     "code": 200,
     "data": [
         {
-            "applicationId": 3,
+            "applicationId": 10,
             "productName": "优享贷",
-            "loanAmount": 80000,
-            "interestRate": 0.041,
-            "loanPeriod": 36,
-            "term": 6,
-            "repaidType": "等额本金",
-            "status": "PENDING",
-            "applyTime": "2025-11-22T14:36:12",
-            "reviewTime": null,
+            "loanAmount": 5000.00,
+            "status": "已通过",
+            "applyTime": "2026-03-10 21:51:27",
             "rejectReason": null
         },
         {
-            "applicationId": 2,
+            "applicationId": 9,
             "productName": "优享贷",
-            "loanAmount": 30000,
-            "interestRate": 0.039,
-            "loanPeriod": 24,
-            "term": 6,
-            "repaidType": "等额本息",
-            "status": "PENDING",
-            "applyTime": "2025-11-21T23:24:08",
-            "reviewTime": null,
+            "loanAmount": 5000.00,
+            "status": "AI拒绝",
+            "applyTime": "2026-03-10 21:51:26",
+            "rejectReason": "AI审核未通过\n"
+        },
+        {
+            "applicationId": 8,
+            "productName": "优享贷",
+            "loanAmount": 5000.00,
+            "status": "已通过",
+            "applyTime": "2026-03-10 21:51:24",
             "rejectReason": null
+        },
+        {
+            "applicationId": 7,
+            "productName": "优享贷",
+            "loanAmount": 5000.00,
+            "status": "已通过",
+            "applyTime": "2026-03-10 21:51:23",
+            "rejectReason": null
+        },
+        {
+            "applicationId": 6,
+            "productName": "优享贷",
+            "loanAmount": 5000.00,
+            "status": "AI拒绝",
+            "applyTime": "2026-03-10 21:51:21",
+            "rejectReason": "AI审核未通过\n"
         }
     ],
     "message": "操作成功"

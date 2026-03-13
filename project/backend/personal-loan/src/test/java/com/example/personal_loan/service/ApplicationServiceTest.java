@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.example.personal_loan.dto.ApplicationRequest;
-import com.example.personal_loan.dto.UserGetAppResponse;
+import com.example.personal_loan.dto.UserAppListResponse;
 import com.example.personal_loan.entity.LoanApplication;
 import com.example.personal_loan.entity.LoanOption;
 import com.example.personal_loan.entity.LoanProduct;
@@ -206,7 +206,7 @@ class ApplicationServiceTest {
         when(applicationMapper.selectById(1L)).thenReturn(loanApplication);
         when(loanProductMapper.findById(1L)).thenReturn(loanProduct);
 
-        UserGetAppResponse response = applicationService.userGetApplication(1L, 1L);
+        LoanApplication response = applicationService.userGetApplication(1L, 1L);
 
         assertNotNull(response);
         assertEquals(new BigDecimal("10000"), response.getLoanAmount());
@@ -240,7 +240,7 @@ class ApplicationServiceTest {
         when(applicationMapper.selectByUserId(1L)).thenReturn(Arrays.asList(loanApplication));
         when(loanProductMapper.findById(1L)).thenReturn(loanProduct);
 
-        List<UserGetAppResponse> responses = applicationService.userGetAllApplications(1L);
+        List<UserAppListResponse> responses = applicationService.userGetAllApplications(1L);
 
         assertNotNull(responses);
         assertEquals(1, responses.size());
@@ -250,31 +250,10 @@ class ApplicationServiceTest {
     void testUserGetAllApplications_EmptyList() {
         when(applicationMapper.selectByUserId(1L)).thenReturn(Collections.emptyList());
 
-        List<UserGetAppResponse> responses = applicationService.userGetAllApplications(1L);
+        List<UserAppListResponse> responses = applicationService.userGetAllApplications(1L);
 
         assertNotNull(responses);
         assertTrue(responses.isEmpty());
     }
 
-    @Test
-    void testAdminGetApplication_Success() {
-        when(applicationMapper.selectById(1L)).thenReturn(loanApplication);
-        when(userService.getUserById(1L)).thenReturn(user);
-        when(loanProductMapper.findById(1L)).thenReturn(loanProduct);
-
-        var response = applicationService.adminGetApplication(1L);
-
-        assertNotNull(response);
-    }
-
-    @Test
-    void testAdminGetApplication_NotFound() {
-        when(applicationMapper.selectById(1L)).thenReturn(null);
-
-        BusinessException exception = assertThrows(BusinessException.class, () -> 
-            applicationService.adminGetApplication(1L)
-        );
-        assertEquals(404, exception.getCode());
-        assertTrue(exception.getMessage().contains("申请不存在"));
-    }
 }

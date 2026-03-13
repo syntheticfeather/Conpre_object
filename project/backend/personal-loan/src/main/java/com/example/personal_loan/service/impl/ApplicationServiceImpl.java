@@ -9,14 +9,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.personal_loan.config.RabbitMQConfig;
-import com.example.personal_loan.dto.AdminGetAppResponse;
 import com.example.personal_loan.dto.ApplicationRequest;
-import com.example.personal_loan.dto.UserGetAppResponse;
+import com.example.personal_loan.dto.UserAppListResponse;
 import com.example.personal_loan.entity.LoanApplication;
 import com.example.personal_loan.entity.LoanOption;
 import com.example.personal_loan.entity.LoanProduct;
 import com.example.personal_loan.entity.OutboxMessage;
-import com.example.personal_loan.entity.User;
 import com.example.personal_loan.enums.ApplicationStatus;
 import com.example.personal_loan.exception.BusinessException;
 import com.example.personal_loan.mapper.ApplicationMapper;
@@ -149,11 +147,11 @@ public class ApplicationServiceImpl implements ApplicationService{
      * 用户获取指定贷款申请
      * @param userId 用户ID
      * @param applicationId 申请ID
-     * @return 用户贷款申请响应DTO
+     * @return 贷款申请实体
      */
     @Override
     @Transactional
-    public UserGetAppResponse userGetApplication(Long userId, Long applicationId){
+    public LoanApplication userGetApplication(Long userId, Long applicationId){
         // 查询申请记录
         LoanApplication app = applicationMapper.selectById(applicationId);
         if (app == null) {
@@ -164,21 +162,8 @@ public class ApplicationServiceImpl implements ApplicationService{
         if (!app.getUserId().equals(userId)) {
             throw new BusinessException(403, "无权查看他人的贷款申请");
         }
-        LoanProduct product = loanProductMapper.findById(app.getProductId());
-
-        return new UserGetAppResponse(
-                app.getId(),
-                product.getProductName(),
-                app.getLoanAmount(),
-                app.getInterestRate(),
-                app.getLoanPeriod(),
-                app.getTerm(),
-                app.getRepaidType(),
-                app.getStatus(),
-                app.getApplyTime(),
-                app.getReviewTime(),
-                app.getRejectReason()
-        );
+        
+        return app;
     }
 
 
@@ -189,79 +174,21 @@ public class ApplicationServiceImpl implements ApplicationService{
      */
     @Override
     @Transactional
-    public List<UserGetAppResponse> userGetAllApplications(Long userId){
+    public List<UserAppListResponse> userGetAllApplications(Long userId){
 
         List<LoanApplication> applications = applicationMapper.selectByUserId(userId);
 
         return applications.stream().map(app -> {
             LoanProduct product = loanProductMapper.findById(app.getProductId());
-            String productName = product.getProductName();
-            return new UserGetAppResponse(
+            return new UserAppListResponse(
                     app.getId(),
-                    productName,
+                    product.getProductName(),
                     app.getLoanAmount(),
-                    app.getInterestRate(),
-                    app.getLoanPeriod(),
-                    app.getTerm(),
-                    app.getRepaidType(),
                     app.getStatus(),
                     app.getApplyTime(),
-                    app.getReviewTime(),
                     app.getStatus().isRejected() ? app.getRejectReason() : null
             );
         }).collect(Collectors.toList());
     }
 
-
-    /**
-     * 管理员获取指定贷款申请
-     * @param applicationId 申请ID
-     * @return 管理员贷款申请响应DTO
-     */
-    @Override
-    @Transactional
-    public AdminGetAppResponse adminGetApplication(Long applicationId){
-
-        LoanApplication app = applicationMapper.selectById(applicationId);
-        if (app == null) throw new BusinessException(404, "申请不存在");
-
-        LoanProduct product = loanProductMapper.findById(app.getProductId());
-        User user = userService.getUserById(app.getUserId());
-
-        return new AdminGetAppResponse(
-                app.getId(), app.getUserId(), app.getProductId(),
-                user.getUserName(), user.getPhone(),product.getProductName(),
-                app.getLoanAmount(), app.getInterestRate(),
-                app.getLoanPeriod(), app.getTerm(),
-                app.getRepaidType(), app.getStatus(),
-                app.getApplyTime(), app.getReviewTime(),
-                app.getRejectReason()
-        );
-    }
-
-    /**
-     * 管理员获取指定用户的所有贷款申请
-     * @param userId 用户ID
-     * @return 管理员贷款申请响应DTO列表
-     */
-    @Override
-    @Transactional
-    public List<AdminGetAppResponse> adminGetAllApplications(Long userId){
-
-        List<LoanApplication> applications = applicationMapper.selectByUserId(userId);
-
-        return applications.stream().map(app -> {
-            LoanProduct product = loanProductMapper.findById(app.getProductId());
-            User user = userService.getUserById(app.getUserId());
-            return new AdminGetAppResponse(
-                    app.getId(), app.getUserId(), app.getProductId(),
-                    user.getUserName(), user.getPhone(),product.getProductName(),
-                    app.getLoanAmount(), app.getInterestRate(),
-                    app.getLoanPeriod(), app.getTerm(),
-                    app.getRepaidType(), app.getStatus(),
-                    app.getApplyTime(), app.getReviewTime(),
-                    app.getStatus().isRejected() ?  app.getRejectReason() : null
-            );
-        }).collect(Collectors.toList());
-    }
 }
