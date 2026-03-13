@@ -30,8 +30,6 @@ import Navbar from '@/components/layout/NavbarMenu.vue'
 
   .dashboard {
     display: flex;
-
-    color: blueviolet;
   }
 
   .sidebar-container {
@@ -40,6 +38,5 @@ import Navbar from '@/components/layout/NavbarMenu.vue'
 
   .main-content {
     flex: 1;
-    color: brown;
   }
 </style>

@@ -37,17 +37,18 @@
 <style scoped>
 /* 顶部导航栏全区 */
 .nav-bar {
-position: fixed;
+  position: fixed;
   display: flex;
   justify-content: space-between;
 
   width: 100%;
-  height: 55px;
+  height: 100px;
   background-color: #2c3e50;
   color: white;
   align-items: center;
 
   box-shadow: 5px 5px 6px rgba(0, 0, 0, 0.3);
+  z-index: 9999;
 }
 
 /*logo*/

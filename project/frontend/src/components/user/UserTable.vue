@@ -33,8 +33,9 @@
               <button
                 class="black-btn"
                 @click.stop="addToBlacklist(user)"
+                :disabled="isUserInBlacklist(user.userId)"
               >
-                加入黑名单
+                {{ isUserInBlacklist(user.userId) ? '已加入黑名单' : '加入黑名单' }}
               </button>
             </td>
           </tr>
@@ -79,12 +80,18 @@ const handlePageChange = (page) => {
   currentPage.value = page
 }
 
+// 检查用户是否在黑名单中
+const isUserInBlacklist = (userId) => {
+  return userStore.blacklist.some(item => item.userId === userId)
+}
+
 // 选中用户（仅用于高亮显示）
 const selectedUserId = ref(null)
 
-// 生命周期：加载用户列表
+// 生命周期：加载用户列表和黑名单列表
 onMounted(async () => {
   await userStore.fetchUserStats()
+  await userStore.fetchBlacklist()
 })
 
 // 选择用户（用于显示详情）
