@@ -181,31 +181,6 @@ public class ApplicationServiceImpl implements ApplicationService{
         );
     }
 
-    /**
-     * 管理员获取指定贷款申请
-     * @param applicationId 申请ID
-     * @return 管理员贷款申请响应DTO
-     */
-    @Override
-    @Transactional
-    public AdminGetAppResponse adminGetApplication(Long applicationId){
-
-        LoanApplication app = applicationMapper.selectById(applicationId);
-        if (app == null) throw new BusinessException(404, "申请不存在");
-
-        LoanProduct product = loanProductMapper.findById(app.getProductId());
-        User user = userService.getUserById(app.getUserId());
-
-        return new AdminGetAppResponse(
-                app.getId(), app.getUserId(), app.getProductId(),
-                user.getUserName(), user.getPhone(),product.getProductName(),
-                app.getLoanAmount(), app.getInterestRate(),
-                app.getLoanPeriod(), app.getTerm(),
-                app.getRepaidType(), app.getStatus(),
-                app.getApplyTime(), app.getReviewTime(),
-                app.getRejectReason()
-        );
-    }
 
     /**
      * 用户获取所有贷款申请
@@ -235,6 +210,33 @@ public class ApplicationServiceImpl implements ApplicationService{
                     app.getStatus().isRejected() ? app.getRejectReason() : null
             );
         }).collect(Collectors.toList());
+    }
+
+
+    /**
+     * 管理员获取指定贷款申请
+     * @param applicationId 申请ID
+     * @return 管理员贷款申请响应DTO
+     */
+    @Override
+    @Transactional
+    public AdminGetAppResponse adminGetApplication(Long applicationId){
+
+        LoanApplication app = applicationMapper.selectById(applicationId);
+        if (app == null) throw new BusinessException(404, "申请不存在");
+
+        LoanProduct product = loanProductMapper.findById(app.getProductId());
+        User user = userService.getUserById(app.getUserId());
+
+        return new AdminGetAppResponse(
+                app.getId(), app.getUserId(), app.getProductId(),
+                user.getUserName(), user.getPhone(),product.getProductName(),
+                app.getLoanAmount(), app.getInterestRate(),
+                app.getLoanPeriod(), app.getTerm(),
+                app.getRepaidType(), app.getStatus(),
+                app.getApplyTime(), app.getReviewTime(),
+                app.getRejectReason()
+        );
     }
 
     /**

@@ -21,7 +21,7 @@
 |productId|integer|是|产品id|1|
 |optionId|integer|是|产品某选项id|3|
 |term|integer|是|用户选择的期数，只能从产品指定的terms数组里选择|6|
-|loanAmount|number|是|用户贷款的金额，不能高于最高额度|5000.00|
+|loanAmount|number|是|用户贷款的金额，不能高于最高额度，低于最低额度|5000.00|
 
 **请求示例（请求体）**:
 
@@ -46,7 +46,13 @@
 
 **postman测试结果** :
 
+**成功**：
 ![](../ApplicationImgs/userApply.png "用户申请贷款成功")
+
+**失败**:
+![](../ApplicationImgs/applyFail_1.png "用户申请贷款失败，贷款金额低于最低额度")
+![](../ApplicationImgs/applyFail_2.png "用户申请贷款失败，贷款金额高于最高额度")
+
 
 **日志**:
 
@@ -179,119 +185,3 @@
 
 ![](../ApplicationImgs/logWithdraw.png)
 
-## 管理员使用（待修改）
-
-### 获取任意用户的单个贷款申请详情
-
-**网址** /api/loan-applications/{applicationId}
-
-**请求方式** GET
-
-**请求参数** :
-
-|字段名|类型|是否必填|说明|示例值|
-|---|---|---|---|---|
-| applicationId | integer | 是 | 申请id | 4 |
-
-**请求示例（网址）** /api/loan-applications/4
-
-**返回数据**:
-
-``` json
-{
-    "code": 200,
-    "data": {
-        "id": 4,
-        "userId": 2,
-        "productId": 1,
-        "userName": "王芳",
-        "phoneNumber": "13100001111",
-        "productName": "优享贷",
-        "loanAmount": 150000,
-        "interestRate": 0.043,
-        "loanPeriod": 60,
-        "term": 6,
-        "repaidType": "等额本息",
-        "status": "PENDING",
-        "applyTime": "2025-11-22T15:03:42",
-        "reviewTime": null,
-        "rejectReason": null
-    },
-    "message": "操作成功"
-}
-```
-
-**postman测试结果**:
-
-![](../ApplicationImgs/adminGetOne.png "管理员获取单个申请")
-
-**日志**:
-
-![](../ApplicationImgs/logAdminGetOne.png)
-
-### 获取指定用户的所有贷款申请详情
-
-**网址** /api/loan-applications/user/{userId}
-
-**请求方式** GET
-
-**请求参数** :
-
-|字段名|类型|是否必填|说明|示例值|
-|---|---|---|---|---|
-| userId | integer | 是 | 用户id | 1 |
-
-**请求示例（网址）** /api/loan-applications/user/1
-
-**返回数据**:
-
-``` json
-{
-    "code": 200,
-    "data": [
-        {
-            "id": 3,
-            "userId": 1,
-            "productId": 1,
-            "userName": "Tom",
-            "phoneNumber": "13712345678",
-            "productName": "优享贷",
-            "loanAmount": 80000,
-            "interestRate": 0.041,
-            "loanPeriod": 36,
-            "term": 6,
-            "repaidType": "等额本金",
-            "status": "PENDING",
-            "applyTime": "2025-11-22T14:36:12",
-            "reviewTime": null,
-            "rejectReason": null
-        },
-        {
-            "id": 2,
-            "userId": 1,
-            "productId": 1,
-            "userName": "Tom",
-            "phoneNumber": "13712345678",
-            "productName": "优享贷",
-            "loanAmount": 30000,
-            "interestRate": 0.039,
-            "loanPeriod": 24,
-            "term": 6,
-            "repaidType": "等额本息",
-            "status": "CANCELLED",
-            "applyTime": "2025-11-21T23:24:08",
-            "reviewTime": null,
-            "rejectReason": null
-        }
-    ],
-    "message": "操作成功"
-}
-```
-
-**postman测试结果** :
-
-![](../ApplicationImgs/adminGetAll.png "管理员获取某用户所有申请记录成功")
-
-**日志**：
-
-![](../ApplicationImgs/logAdminGetAll.png)
