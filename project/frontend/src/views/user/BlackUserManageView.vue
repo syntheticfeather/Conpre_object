@@ -56,10 +56,6 @@ const closeUserDetail = () => {
   flex-direction: column;
 }
 
-.header {
-  margin-bottom: 20px;
-}
-
 .title {
   font-size: 24px;
   color: #333;

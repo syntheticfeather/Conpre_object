@@ -1,53 +1,48 @@
-[file name]: CompletedApplications.vue
-[file content begin]
 <template>
-  <div class="table-content">
-    <div class="data-table">
-      <table>
-        <thead>
-          <tr>
-            <th>贷款人姓名</th>
-            <th>贷款项目</th>
-            <th>贷款金额</th>
-            <th>贷款年限</th>
-            <th>贷款期数</th>
-            <th>申请时间</th>
-            <th>审核状态</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr 
-            v-for="app in paginatedApplications" 
-            :key="app.applicationId"
-            @click="$emit('show-detail', app.applicationId)"
-            style="cursor: pointer;"
-          >
-            <td>{{ app.userName || '—' }}</td>
-            <td>{{ app.productName || '—' }}</td>
-            <td>{{ formatCurrency(app.loanAmount) }}</td>
-            <td>{{ app.loanPeriod || 0 }} 年</td>
-            <td>{{ app.term || 0 }} 期</td>
-            <td>{{ formatDate(app.applyTime) }}</td>
-            <td>{{ formatStatus(app.status) || '—' }}</td>
-          </tr>
-          <tr v-if="applications.length === 0">
-            <td colspan="7" style="text-align: center;">暂无已审核申请</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <Pagination 
-      :current-page="currentPage"
-      :total="applications.length"
-      :page-size="pageSize"
-      @page-change="handlePageChange"
-    />
-  </div>
+  <BaseTable
+    :data-source="paginatedApplications"
+    :columns="columns"
+    :current-page="currentPage"
+    :total="applications.length"
+    :page-size="pageSize"
+    :row-key="'applicationId'"
+    :show-row-selection="false"
+    :show-batch-actions="false"
+    :show-index="false"
+    :show-action="false"
+    @page-change="handlePageChange"
+    @row-click="handleRowClick"
+  >
+    <!-- 贷款金额格式化 -->
+    <template #loanAmount="{ record }">
+      {{ formatCurrency(record.loanAmount) }}
+    </template>
+
+    <!-- 贷款年限格式化 -->
+    <template #loanPeriod="{ record }">
+      {{ record.loanPeriod || 0 }} 年
+    </template>
+
+    <!-- 贷款期数格式化 -->
+    <template #term="{ record }">
+      {{ record.term || 0 }} 期
+    </template>
+
+    <!-- 申请时间格式化 -->
+    <template #applyTime="{ record }">
+      {{ formatDate(record.applyTime) }}
+    </template>
+
+    <!-- 审核状态格式化 -->
+    <template #status="{ record }">
+      {{ formatStatus(record.status) }}
+    </template>
+  </BaseTable>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
-import Pagination from '@/components/shared/BasePagination.vue'
+import BaseTable from '@/components/shared/BaseTable.vue'
 
 const props = defineProps({
   applications: {
@@ -56,10 +51,53 @@ const props = defineProps({
   }
 })
 
-// const emit = defineEmits(['show-detail', 'refresh'])
+const emit = defineEmits(['show-detail'])
 
 const currentPage = ref(1)
 const pageSize = 5
+
+const columns = [
+  {
+    title: '贷款人姓名',
+    dataIndex: 'userName',
+    key: 'userName'
+  },
+  {
+    title: '贷款项目',
+    dataIndex: 'productName',
+    key: 'productName'
+  },
+  {
+    title: '贷款金额',
+    dataIndex: 'loanAmount',
+    key: 'loanAmount',
+    slotName: 'loanAmount'
+  },
+  {
+    title: '贷款年限',
+    dataIndex: 'loanPeriod',
+    key: 'loanPeriod',
+    slotName: 'loanPeriod'
+  },
+  {
+    title: '贷款期数',
+    dataIndex: 'term',
+    key: 'term',
+    slotName: 'term'
+  },
+  {
+    title: '申请时间',
+    dataIndex: 'applyTime',
+    key: 'applyTime',
+    slotName: 'applyTime'
+  },
+  {
+    title: '审核状态',
+    dataIndex: 'status',
+    key: 'status',
+    slotName: 'status'
+  }
+]
 
 const paginatedApplications = computed(() => {
   const start = (currentPage.value - 1) * pageSize
@@ -68,6 +106,10 @@ const paginatedApplications = computed(() => {
 
 const handlePageChange = (page) => {
   currentPage.value = page
+}
+
+const handleRowClick = (record) => {
+  emit('show-detail', record.applicationId)
 }
 
 const formatCurrency = (amount) => {
@@ -93,7 +135,7 @@ const formatStatus = (status) => {
     'MANUAL_REJECTED': '人工拒绝',
     '已通过': '已通过',
     '人工拒绝': '人工拒绝'
-  };
+  }
   return statusMap[status] || status
 }
 </script>

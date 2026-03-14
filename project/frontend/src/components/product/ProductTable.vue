@@ -27,79 +27,100 @@
       <button class="btn" @click="searchProducts">搜索</button>
       <button class="btn" @click="resetSearch">重置</button>
 
-      <!-- 搜索状态提示 -->
       <span v-if="hasSearchCriteria" class="search-status">
         当前显示筛选结果 ({{ loanStore.products.length }} 条)
       </span>
     </div>
 
     <!-- 产品表格 -->
-    <div class="product-content table-content">
-      <table class="product-table data-table">
-        <thead>
-          <tr>
-            <th>序号</th>
-            <th>贷款名称</th>
-            <th>贷款描述</th>
-            <th>贷款用途</th>
-            <th>金额范围</th>
-            <th>产品状态</th>
-            <th>更新时间</th>
-            <th>创建时间</th>
-            <th>快捷操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr 
-            v-for="(product, index) in paginatedProducts" 
-            :key="product.productId"
-            :class="{ 'selected-row': selectedProductId === product.productId }"
-            @click="selectProduct(product.productId)"
-          >
-            <td>{{ (currentPage - 1) * pageSize + index + 1 }}</td>
-            <td>{{ product.productName || '—' }}</td>
-            <td :title="product.description" class="ellipsis">{{ product.description || '—' }}</td>
-            <td>{{ product.loanUsage || '—' }}</td>
-            <td>{{ product.minAmount || 0 }} - {{ product.maxAmount || 0 }} 元</td>
-            <td>{{ product.status || '—' }}</td>
-            <td>{{ formatDate(product.updateTime) }}</td>
-            <td>{{ formatDate(product.createTime) }}</td>
-            <td>
-              <button
-                v-if="product.status === '上架中'"
-                class="toggle-status-btn"
-                @click.stop="toggleProductStatus(product, 'deactive')"
-              >
-                下架
-              </button>
-              <button
-                v-else
-                class="toggle-status-btn"
-                @click.stop="toggleProductStatus(product, 'active')"
-              >
-                上架
-              </button>
-              <button class="delete-prod-btn" @click.stop="deleteProduct(product)">
-                删除
-              </button>
-            </td>
-          </tr>
-          <tr v-if="loanStore.products.length === 0">
-            <td colspan="9" style="text-align: center;">
-              {{ hasSearchCriteria ? '未找到符合条件的商品' : '暂无产品' }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <BaseTable
+      ref="tableRef"
+      :data-source="paginatedProducts"
+      :columns="columns"
+      :current-page="currentPage"
+      :total="loanStore.products.length"
+      :page-size="pageSize"
+      :row-key="'productId'"
+      :show-row-selection="true"
+      :show-batch-actions="true"
+      :show-index="true"
+      :show-action="true"
+      :row-clickable="true"
+      @page-change="handlePageChange"
+      @row-click="selectProduct"
+      @selection-change="handleSelectionChange"
+      @batch-delete="handleBatchDelete"
+    >
+      <!-- 贷款描述列 -->
+      <template #description="{ record }">
+        <span :title="record.description" class="ellipsis">
+          {{ record.description || '—' }}
+        </span>
+      </template>
 
-      <!-- 分页 -->
-      <BasePagination
-        :current-page="currentPage"
-        :total="loanStore.products.length"
-        :page-size="pageSize"
-        @page-change="handlePageChange"
-      />
-    </div>
+      <!-- 金额范围列 -->
+      <template #amountRange="{ record }">
+        {{ record.minAmount || 0 }} - {{ record.maxAmount || 0 }} 元
+      </template>
+
+      <!-- 产品状态列 -->
+      <template #status="{ record }">
+        <a-tag :color="record.status === '上架中' ? 'green' : 'red'">
+          {{ record.status || '—' }}
+        </a-tag>
+      </template>
+
+      <!-- 更新时间列 -->
+      <template #updateTime="{ record }">
+        {{ formatDate(record.updateTime) }}
+      </template>
+
+      <!-- 创建时间列 -->
+      <template #createTime="{ record }">
+        {{ formatDate(record.createTime) }}
+      </template>
+
+      <!-- 操作列 -->
+      <template #action="{ record }">
+        <a-space>
+          <a-button
+            v-if="record.status === '上架中'"
+            type="primary"
+            size="small"
+            @click.stop="toggleProductStatus(record, 'deactive')"
+          >
+            下架
+          </a-button>
+          <a-button
+            v-else
+            size="small"
+            @click.stop="toggleProductStatus(record, 'active')"
+          >
+            上架
+          </a-button>
+          <a-button
+            type="primary"
+            size="small"
+            danger
+            @click.stop="deleteProduct(record)"
+          >
+            删除
+          </a-button>
+        </a-space>
+      </template>
+
+      <!-- 自定义批量操作 -->
+      <template #batch-actions="{ selectedRows, selectedKeys }">
+        <a-space>
+          <a-button type="primary" danger @click="handleBatchDelete(selectedKeys, selectedRows)">
+            批量删除
+          </a-button>
+          <a-button @click="batchOffline(selectedKeys, selectedRows)">
+            批量下架
+          </a-button>
+        </a-space>
+      </template>
+    </BaseTable>
 
     <!-- 产品详情展示区域 -->
     <div v-if="selectedProductId" class="product-detail-section">
@@ -118,44 +139,86 @@ import { useLoanStore } from '@/stores/loan'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { loanAPI, applicationAPI } from '@/api'
 import ProductDetailPanel from './ProductDetailPanel.vue'
-import BasePagination from '@/components/shared/BasePagination.vue'
+import BaseTable from '@/components/shared/BaseTable.vue'
 
 const loanStore = useLoanStore()
+const tableRef = ref(null)
 
-// 搜索条件
 const createDateRange = ref([])
 const updateDateRange = ref([])
-// 计算是否有搜索条件
+const currentPage = ref(1)
+const pageSize = 5
+const selectedProductId = ref(null)
+const selectedRows = ref([])
+const selectedKeys = ref([])
+
 const hasSearchCriteria = computed(() => {
   return createDateRange.value.length > 0 || updateDateRange.value.length > 0
 })
 
-// 分页
-const currentPage = ref(1)
-const pageSize = 5
+const columns = [
+  {
+    title: '贷款名称',
+    dataIndex: 'productName',
+    key: 'productName'
+  },
+  {
+    title: '贷款描述',
+    dataIndex: 'description',
+    key: 'description',
+    slotName: 'description'
+  },
+  {
+    title: '贷款用途',
+    dataIndex: 'loanUsage',
+    key: 'loanUsage'
+  },
+  {
+    title: '金额范围',
+    key: 'amountRange',
+    slotName: 'amountRange'
+  },
+  {
+    title: '产品状态',
+    dataIndex: 'status',
+    key: 'status',
+    slotName: 'status'
+  },
+  {
+    title: '更新时间',
+    dataIndex: 'updateTime',
+    key: 'updateTime',
+    slotName: 'updateTime'
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'createTime',
+    key: 'createTime',
+    slotName: 'createTime'
+  }
+]
+
 const paginatedProducts = computed(() => {
   const start = (currentPage.value - 1) * pageSize
   return loanStore.products.slice(start, start + pageSize)
 })
 
-// 分页变化处理
-const handlePageChange = (page) => {
-  currentPage.value = page
-}
-
-// 选中状态
-const selectedProductId = ref(null)
-
-// 加载产品列表
 onMounted(async () => {
   await loanStore.fetchProducts()
 })
 
-// 根据日期搜索产品
+const handlePageChange = (page) => {
+  currentPage.value = page
+}
+
+const handleSelectionChange = (keys, rows) => {
+  selectedKeys.value = keys
+  selectedRows.value = rows
+}
+
 const searchProducts = async () => {
   const params = {}
   
-  // 构建搜索参数
   if (createDateRange.value?.length === 2) {
     params.createStartDate = createDateRange.value[0]
     params.createEndDate = createDateRange.value[1]
@@ -166,20 +229,17 @@ const searchProducts = async () => {
     params.updateEndDate = updateDateRange.value[1]
   }
   
-  // 如果没有选择任何日期范围，提示用户
   if (!params.createStartDate && !params.updateStartDate) {
     ElMessage.warning('请选择至少一个日期范围进行搜索')
     return
   }
   
   try {
-    // 直接调用 API 获取数据
     const response = await loanAPI.searchProductsByTime(params)
     
     if (response.code === 200 && response.data) {
       loanStore.products = response.data
       
-      // 显示搜索结果信息
       if (loanStore.products.length > 0) {
         ElMessage.success(`找到 ${loanStore.products.length} 个符合条件的商品`)
       } else {
@@ -187,18 +247,17 @@ const searchProducts = async () => {
       }
     } else {
       ElMessage.warning('返回数据格式不正确')
-      loanStore.products = [] // 清空列表
+      loanStore.products = []
     }
     
     currentPage.value = 1
   } catch (error) {
     console.error('搜索产品失败:', error)
     ElMessage.error('搜索失败')
-    loanStore.products = [] // 清空列表
+    loanStore.products = []
   }
 }
 
-// 重置搜索
 const resetSearch = async () => {
   createDateRange.value = []
   updateDateRange.value = []
@@ -213,28 +272,23 @@ const resetSearch = async () => {
   }
 }
 
-// 选择产品
-const selectProduct = (productId) => {
-  if (selectedProductId.value === productId) {
-    // 如果点击已选中的行，则取消选择
+const selectProduct = (record) => {
+  if (selectedProductId.value === record.productId) {
     selectedProductId.value = null
   } else {
-    selectedProductId.value = productId
+    selectedProductId.value = record.productId
   }
 }
 
-// 清除选择
 const clearSelection = () => {
   selectedProductId.value = null
 }
 
-// 产品保存后的处理
 const handleProductSaved = () => {
   loanStore.fetchProducts()
   selectedProductId.value = null
 }
 
-// 切换产品状态
 const toggleProductStatus = async (product, action) => {
   try {
     await ElMessageBox.confirm(
@@ -256,7 +310,6 @@ const toggleProductStatus = async (product, action) => {
   }
 }
 
-// 删除产品
 const deleteProduct = async (product) => {
   try {
     await ElMessageBox.confirm(
@@ -269,7 +322,6 @@ const deleteProduct = async (product) => {
       }
     )
     
-    // 检查是否有待审申请
     const hasPending = await checkPendingApplications(product.productId)
     if (hasPending) {
       ElMessage.warning('该产品存在待审核申请，无法删除！')
@@ -278,7 +330,7 @@ const deleteProduct = async (product) => {
     
     await loanStore.deleteProduct(product.productId)
     ElMessage.success('删除成功')
-    // 如果删除的是当前选中的产品，清除选中状态
+    
     if (selectedProductId.value === product.productId) {
       selectedProductId.value = null
     }
@@ -289,7 +341,6 @@ const deleteProduct = async (product) => {
   }
 }
 
-// 检查待审申请
 const checkPendingApplications = async (productId) => {
   try {
     const response = await applicationAPI.getPendingApplications()
@@ -300,7 +351,129 @@ const checkPendingApplications = async (productId) => {
   }
 }
 
-// 工具函数
+const getPendingProductIds = async () => {
+  try {
+    const response = await applicationAPI.getPendingApplications()
+    const pendingProductIds = response.data?.map(app => app.productId) || []
+    return [...new Set(pendingProductIds)]
+  } catch (error) {
+    console.error('获取待审申请产品ID失败:', error)
+    return []
+  }
+}
+
+const handleBatchDelete = async (keys, rows) => {
+  if (!keys || keys.length === 0) {
+    ElMessage.warning('请先选择要删除的产品')
+    return
+  }
+
+  try {
+    await ElMessageBox.confirm(
+      `确定删除选中的 ${keys.length} 个产品？`,
+      '批量删除',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    )
+
+    const pendingProductIds = await getPendingProductIds()
+    
+    const productsWithPending = keys.filter(id => pendingProductIds.includes(id))
+    const productsWithoutPending = keys.filter(id => !pendingProductIds.includes(id))
+
+    if (productsWithPending.length > 0) {
+      const pendingProductNames = rows
+        .filter(row => productsWithPending.includes(row.productId))
+        .map(row => row.productName)
+        .join('、')
+
+      if (productsWithoutPending.length === 0) {
+        ElMessage.warning(`以下产品存在待审核申请，无法删除：${pendingProductNames}`)
+        return
+      }
+
+      await ElMessageBox.confirm(
+        `以下产品存在待审核申请，将跳过删除：\n${pendingProductNames}\n\n是否继续删除其他 ${productsWithoutPending.length} 个产品？`,
+        '部分产品无法删除',
+        {
+          confirmButtonText: '继续删除',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      )
+    }
+
+    let successCount = 0
+    let failCount = 0
+
+    for (const productId of productsWithoutPending) {
+      try {
+        await loanStore.deleteProduct(productId)
+        successCount++
+      } catch {
+        failCount++
+      }
+    }
+
+    if (successCount > 0) {
+      ElMessage.success(`成功删除 ${successCount} 个产品`)
+    }
+    if (failCount > 0) {
+      ElMessage.error(`${failCount} 个产品删除失败`)
+    }
+
+    tableRef.value?.clearSelection()
+    await loanStore.fetchProducts()
+    
+    if (selectedProductId.value && keys.includes(selectedProductId.value)) {
+      selectedProductId.value = null
+    }
+  } catch (error) {
+    if (error !== 'cancel') {
+      console.error('批量删除失败:', error)
+    }
+  }
+}
+
+const batchOffline = async (keys) => {
+  if (!keys || keys.length === 0) {
+    ElMessage.warning('请先选择要下架的产品')
+    return
+  }
+
+  try {
+    await ElMessageBox.confirm(
+      `确定下架选中的 ${keys.length} 个产品？`,
+      '批量下架',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    )
+
+    let successCount = 0
+    for (const productId of keys) {
+      try {
+        await loanStore.toggleProductStatus(productId, 'deactive')
+        successCount++
+      } catch (error) {
+        console.error(`下架产品 ${productId} 失败:`, error)
+      }
+    }
+
+    ElMessage.success(`成功下架 ${successCount} 个产品`)
+    tableRef.value?.clearSelection()
+  } catch (error) {
+    if (error !== 'cancel') {
+      ElMessage.error('批量下架失败')
+    }
+  }
+}
+
 const formatDate = (dateString) => {
   if (!dateString) return '—'
   return new Date(dateString).toLocaleString('zh-CN')
@@ -317,6 +490,7 @@ const formatDate = (dateString) => {
   gap: 10px;
   margin-bottom: 15px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .input-group {
@@ -343,9 +517,9 @@ const formatDate = (dateString) => {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 150px;
+  display: inline-block;
 }
 
-/* 搜索状态提示 */
 .search-status {
   font-size: 14px;
   color: #28a745;
@@ -355,31 +529,6 @@ const formatDate = (dateString) => {
   border-radius: 4px;
 }
 
-/* 添加选中行的样式 */
-.selected-row {
-  background-color: #f0f9ff;
-  border-left: 3px solid #409EFF;
-}
-
-.selected-row:hover {
-  background-color: #e6f7ff;
-}
-
-/* 点击行的样式 */
-.product-table tbody tr {
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.product-table tbody tr:hover {
-  background-color: #f5f5f5;
-}
-
-.selected-row:hover {
-  background-color: #e6f7ff;
-}
-
-/* 详情区域样式 */
 .product-detail-section {
   margin-top: 30px;
   border: 1px solid #e4e7ed;
@@ -397,57 +546,5 @@ const formatDate = (dateString) => {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  margin-top: 15px;
-}
-
-.page-btn {
-  padding: 6px 12px;
-  background-color: #409EFF;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.page-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.toggle-status-btn,
-.delete-prod-btn {
-  padding: 4px 8px;
-  margin: 0 2px;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.toggle-status-btn {
-  background-color: #409EFF;
-  color: white;
-}
-
-.delete-prod-btn {
-  background-color: #F56C6C;
-  color: white;
-}
-
-/* 确保表格单元格中的按钮不会触发行点击 */
-.product-table tbody td button {
-  pointer-events: auto;
-}
-
-/* 确保其他单元格可以点击 */
-.product-table tbody td:not(:last-child) {
-  cursor: pointer;
 }
 </style>

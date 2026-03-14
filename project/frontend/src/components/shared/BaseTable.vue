@@ -1,48 +1,80 @@
 <template>
-  <div class="base-table">
-    <!-- 表格 -->
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th v-for="column in columns" :key="column.key">
-            {{ column.label }}
-          </th>
-          <th v-if="actions.length > 0">操作</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr 
-          v-for="(item, index) in paginatedData" 
-          :key="item[primaryKey]"
-          :class="{ 'selected-row': selectedId === item[primaryKey] }"
-          @click="handleRowClick(item)"
-        >
-          <td v-for="column in columns" :key="column.key">
-            {{ column.formatter ? column.formatter(item[column.key], item, index) : item[column.key] }}
-          </td>
-          <td v-if="actions.length > 0">
-            <button 
-              v-for="action in actions" 
-              :key="action.key"
-              :class="action.className"
-              @click.stop="action.handler(item)"
-            >
-              {{ typeof action.label === 'function' ? action.label(item) : action.label }}
-            </button>
-          </td>
-        </tr>
-        <tr v-if="data.length === 0">
-          <td :colspan="columns.length + (actions.length > 0 ? 1 : 0)" style="text-align: center;">
-            {{ emptyText }}
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="table-content">
+    <!-- 批量操作区域 -->
+    <div v-if="showBatchActions && selectedRowKeys.length > 0" class="batch-actions">
+      <span class="selected-info">已选择 {{ selectedRowKeys.length }} 项</span>
+      <slot name="batch-actions" :selected-rows="selectedRows" :selected-keys="selectedRowKeys">
+        <a-button type="primary" size="small" @click="handleBatchDelete">批量删除</a-button>
+      </slot>
+    </div>
 
-    <!-- 分页 -->
-    <BasePagination 
+    <!-- 表格主体 -->
+    <div class="data-table">
+      <a-table
+        :columns="processedColumns"
+        :data-source="dataSource"
+        :loading="loading"
+        :pagination="false"
+        :row-key="rowKey"
+        :row-selection="showRowSelection ? rowSelectionConfig : undefined"
+        :scroll="scroll"
+        :custom-row="customRow"
+        @change="handleTableChange"
+      >
+        <!-- 自定义列内容 -->
+        <template #bodyCell="{ column, record, index }">
+          <!-- 索引列 -->
+          <template v-if="column.key === 'index'">
+            {{ (currentPage - 1) * pageSize + index + 1 }}
+          </template>
+
+          <!-- 操作列 -->
+          <template v-else-if="column.key === 'action'">
+            <slot name="action" :record="record" :index="index">
+              <a-space>
+                <a-button type="link" size="small" @click.stop="handleEdit(record)">编辑</a-button>
+                <a-button type="link" size="small" danger @click.stop="handleDelete(record)">删除</a-button>
+              </a-space>
+            </slot>
+          </template>
+
+          <!-- 自定义列插槽 -->
+          <template v-else-if="column.slotName">
+            <slot :name="column.slotName" :record="record" :column="column" :index="index" />
+          </template>
+
+          <!-- 默认显示 -->
+          <template v-else>
+            {{ record[column.dataIndex] }}
+          </template>
+        </template>
+
+        <!-- 自定义筛选下拉 -->
+        <template #customFilterDropdown="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }">
+          <div style="padding: 8px">
+            <a-input
+              :value="selectedKeys[0]"
+              :placeholder="`搜索${column.title}`"
+              style="width: 188px; margin-bottom: 8px; display: block"
+              @change="e => setSelectedKeys(e.target.value ? [e.target.value] : [])"
+              @pressEnter="handleSearch(selectedKeys, confirm)"
+            />
+            <a-space>
+              <a-button type="primary" size="small" @click="handleSearch(selectedKeys, confirm)">
+                搜索
+              </a-button>
+              <a-button size="small" @click="handleReset(clearFilters)">重置</a-button>
+            </a-space>
+          </div>
+        </template>
+      </a-table>
+    </div>
+
+    <!-- 分页组件 -->
+    <BasePagination
+      v-if="showPagination"
       :current-page="currentPage"
-      :total="data.length"
+      :total="total"
       :page-size="pageSize"
       @page-change="handlePageChange"
     />
@@ -54,7 +86,7 @@ import { ref, computed } from 'vue'
 import BasePagination from './BasePagination.vue'
 
 const props = defineProps({
-  data: {
+  dataSource: {
     type: Array,
     default: () => []
   },
@@ -62,119 +94,236 @@ const props = defineProps({
     type: Array,
     required: true
   },
-  actions: {
-    type: Array,
-    default: () => []
+  loading: {
+    type: Boolean,
+    default: false
   },
-  primaryKey: {
-    type: String,
-    default: 'id'
-  },
-  emptyText: {
-    type: String,
-    default: '暂无数据'
+  currentPage: {
+    type: Number,
+    default: 1
   },
   pageSize: {
     type: Number,
-    default: 5
+    default: 10
+  },
+  total: {
+    type: Number,
+    default: 0
+  },
+  rowKey: {
+    type: String,
+    default: 'id'
+  },
+  showPagination: {
+    type: Boolean,
+    default: true
+  },
+  showRowSelection: {
+    type: Boolean,
+    default: false
+  },
+  showBatchActions: {
+    type: Boolean,
+    default: false
+  },
+  showIndex: {
+    type: Boolean,
+    default: false
+  },
+  showAction: {
+    type: Boolean,
+    default: false
+  },
+  scroll: {
+    type: Object,
+    default: undefined
+  },
+  rowClickable: {
+    type: Boolean,
+    default: true
   }
 })
 
-const emit = defineEmits(['row-click', 'selection-change'])
+const emit = defineEmits([
+  'page-change',
+  'edit',
+  'delete',
+  'batch-delete',
+  'selection-change',
+  'table-change',
+  'row-click'
+])
 
-// 分页控制
-const currentPage = ref(1)
-const selectedId = ref(null)
+const selectedRowKeys = ref([])
+const selectedRows = ref([])
 
-// 分页数据
-const paginatedData = computed(() => {
-  const start = (currentPage.value - 1) * props.pageSize
-  return props.data.slice(start, start + props.pageSize)
+const processedColumns = computed(() => {
+  let cols = [...props.columns]
+
+  if (props.showIndex) {
+    cols.unshift({
+      title: '序号',
+      key: 'index',
+      width: 70,
+      align: 'center',
+      fixed: 'left'
+    })
+  }
+
+  if (props.showAction) {
+    cols.push({
+      title: '操作',
+      key: 'action',
+      width: 150,
+      align: 'center',
+      fixed: 'right'
+    })
+  }
+
+  return cols
 })
 
-// 处理分页变化
+const rowSelectionConfig = computed(() => ({
+  selectedRowKeys: selectedRowKeys.value,
+  onChange: (keys, rows) => {
+    selectedRowKeys.value = keys
+    selectedRows.value = rows
+    emit('selection-change', keys, rows)
+  },
+  getCheckboxProps: (record) => ({
+    disabled: record.disabled || false
+  })
+}))
+
+const customRow = (record, index) => {
+  return {
+    onClick: () => {
+      if (props.rowClickable) {
+        emit('row-click', record, index)
+      }
+    },
+    style: {
+      cursor: props.rowClickable ? 'pointer' : 'default'
+    }
+  }
+}
+
 const handlePageChange = (page) => {
-  currentPage.value = page
+  emit('page-change', page)
 }
 
-// 处理行点击
-const handleRowClick = (item) => {
-  const itemId = item[props.primaryKey]
-  if (selectedId.value === itemId) {
-    selectedId.value = null
-  } else {
-    selectedId.value = itemId
-  }
-  emit('row-click', item)
-  emit('selection-change', selectedId.value)
+const handleTableChange = (pagination, filters, sorter) => {
+  emit('table-change', { pagination, filters, sorter })
 }
 
-// 暴露方法和属性
-const resetSelection = () => {
-  selectedId.value = null
+const handleEdit = (record) => {
+  emit('edit', record)
 }
 
-const setCurrentPage = (page) => {
-  currentPage.value = page
+const handleDelete = (record) => {
+  emit('delete', record)
+}
+
+const handleBatchDelete = () => {
+  emit('batch-delete', selectedRowKeys.value, selectedRows.value)
+}
+
+const handleSearch = (selectedKeys, confirm) => {
+  confirm()
+}
+
+const handleReset = (clearFilters) => {
+  clearFilters({ confirm: true })
+}
+
+const clearSelection = () => {
+  selectedRowKeys.value = []
+  selectedRows.value = []
+}
+
+const setSelection = (keys, rows = []) => {
+  selectedRowKeys.value = keys
+  selectedRows.value = rows
 }
 
 defineExpose({
-  resetSelection,
-  setCurrentPage,
-  currentPage
+  clearSelection,
+  setSelection,
+  getSelection: () => ({ keys: selectedRowKeys.value, rows: selectedRows.value })
 })
 </script>
 
 <style scoped>
-.base-table {
-  width: 100%;
+.table-content {
+  padding: 10px 20px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s;
 }
 
 .data-table {
+  padding: 6px 20px;
   width: 100%;
-  border-collapse: collapse;
+  min-height: 241px;
+  color: #525457;
+  overflow-y: hidden;
 }
 
-.data-table th {
-  background: #f8f9fa;
-  padding: 12px;
-  text-align: left;
-  border-bottom: 2px solid #dee2e6;
-  font-weight: 600;
+.batch-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  background-color: #f6ffed;
+  border: 1px solid #b7eb8f;
+  border-radius: 4px;
 }
 
-.data-table td {
-  padding: 12px;
-  border-bottom: 1px solid #dee2e6;
+.selected-info {
+  font-size: 14px;
+  color: #52c41a;
+  font-weight: 500;
 }
 
-/* 行点击效果 */
-.data-table tbody tr {
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.data-table tbody tr:hover {
-  background-color: #f5f5f5;
-}
-
-/* 选中行样式 */
-.selected-row {
-  background-color: #f0f9ff;
-  border-left: 3px solid #409eff;
-}
-
-.selected-row:hover {
-  background-color: #e6f7ff;
-}
-
-/* 操作按钮通用样式 */
-.data-table tbody button {
-  padding: 4px 8px;
-  margin: 0 2px;
+:deep(.ant-table) {
+  font-size: 14px;
   border: none;
-  border-radius: 3px;
+}
+
+:deep(.ant-table-thead > tr > th) {
+  background-color: transparent;
+  font-weight: 600;
+  color: #525457;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 7px;
+  text-align: center;
+}
+
+:deep(.ant-table-tbody > tr > td) {
+  padding: 7px;
+  text-align: center;
+  border-bottom: 1px solid #e0e0e0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+:deep(.ant-table-tbody > tr:hover > td) {
+  background-color: #d1d0d0;
+  transition: background-color 0.3s;
+}
+
+:deep(.ant-table-tbody > tr) {
   cursor: pointer;
-  font-size: 12px;
+}
+
+:deep(.ant-btn-link) {
+  padding: 0 4px;
+}
+
+:deep(.ant-empty) {
+  padding: 20px 0;
 }
 </style>

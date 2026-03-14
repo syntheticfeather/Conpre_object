@@ -49,10 +49,6 @@ const closeUserDetail = () => {
   padding: 20px;
 }
 
-.header {
-  margin-bottom: 20px;
-}
-
 .title {
   font-size: 24px;
   color: #333;

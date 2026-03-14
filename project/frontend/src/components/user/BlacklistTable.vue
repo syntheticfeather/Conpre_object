@@ -1,113 +1,139 @@
 <template>
-  <div class="blacklist-table-container">
-    <!-- 黑名单表格 -->
-    <div class="blacklist-content table-content">
-      <table class="blacklist-table data-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>序号</th>
-            <th>用户名</th>
-            <th>手机号</th>
-            <th>黑名单等级</th>
-            <th>加入时间</th>
-            <th>更新时间</th>
-            <th>解除时间</th>
-            <th>快捷操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="(user, index) in paginatedBlacklist"
-            :key="user.userId"
-            :class="{ 'selected-row': selectedUserId === user.userId }"
-            @click="selectUser(user)"
-          >
-            <td>{{ user.userId }}</td>
-            <td>{{ (currentPage - 1) * pageSize + index + 1 }}</td>
-            <td>{{ user.userName || '—' }}</td>
-            <td>{{ user.phone || '—' }}</td>
-            <td>{{ user.blackLevel || '—' }}</td>
-            <td>{{ formatDate(user.createTime) }}</td>
-            <td>{{ formatDate(user.updateTime) }}</td>
-            <td>{{ formatDate(user.removeTime) }}</td>
-            <td>
-              <button
-                class="remove-btn"
-                @click.stop="removeFromBlacklist(user)"
-                :disabled="user.removeTime !== null"
-              >
-                {{ user.removeTime !== null ? '已解除' : '解除黑名单' }}
-              </button>
-            </td>
-          </tr>
-          <tr v-if="userStore.blacklist.length === 0">
-            <td colspan="9" style="text-align: center;">暂无黑名单用户</td>
-          </tr>
-        </tbody>
-      </table>
+  <div class="blacklist-table-wrapper">
+    <BaseTable
+      ref="tableRef"
+      :data-source="paginatedBlacklist"
+      :columns="columns"
+      :current-page="currentPage"
+      :total="userStore.blacklist.length"
+      :page-size="pageSize"
+      :row-key="'userId'"
+      :show-row-selection="false"
+      :show-batch-actions="false"
+      :show-index="true"
+      :show-action="true"
+      :row-clickable="true"
+      @page-change="handlePageChange"
+      @row-click="selectUser"
+    >
+      <!-- 黑名单等级列 -->
+      <template #blackLevel="{ record }">
+        <span>
+          {{ record.blackLevel || '—' }}
+        </span>
+      </template>
 
-      <!-- 分页 -->
-      <BasePagination
-        :current-page="currentPage"
-        :total="userStore.blacklist.length"
-        :page-size="pageSize"
-        @page-change="handlePageChange"
-      />
-    </div>
+      <!-- 加入时间列 -->
+      <template #createTime="{ record }">
+        {{ formatDate(record.createTime) }}
+      </template>
+
+      <!-- 更新时间列 -->
+      <template #updateTime="{ record }">
+        {{ formatDate(record.updateTime) }}
+      </template>
+
+      <!-- 解除时间列 -->
+      <template #removeTime="{ record }">
+        <span :style="{ color: record.removeTime ? '#52c41a' : '#999' }">
+          {{ formatDate(record.removeTime) }}
+        </span>
+      </template>
+
+      <!-- 操作列 -->
+      <template #action="{ record }">
+        <a-button
+          class="remove-blacklist-btn"
+          :disabled="record.removeTime !== null"
+          @click.stop="removeFromBlacklist(record)"
+        >
+          {{ record.removeTime !== null ? '已解除' : '解除黑名单' }}
+        </a-button>
+      </template>
+    </BaseTable>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, defineEmits } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import BasePagination from '@/components/shared/BasePagination.vue'
+import BaseTable from '@/components/shared/BaseTable.vue'
 
-// 定义 emits
 const emit = defineEmits(['user-selected'])
 
 const userStore = useUserStore()
+const tableRef = ref(null)
 
-// 分页控制（由组件管理）
 const currentPage = ref(1)
 const pageSize = 5
+const selectedUserId = ref(null)
+
+const columns = [
+  {
+    title: 'ID',
+    dataIndex: 'userId',
+    key: 'userId',
+    width: 60
+  },
+  {
+    title: '用户名',
+    dataIndex: 'userName',
+    key: 'userName'
+  },
+  {
+    title: '手机号',
+    dataIndex: 'phone',
+    key: 'phone'
+  },
+  {
+    title: '黑名单等级',
+    dataIndex: 'blackLevel',
+    key: 'blackLevel',
+    slotName: 'blackLevel'
+  },
+  {
+    title: '加入时间',
+    dataIndex: 'createTime',
+    key: 'createTime',
+    slotName: 'createTime'
+  },
+  {
+    title: '更新时间',
+    dataIndex: 'updateTime',
+    key: 'updateTime',
+    slotName: 'updateTime'
+  },
+  {
+    title: '解除时间',
+    dataIndex: 'removeTime',
+    key: 'removeTime',
+    slotName: 'removeTime'
+  }
+]
+
 const paginatedBlacklist = computed(() => {
   const start = (currentPage.value - 1) * pageSize
   return userStore.blacklist.slice(start, start + pageSize)
 })
 
-// 分页变化处理
 const handlePageChange = (page) => {
   currentPage.value = page
 }
 
-// 选中用户（仅用于高亮显示）
-const selectedUserId = ref(null)
-
-// 生命周期：加载黑名单列表
 onMounted(async () => {
   await userStore.fetchBlacklist()
 })
 
-// 选择用户（用于显示详情）
-const selectUser = async (user) => {
-  console.log('BlacklistTable: 点击用户:', user.userId, user.userName)
-  
-  if (selectedUserId.value === user.userId) {
-    // 如果点击已选中的用户，清除选中状态
+const selectUser = async (record) => {
+  if (selectedUserId.value === record.userId) {
     selectedUserId.value = null
   } else {
-    selectedUserId.value = user.userId
+    selectedUserId.value = record.userId
     
     try {
-      // 先获取用户详情数据
-      console.log('BlacklistTable: 开始获取用户详情...')
-      await userStore.fetchBlacklistUserDetail(user.userId)
-      console.log('BlacklistTable: 获取用户详情成功，store.blacklistUserDetail:', userStore.blacklistUserDetail)
-      
-      // 发射事件到父组件，传递用户ID
-      emit('user-selected', user.userId)
+      await userStore.fetchBlacklistUserDetail(record.userId)
+      emit('user-selected', record.userId)
     } catch (error) {
       console.error('BlacklistTable: 获取用户详情失败:', error)
       ElMessage.error('获取用户详情失败')
@@ -116,10 +142,8 @@ const selectUser = async (user) => {
   }
 }
 
-// 从黑名单移除用户
 const removeFromBlacklist = async (user) => {
   try {
-    // 使用 Element Plus 确认框
     await ElMessageBox.confirm(
       `确定解除用户【${user.userName}】的黑名单吗？`,
       '解除黑名单',
@@ -130,14 +154,11 @@ const removeFromBlacklist = async (user) => {
       }
     )
 
-    // 调用 store 方法
     await userStore.removeFromBlacklist(user.userId)
     ElMessage.success('已成功解除黑名单')
     
-    // 刷新列表
     await userStore.fetchBlacklist()
     
-    // 如果当前选中了这个用户，清除选中状态
     if (selectedUserId.value === user.userId) {
       selectedUserId.value = null
     }
@@ -148,97 +169,32 @@ const removeFromBlacklist = async (user) => {
   }
 }
 
-// 格式化日期
 const formatDate = (dateString) => {
   if (!dateString) return '—'
   return new Date(dateString).toLocaleString('zh-CN')
 }
+
 </script>
 
 <style scoped>
-.blacklist-table-container {
+.blacklist-table-wrapper {
   width: 100%;
 }
 
-.blacklist-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-thead th {
-  background: #f8f9fa;
-  padding: 12px;
-  text-align: left;
-  border-bottom: 2px solid #dee2e6;
-  font-weight: 600;
-}
-
-tbody td {
-  padding: 12px;
-  border-bottom: 1px solid #dee2e6;
-}
-
-/* 行点击效果 */
-.blacklist-table tbody tr {
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.blacklist-table tbody tr:hover {
-  background-color: #f5f5f5;
-}
-
-/* 选中行样式 */
-.selected-row {
-  background-color: #f0f9ff;
-  border-left: 3px solid #409eff;
-}
-
-.selected-row:hover {
-  background-color: #e6f7ff;
-}
-
-/* 按钮样式 */
-.remove-btn {
-  padding: 4px 8px;
-  margin: 0 2px;
-  background-color: #28a745;
+.remove-blacklist-btn {
+  background-color: #52c41a;
   color: white;
   border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  font-size: 12px;
+  border-radius: 6px;
+  padding: 2px 5px;
 }
 
-.remove-btn:hover {
-  background-color: #218838;
+.remove-blacklist-btn:hover {
+  background-color: #73d13d;
 }
 
-.remove-btn:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
-/* 分页 */
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  margin-top: 15px;
-}
-
-.page-btn {
-  padding: 6px 12px;
-  background-color: #409eff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.page-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.remove-blacklist-btn:disabled {
+  background-color: #d9d9d9;
+  color: rgba(0, 0, 0, 0.25);
 }
 </style>
