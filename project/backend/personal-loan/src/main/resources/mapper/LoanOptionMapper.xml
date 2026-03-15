@@ -13,7 +13,7 @@
             <if test="loanPeriod != null">
                 loan_period = #{loanPeriod},
             </if>
-            <if test="repaidType != null and repaidType != ''">
+            <if test="repaidType != null">
                 repaid_type = #{repaidType},
             </if>
         </set>
