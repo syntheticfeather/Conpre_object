@@ -9,6 +9,11 @@ export const useLoanStore = defineStore('loan', {
     error: null
   }),
 
+  getters: {
+    hasProducts: (state) => state.products.length > 0,
+    activeProducts: (state) => state.products.filter((p) => p.status === 'ACTIVE')
+  },
+
   actions: {
     async fetchProducts() {
       this.loading = true
@@ -19,7 +24,7 @@ export const useLoanStore = defineStore('loan', {
         }
       } catch (error) {
         this.error = error.message
-        console.error('Failed to fetch products:', error)
+        console.error('获取产品列表出错:', error)
       } finally {
         this.loading = false
       }
@@ -34,7 +39,7 @@ export const useLoanStore = defineStore('loan', {
         }
       } catch (error) {
         this.error = error.message
-        console.error('Failed to fetch product:', error)
+        console.error('获取产品详情出错:', error)
       } finally {
         this.loading = false
       }
@@ -51,10 +56,7 @@ export const useLoanStore = defineStore('loan', {
         return { success: false, message: response.message }
       } catch (error) {
         this.error = error.message
-        return { 
-          success: false, 
-          message: error.response?.message || '添加失败' 
-        }
+        return { success: false, message: error.response?.data?.message || '添加失败' }
       } finally {
         this.loading = false
       }
@@ -71,10 +73,7 @@ export const useLoanStore = defineStore('loan', {
         return { success: false, message: response.message }
       } catch (error) {
         this.error = error.message
-        return { 
-          success: false, 
-          message: error.response?.message || '更新失败' 
-        }
+        return { success: false, message: error.response?.data?.message || '更新失败' }
       } finally {
         this.loading = false
       }
@@ -91,10 +90,7 @@ export const useLoanStore = defineStore('loan', {
         return { success: false, message: response.message }
       } catch (error) {
         this.error = error.message
-        return { 
-          success: false, 
-          message: error.response?.message || '删除失败' 
-        }
+        return { success: false, message: error.response?.data?.message || '删除失败' }
       } finally {
         this.loading = false
       }
@@ -111,10 +107,7 @@ export const useLoanStore = defineStore('loan', {
         return { success: false, message: response.message }
       } catch (error) {
         this.error = error.message
-        return { 
-          success: false, 
-          message: error.response?.message || '操作失败' 
-        }
+        return { success: false, message: error.response?.data?.message || '操作失败' }
       } finally {
         this.loading = false
       }
@@ -122,6 +115,10 @@ export const useLoanStore = defineStore('loan', {
 
     clearCurrentProduct() {
       this.currentProduct = null
+    },
+
+    clearError() {
+      this.error = null
     }
   }
 })

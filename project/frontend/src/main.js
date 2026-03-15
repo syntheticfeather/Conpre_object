@@ -1,6 +1,6 @@
-// src/main.js
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import App from './App.vue'
 import router from './router'
 
@@ -15,9 +15,36 @@ import './assets/iconfont/iconfont.css'
 const app = createApp(App)
 const pinia = createPinia()
 
+pinia.use(piniaPluginPersistedstate)
+
+pinia.use(({ store }) => {
+  store.$onAction(({ name, args, after, onError }) => {
+    const startTime = Date.now()
+    console.log(`[Store Action] ${store.$id}/${name}`, args)
+
+    after((result) => {
+      const duration = Date.now() - startTime
+      console.log(`[Store Action Success] ${store.$id}/${name} (${duration}ms)`, result)
+    })
+
+    onError((error) => {
+      const duration = Date.now() - startTime
+      console.error(`[Store Action Error] ${store.$id}/${name} (${duration}ms)`, error)
+    })
+  })
+
+  store.$subscribe((mutation) => {
+    console.log(`[Store State Change] ${store.$id}`, {
+      type: mutation.type,
+      storeId: mutation.storeId,
+      payload: mutation.payload
+    })
+  })
+})
+
 app.use(pinia)
 app.use(router)
-app.use(ElementPlus) // 全局注册 ElementPlus 组件
-app.use(Antd) // 全局注册 Ant Design Vue 组件
+app.use(ElementPlus)
+app.use(Antd)
 
 app.mount('#app')

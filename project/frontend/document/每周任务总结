@@ -21,7 +21,6 @@
    - 添加Pinia持久化插件，实现关键状态的本地存储
    - 优化Store模块结构，统一action命名规范
    - 添加Store状态变更日志，便于调试
-   - 创建appStore管理全局Loading状态，实现请求队列自动控制Loading状态
 
 4. **统一代码风格**
    - 配置ESLint和Prettier规则；

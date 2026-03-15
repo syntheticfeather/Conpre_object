@@ -1,7 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
 
-// 视图组件
 const LoginView = () => import('@/views/LoginView.vue')
 const RegisterView = () => import('@/views/RegisterView.vue')
 
@@ -51,7 +49,7 @@ const routes = [
 
       { path: 'risk', name: 'Risk', component: RiskManageView }
     ]
-  },
+  }
 ]
 
 const router = createRouter({
@@ -59,24 +57,26 @@ const router = createRouter({
   routes
 })
 
-// 全局前置守卫
-router.beforeEach((to, from, next) => {
-  const authStore = useAuthStore()
-  
-  if (to.meta.requiresAuth !== false) {
-    // 需要认证的路由
-    if (!authStore.isAuthenticated) {
-      next('/login')
-    } else {
-      next()
-    }
-  } else {
-    // 不需要认证的路由
-    if (authStore.isAuthenticated && to.name === 'Login') {
-      next('/dashboard')
-    } else {
-      next()
-    }
+function checkAuthFromStorage() {
+  const stored = localStorage.getItem('auth-store')
+  if (!stored) return false
+  try {
+    const data = JSON.parse(stored)
+    return !!(data.isAuthenticated && data.token)
+  } catch {
+    return false
+  }
+}
+
+router.beforeEach((to) => {
+  const isAuthenticated = checkAuthFromStorage()
+
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    return '/login'
+  }
+
+  if ((to.name === 'Login' || to.name === 'Register') && isAuthenticated) {
+    return '/dashboard'
   }
 })
 

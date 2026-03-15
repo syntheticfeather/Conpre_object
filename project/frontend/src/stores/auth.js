@@ -1,78 +1,52 @@
-// stores/auth.js
 import { defineStore } from 'pinia'
 import { authAPI } from '@/api'
 
 export const useAuthStore = defineStore('auth', {
-  // stores/auth.js
-  state: () => {
-    const token = localStorage.getItem('admin_token')
-    let userInfo = null
-    
-    const userInfoStr = localStorage.getItem('user_info')
-    if (userInfoStr && userInfoStr !== 'undefined' && userInfoStr !== 'null') {
-      try {
-        userInfo = JSON.parse(userInfoStr)
-      } catch (e) {
-        console.warn('Failed to parse user_info from localStorage', e)
-        userInfo = null
-      }
-    }
-
-    return {
-      token: token || null,
-      userInfo,
-      isAuthenticated: !!token
-    }
-  },
+  state: () => ({
+    token: null,
+    userInfo: null,
+    isAuthenticated: false
+  }),
 
   getters: {
-    isAdmin() {
-      return this.userInfo?.role === 'ADMIN'
-    }
+    isAdmin: (state) => state.userInfo?.role === 'ADMIN',
+    isLoggedIn: (state) => !!state.token && state.isAuthenticated,
+    userName: (state) => state.userInfo?.name || '',
+    userPhone: (state) => state.userInfo?.phone || ''
   },
 
   actions: {
-    // 密码登录
     async loginByPassword(phone, password) {
       try {
         const response = await authAPI.loginByPassword(phone, password)
-        return this.handleLoginResponse(response)
+        return this.handleLoginSuccess(response)
       } catch (error) {
-        return this.handleError(error, '密码登录失败')
+        return this.handleLoginError(error, '密码登录失败')
       }
     },
 
-    // 短信验证码登录
     async loginBySms(phone, code) {
       try {
         const response = await authAPI.loginBySms(phone, code)
-        return this.handleLoginResponse(response)
+        return this.handleLoginSuccess(response)
       } catch (error) {
-        return this.handleError(error, '短信登录失败')
+        return this.handleLoginError(error, '短信登录失败')
       }
     },
 
-    // 公共成功处理逻辑
-    handleLoginResponse(response) {
+    handleLoginSuccess(response) {
       if (response.data?.code === 200) {
         const { token, user } = response.data.data
-        this.token = token
-        this.userInfo = user
-        this.isAuthenticated = true
-
-        localStorage.setItem('admin_token', token)
-        localStorage.setItem('user_info', JSON.stringify(user))
-
+        this.setAuthInfo({ token, user })
         return { success: true }
       }
-      return { 
-        success: false, 
-        message: response.data?.message || '登录响应异常' 
+      return {
+        success: false,
+        message: response.data?.message || '登录响应异常'
       }
     },
 
-    // 公共错误处理逻辑
-    handleError(error, defaultMsg) {
+    handleLoginError(error, defaultMsg) {
       console.error(defaultMsg, error)
       return {
         success: false,
@@ -80,21 +54,36 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    // 用于设置已获取的认证信息
     setAuthInfo({ token, user }) {
       this.token = token
       this.userInfo = user
       this.isAuthenticated = true
-      
-      localStorage.setItem('admin_token', token)
-      localStorage.setItem('user_info', JSON.stringify(user))
     },
 
-    // 退出登录
-    logout() {
-      localStorage.removeItem('admin_token')
-      localStorage.removeItem('user_info')
-      this.$reset() // Pinia 提供的重置 state 方法（推荐）
+    setToken(token, phone) {
+      this.token = token
+      this.isAuthenticated = true
+      if (this.userInfo) {
+        this.userInfo.phone = phone
+      } else {
+        this.userInfo = { phone }
+      }
+    },
+
+    async logout() {
+      try {
+        await authAPI.logout()
+      } catch (error) {
+        console.warn('后端 logout 调用失败，但已清理本地状态:', error)
+      } finally {
+        this.$reset()
+      }
     }
+  },
+
+  persist: {
+    key: 'auth-store',
+    storage: localStorage,
+    paths: ['token', 'userInfo', 'isAuthenticated']
   }
 })

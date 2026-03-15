@@ -10,6 +10,12 @@ export const useApplicationStore = defineStore('application', {
     error: null
   }),
 
+  getters: {
+    hasPending: (state) => state.pendingApplications.length > 0,
+    hasCompleted: (state) => state.completedApplications.length > 0,
+    pendingCount: (state) => state.pendingApplications.length
+  },
+
   actions: {
     async fetchPendingApplications() {
       this.loading = true
@@ -20,7 +26,7 @@ export const useApplicationStore = defineStore('application', {
         }
       } catch (error) {
         this.error = error.message
-        console.error('Failed to fetch pending applications:', error)
+        console.error('获取待处理申请出错:', error)
       } finally {
         this.loading = false
       }
@@ -35,7 +41,7 @@ export const useApplicationStore = defineStore('application', {
         }
       } catch (error) {
         this.error = error.message
-        console.error('Failed to fetch completed applications:', error)
+        console.error('获取已完成申请出错:', error)
       } finally {
         this.loading = false
       }
@@ -50,7 +56,7 @@ export const useApplicationStore = defineStore('application', {
         }
       } catch (error) {
         this.error = error.message
-        console.error('Failed to fetch application detail:', error)
+        console.error('获取申请详情出错:', error)
       } finally {
         this.loading = false
       }
@@ -61,7 +67,6 @@ export const useApplicationStore = defineStore('application', {
       try {
         const response = await applicationAPI.submitReview(reviewData)
         if (response.code === 200) {
-          // 刷新列表
           await this.fetchPendingApplications()
           await this.fetchCompletedApplications()
           return { success: true }
@@ -69,10 +74,7 @@ export const useApplicationStore = defineStore('application', {
         return { success: false, message: response.message }
       } catch (error) {
         this.error = error.message
-        return { 
-          success: false, 
-          message: error.response?.message || '提交失败' 
-        }
+        return { success: false, message: error.response?.data?.message || '提交失败' }
       } finally {
         this.loading = false
       }
@@ -80,6 +82,10 @@ export const useApplicationStore = defineStore('application', {
 
     clearCurrentApplication() {
       this.currentApplication = null
+    },
+
+    clearError() {
+      this.error = null
     }
   }
 })
