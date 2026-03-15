@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +26,6 @@ import com.example.personal_loan.dto.UserListResponse;
 import com.example.personal_loan.dto.UserSearchDto;
 import com.example.personal_loan.dto.UserSelfResponse;
 import com.example.personal_loan.dto.UserUpdateRequest;
-import com.example.personal_loan.entity.User;
 import com.example.personal_loan.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;

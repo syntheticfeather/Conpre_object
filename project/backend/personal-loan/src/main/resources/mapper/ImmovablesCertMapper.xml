@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.personal_loan.mapper.ImmovablesCertMapper">
+
+    <!-- 动态更新非空字段 -->
+    <update id="update" parameterType="com.example.personal_loan.entity.ImmovablesCert">
+        UPDATE immovables_cert
+        <set>
+            <if test="propertyCertPath != null">
+                property_cert_path = #{propertyCertPath},
+            </if>
+            <if test="carCertPath != null">
+                car_cert_path = #{carCertPath},
+            </if>
+            <if test="totalValue != null">
+                total_value = #{totalValue},
+            </if>
+        </set>
+        WHERE immovable_cert_id = #{immovableCertId}
+    </update>
+
+</mapper>

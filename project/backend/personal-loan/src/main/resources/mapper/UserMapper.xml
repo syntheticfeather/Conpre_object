@@ -116,4 +116,35 @@
         WHERE u.id = #{userId}
         ORDER BY la.apply_time DESC, o.start_time DESC
     </select>
+
+    <!-- 按信用分搜索用户 -->
+    <select id="selectUsersByCreditScore" resultType="com.example.personal_loan.dto.UserSearchDto">
+        SELECT
+            u.id,
+            u.user_name AS userName,
+            u.phone,
+            u.avatar,
+            u.role,
+            uc.credit_score AS creditScore
+        FROM users u
+        LEFT JOIN user_certification uc ON u.id = uc.user_id
+        <where>
+            <if test="operator == 'gt'">
+                uc.credit_score &gt; #{value}
+            </if>
+            <if test="operator == 'lt'">
+                uc.credit_score &lt; #{value}
+            </if>
+            <if test="operator == 'eq'">
+                uc.credit_score = #{value}
+            </if>
+            <if test="operator == 'ge'">
+                uc.credit_score &gt;= #{value}
+            </if>
+            <if test="operator == 'le'">
+                uc.credit_score &lt;= #{value}
+            </if>
+        </where>
+        ORDER BY uc.credit_score DESC
+    </select>
 </mapper>

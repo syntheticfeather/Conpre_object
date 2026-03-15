@@ -78,4 +78,29 @@
         WHERE a.id = #{loanApplicationId}
     </select>
 
+    <!-- 结果映射：用户贷款申请列表 -->
+    <resultMap id="UserAppListResultMap" type="com.example.personal_loan.dto.UserAppListResponse">
+        <id property="applicationId" column="id"/>
+        <result property="productName" column="product_name"/>
+        <result property="loanAmount" column="loan_amount"/>
+        <result property="status" column="status"/>
+        <result property="applyTime" column="apply_time"/>
+        <result property="rejectReason" column="reject_reason"/>
+    </resultMap>
+
+    <!-- 查询用户所有贷款申请（带产品信息） -->
+    <select id="selectByUserIdWithProduct" resultMap="UserAppListResultMap">
+        SELECT
+            a.id,
+            lp.product_name,
+            a.loan_amount,
+            a.status,
+            a.apply_time,
+            a.reject_reason
+        FROM loan_applications a
+        JOIN loan_products lp ON a.product_id = lp.id
+        WHERE a.user_id = #{userId}
+        ORDER BY a.apply_time DESC
+    </select>
+
 </mapper>

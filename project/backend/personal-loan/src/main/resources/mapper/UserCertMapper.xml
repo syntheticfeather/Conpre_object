@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.personal_loan.mapper.UserCertMapper">
+
+    <!-- 动态更新非空字段 -->
+    <update id="update" parameterType="com.example.personal_loan.entity.UserCert">
+        UPDATE user_certification
+        <set>
+            <if test="idCard != null">
+                id_card = #{idCard},
+            </if>
+            <if test="creditScore != null">
+                credit_score = #{creditScore},
+            </if>
+            <if test="bankCardId != null">
+                bank_card_id = #{bankCardId},
+            </if>
+            <if test="workCertId != null">
+                work_cert_id = #{workCertId},
+            </if>
+            <if test="triCertId != null">
+                tri_cert_id = #{triCertId},
+            </if>
+            <if test="immovableCertId != null">
+                immovable_cert_id = #{immovableCertId},
+            </if>
+        </set>
+        WHERE user_id = #{userId}
+    </update>
+
+</mapper>

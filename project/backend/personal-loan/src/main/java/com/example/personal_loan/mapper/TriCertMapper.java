@@ -10,23 +10,27 @@ import com.example.personal_loan.entity.TriCert;
 
 @Mapper
 public interface TriCertMapper {
-    @Insert("INSERT INTO tri_cert (social_security_path, credit_report_path) " +
-            "VALUES (#{socialSecurityPath}, #{creditReportPath})")
+    @Insert(
+        "INSERT INTO tri_cert (" +
+        "  social_security_path, " +
+        "  credit_report_path " +
+        ") VALUES (" +
+        "  #{socialSecurityPath}, " +
+        "  #{creditReportPath} " +
+        ")"
+    )
     @Options(useGeneratedKeys = true, keyProperty = "triCertId", keyColumn = "tri_cert_id")
     int insert(TriCert record);
 
-    @Update("<script>" +
-            "UPDATE tri_cert " +
-            "<set>" +
-                "<if test='socialSecurityPath != null'>social_security_path = #{socialSecurityPath},</if>" +
-                "<if test='creditReportPath != null'>credit_report_path = #{creditReportPath}</if>" +
-            "</set>" +
-            "WHERE tri_cert_id = #{triCertId}" +
-            "</script>")
     int update(TriCert record);
 
-    @Select("SELECT tri_cert_id, social_security_path, credit_report_path " +
-            "FROM tri_cert " +
-            "WHERE tri_cert_id = #{id}")
+    @Select(
+        "SELECT " +
+        "  tri_cert_id, " +
+        "  social_security_path, " +
+        "  credit_report_path " +
+        "FROM tri_cert " +
+        "WHERE tri_cert_id = #{id}"
+    )
     TriCert selectById(Integer id);
 }

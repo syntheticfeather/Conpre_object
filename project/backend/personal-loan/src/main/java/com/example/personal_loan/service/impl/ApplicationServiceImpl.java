@@ -175,20 +175,7 @@ public class ApplicationServiceImpl implements ApplicationService{
     @Override
     @Transactional
     public List<UserAppListResponse> userGetAllApplications(Long userId){
-
-        List<LoanApplication> applications = applicationMapper.selectByUserId(userId);
-
-        return applications.stream().map(app -> {
-            LoanProduct product = loanProductMapper.findById(app.getProductId());
-            return new UserAppListResponse(
-                    app.getId(),
-                    product.getProductName(),
-                    app.getLoanAmount(),
-                    app.getStatus(),
-                    app.getApplyTime(),
-                    app.getStatus().isRejected() ? app.getRejectReason() : null
-            );
-        }).collect(Collectors.toList());
+        return applicationMapper.selectByUserIdWithProduct(userId);
     }
 
 }

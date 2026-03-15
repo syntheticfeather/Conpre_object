@@ -116,6 +116,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public RegisterResponse userRegister(RegisterRequest request) {
+        //检验手机号是否已存在
+        if (userMapper.findByPhone(request.getPhone()) != null) {
+            throw new BusinessException(400, "手机号已存在");
+        }
         request.setPassword(passwordEncoder.encode(request.getPassword()));
         User user = new User(request.getName(), request.getPassword(), request.getPhone());
         user.setRole(0);                      // 用户的注册，默认权限为0
@@ -197,7 +201,7 @@ public class UserServiceImpl implements UserService {
 
     /*
     * 用户使用
-     */
+    */
 
     // 查看个人信息
     @Override

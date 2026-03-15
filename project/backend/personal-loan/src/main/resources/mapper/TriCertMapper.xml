@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.personal_loan.mapper.TriCertMapper">
+
+    <!-- 动态更新非空字段 -->
+    <update id="update" parameterType="com.example.personal_loan.entity.TriCert">
+        UPDATE tri_cert
+        <set>
+            <if test="socialSecurityPath != null">
+                social_security_path = #{socialSecurityPath},
+            </if>
+            <if test="creditReportPath != null">
+                credit_report_path = #{creditReportPath},
+            </if>
+        </set>
+        WHERE tri_cert_id = #{triCertId}
+    </update>
+
+</mapper>
