@@ -171,8 +171,8 @@
                   <button 
                     type="button" 
                     class="btn-delete" 
-                    @click="removeOption(index)"
                     :disabled="form.options.length === 1"
+                    @click="removeOption(index)"
                   >
                     删除
                   </button>

@@ -17,7 +17,7 @@ input {
     font-size: 20px;
     color: #aaadad;
     border: none;
-    border-radius: 5px 0 0 5px;
+    border-radius: 5px;
     outline: none;
 }
 .main input[type="text"],
@@ -248,7 +248,7 @@ input[type="password"]:focus {
 .register-btn {
     margin: 35px 0px 0px 64px;
     width: 258px;
-    font-size: 20px;
+    font-size: 28px;
     justify-self: center;
     border-radius: 10px;
 }

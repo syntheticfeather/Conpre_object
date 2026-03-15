@@ -4,17 +4,17 @@
       <input 
         type="text" 
         :value="startDate" 
-        @focus="openCalendar"
         placeholder="开始日期"
         readonly
+        @focus="openCalendar"
       />
       <span>至</span>
       <input 
         type="text" 
         :value="endDate" 
-        @focus="openCalendar"
         placeholder="结束日期"
         readonly
+        @focus="openCalendar"
       />
     </div>
     

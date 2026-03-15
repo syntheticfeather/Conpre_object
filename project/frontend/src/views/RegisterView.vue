@@ -2,28 +2,26 @@
   <div class="container" :style="{ backgroundImage: `url(${bgImage})`,backgroundSize: 'cover' }">
     <div class="wrapper">
       <!-- 基础信息输入区 -->
-      <div id="baseInformation" class="main" v-show="currentStep === 'base'">
+      <div v-show="currentStep === 'base'" id="baseInformation" class="main">
         <h2>———Register———</h2>
         <div class="base-information">
           <div class="infor">
             <p>* 用户名(2-20位)</p>
-            <span id="adminNameError" class="error-message"></span>
             <input
-              type="text"
               id="adminName"
               v-model.trim="formData.adminName"
+              type="text"
               @input="clearFieldError('adminName')"
             />
             <p>* 密码(8-20位，包含大小写字母、数字和特殊字符)</p>
-            <span id="passwordError" class="error-message"></span>
             <div class="password-input">
               <input
-                :type="showPassword ? 'text' : 'password'"
                 id="password"
                 v-model="formData.password"
+                :type="showPassword ? 'text' : 'password'"
                 @input="clearFieldError('password')"
               />
-              <div @click="togglePassword" class="showPassword-btn">
+              <div class="showPassword-btn" @click="togglePassword">
                 <span v-if="showPassword" class="iconfont icon-browse"></span>
                 <span v-else class="iconfont icon-hide"></span>
               </div>
@@ -31,16 +29,15 @@
 
             <p>
                 * 确认密码（请再次输入密码）
-                <span id="confirmPasswordError" class="error-message"></span>
             </p>
             <div class="password-input">
                 <input
-                :type="showConfirmPassword ? 'text' : 'password'"
                 id="confirmPassword"
                 v-model="formData.confirmPassword"
+                :type="showConfirmPassword ? 'text' : 'password'"
                 @input="clearFieldError('confirmPassword')"
                 />
-                <div @click="toggleConfirmPassword" class="showPassword-btn">
+                <div class="showPassword-btn" @click="toggleConfirmPassword">
                     <span v-if="showConfirmPassword" class="iconfont icon-browse"></span>
                     <span v-else class="iconfont icon-hide"></span>
                 </div>
@@ -50,38 +47,36 @@
         <button type="button" class="confirm-btn btn" @click="handleConfirm">
           确认
         </button>
-        <router-link to="/login" id="back-to-login">返回登录</router-link>
+        <router-link id="back-to-login" to="/login">返回登录</router-link>
       </div>
 
       <!-- 验证信息输入区 -->
-      <div id="authentication" class="main" v-show="currentStep === 'auth'">
+      <div v-show="currentStep === 'auth'" id="authentication" class="main">
         <h2>———Register———</h2>
         <div id="authentication-input">
           <p>* 手机号码</p>
           <input
-            type="text"
             id="phone"
             v-model.trim="formData.phone"
+            type="text"
             @input="clearFieldError('phone')"
           />
-          <p id="phoneError" class="error-message"></p>
 
           <p>* 短信验证码</p>
           <div id="sms-code-input">
             <input
-              type="text"
               id="smsCode"
               v-model="formData.smsCode"
+              type="text"
               style="margin-left: 0;"
               @input="clearFieldError('smsCode')"
             />
-            <button type="button" class="get-code-btn btn" @click="sendSmsCode">
+            <button type="button" class="get-code-btn btn" :style="{padding:'5px 8px' }" @click="sendSmsCode">
               获取验证码
             </button>
           </div>
-          <p id="smsCodeError" class="error-message"></p>
 
-          <button type="button" class="register-btn" @click="handleSubmit" :disabled="loading">
+          <button type="button" class="register-btn" :disabled="loading" @click="handleSubmit">
               {{ loading ? '注册中...' : '注册' }}
           </button>
         </div>
@@ -90,7 +85,7 @@
             <span class="close-btn" @click="handleClose">返回</span>
         </div>
 
-        <div id="loadingSpinner" class="loading" v-if="loading">注册中，请稍候...</div>
+        <div v-if="loading" id="loadingSpinner" class="loading">注册中，请稍候...</div>
         <div id="successMessage"></div>
         <div id="networkError" style="color: red; text-align: center;"></div>
       </div>
@@ -101,6 +96,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
 import { authAPI } from '@/api/index' 
 import bgImage from '@/assets/images/background.png'
 
@@ -149,60 +145,80 @@ const toggleConfirmPassword = () => {
 
 // 表单验证
 const validateBaseForm = () => {
-  let isValid = true
+  const errorMessages = []
 
-  // 用户名
   if (!formData.adminName) {
     showError('adminName', '请输入用户名')
-    isValid = false
+    errorMessages.push('请输入用户名')
   } else if (formData.adminName.length < 2 || formData.adminName.length > 20) {
     showError('adminName', '用户名长度需为2-20位')
-    isValid = false
+    errorMessages.push('用户名长度需为2-20位')
   } else if (!/^[a-zA-Z0-9_一-龥]+$/.test(formData.adminName)) {
     showError('adminName', '用户名只能包含字母、数字、下划线和中文字符')
-    isValid = false
+    errorMessages.push('用户名只能包含字母、数字、下划线和中文字符')
   }
 
-  // 密码
   if (!formData.password) {
     showError('password', '请输入密码')
-    isValid = false
+    errorMessages.push('请输入密码')
   } else if (formData.password.length < 8 || formData.password.length > 20) {
     showError('password', '密码长度需为8-20位')
-    isValid = false
+    errorMessages.push('密码长度需为8-20位')
   } else if (!validatePasswordComplexity(formData.password)) {
     showError('password', '密码需包含大小写字母、数字和特殊字符')
-    isValid = false
+    errorMessages.push('密码需包含大小写字母、数字和特殊字符')
   }
 
-  // 确认密码
   if (!formData.confirmPassword) {
     showError('confirmPassword', '请确认密码')
-    isValid = false
+    errorMessages.push('请确认密码')
   } else if (formData.password !== formData.confirmPassword) {
     showError('confirmPassword', '两次输入的密码不一致')
-    isValid = false
+    errorMessages.push('两次输入的密码不一致')
   }
 
-  return isValid
+  if (errorMessages.length > 0) {
+    ElMessage({
+      type: 'error',
+      message: errorMessages.join('；'),
+      duration: 4000,
+      showClose: true
+    })
+    return false
+  }
+
+  return true
 }
 const validateAuthForm = () => {
-  let isValid = true
+  const errorMessages = []
+
   if (!formData.phone) {
     showError('phone', '请输入手机号码')
-    isValid = false
+    errorMessages.push('请输入手机号码')
   } else if (!/^1[3-9]\d{9}$/.test(formData.phone)) {
-    showError('phone', '手机号码格式错误')
-    isValid = false
+    showError('phone', '手机号码格式错误，请输入11位有效手机号')
+    errorMessages.push('手机号码格式错误，请输入11位有效手机号')
   }
+
   if (!formData.smsCode) {
     showError('smsCode', '请输入短信验证码')
-    isValid = false
+    errorMessages.push('请输入短信验证码')
   } else if (formData.smsCode.length !== 6) {
-    showError('smsCode', '短信验证码格式错误')
-    isValid = false
+    showError('smsCode', '短信验证码应为6位数字')
+    errorMessages.push('短信验证码应为6位数字')
   }
-  return isValid
+
+  if (errorMessages.length > 0) {
+    ElMessage({
+      type: 'error',
+      message: errorMessages.join('；'),
+      duration: 3000,
+      showClose: true
+    })
+    return false
+  }
+
+  return true
 }
 
 // 密码复杂度验证
@@ -240,11 +256,17 @@ const clearAllErrors = () => {
 
 // 模拟发送验证码
 const sendSmsCode = () => {
-  if (!/^1[3-9]\d{9}$/.test(formData.phone)) {
-    showError('phone', '手机号码格式错误')
+  if (!formData.phone) {
+    showError('phone', '请输入手机号码')
+    ElMessage.warning('请输入手机号码')
     return
   }
-  alert(`验证码已发送到 ${formData.phone}（模拟）`)
+  if (!/^1[3-9]\d{9}$/.test(formData.phone)) {
+    showError('phone', '手机号码格式错误')
+    ElMessage.warning('手机号码格式错误，请输入11位有效手机号')
+    return
+  }
+  ElMessage.success(`验证码已发送到 ${formData.phone}`)
 }
 
 // 提交注册
@@ -255,17 +277,17 @@ const handleSubmit = async () => {
   loading.value = true
   try {
     const result = await authAPI.register({
-      name: formData.adminName,   // 对应后端要求的 "name"
+      name: formData.adminName,
       phone: formData.phone,
       password: formData.password
     })
 
-    // 检查返回 code
     if (result.code !== 200) {
       throw new Error(result.message || '注册失败')
     }
 
-    // 显示成功
+    ElMessage.success('注册成功！正在跳转到登录页...')
+
     const successEl = document.getElementById('successMessage')
     if (successEl) {
       successEl.textContent = '注册成功！正在跳转到登录页...'
@@ -276,10 +298,11 @@ const handleSubmit = async () => {
       router.push('/login')
     }, 2000)
   } catch (error) {
-    // 统一错误处理
     const msg = error.response?.data?.message ||
                 error.message ||
                 '网络错误，请稍后重试'
+
+    ElMessage.error(msg)
 
     const networkError = document.getElementById('networkError')
     if (networkError) {

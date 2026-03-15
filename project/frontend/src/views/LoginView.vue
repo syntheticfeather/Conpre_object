@@ -7,16 +7,16 @@
       <!-- 登录方式切换 -->
       <div class="login-type">
         <button
-          type="button"
           id="change-passwordLogin-btn"
+          type="button"
           :class="{ active: loginType === 'password' }"
           @click="loginType = 'password'"
         >
           密码登录
         </button>
         <button
-          type="button"
           id="change-smsLogin-btn"
+          type="button"
           :class="{ active: loginType === 'sms' }"
           @click="loginType = 'sms'"
         >
@@ -32,27 +32,20 @@
           placeholder="请输入手机号码"
           autocomplete="off"
         />
-        <div class="error-message" :style="{ opacity: errors.phone ? 1 : 0 }">
-          {{ errors.phone }}
-        </div>
 
         <div class="password-input">
           <input
-            :type="showPassword ? 'text' : 'password'"
             v-model="formData.password"
+            :type="showPassword ? 'text' : 'password'"
             placeholder="请输入密码"
             autocomplete="off"
           />
-          <div @click="togglePassword" id="showPassword-btn">
+          <div id="showPassword-btn" @click="togglePassword">
             <span v-if="showPassword" class="iconfont icon-browse"></span>
             <span v-else class="iconfont icon-hide"></span>
           </div>
         </div>
-        <div class="error-message" :style="{ opacity: errors.password ? 1 : 0 }">
-          {{ errors.password }}
-        </div>
-
-        <button type="submit" :disabled="loading" id="passwordLogin-submit-btn">
+        <button id="passwordLogin-submit-btn" type="submit" :disabled="loading">
           {{ loading ? '登录中...' : '登录' }}
         </button>
       </form>
@@ -64,47 +57,39 @@
           type="text"
           placeholder="请输入手机号码"
           autocomplete="off"
+          :style="{margin:'12px'}"
         />
-        <div class="error-message" :style="{ opacity: errors.phone ? 1 : 0 }">
-          {{ errors.phone }}
-        </div>
 
-        <div class="sms-code-containert">
+        <div class="sms-code-container">
           <input
-            v-model="formData.smsCode"
             id="sms-code-input"
+            v-model="formData.smsCode"
             type="text"
             placeholder="请输入验证码"
             autocomplete="off"
           />
           <button
+            id="get-sms-btn"
             type="button"
             :disabled="isCounting || !canSendSms"
             @click="sendSmsCode"
-            id="get-sms-btn"
           >
             {{ isCounting ? `${countDown}s 后重发` : '获取验证码' }}
           </button>
         </div>
-        <div class="error-message" :style="{ opacity: errors.smsCode ? 1 : 0 }">
-          {{ errors.smsCode }}
-        </div>
 
-        <button type="submit" :disabled="loading" id="smsLogin-submit-btn">
+        <button id="smsLogin-submit-btn" type="submit" :disabled="loading">
           {{ loading ? '登录中...' : '登录' }}
         </button>
       </form>
 
       <!-- 协议与操作 -->
       <label class="agreement">
-        <input type="checkbox" v-model="formData.agreed" />
+        <input v-model="formData.agreed" type="checkbox" />
         同意并接受
         <a href="#" target="_blank">《服务条款》</a> 和
         <a href="#" target="_blank">《隐私政策》</a>
       </label>
-      <div class="error-message" :style="{ opacity: errors.agree ? 1 : 0 }">
-        {{ errors.agree }}
-      </div>
 
       <div class="other">
         <span>还没有账号？<router-link to="/register">注册</router-link></span>
@@ -122,6 +107,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
 import { useAuthStore } from '@/stores/auth'
 import { authAPI } from '@/api/index'
 import bgImage from '@/assets/images/background.png'
@@ -169,12 +155,18 @@ const togglePassword = () => {
 
 // 发送验证码（模拟）
 const sendSmsCode = () => {
+  if (!formData.phone) {
+    ElMessage.warning('请输入手机号码')
+    errors.phone = '请输入手机号码'
+    return
+  }
   if (!canSendSms.value) {
+    ElMessage.warning('请输入正确的手机号码')
     errors.phone = '请输入正确的手机号码'
     return
   }
 
-  // 实际项目：调用 API 发送验证码
+  ElMessage.success(`验证码已发送到 ${formData.phone}`)
   console.log('发送验证码到:', formData.phone)
   isCounting.value = true
   countDown.value = 60
@@ -192,30 +184,46 @@ const sendSmsCode = () => {
 // 表单验证
 const validate = () => {
   errors.phone = errors.password = errors.smsCode = errors.agree = ''
+  const errorMessages = []
 
   if (!formData.phone) {
     errors.phone = '请输入手机号码'
-    return false
-  }
-  if (!/^1[3-9]\d{9}$/.test(formData.phone)) {
-    errors.phone = '手机号格式不正确'
-    return false
+    errorMessages.push('请输入手机号码')
+  } else if (!/^1[3-9]\d{9}$/.test(formData.phone)) {
+    errors.phone = '手机号格式不正确，请输入11位有效手机号'
+    errorMessages.push('手机号格式不正确，请输入11位有效手机号')
   }
 
   if (loginType.value === 'password') {
     if (!formData.password) {
       errors.password = '请输入密码'
-      return false
+      errorMessages.push('请输入密码')
+    } else if (formData.password.length < 6) {
+      errors.password = '密码长度不能少于6位'
+      errorMessages.push('密码长度不能少于6位')
     }
   } else {
     if (!formData.smsCode) {
       errors.smsCode = '请输入验证码'
-      return false
+      errorMessages.push('请输入验证码')
+    } else if (formData.smsCode.length !== 6) {
+      errors.smsCode = '验证码应为6位数字'
+      errorMessages.push('验证码应为6位数字')
     }
   }
 
   if (!formData.agreed) {
     errors.agree = '请同意服务条款和隐私政策'
+    errorMessages.push('请先同意服务条款和隐私政策')
+  }
+
+  if (errorMessages.length > 0) {
+    ElMessage({
+      type: 'error',
+      message: errorMessages.join('；'),
+      duration: 3000,
+      showClose: true
+    })
     return false
   }
 
@@ -228,24 +236,26 @@ const handlePasswordLogin = async () => {
 
   loading.value = true
   try {
-    // 调用 API 登录
     const res = await authAPI.loginByPassword(formData.phone, formData.password)
     
     if (res.code === 200) {
-      // 保存认证信息
       authStore.setAuthInfo({
         token: res.data.token,
         user: res.data.user
       })
       
+      ElMessage.success('登录成功！正在跳转...')
       success.value = true
       setTimeout(() => router.push('/dashboard'), 1500)
     } else {
+      ElMessage.error(res.message || '用户名或密码错误')
       errors.password = res.message || '用户名或密码错误'
     }
   } catch (err) {
     console.error('登录失败:', err)
-    errors.password = err.response?.data?.message || '网络错误，请稍后重试'
+    const errorMsg = err.response?.data?.message || '网络错误，请稍后重试'
+    ElMessage.error(errorMsg)
+    errors.password = errorMsg
   } finally {
     loading.value = false
   }
@@ -260,14 +270,18 @@ const handleSmsLogin = async () => {
     const res = await authAPI.loginBySms(formData.phone, formData.smsCode)
     if (res.code === 200) {
       authStore.setToken(res.data.token, formData.phone)
+      ElMessage.success('登录成功！正在跳转...')
       success.value = true
       setTimeout(() => router.push('/dashboard'), 1500)
     } else {
+      ElMessage.error(res.message || '验证码错误')
       errors.smsCode = res.message || '验证码错误'
     }
   } catch (err) {
     console.error('登录失败:', err)
-    errors.password = err.message || '网络错误，请稍后重试'
+    const errorMsg = err.message || '网络错误，请稍后重试'
+    ElMessage.error(errorMsg)
+    errors.password = errorMsg
   } finally {
     loading.value = false
   }

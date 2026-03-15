@@ -1,5 +1,5 @@
 <template>
-  <div class="detail-container" v-if="visible">
+  <div v-if="visible" class="detail-container">
     <div class="detail-header">
       <h2 class="detail-title">用户详情</h2>
       <div class="header-actions">

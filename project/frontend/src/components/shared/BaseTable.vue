@@ -141,6 +141,10 @@ const props = defineProps({
   rowClickable: {
     type: Boolean,
     default: true
+  },
+  minHeight: {
+    type: String,
+    default: '220px'
   }
 })
 
@@ -158,7 +162,7 @@ const selectedRowKeys = ref([])
 const selectedRows = ref([])
 
 const processedColumns = computed(() => {
-  let cols = [...props.columns]
+  const cols = [...props.columns]
 
   if (props.showIndex) {
     cols.unshift({
@@ -265,7 +269,7 @@ defineExpose({
 .data-table {
   padding: 6px 20px;
   width: 100%;
-  min-height: 241px;
+  min-height: v-bind(minHeight);
   color: #525457;
   overflow-y: hidden;
 }

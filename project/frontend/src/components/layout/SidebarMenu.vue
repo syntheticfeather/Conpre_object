@@ -64,7 +64,7 @@
     </el-menu>
 
     <!-- 切换按钮 -->
-    <el-button @click="toggleCollapse" circle class="collapse-btn">
+    <el-button circle class="collapse-btn" @click="toggleCollapse">
       <el-icon>
         <ArrowRightBold v-if="isCollapse" />
         <ArrowLeftBold v-else />
@@ -116,7 +116,7 @@ const toggleCollapse = () => {
   width: 200px;
 }
 
-/* 折叠时隐藏文字（Element Plus 默认已处理，但可加强） */
+/* 折叠时隐藏文字 */
 .el-menu--collapse .el-sub-menu .el-sub-menu__title span,
 .el-menu--collapse .el-menu-item span {
   display: none;

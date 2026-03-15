@@ -15,7 +15,7 @@
       </div>
 
       <!-- 退出登录按钮 -->
-      <button @click="logout" id="logout-btn">退出登录</button>
+      <button id="logout-btn" @click="logout">退出登录</button>
      </div>
   </div>
 </template>

@@ -196,7 +196,7 @@ span a {
 /* 勾选条款 */
 label {
     display: block;
-    margin-top: 20px;
+    margin: 20px;
     width: 590px; 
     text-align: center; 
 
@@ -218,7 +218,8 @@ label a {
 
 #sms-code-input {
     margin-top: 0 !important;
-    width: 200px;
+    width: 193px;
+    margin-left: 10px;
 }
 
 #get-sms-btn {

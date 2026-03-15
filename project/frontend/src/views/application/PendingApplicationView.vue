@@ -11,8 +11,8 @@
     </div>
 
     <component 
-      v-else
-      :is="currentComponent" 
+      :is="currentComponent"
+      v-else 
       :applications="currentApplications"
       @show-detail="showApplicationDetail"
       @refresh="loadApplications"

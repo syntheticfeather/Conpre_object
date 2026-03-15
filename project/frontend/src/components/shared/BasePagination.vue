@@ -4,8 +4,8 @@
   <div class="pagination">
     <button 
       :disabled="currentPage === 1"
-      @click="changePage(currentPage - 1)"
       class="page-btn"
+      @click="changePage(currentPage - 1)"
     >
       上一页
     </button>
@@ -14,16 +14,16 @@
       v-for="page in visiblePages" 
       :key="page"
       :class="{ active: page === currentPage }"
-      @click="changePage(page)"
       class="page-number"
+      @click="changePage(page)"
     >
       {{ page }}
     </span>
     
     <button 
       :disabled="currentPage === totalPages"
-      @click="changePage(currentPage + 1)"
       class="page-btn"
+      @click="changePage(currentPage + 1)"
     >
       下一页
     </button>
@@ -60,7 +60,7 @@ const visiblePages = computed(() => {
   const pages = []
   const maxVisible = 5
   let start = Math.max(1, props.currentPage - Math.floor(maxVisible / 2))
-  let end = Math.min(totalPages.value, start + maxVisible - 1)
+  const end = Math.min(totalPages.value, start + maxVisible - 1)
   
   if (end - start + 1 < maxVisible) {
     start = Math.max(1, end - maxVisible + 1)

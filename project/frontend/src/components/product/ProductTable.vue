@@ -537,6 +537,10 @@ const formatDate = (dateString) => {
   animation: fadeIn 0.3s ease;
 }
 
+.data-table {
+  min-height: 316px;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

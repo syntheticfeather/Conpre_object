@@ -99,7 +99,7 @@ const columns = [
 ]
 
 const paginatedUsers = computed(() => {
-  let users = [...userStore.users]
+  const users = [...userStore.users]
   
   if (sortInfo.value.field && sortInfo.value.order) {
     const order = sortInfo.value.order === 'ascend' ? 1 : -1
