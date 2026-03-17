@@ -98,7 +98,7 @@ public interface LoanProductMapper {
         "create_time as createTime, " +
         "update_time as updateTime " +
         "FROM loan_products " +
-        "ORDER BY update_time DESC, create_time DESC"
+        "ORDER BY  create_time DESC,update_time DESC"
     )
     List<LoanProduct> findAll();
 

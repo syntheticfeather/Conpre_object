@@ -22,8 +22,10 @@ import com.example.personal_loan.entity.LoanOption;
 import com.example.personal_loan.entity.LoanProduct;
 import com.example.personal_loan.enums.ProductStatus;
 import com.example.personal_loan.exception.BusinessException;
+import com.example.personal_loan.mapper.ApplicationMapper;
 import com.example.personal_loan.mapper.LoanOptionMapper;
 import com.example.personal_loan.mapper.LoanProductMapper;
+import com.example.personal_loan.mapper.OrderMapper;
 import com.example.personal_loan.service.LoanProductService;
 
 @Service
@@ -34,6 +36,12 @@ public class LoanProductServiceImpl implements LoanProductService{
 
     @Autowired
     private LoanOptionMapper loanOptionMapper;
+
+    @Autowired
+    private ApplicationMapper applicationMapper;
+
+    @Autowired
+    private OrderMapper orderMapper;
 
     /*
      * 管理员使用
@@ -136,6 +144,22 @@ public class LoanProductServiceImpl implements LoanProductService{
     @Override
     @Transactional
     public int deleteLoanOption(Long optionId) {
+        // 检查选项是否存在
+        LoanOption option = loanOptionMapper.selectById(optionId);
+        if (option == null) {
+            throw new BusinessException(404, "该选项不存在");
+        }
+        
+        // 检查选项所属的产品是否被贷款申请引用
+        if (applicationMapper.countByProductId(option.getProductId()) > 0) {
+            throw new BusinessException(400, "该产品已被贷款申请引用，无法删除选项");
+        }
+        
+        // 检查选项所属的产品是否被订单引用
+        if (orderMapper.countByProductId(option.getProductId()) > 0) {
+            throw new BusinessException(400, "该产品已被订单引用，无法删除选项");
+        }
+        
         return loanOptionMapper.deleteById(optionId);
     }
 
@@ -143,6 +167,21 @@ public class LoanProductServiceImpl implements LoanProductService{
     @Override
     @Transactional
     public int deleteLoanProduct(Long productId){
+        // 检查产品是否存在
+        if (loanProductMapper.findById(productId) == null) {
+            throw new BusinessException(404, "该产品不存在");
+        }
+        
+        // 检查产品是否被贷款申请引用
+        if (applicationMapper.countByProductId(productId) > 0) {
+            throw new BusinessException(400, "该产品已被贷款申请引用，无法删除");
+        }
+        
+        // 检查产品是否被订单引用
+        if (orderMapper.countByProductId(productId) > 0) {
+            throw new BusinessException(400, "该产品已被订单引用，无法删除");
+        }
+        
         loanOptionMapper.deleteByProductId(productId);  // 先删除该产品所有选项
         return loanProductMapper.delete(productId);
     }
@@ -151,6 +190,20 @@ public class LoanProductServiceImpl implements LoanProductService{
     @Override
     @Transactional
     public void batchDeleteLoanProducts(List<Long> productIds){
+        if (productIds == null || productIds.isEmpty()) {
+            return;
+        }
+        
+        // 检查产品是否被贷款申请引用
+        if (applicationMapper.countByProductIds(productIds) > 0) {
+            throw new BusinessException(400, "部分产品已被贷款申请引用，无法删除");
+        }
+        
+        // 检查产品是否被订单引用
+        if (orderMapper.countByProductIds(productIds) > 0) {
+            throw new BusinessException(400, "部分产品已被订单引用，无法删除");
+        }
+        
         loanOptionMapper.batchDeleteByProductIds(productIds);
         // 再删除产品
         loanProductMapper.batchDelete(productIds);
@@ -163,6 +216,23 @@ public class LoanProductServiceImpl implements LoanProductService{
         if (optionIds == null || optionIds.isEmpty()) {
             return;
         }
+        
+        // 检查每个选项所属的产品是否被引用
+        for (Long optionId : optionIds) {
+            LoanOption option = loanOptionMapper.selectById(optionId);
+            if (option != null) {
+                // 检查产品是否被贷款申请引用
+                if (applicationMapper.countByProductId(option.getProductId()) > 0) {
+                    throw new BusinessException(400, "部分产品已被贷款申请引用，无法删除选项");
+                }
+                
+                // 检查产品是否被订单引用
+                if (orderMapper.countByProductId(option.getProductId()) > 0) {
+                    throw new BusinessException(400, "部分产品已被订单引用，无法删除选项");
+                }
+            }
+        }
+        
         loanOptionMapper.batchDeleteByIds(optionIds);
     }
 
@@ -220,9 +290,12 @@ public class LoanProductServiceImpl implements LoanProductService{
             }
         }
 
+        // 重新查询更新后的产品信息
+        LoanProduct updatedProduct = loanProductMapper.findById(productId);
+        
         // 构建并返回更新后的完整 ProductDto
         ProductDto result = new ProductDto();
-        BeanUtils.copyProperties(existing, result);
+        BeanUtils.copyProperties(updatedProduct, result);
         result.setOptions(loanOptionMapper.selectByProductId(productId));
         return result;
     }

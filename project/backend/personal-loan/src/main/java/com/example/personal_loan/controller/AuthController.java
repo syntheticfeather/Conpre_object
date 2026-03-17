@@ -1,9 +1,5 @@
 package com.example.personal_loan.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,7 +7,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +20,9 @@ import com.example.personal_loan.dto.RegisterResponse;
 import com.example.personal_loan.service.AuthService;
 import com.example.personal_loan.service.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -63,8 +61,8 @@ public class AuthController {
     @Operation(summary = "提交认证材料", description = "用户提交所有认证材料，包括身份证、银行卡、房产证明、车辆证明、工作证明、工资证明、社保证明、征信报告")
     public ResponseEntity<ApiResult<Void>> submitAllAuth(
             HttpServletRequest request,
-            @Parameter(description = "身份证号") @RequestPart String idCard,
-            @Parameter(description = "银行卡号") @RequestPart String bankCardId,
+            @Parameter(description = "身份证号") @RequestPart(required=false) String idCard,
+            @Parameter(description = "银行卡号") @RequestPart(required=false) String bankCardId,
             @Parameter(description = "房产证明文件") @RequestPart(required=false) MultipartFile propertyFile,
             @Parameter(description = "车辆证明文件") @RequestPart(required=false) MultipartFile carFile,
             @Parameter(description = "工作证明文件") @RequestPart(required=false) MultipartFile employmentFile,

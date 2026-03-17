@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Update;
 
 import com.example.personal_loan.dto.ApplicationDetailResponse;
 import com.example.personal_loan.dto.PendingApprovalResponse;
+import com.example.personal_loan.dto.UserAppListResponse;
 import com.example.personal_loan.entity.LoanApplication;
 
 @Mapper
@@ -80,7 +81,7 @@ public interface ApplicationMapper {
     List<LoanApplication> selectByUserId(@Param("userId") Long userId);
 
     // 根据用户ID查询所有申请（带产品信息）
-    List<com.example.personal_loan.dto.UserAppListResponse> selectByUserIdWithProduct(@Param("userId") Long userId);
+    List<UserAppListResponse> selectByUserIdWithProduct(@Param("userId") Long userId);
 
     @Update(
         "UPDATE loan_applications " +
@@ -136,4 +137,12 @@ public interface ApplicationMapper {
         "ORDER BY la.apply_time DESC"
     )
     List<PendingApprovalResponse> listCompletedApprovals();
+
+    // 检查产品是否被贷款申请引用
+    @Select("SELECT COUNT(*) FROM loan_applications WHERE product_id = #{productId}")
+    int countByProductId(@Param("productId") Long productId);
+
+    // 批量检查产品是否被贷款申请引用
+    @Select("SELECT COUNT(*) FROM loan_applications WHERE product_id IN <foreach collection='productIds' item='id' open='(' separator=',' close=')'>#{id}</foreach>")
+    int countByProductIds(@Param("productIds") List<Long> productIds);
 }

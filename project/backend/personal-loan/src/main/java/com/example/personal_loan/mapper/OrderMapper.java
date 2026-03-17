@@ -158,4 +158,12 @@ public interface OrderMapper {
 
     // 获取订单列表
     List<UserOrderListResponse> selectOrderListByUserId(@Param("userId") Long userId);
+
+    // 检查产品是否被订单引用
+    @Select("SELECT COUNT(*) FROM orders WHERE product_id = #{productId}")
+    int countByProductId(@Param("productId") Long productId);
+
+    // 批量检查产品是否被订单引用
+    @Select("SELECT COUNT(*) FROM orders WHERE product_id IN <foreach collection='productIds' item='id' open='(' separator=',' close=')'>#{id}</foreach>")
+    int countByProductIds(@Param("productIds") List<Long> productIds);
 }

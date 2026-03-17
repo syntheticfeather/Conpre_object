@@ -175,3 +175,253 @@ LEFT JOIN loan_applications la ON u.id = la.user_id
 LEFT JOIN orders o ON u.id = o.user_id
 WHERE u.id = 1
 ORDER BY la.apply_time DESC, o.start_time DESC;
+
+-- ========== 以下为遗漏的查询分析 ==========
+
+-- 9. 按ID查询单个产品
+EXPLAIN SELECT
+    id,
+    product_name as productName,
+    description,
+    loan_usage as loanUsage,
+    status as status,
+    min_term as minTerm,
+    max_term as maxTerm,
+    term_step as termStep,
+    min_amount AS minAmount,
+    max_amount AS maxAmount,
+    promotion_details as promotionDetails,
+    create_time as createTime,
+    update_time as updateTime
+FROM loan_products
+WHERE id = 1;
+
+-- 10. 查询所有产品
+EXPLAIN SELECT
+    id,
+    product_name as productName,
+    description,
+    loan_usage as loanUsage,
+    status as status,
+    min_term as minTerm,
+    max_term as maxTerm,
+    term_step as termStep,
+    min_amount AS minAmount,
+    max_amount AS maxAmount,
+    promotion_details as promotionDetails,
+    create_time as createTime,
+    update_time as updateTime
+FROM loan_products
+ORDER BY create_time DESC, update_time DESC;
+
+-- 11. 查询上架产品
+EXPLAIN SELECT
+    id,
+    product_name as productName,
+    description,
+    loan_usage as loanUsage,
+    min_term as minTerm,
+    max_term as maxTerm,
+    term_step as termStep,
+    min_amount AS minAmount,
+    max_amount AS maxAmount,
+    promotion_details as promotionDetails,
+    create_time as createTime,
+    update_time as updateTime
+FROM loan_products
+WHERE status = '上架中'
+ORDER BY update_time DESC, create_time DESC;
+
+-- 12. 按产品名称模糊搜索上架产品
+EXPLAIN SELECT
+    id,
+    product_name AS productName,
+    description,
+    loan_usage AS loanUsage,
+    status,
+    min_term AS minTerm,
+    max_term AS maxTerm,
+    term_step AS termStep,
+    min_amount AS minAmount,
+    max_amount AS maxAmount,
+    promotion_details AS promotionDetails,
+    create_time AS createTime,
+    update_time AS updateTime
+FROM loan_products
+WHERE product_name LIKE CONCAT('%', '消费', '%')
+  AND status = '上架中';
+
+-- 13. 按ID查询贷款申请
+EXPLAIN SELECT
+    id,
+    user_id as userId,
+    product_id as productId,
+    status,
+    loan_amount as loanAmount,
+    interest_rate as interestRate,
+    loan_period as loanPeriod,
+    term as term,
+    repaid_type as repaidType,
+    reject_reason as rejectReason,
+    apply_time as applyTime,
+    review_time as reviewTime
+FROM loan_applications
+WHERE id = 1;
+
+-- 14. 按用户ID查询所有申请（简单版）
+EXPLAIN SELECT
+    id,
+    user_id as userId,
+    product_id as productId,
+    status,
+    loan_amount as loanAmount,
+    interest_rate as interestRate,
+    loan_period as loanPeriod,
+    term as term,
+    repaid_type as repaidType,
+    reject_reason as rejectReason,
+    apply_time as applyTime,
+    review_time as reviewTime
+FROM loan_applications
+WHERE user_id = 1
+ORDER BY apply_time DESC;
+
+-- 15. 检查产品是否被贷款申请引用
+EXPLAIN SELECT COUNT(*)
+FROM loan_applications
+WHERE product_id = 1;
+
+-- 16. 批量检查产品是否被贷款申请引用
+EXPLAIN SELECT COUNT(*)
+FROM loan_applications
+WHERE product_id IN (1, 2, 3);
+
+-- 17. 按ID查询用户
+EXPLAIN SELECT
+    id,
+    user_name as userName,
+    avatar,
+    password,
+    phone,
+    role,
+    create_time as createTime,
+    update_time as updateTime
+FROM users
+WHERE id = 1;
+
+-- 18. 查询所有普通用户（role=0）
+EXPLAIN SELECT
+    id,
+    user_name as userName,
+    avatar,
+    password,
+    phone,
+    role,
+    create_time as createTime,
+    update_time as updateTime
+FROM users
+WHERE role = 0;
+
+-- 19. 按手机号查询用户
+EXPLAIN SELECT
+    id,
+    user_name,
+    avatar,
+    password,
+    phone,
+    role,
+    create_time,
+    update_time
+FROM users
+WHERE phone = '13800138000';
+
+-- 20. 按ID查询订单
+EXPLAIN SELECT
+    id,
+    user_id,
+    product_id,
+    status,
+    repaid_amount,
+    loan_amount,
+    interest_rate,
+    repaid_type,
+    loan_period,
+    term,
+    current_term,
+    contract,
+    overdue_days,
+    start_time
+FROM orders
+WHERE id = 1;
+
+-- 21. 按订单ID和用户ID查询订单
+EXPLAIN SELECT
+    id,
+    user_id,
+    product_id,
+    status,
+    repaid_amount,
+    loan_amount,
+    interest_rate,
+    repaid_type,
+    loan_period,
+    term,
+    current_term,
+    contract,
+    overdue_days,
+    start_time
+FROM orders
+WHERE id = 1 AND user_id = 1;
+
+-- 22. 查询用户所有订单（简单版）
+EXPLAIN SELECT
+    id,
+    user_id,
+    product_id,
+    status,
+    repaid_amount,
+    loan_amount,
+    interest_rate,
+    repaid_type,
+    loan_period,
+    term,
+    current_term,
+    contract,
+    overdue_days,
+    start_time
+FROM orders
+WHERE user_id = 1;
+
+-- 23. 检查产品是否被订单引用
+EXPLAIN SELECT COUNT(*)
+FROM orders
+WHERE product_id = 1;
+
+-- 24. 批量检查产品是否被订单引用
+EXPLAIN SELECT COUNT(*)
+FROM orders
+WHERE product_id IN (1, 2, 3);
+
+-- 25. 按ID查询贷款选项
+EXPLAIN SELECT
+    id as optionId,
+    product_id as productId,
+    loan_period as loanPeriod,
+    interest_rate as interestRate,
+    repaid_type as repaidType,
+    create_time as createTime,
+    update_time as updateTime
+FROM loan_options
+WHERE id = 1;
+
+-- 26. 按产品ID查询所有选项
+EXPLAIN SELECT
+    id as optionId,
+    product_id as productId,
+    loan_period as loanPeriod,
+    interest_rate as interestRate,
+    repaid_type as repaidType,
+    create_time as createTime,
+    update_time as updateTime
+FROM loan_options
+WHERE product_id = 1;
