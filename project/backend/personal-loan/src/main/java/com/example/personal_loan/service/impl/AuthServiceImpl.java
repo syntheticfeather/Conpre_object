@@ -63,19 +63,18 @@ public class AuthServiceImpl implements AuthService{
             MultipartFile socialSecurityFile,
             MultipartFile creditReportFile) {
 
-        // 1. 验证身份证号和银行卡号
-        if (idCard.isBlank() || !IdCardUtils.isValid(idCard)) {
+        UserCert userCert = userCertMapper.selectByUserId(userId);
+
+        // 验证身份证号和银行卡号
+        if (userCert.getIdCard() == null && (idCard.isBlank() || !IdCardUtils.isValid(idCard))) {
             throw new BusinessException(400, "身份证号不能为空或格式无效");
         }
-        if (!bankCardId.isBlank() && BankCardUtils.isValid(bankCardId)) {
+        if (userCert.getBankCardId() == null && (!bankCardId.isBlank() && BankCardUtils.isValid(bankCardId))) {
         } else {
             throw new BusinessException(400, "银行卡号不能为空或格式无效");
         }
 
-        // 2. 获取用户认证主记录（user_certification）
-        UserCert userCert = userCertMapper.selectByUserId(userId);
-
-        // 3. 存储所有文件（任一失败则整体回滚）
+        // 存储所有文件（任一失败则整体回滚）
         log.info("begin store all auth files:...");
         String propertyPath = storeRequiredFile(propertyFile, "property", userId, fileStorageConfig.getPaths().getPropertyProof());
         String carPath = storeRequiredFile(carFile, "car", userId, fileStorageConfig.getPaths().getCarProof());
@@ -86,24 +85,24 @@ public class AuthServiceImpl implements AuthService{
         log.info("all auth files are stored successfully: propertyPath={}, carPath={}, empPath={}, salPath={}, ssPath={}, crPath={}", 
             propertyPath, carPath, empPath, salPath, ssPath, crPath);
 
-        // 4. 处理不动产认证
+        // 处理不动产认证
         handleImmovablesCert(userCert, propertyPath, carPath);
         log.info("immovable cert is handled successfully: immovableCertId={}", userCert.getImmovableCertId());
 
-        // 5. 处理工作认证
+        // 处理工作认证
         handleWorkCert(userCert, empPath, salPath);
         log.info("work cert is handled successfully: workCertId={}", userCert.getWorkCertId());
 
-        // 6. 处理第三方认证
+        // 处理第三方认证
         handleTriCert(userCert, ssPath, crPath);
         log.info("tri cert is handled successfully: triCertId={}", userCert.getTriCertId());
 
         int score = calScore(userId);
 
-        // 8. 更新主表中的贷款分数
+        // 更新主表中的贷款分数
         userCert.setCreditScore(score);
 
-        // 9. 更新主表中的文本字段
+        // 更新主表中的文本字段
         userCert.setIdCard(idCard);
         userCert.setBankCardId(bankCardId);
         userCertMapper.update(userCert);
