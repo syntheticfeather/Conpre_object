@@ -174,12 +174,12 @@ public class LoanProductServiceImpl implements LoanProductService{
         
         // 检查产品是否被贷款申请引用
         if (applicationMapper.countByProductId(productId) > 0) {
-            throw new BusinessException(400, "该产品已被贷款申请引用，无法删除");
+            throw new BusinessException(400, "删除失败，产品已被使用");
         }
         
         // 检查产品是否被订单引用
         if (orderMapper.countByProductId(productId) > 0) {
-            throw new BusinessException(400, "该产品已被订单引用，无法删除");
+            throw new BusinessException(400, "删除失败，产品已被使用");
         }
         
         loanOptionMapper.deleteByProductId(productId);  // 先删除该产品所有选项
@@ -196,12 +196,12 @@ public class LoanProductServiceImpl implements LoanProductService{
         
         // 检查产品是否被贷款申请引用
         if (applicationMapper.countByProductIds(productIds) > 0) {
-            throw new BusinessException(400, "部分产品已被贷款申请引用，无法删除");
+            throw new BusinessException(400, "删除失败，部分产品已被使用");
         }
         
         // 检查产品是否被订单引用
         if (orderMapper.countByProductIds(productIds) > 0) {
-            throw new BusinessException(400, "部分产品已被订单引用，无法删除");
+            throw new BusinessException(400, "删除失败，部分产品已被使用");
         }
         
         loanOptionMapper.batchDeleteByProductIds(productIds);
@@ -223,12 +223,12 @@ public class LoanProductServiceImpl implements LoanProductService{
             if (option != null) {
                 // 检查产品是否被贷款申请引用
                 if (applicationMapper.countByProductId(option.getProductId()) > 0) {
-                    throw new BusinessException(400, "部分产品已被贷款申请引用，无法删除选项");
+                    throw new BusinessException(400, "删除失败，部分选项已被使用");
                 }
                 
                 // 检查产品是否被订单引用
                 if (orderMapper.countByProductId(option.getProductId()) > 0) {
-                    throw new BusinessException(400, "部分产品已被订单引用，无法删除选项");
+                    throw new BusinessException(400, "删除失败，部分选项已被使用");
                 }
             }
         }

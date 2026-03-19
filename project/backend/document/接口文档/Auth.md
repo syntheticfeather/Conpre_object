@@ -30,7 +30,8 @@
 {
     "code": 200,
     "data": {
-        "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzU0NTY3ODkwMSIsInVzZXJJZCI6IjgiLCJpYXQiOjE3NjM0NDg1MjYsImV4cCI6MTc2MzUzNDkyNn0.FjIp4FZTe_Wur65rKrMV5KPN5t-HAJQaYweBLiVeKrg"
+        "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzEwMDAwMTExMSIsInVzZXJJZCI6IjEwIiwiaWF0IjoxNzczODQwNTMyLCJleHAiOjE3NzM5MjY5MzJ9.4-dqMxJOgKA8_wBwbKuf9YzjHeBRnkbBENKDNC5iWDM",
+        "refreshToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMCIsImlhdCI6MTc3Mzg0MDUzMiwiZXhwIjoxNzc0NDQ1MzMyfQ.V40VX-crfa12FCpKpRdYHfhlc2-Yxv0zGXe4tkWyO5Y"
     },
     "message": "登录成功"
 }
@@ -43,6 +44,48 @@
 
 **失败**
 ![](../AuthImgs/loginFail.png "登录失败，用户名或密码错误")
+
+### 刷新token
+
+**网址**：http://localhost:8080/api/auth/refresh-token
+
+**请求方式**：POST
+
+**请求参数**：
+
+|字段名|类型|是否必填|说明|示例值|
+|---|---|---|---|---|
+|refreshToken|string|是|login时返回的refreshToken,用于刷新token|eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMCIsImlhdCI6MTc3Mzg0MDUzMiwiZXhwIjoxNzc0NDQ1MzMyfQ.V40VX-crfa12FCpKpRdYHfhlc2-Yxv0zGXe4tkWyO5Y|
+
+**请求示例（请求体）**：
+
+``` json
+{
+    "refreshToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMCIsImlhdCI6MTc3Mzg0MDUzMiwiZXhwIjoxNzc0NDQ1MzMyfQ.V40VX-crfa12FCpKpRdYHfhlc2-Yxv0zGXe4tkWyO5Y"
+}
+```
+
+**返回数据**：
+
+``` json
+{
+    "code": 200,
+    "data": {
+        "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzUwMDAwMTExMSIsInVzZXJJZCI6IjEwIiwiaWF0IjoxNzczODQwNTMyLCJleHAiOjE3NzM5MjY5MzJ9.4-dqMxJOgKA8_wBwbKuf9YzjHeBRnkbBENKDNC5iWDM",
+        "refreshToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMCIsImlhdCI6MTc3Mzg0MDUzMiwiZXhwIjoxNzc0NDQ1MzMyfQ.V40VX-crfa12FCpKpRdYHfhlc2-Yxv0zGXe4tkWyO5Y"
+    },
+    "message": "刷新token成功"
+}
+```
+
+**postman测试结果**：
+
+**成功**
+![](../AuthImgs/refreshToken.png "刷新token成功")
+
+**失败**
+![](../AuthImgs/refreshFail.png "刷新token失败，refreshToken过期，需重新登录")
+
 
 ### 注册
 

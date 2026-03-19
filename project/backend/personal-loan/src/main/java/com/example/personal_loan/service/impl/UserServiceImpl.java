@@ -3,6 +3,8 @@ package com.example.personal_loan.service.impl;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +40,6 @@ import com.example.personal_loan.service.UserService;
 import com.example.personal_loan.utils.CalculateUtil;
 import com.example.personal_loan.utils.JwtUtil;
 import com.example.personal_loan.utils.RedisUtil;
-import static com.example.personal_loan.utils.RedisUtil.JWT_REFRESH_CACHE_TOKEN_PREFIX_STRING;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -90,28 +91,40 @@ public class UserServiceImpl implements UserService {
         String token = jwtUtil.generateAccessToken(user.getPhone(), user.getId().toString());
 
         String refreshToken = jwtUtil.generateRefreshToken(user.getId().toString());
-        // 后期使用，存储在redis中?
+        // 存储在redis中，过期时间7天
         log.info("token:" + token);
-        RedisUtil.set(RedisUtil.JWT_REFRESH_CACHE_TOKEN_PREFIX_STRING + user.getId(), refreshToken);
+        RedisUtil.set(RedisUtil.JWT_REFRESH_CACHE_TOKEN_PREFIX_STRING + user.getId(), refreshToken,7,TimeUnit.DAYS);
 
-        return new LoginResponse(token);
+        return new LoginResponse(token, refreshToken);
 
     }
 
     @Override
-    public String refreshToken(Long id) {
-        String refreshToken = RedisUtil.get(JWT_REFRESH_CACHE_TOKEN_PREFIX_STRING + id, String.class);
-        if (refreshToken == null || !jwtUtil.validateToken(refreshToken)) {
-            log.info("refresh token 无效, 需重新登录");
+    public Map<String, String> refreshToken(Map<String, String> refreshToken) {
+        if(refreshToken == null|| refreshToken.isEmpty()) {
+            log.info("refresh token is empty, please login again");
+            throw new InvalidCredentialsException("refresh token 为空, 需重新登录");
+        }
+        if(!jwtUtil.validateToken(refreshToken.get("refreshToken"))) {
+            log.info("refresh token is invalid, please login again");
+            throw new InvalidCredentialsException("refresh token 无效, 需重新登录");
+        }
+        // 从refreshToken中提取用户ID
+        Long id = jwtUtil.getUserIdFromRefreshToken(refreshToken.get("refreshToken"));
+        String cachedToken = RedisUtil.get(RedisUtil.JWT_REFRESH_CACHE_TOKEN_PREFIX_STRING + id, String.class);
+        if (cachedToken == null || !cachedToken.equals(refreshToken.get("refreshToken"))) {
+            log.info("refresh token error, please login again");
             throw new InvalidCredentialsException("refresh token 无效, 需重新登录");
         }
         String phone = userMapper.findById(id).getPhone();
         String newAccessToken = jwtUtil.generateAccessToken(phone, id.toString());
 
         // 可选：检查用户是否被禁用、加入黑名单等
-        // 生成新的 access token（不发新的 refresh token）
-        log.info("已刷新 access token" + newAccessToken);
-        return newAccessToken;
+        log.info("Refresh access token successfully" );
+        return Map.of(
+            "token", newAccessToken,
+            "refreshToken", cachedToken
+        );
     }
 
     @Override
@@ -191,11 +204,6 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException(404, "该用户不存在");
         }
         return user;
-    }
-
-    @Override
-    public List<User> getAllUsers() {
-        return userMapper.findAll();
     }
 
 

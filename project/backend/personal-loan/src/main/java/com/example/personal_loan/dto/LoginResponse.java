@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class LoginResponse {
     @Schema(description = "JWT令牌", example = "eyJhbGciOiJIUzI1NiJ9...")
     private String token;
+    private String refreshToken;
 }

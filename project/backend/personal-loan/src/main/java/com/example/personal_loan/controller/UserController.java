@@ -1,10 +1,6 @@
 package com.example.personal_loan.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +24,9 @@ import com.example.personal_loan.dto.UserSelfResponse;
 import com.example.personal_loan.dto.UserUpdateRequest;
 import com.example.personal_loan.service.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -157,14 +156,5 @@ public class UserController {
         return ResponseEntity.ok(userService.searchUsersByCreditScore(expr));
     }
     
-    /*
-    * 刷新token
-    */
-   @PostMapping(value = "/refresh-token", produces = "application/json")
-   @Operation(summary = "刷新token", description = "刷新用户的访问令牌")
-   public ResponseEntity<Map<String, String>> refreshToken(@Parameter(description = "用户ID") @RequestBody Long id) {
-       String newAccessToken = userService.refreshToken(id);
-       return ResponseEntity.ok(Map.of("token", newAccessToken));
-    }
 
 }

@@ -53,7 +53,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<ApiResult<?>> handleAuthError(InvalidCredentialsException e) {
-        ApiResult<?> response = ApiResult.fail(401, "手机号或密码错误");
+        ApiResult<?> response = ApiResult.fail(401, e.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 

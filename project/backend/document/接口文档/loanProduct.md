@@ -420,6 +420,7 @@
 **postman测试结果**:
 
 ![](../loanProductImgs/deleteProduct.png "删除产品成功")
+![](../loanProductImgs/deleteProductFail.png "删除产品失败，产品已被使用")
 
 **日志**：
 

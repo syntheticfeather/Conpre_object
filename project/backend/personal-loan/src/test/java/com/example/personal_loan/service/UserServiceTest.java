@@ -15,8 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.never;
@@ -168,18 +166,6 @@ class UserServiceTest {
     }
 
     @Test
-    void testRefreshToken_Success() {
-        when(redisUtil.get(anyString(), eq(String.class))).thenReturn("refreshToken");
-        when(jwtUtil.validateToken("refreshToken")).thenReturn(true);
-        when(userMapper.findById(1L)).thenReturn(user);
-        when(jwtUtil.generateAccessToken(anyString(), anyString())).thenReturn("newAccessToken");
-
-        String token = userService.refreshToken(1L);
-
-        assertEquals("newAccessToken", token);
-    }
-
-    @Test
     void testUserRegister_Success() {
         RegisterRequest request = new RegisterRequest();
         request.setName("newuser");
@@ -259,17 +245,6 @@ class UserServiceTest {
         List<UserListResponse> responses = userService.adminGetAllUsersWithStats();
 
         assertNotNull(responses);
-    }
-
-    @Test
-    void testGetAllUsers_Success() {
-        when(userMapper.findAll()).thenReturn(Arrays.asList(user));
-
-        List<User> users = userService.getAllUsers();
-
-        assertNotNull(users);
-        assertEquals(1, users.size());
-        assertEquals(1L, users.get(0).getId());
     }
 
     @Test

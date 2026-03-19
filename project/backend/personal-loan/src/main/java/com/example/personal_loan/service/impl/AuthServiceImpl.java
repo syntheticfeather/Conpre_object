@@ -15,7 +15,6 @@ import com.example.personal_loan.exception.BusinessException;
 import com.example.personal_loan.mapper.ImmovablesCertMapper;
 import com.example.personal_loan.mapper.TriCertMapper;
 import com.example.personal_loan.mapper.UserCertMapper;
-import com.example.personal_loan.mapper.UserMapper;
 import com.example.personal_loan.mapper.WorkCertMapper;
 import com.example.personal_loan.service.AuthService;
 import com.example.personal_loan.service.LocalFileStorageService;
@@ -27,9 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class AuthServiceImpl implements AuthService{
-
-    @Autowired
-    private UserMapper userMapper; // 用户认证信息类
 
     @Autowired
     private UserCertMapper userCertMapper;
@@ -97,14 +93,14 @@ public class AuthServiceImpl implements AuthService{
         handleTriCert(userCert, ssPath, crPath);
         log.info("tri cert is handled successfully: triCertId={}", userCert.getTriCertId());
 
-        int score = calScore(userId);
-
-        // 更新主表中的贷款分数
-        userCert.setCreditScore(score);
-
         // 更新主表中的文本字段
-        userCert.setIdCard(idCard);
-        userCert.setBankCardId(bankCardId);
+        userCert.setCreditScore(calScore(userId));
+        if(userCert.getIdCard() != null){
+            userCert.setIdCard(idCard);
+        }
+        if(userCert.getBankCardId() != null){
+            userCert.setBankCardId(bankCardId);
+        }
         userCertMapper.update(userCert);
         
         log.info("all auth materials are submitted successfully: userId={}", userId);

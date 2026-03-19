@@ -1,6 +1,7 @@
 package com.example.personal_loan.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,7 +27,7 @@ public interface UserService {
     LoginResponse login(LoginRequest request);
 
     // 刷新token
-    String refreshToken(Long id);
+    Map<String, String> refreshToken(Map<String, String> refreshToken);
 
     // 用户注册
     RegisterResponse userRegister(RegisterRequest request);
@@ -82,10 +83,4 @@ public interface UserService {
    // 根据ID获取用户
    User getUserById(Long id);
 
-   // 获取所有用户
-   List<User> getAllUsers();
-
-    // // 根据id，name搜索用户
-    // List<User> searchUsers(Long id, String name);
-    // 根据信誉分表达式搜索用户
 }

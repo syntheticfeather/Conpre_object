@@ -1,5 +1,7 @@
 package com.example.personal_loan.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,6 +54,16 @@ public class AuthController {
     public ResponseEntity<ApiResult<RegisterResponse>> userRegister(@Parameter(description = "注册请求参数") @RequestBody @Valid RegisterRequest request) {
         log.info("register api success called");
         return ResponseEntity.ok(ApiResult.success(userService.userRegister(request),"注册成功"));
+    }
+
+    /*
+    * 刷新token
+    */
+   @PostMapping(value = "/refresh-token", produces = "application/json")
+   @Operation(summary = "刷新token", description = "刷新用户的访问令牌")
+   public ResponseEntity<ApiResult<Map<String,String>>> refreshToken(@Parameter(description = "刷新token") @RequestBody Map<String, String> refreshToken) {
+       Map<String,String> newTokens = userService.refreshToken(refreshToken);
+       return ResponseEntity.ok(ApiResult.success(newTokens,"刷新成功"));
     }
 
     /**
