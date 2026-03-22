@@ -33,11 +33,13 @@
           <div 
             v-for="(label, key) in materialMap" 
             :key="key"
-            class="material-item"
+            class="material-item clickable"
+            :class="{ 'has-image': isMaterialUploaded(key) }"
+            @click="handleMaterialClick(key, applicationDetail?.userCert?.[key])"
           >
             <span>{{ label }}</span>
             <span :style="{ color: isMaterialUploaded(key) ? '#27ae60' : '#e74c3c' }">
-              {{ isMaterialUploaded(key) ? '已上传' : '未上传' }}
+              {{ isMaterialUploaded(key) ? '已上传 (点击查看)' : '未上传' }}
             </span>
           </div>
         </div>
@@ -89,12 +91,21 @@
     <div v-else class="status-display">
       <span>状态: {{ formatStatus(applicationDetail?.data?.application?.status) || '—' }}</span>
     </div>
+
+    <!-- 图片预览组件 -->
+    <ImagePreview
+      v-model:visible="showImagePreview"
+      :image-url="previewImageUrl"
+      :title="previewTitle"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, watch, computed } from 'vue';
-import { applicationAPI } from '@/api';
+import { applicationAPI, authAPI } from '@/api';
+import ImagePreview from '@/components/shared/ImagePreview.vue';
+import { ElMessage } from 'element-plus';
 
 const props = defineProps({
   // 控制显示/隐藏 (用于 v-model)
@@ -125,12 +136,22 @@ const emit = defineEmits(['update:modelValue', 'close', 'submit']);
 const applicationDetail = ref(null);
 const loading = ref(false);
 
+const showImagePreview = ref(false)
+const previewImageUrl = ref('')
+const previewTitle = ref('')
+
+const certTypeMap = {
+  workCertId: 'workCert',
+  triCertId: 'triCert',
+  immovableCertId: 'immovableCert'
+}
+
 // 材料映射
 const materialMap = {
   idCard: '身份证',
   bankCardId: '银行卡',
   workCertId: '工作证明',
-  triCertId: '三证合一',
+  triCertId: '第三方认证',
   immovableCertId: '不动产证明'
 };
 
@@ -172,6 +193,59 @@ const fetchApplicationDetail = async (id) => {
 // 检查材料是否已上传
 const isMaterialUploaded = (key) => {
   return applicationDetail.value?.userCert?.[key] != null
+}
+
+const fetchCertImage = async (certId, certType) => {
+  if (!certId) {
+    ElMessage.warning('该材料未上传')
+    return
+  }
+
+  try {
+    let response
+    switch (certType) {
+      case 'workCert':
+        response = await authAPI.getWorkCert(certId)
+        break
+      case 'triCert':
+        response = await authAPI.getTriCert(certId)
+        break
+      case 'immovableCert':
+        response = await authAPI.getImmovablesCert(certId)
+        break
+      default:
+        ElMessage.warning('不支持的认证类型')
+        return
+    }
+
+    if (response.code === 200 && response.data) {
+      const imageUrl = response.data.fileUrl || response.data.imageUrl
+      if (imageUrl) {
+        previewImageUrl.value = imageUrl
+        previewTitle.value = materialMap[certType] || '认证材料'
+        showImagePreview.value = true
+      } else {
+        ElMessage.warning('未找到图片')
+      }
+    }
+  } catch (error) {
+    console.error('获取认证材料失败:', error)
+    ElMessage.error('获取认证材料失败')
+  }
+}
+
+const handleMaterialClick = (key, certId) => {
+  if (!certId) {
+    ElMessage.warning('该材料未上传')
+    return
+  }
+
+  const certType = certTypeMap[key]
+  if (certType) {
+    fetchCertImage(certId, certType)
+  } else {
+    ElMessage.warning('该材料类型不支持图片查看')
+  }
 }
 
 // 格式化货币

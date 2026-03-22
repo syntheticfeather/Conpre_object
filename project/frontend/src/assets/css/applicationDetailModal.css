@@ -71,6 +71,21 @@
   border-radius: 4px;
 }
 
+.material-item.clickable {
+  cursor: pointer;
+  transition: all 2s;
+}
+
+.material-item.clickable:hover {
+  background-color: #e6f7ff;
+  transform: translateY(-1px);
+}
+
+.material-item.clickable.has-image:hover {
+  background-color: #e8f5e8;
+  border-color: #27ae60;
+}
+
 /* 操作按钮 */
 .action-buttons {
   display: flex;

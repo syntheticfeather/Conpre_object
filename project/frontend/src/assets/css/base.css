@@ -140,12 +140,11 @@ a {
 }
 /*内置标题*/
 .header {
-    margin-top: 20px;
-    padding: 10px 0;
 }
 .header h2 {
     font-size: 25px;
     font-family: 方正小标宋，楷体，微软雅黑;
+    font-weight: 600;
 }
 
 /*********************** 展示列表统一样式 ****************************/

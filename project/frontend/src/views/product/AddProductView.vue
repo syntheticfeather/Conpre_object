@@ -11,7 +11,7 @@
       <!-- 基础信息表单 -->
       <div class="form-section">
         <h3>基础信息</h3>
-        <el-form ref="formRef" :model="form" :rules="rules" label-width="120px">
+        <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
           <el-form-item label="产品名称" prop="productName">
             <el-input 
               v-model="form.productName" 

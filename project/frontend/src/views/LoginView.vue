@@ -246,7 +246,7 @@ const handlePasswordLogin = async () => {
       
       ElMessage.success('登录成功！正在跳转...')
       success.value = true
-      setTimeout(() => router.push('/dashboard'), 1500)
+      setTimeout(() => router.push('/dashboard/pending-applications'), 1500)
     } else {
       ElMessage.error(res.message || '用户名或密码错误')
       errors.password = res.message || '用户名或密码错误'
@@ -272,7 +272,7 @@ const handleSmsLogin = async () => {
       authStore.setToken(res.data.token, formData.phone)
       ElMessage.success('登录成功！正在跳转...')
       success.value = true
-      setTimeout(() => router.push('/dashboard'), 1500)
+      setTimeout(() => router.push('/dashboard/pending-applications'), 1500)
     } else {
       ElMessage.error(res.message || '验证码错误')
       errors.smsCode = res.message || '验证码错误'
@@ -290,7 +290,7 @@ const handleSmsLogin = async () => {
 // 页面加载时检查是否已登录
 onMounted(() => {
   if (authStore.isLoggedIn) {
-    router.push('/dashboard')
+    router.push('/dashboard/pending-applications')
   }
 })
 </script>

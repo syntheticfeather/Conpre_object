@@ -4,6 +4,7 @@ import { authAPI } from '@/api'
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     token: null,
+    refreshToken: null,
     userInfo: null,
     isAuthenticated: false
   }),
@@ -36,8 +37,8 @@ export const useAuthStore = defineStore('auth', {
 
     handleLoginSuccess(response) {
       if (response.data?.code === 200) {
-        const { token, user } = response.data.data
-        this.setAuthInfo({ token, user })
+        const { token, refreshToken, user } = response.data.data
+        this.setAuthInfo({ token, refreshToken, user })
         return { success: true }
       }
       return {
@@ -54,8 +55,9 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    setAuthInfo({ token, user }) {
+    setAuthInfo({ token, refreshToken, user }) {
       this.token = token
+      this.refreshToken = refreshToken
       this.userInfo = user
       this.isAuthenticated = true
     },
@@ -70,20 +72,40 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    async logout() {
+    async refreshToken() {
       try {
-        await authAPI.logout()
+        if (!this.refreshToken) {
+          throw new Error('No refresh token available')
+        }
+        const response = await authAPI.refreshToken(this.refreshToken)
+        if (response.data?.code === 200) {
+          const { token, refreshToken } = response.data.data
+          this.token = token
+          this.refreshToken = refreshToken
+          return { success: true }
+        }
+        return {
+          success: false,
+          message: response.data?.message || '刷新 token 失败'
+        }
       } catch (error) {
-        console.warn('后端 logout 调用失败，但已清理本地状态:', error)
-      } finally {
-        this.$reset()
+        console.error('Refresh token failed', error)
+        this.logout()
+        return {
+          success: false,
+          message: error.response?.data?.message || '刷新 token 失败，请重新登录'
+        }
       }
+    },
+
+    logout() {
+      this.$reset()
     }
   },
 
   persist: {
     key: 'auth-store',
     storage: localStorage,
-    paths: ['token', 'userInfo', 'isAuthenticated']
+    paths: ['token', 'refreshToken', 'userInfo', 'isAuthenticated']
   }
 })

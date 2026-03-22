@@ -126,6 +126,19 @@ export const useUserStore = defineStore('user', {
 
     setBlacklistPage(page) {
       this.blacklistPage = page
+    },
+
+    async searchUsersByCredit(expr) {
+      try {
+        const res = await userAPI.searchUsersByCredit(expr)
+        if (res.code === 200) {
+          this.users = res.data || []
+          this.currentPage = 1
+        }
+      } catch (error) {
+        console.error('搜索用户出错:', error)
+        throw error
+      }
     }
   }
 })

@@ -111,14 +111,17 @@
 
       <!-- 自定义批量操作 -->
       <template #batch-actions="{ selectedRows, selectedKeys }">
-        <a-space>
-          <a-button type="primary" danger @click="handleBatchDelete(selectedKeys, selectedRows)">
+        <div class="batch-actions-container">
+          <button class="batch-btn danger" @click="handleBatchDelete(selectedKeys, selectedRows)">
             批量删除
-          </a-button>
-          <a-button @click="batchOffline(selectedKeys, selectedRows)">
+          </button>
+          <button class="batch-btn" @click="batchOffline(selectedKeys, selectedRows)">
             批量下架
-          </a-button>
-        </a-space>
+          </button>
+          <button class="batch-btn primary" @click="batchOnline(selectedKeys, selectedRows)">
+            批量上架
+          </button>
+        </div>
       </template>
     </BaseTable>
 
@@ -406,27 +409,16 @@ const handleBatchDelete = async (keys, rows) => {
       )
     }
 
-    let successCount = 0
-    let failCount = 0
-
-    for (const productId of productsWithoutPending) {
-      try {
-        await loanStore.deleteProduct(productId)
-        successCount++
-      } catch {
-        failCount++
+    if (productsWithoutPending.length > 0) {
+      const result = await loanStore.batchDeleteProducts(productsWithoutPending)
+      if (result.success) {
+        ElMessage.success(`成功删除 ${productsWithoutPending.length} 个产品`)
+      } else {
+        ElMessage.error(result.message || '批量删除失败')
       }
     }
 
-    if (successCount > 0) {
-      ElMessage.success(`成功删除 ${successCount} 个产品`)
-    }
-    if (failCount > 0) {
-      ElMessage.error(`${failCount} 个产品删除失败`)
-    }
-
     tableRef.value?.clearSelection()
-    await loanStore.fetchProducts()
     
     if (selectedProductId.value && keys.includes(selectedProductId.value)) {
       selectedProductId.value = null
@@ -434,6 +426,7 @@ const handleBatchDelete = async (keys, rows) => {
   } catch (error) {
     if (error !== 'cancel') {
       console.error('批量删除失败:', error)
+      ElMessage.error('批量删除失败')
     }
   }
 }
@@ -455,21 +448,49 @@ const batchOffline = async (keys) => {
       }
     )
 
-    let successCount = 0
-    for (const productId of keys) {
-      try {
-        await loanStore.toggleProductStatus(productId, 'deactive')
-        successCount++
-      } catch (error) {
-        console.error(`下架产品 ${productId} 失败:`, error)
-      }
+    const result = await loanStore.batchToggleProductStatus(keys, 'deactive')
+    if (result.success) {
+      ElMessage.success(`成功下架 ${result.successCount} 个产品`)
+    } else {
+      ElMessage.error(result.message || '批量下架失败')
     }
 
-    ElMessage.success(`成功下架 ${successCount} 个产品`)
     tableRef.value?.clearSelection()
   } catch (error) {
     if (error !== 'cancel') {
       ElMessage.error('批量下架失败')
+    }
+  }
+}
+
+const batchOnline = async (keys) => {
+  if (!keys || keys.length === 0) {
+    ElMessage.warning('请先选择要上架的产品')
+    return
+  }
+
+  try {
+    await ElMessageBox.confirm(
+      `确定上架选中的 ${keys.length} 个产品？`,
+      '批量上架',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    )
+
+    const result = await loanStore.batchToggleProductStatus(keys, 'active')
+    if (result.success) {
+      ElMessage.success(`成功上架 ${result.successCount} 个产品`)
+    } else {
+      ElMessage.error(result.message || '批量上架失败')
+    }
+
+    tableRef.value?.clearSelection()
+  } catch (error) {
+    if (error !== 'cancel') {
+      ElMessage.error('批量上架失败')
     }
   }
 }
@@ -509,6 +530,42 @@ const formatDate = (dateString) => {
 }
 
 .btn:hover {
+  background-color: #66b1ff;
+}
+
+.batch-actions-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.batch-btn {
+  padding: 8px 16px;
+  background-color: #409EFF;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.batch-btn:hover {
+  background-color: #66b1ff;
+}
+
+.batch-btn.danger {
+  background-color: #F56C6C;
+}
+
+.batch-btn.danger:hover {
+  background-color: #f78989;
+}
+
+.batch-btn.primary {
+  background-color: #409EFF;
+}
+
+.batch-btn.primary:hover {
   background-color: #66b1ff;
 }
 

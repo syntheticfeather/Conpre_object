@@ -15,6 +15,7 @@ const UserManageView = () => import('@/views/user/UserManageView.vue')
 const BlackUserManageView = () => import('@/views/user/BlackUserManageView.vue')
 
 const RiskManageView = () => import('@/views/risk/RiskManageView.vue')
+const CollectManagementView = () => import('@/views/risk/CollectManagementView.vue')
 
 const routes = [
   {
@@ -47,7 +48,8 @@ const routes = [
       { path: 'users', name: 'Users', component: UserManageView },
       { path: 'black-users', name: 'BlackUsers', component: BlackUserManageView },
 
-      { path: 'risk', name: 'Risk', component: RiskManageView }
+      { path: 'risk', name: 'Risk', component: RiskManageView },
+      { path: 'collect-management', name: 'CollectManagement', component: CollectManagementView }
     ]
   }
 ]
@@ -76,7 +78,7 @@ router.beforeEach((to) => {
   }
 
   if ((to.name === 'Login' || to.name === 'Register') && isAuthenticated) {
-    return '/dashboard'
+    return '/dashboard/pending-applications'
   }
 })
 

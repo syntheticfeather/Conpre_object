@@ -271,6 +271,9 @@ const saveChanges = async () => {
       })
     }
 
+    // 确保 editForm.value.options 只包含已存在的选项（有 optionId 的选项）
+    editForm.value.options = options.value.filter(opt => opt.optionId)
+    
     // 更新产品基本信息 - 使用正确的API函数
     await loanAPI.updateProduct(props.productId, editForm.value)
 

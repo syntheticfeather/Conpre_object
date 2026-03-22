@@ -24,6 +24,18 @@
           {{ record.creditScore || '—' }}
         </span>
       </template>
+      
+      <!-- 自定义信誉分列头 -->
+      <template #headerCell="{ column }">
+        <template v-if="column.key === 'creditScore'">
+          <div @click="handleCreditScoreSort" style="cursor: pointer; display: flex; align-items: center; justify-content: center;">
+            <span>信誉分</span>
+            <span v-if="sortInfo.field === 'creditScore'" style="margin-left: 4px;">
+              {{ sortInfo.order === 'ascend' ? '↑' : '↓' }}
+            </span>
+          </div>
+        </template>
+      </template>
 
       <!-- 总贷款金额列 -->
       <template #totalLoanAmount="{ record }">
@@ -76,9 +88,7 @@ const columns = [
     title: '信誉分',
     dataIndex: 'creditScore',
     key: 'creditScore',
-    slotName: 'creditScore',
-    sorter: (a, b) => (a.creditScore || 0) - (b.creditScore || 0),
-    sortOrder: 'descend'
+    slotName: 'creditScore'
   },
   {
     title: '目前借贷情况',
@@ -129,6 +139,23 @@ const handleTableChange = ({ sorter }) => {
   }
 }
 
+// 处理信誉分列头点击排序
+const handleCreditScoreSort = () => {
+  if (sortInfo.value.field === 'creditScore') {
+    // 切换排序方向
+    sortInfo.value = {
+      field: 'creditScore',
+      order: sortInfo.value.order === 'ascend' ? 'descend' : 'ascend'
+    }
+  } else {
+    // 首次点击，默认降序
+    sortInfo.value = {
+      field: 'creditScore',
+      order: 'descend'
+    }
+  }
+}
+
 const isUserInBlacklist = (userId) => {
   return userStore.blacklist.some(item => item.userId === userId)
 }
@@ -138,6 +165,10 @@ onMounted(async () => {
   await userStore.fetchBlacklist()
 })
 
+/**
+ * 处理用户点击事件，切换选中状态并获取用户详情
+ * @param {Object} record - 点击的用户记录
+ */
 const selectUser = async (record) => {
   if (selectedUserId.value === record.userId) {
     selectedUserId.value = null
@@ -155,6 +186,10 @@ const selectUser = async (record) => {
   }
 }
 
+/**
+ * 处理将用户加入黑名单的操作
+ * @param {Object} user - 要加入黑名单的用户记录
+ */
 const addToBlacklist = async (user) => {
   try {
     const { value: blackLevel } = await ElMessageBox.prompt(
@@ -187,6 +222,11 @@ const addToBlacklist = async (user) => {
   }
 }
 
+/**
+ * 格式化金额，保留两位小数
+ * @param {number} amount - 要格式化的金额
+ * @returns {string} - 格式化后的金额字符串
+ */
 const formatAmount = (amount) => {
   if (!amount && amount !== 0) return '0'
   return Number(amount).toLocaleString('zh-CN', {
@@ -195,6 +235,11 @@ const formatAmount = (amount) => {
   })
 }
 
+/**
+ * 根据信誉分获取信誉分颜色
+ * @param {number} score - 信誉分
+ * @returns {string} - 信誉分颜色
+ */
 const getCreditScoreColor = (score) => {
   if (!score) return '#666'
   if (score >= 700) return '#52c41a'
@@ -225,4 +270,6 @@ const getCreditScoreColor = (score) => {
   background-color: #d9d9d9;
   color: rgba(0, 0, 0, 0.25);
 }
+
+
 </style>

@@ -267,7 +267,7 @@ defineExpose({
 }
 
 .data-table {
-  padding: 6px 20px;
+  padding: 6px 0px;
   width: 100%;
   min-height: v-bind(minHeight);
   color: #525457;
@@ -280,6 +280,9 @@ defineExpose({
   gap: 16px;
   padding: 12px 16px;
   margin-bottom: 16px;
+
+  height: 44px;
+  
   background-color: #f6ffed;
   border: 1px solid #b7eb8f;
   border-radius: 4px;

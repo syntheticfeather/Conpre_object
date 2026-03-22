@@ -18,7 +18,7 @@ const userAPI = {
       },
     }),
   // 根据信誉分从高到低查询用户
-  searchUsersByCredit: () => request.get('/users/search-by-credit'),
+  searchUsersByCredit: (expr) => request.get(`/users/search-by-credit?expr=${expr}`),
 }
 
 export default userAPI

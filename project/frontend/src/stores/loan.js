@@ -96,6 +96,23 @@ export const useLoanStore = defineStore('loan', {
       }
     },
 
+    async batchDeleteProducts(productIds) {
+      this.loading = true
+      try {
+        const response = await loanAPI.batchDeleteProducts(productIds)
+        if (response.code === 200) {
+          await this.fetchProducts()
+          return { success: true }
+        }
+        return { success: false, message: response.message }
+      } catch (error) {
+        this.error = error.message
+        return { success: false, message: error.response?.data?.message || '批量删除失败' }
+      } finally {
+        this.loading = false
+      }
+    },
+
     async toggleProductStatus(productId, action) {
       this.loading = true
       try {
@@ -108,6 +125,28 @@ export const useLoanStore = defineStore('loan', {
       } catch (error) {
         this.error = error.message
         return { success: false, message: error.response?.data?.message || '操作失败' }
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async batchToggleProductStatus(productIds, action) {
+      this.loading = true
+      try {
+        let successCount = 0
+        for (const productId of productIds) {
+          try {
+            await loanAPI.toggleStatus(productId, action)
+            successCount++
+          } catch (error) {
+            console.error(`${action === 'active' ? '上架' : '下架'}产品 ${productId} 失败:`, error)
+          }
+        }
+        await this.fetchProducts()
+        return { success: true, successCount }
+      } catch (error) {
+        this.error = error.message
+        return { success: false, message: error.response?.data?.message || '批量操作失败' }
       } finally {
         this.loading = false
       }
