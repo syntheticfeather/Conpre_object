@@ -62,13 +62,22 @@ public class AuthServiceImpl implements AuthService{
         UserCert userCert = userCertMapper.selectByUserId(userId);
 
         // 验证身份证号和银行卡号
-        if (userCert.getIdCard() == null && (idCard.isBlank() || !IdCardUtils.isValid(idCard))) {
-            throw new BusinessException(400, "身份证号不能为空或格式无效");
+        if (userCert.getIdCard() == null ) {
+            if(idCard==null||idCard.isBlank()){
+                throw new BusinessException(400, "身份证号不能为空");
+            }
+            if(!IdCardUtils.isValid(idCard)){
+                throw new BusinessException(400, "身份证号格式无效");
+            }
         }
-        if (userCert.getBankCardId() == null && (!bankCardId.isBlank() && BankCardUtils.isValid(bankCardId))) {
-        } else {
-            throw new BusinessException(400, "银行卡号不能为空或格式无效");
-        }
+        if (userCert.getBankCardId() == null) {
+            if(bankCardId==null||bankCardId.isBlank()){
+                throw new BusinessException(400, "银行卡号不能为空");
+            }
+            if(!BankCardUtils.isValid(bankCardId)){
+                throw new BusinessException(400, "银行卡号格式无效");
+            }
+        } 
 
         // 存储所有文件（任一失败则整体回滚）
         log.info("begin store all auth files:...");
@@ -95,10 +104,10 @@ public class AuthServiceImpl implements AuthService{
 
         // 更新主表中的文本字段
         userCert.setCreditScore(calScore(userId));
-        if(userCert.getIdCard() != null){
+        if(userCert.getIdCard() == null){
             userCert.setIdCard(idCard);
         }
-        if(userCert.getBankCardId() != null){
+        if(userCert.getBankCardId() == null){   
             userCert.setBankCardId(bankCardId);
         }
         userCertMapper.update(userCert);
