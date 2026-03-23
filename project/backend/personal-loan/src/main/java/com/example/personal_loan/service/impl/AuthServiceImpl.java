@@ -63,7 +63,7 @@ public class AuthServiceImpl implements AuthService{
 
         // 验证身份证号和银行卡号
         if (userCert.getIdCard() == null ) {
-            if(idCard==null||idCard.isBlank()){
+            if(idCard==null||idCard.trim().isEmpty()){
                 throw new BusinessException(400, "身份证号不能为空");
             }
             if(!IdCardUtils.isValid(idCard)){
@@ -71,7 +71,7 @@ public class AuthServiceImpl implements AuthService{
             }
         }
         if (userCert.getBankCardId() == null) {
-            if(bankCardId==null||bankCardId.isBlank()){
+            if(bankCardId==null||bankCardId.trim().isEmpty()){
                 throw new BusinessException(400, "银行卡号不能为空");
             }
             if(!BankCardUtils.isValid(bankCardId)){
