@@ -141,9 +141,44 @@
 
 ![](../AuthImgs/registerPhoneExist.png "注册失败，该手机号已被注册")
 
+
+### 实名认证（后续添加真实姓名/身份证图片）
+
+**网址** /api/auth/submit-basic
+
+**请求方式** POST
+
+**请求头**
+
+|字段名|值|说明|
+| --- | --- | --- |
+| Authorization | Bearer token | 需携带有效token |
+
+**请求参数**
+
+格式 form-data(多部分表单)
+
+|字段名|类型|是否必填|说明|示例值|
+|---|---|---|---|---|
+|idCard|string|是|身份证号码|110101199003072316|
+
+**返回数据**
+
+``` json
+{
+    "code": 200,
+    "data": null,
+    "message": "基本认证提交成功"
+}
+```
+
+**postman测试结果**
+
+![](../AuthImgs/submitBasic.png "用户上传基本认证材料成功")
+
 ### 上传认证材料
 
-**网址** /api/auth/submit-all
+**网址** /api/auth/submit-other
 
 **请求方式** POST
 
@@ -159,14 +194,14 @@
 
 | Key                |  Type   |    Value  |  是否必填  |   说明    |  示例值    |
 |---|---|---|---|---|---|
+| bankCardId         |   Text  |   银行卡号               |    是    | 必须填写，长度16位    | 6214850200001234 |
 | propertyFile       |   File  |   房产证明图片           |    否   |  可选，上传图片         |           |
 | carFile            |   File  |   车产证明图片           |    否   |  可选，上传图片         |           |
 | employmentFile     |   File  |   工作证明图片           |    否   |  可选，上传图片         |           |
 | salaryFile         |   File  |   工资流水截图或银行流水  |    否   |  可选，上传图片         |           |
 | socialSecurityFile |   File  |   社保缴纳记录图片       |    否    |  可选，上传图片         |           |
 | creditReportFile   |   File  |   征信报告图片           |    否    |  可选，上传图片         |           |
-| idCard             |   Text  |   身份证号码             |    是    | 必须填写，18位数字    | 110101199003072316 |
-| bankCardId         |   Text  |   银行卡号               |    是    | 必须填写，长度16位    | 6214850200001234 |
+
 
 **返回数据**
 
@@ -174,13 +209,13 @@
 {
     "code": 200,
     "data": null,
-    "message": "全部认证材料提交成功"
+    "message": "其他认证材料提交成功"
 }
 ```
 
 **postman测试结果**
 
-![](../AuthImgs/submitAll.png "用户上传认证材料成功")
+![](../AuthImgs/submitOther.png "用户上传认证材料成功")
 
 ### 获取已经上传的认证信息
 

@@ -67,33 +67,49 @@ public class AuthController {
     }
 
     /**
-     * 上传认证信息
+     * 提交基本认证信息
      */
-    @PostMapping(value = "/submit-all", produces = "application/json")
-    @Operation(summary = "提交认证材料", description = "用户提交所有认证材料，包括身份证、银行卡、房产证明、车辆证明、工作证明、工资证明、社保证明、征信报告")
-    public ResponseEntity<ApiResult<Void>> submitAllAuth(
+    @PostMapping(value = "/submit-basic", produces = "application/json")
+    @Operation(summary = "提交基本认证", description = "用户提交身份证信息进行基本认证")
+    public ResponseEntity<ApiResult<Void>> submitBasicAuth(
             HttpServletRequest request,
-            @Parameter(description = "身份证号") @RequestPart(required=false) String idCard,
-            @Parameter(description = "银行卡号") @RequestPart(required=false) String bankCardId,
-            @Parameter(description = "房产证明文件") @RequestPart(required=false) MultipartFile propertyFile,
-            @Parameter(description = "车辆证明文件") @RequestPart(required=false) MultipartFile carFile,
-            @Parameter(description = "工作证明文件") @RequestPart(required=false) MultipartFile employmentFile,
-            @Parameter(description = "工资证明文件") @RequestPart(required=false) MultipartFile salaryFile,
-            @Parameter(description = "社保证明文件") @RequestPart(required=false) MultipartFile socialSecurityFile,
-            @Parameter(description = "征信报告文件") @RequestPart(required=false) MultipartFile creditReportFile) {
+            @Parameter(description = "身份证号", required = true) @RequestPart String idCard) {
 
         Long userId = (Long) request.getAttribute("userId");
-        log.info("/api/auth/submit-all success called for user {} to authorize", userId);
+        log.info("/api/auth/submit-basic called for user {} to authorize", userId);
 
-        authService.submitAllAuth(
-                userId, idCard, bankCardId,
+        authService.submitBasicAuth(userId, idCard);
+
+        return ResponseEntity.ok(ApiResult.success(null, "基本认证提交成功"));
+    }
+
+    /**
+     * 提交其他认证材料
+     */
+    @PostMapping(value = "/submit-other", produces = "application/json")
+    @Operation(summary = "提交其他认证材料", description = "用户提交银行卡号、房产、车辆、工作、工资、社保及征信报告等证明材料")
+    public ResponseEntity<ApiResult<Void>> submitOtherAuth(
+            HttpServletRequest request,
+            @Parameter(description = "银行卡号", required = true) @RequestPart String bankCardId,
+            @Parameter(description = "房产证明文件", required = false) @RequestPart MultipartFile propertyFile,
+            @Parameter(description = "车辆证明文件", required = false) @RequestPart MultipartFile carFile,
+            @Parameter(description = "工作证明文件", required = false) @RequestPart MultipartFile employmentFile,
+            @Parameter(description = "工资证明文件", required = false) @RequestPart MultipartFile salaryFile,
+            @Parameter(description = "社保证明文件", required = false) @RequestPart MultipartFile socialSecurityFile,
+            @Parameter(description = "征信报告文件", required = false) @RequestPart MultipartFile creditReportFile) {
+
+        Long userId = (Long) request.getAttribute("userId");
+        log.info("/api/auth/submit-other called for user {} to authorize", userId);
+
+        authService.submitOtherAuth(
+                userId, bankCardId,
                 propertyFile, carFile,
                 employmentFile, salaryFile,
                 socialSecurityFile, creditReportFile
         );
 
-        return ResponseEntity.ok(ApiResult.success(null, "全部认证材料提交成功"));
-    }   
+        return ResponseEntity.ok(ApiResult.success(null, "其他认证材料提交成功"));
+    }
 
     /**
      * 获取已经上传的认证信息

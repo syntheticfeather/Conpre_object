@@ -25,17 +25,11 @@ public interface AuthService {
     // void thirdPartyAuth(Long userId, MultipartFile socialSecurityFile, MultipartFile creditReportFile);
 
     
-    // 提交所有认证信息
-    void submitAllAuth(
-            Long userId,
-            String idCard,
-            String bankCardId,
-            MultipartFile propertyFile,
-            MultipartFile carFile,
-            MultipartFile employmentFile,
-            MultipartFile salaryFile,
-            MultipartFile socialSecurityFile,
-            MultipartFile creditReportFile); 
+    // 提交基本认证信息
+    void submitBasicAuth(Long userId, String idCard);
+
+    // 提交其他认证材料
+    void submitOtherAuth(Long userId, String bankCardId, MultipartFile propertyFile, MultipartFile carFile, MultipartFile employmentFile, MultipartFile salaryFile, MultipartFile socialSecurityFile, MultipartFile creditReportFile);
     
     // 计算贷款认证分数
     int calScore(Long userId); 

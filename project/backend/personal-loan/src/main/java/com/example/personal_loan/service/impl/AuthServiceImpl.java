@@ -45,12 +45,49 @@ public class AuthServiceImpl implements AuthService{
     @Autowired
     private FileStorageConfig fileStorageConfig;
 
-    // 提交所有认证信息
+    /**
+     * 提交基本认证信息
+     * @param userId 用户ID
+     * @param idCard 身份证号
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void submitAllAuth(
+    public void submitBasicAuth(Long userId, String idCard) {
+        UserCert userCert = userCertMapper.selectByUserId(userId);
+
+        // 1. 参数校验
+        if (userCert.getIdCard() == null) {
+            if (idCard == null || idCard.trim().isEmpty()) {
+                throw new BusinessException(400, "身份证号不能为空");
+            }
+            if (!IdCardUtils.isValid(idCard)) {
+                throw new BusinessException(400, "身份证号格式无效");
+            }
+        }
+
+        // 2. 更新主表中的身份证号
+        userCert.setIdCard(idCard);
+        userCert.setCreditScore(calScore(userId));
+        userCertMapper.update(userCert);
+        
+        log.info("basic auth is submitted successfully: userId={}", userId);
+    }
+
+    /**
+     * 提交其他认证信息，包括银行卡及各类证明材料
+     * @param userId 用户ID
+     * @param bankCardId 银行卡号
+     * @param propertyFile 资产证明文件
+     * @param carFile 车辆证明文件
+     * @param employmentFile 工作证明文件
+     * @param salaryFile 收入证明文件
+     * @param socialSecurityFile 社保证明文件
+     * @param creditReportFile 征信报告文件
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void submitOtherAuth(
             Long userId,
-            String idCard,
             String bankCardId,
             MultipartFile propertyFile,
             MultipartFile carFile,
@@ -61,25 +98,17 @@ public class AuthServiceImpl implements AuthService{
 
         UserCert userCert = userCertMapper.selectByUserId(userId);
 
-        // 验证身份证号和银行卡号
-        if (userCert.getIdCard() == null ) {
-            if(idCard==null||idCard.trim().isEmpty()){
-                throw new BusinessException(400, "身份证号不能为空");
-            }
-            if(!IdCardUtils.isValid(idCard)){
-                throw new BusinessException(400, "身份证号格式无效");
-            }
-        }
+        // 1. 验证银行卡号
         if (userCert.getBankCardId() == null) {
-            if(bankCardId==null||bankCardId.trim().isEmpty()){
+            if (bankCardId == null || bankCardId.trim().isEmpty()) {
                 throw new BusinessException(400, "银行卡号不能为空");
             }
-            if(!BankCardUtils.isValid(bankCardId)){
+            if (!BankCardUtils.isValid(bankCardId)) {
                 throw new BusinessException(400, "银行卡号格式无效");
             }
-        } 
+        }
 
-        // 存储所有文件（任一失败则整体回滚）
+        // 2. 存储所有文件（任一失败则整体回滚）
         log.info("begin store all auth files:...");
         String propertyPath = storeRequiredFile(propertyFile, "property", userId, fileStorageConfig.getPaths().getPropertyProof());
         String carPath = storeRequiredFile(carFile, "car", userId, fileStorageConfig.getPaths().getCarProof());
@@ -90,29 +119,22 @@ public class AuthServiceImpl implements AuthService{
         log.info("all auth files are stored successfully: propertyPath={}, carPath={}, empPath={}, salPath={}, ssPath={}, crPath={}", 
             propertyPath, carPath, empPath, salPath, ssPath, crPath);
 
-        // 处理不动产认证
+        // 3. 处理各类认证业务逻辑
         handleImmovablesCert(userCert, propertyPath, carPath);
         log.info("immovable cert is handled successfully: immovableCertId={}", userCert.getImmovableCertId());
 
-        // 处理工作认证
         handleWorkCert(userCert, empPath, salPath);
         log.info("work cert is handled successfully: workCertId={}", userCert.getWorkCertId());
 
-        // 处理第三方认证
         handleTriCert(userCert, ssPath, crPath);
         log.info("tri cert is handled successfully: triCertId={}", userCert.getTriCertId());
 
-        // 更新主表中的文本字段
+        // 4. 更新主表中的银行卡号和信用分
+        userCert.setBankCardId(bankCardId);
         userCert.setCreditScore(calScore(userId));
-        if(userCert.getIdCard() == null){
-            userCert.setIdCard(idCard);
-        }
-        if(userCert.getBankCardId() == null){   
-            userCert.setBankCardId(bankCardId);
-        }
         userCertMapper.update(userCert);
         
-        log.info("all auth materials are submitted successfully: userId={}", userId);
+        log.info("all other auth materials are submitted successfully: userId={}", userId);
     }
 
     // 计算贷款分数(125x6=750)

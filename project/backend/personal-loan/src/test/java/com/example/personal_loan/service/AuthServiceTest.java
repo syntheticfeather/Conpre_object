@@ -105,9 +105,8 @@ class AuthServiceTest {
     @Test
     void testSubmitAllAuth_InvalidIdCard() {
         BusinessException exception = assertThrows(BusinessException.class, () -> 
-            authService.submitAllAuth(
-                1L, "", "6222021234567890",
-                mockFile, mockFile, mockFile, mockFile, mockFile, mockFile
+            authService.submitBasicAuth(
+                1L, ""
             )
         );
         assertEquals(400, exception.getCode());
@@ -116,8 +115,8 @@ class AuthServiceTest {
     @Test
     void testSubmitAllAuth_InvalidBankCard() {
         BusinessException exception = assertThrows(BusinessException.class, () -> 
-            authService.submitAllAuth(
-                1L, "123456789012345678", "",
+            authService.submitOtherAuth(
+                1L, "123456789012345678", 
                 mockFile, mockFile, mockFile, mockFile, mockFile, mockFile
             )
         );
