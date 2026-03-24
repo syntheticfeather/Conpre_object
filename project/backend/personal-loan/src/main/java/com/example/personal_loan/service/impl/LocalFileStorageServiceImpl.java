@@ -35,6 +35,7 @@ public class LocalFileStorageServiceImpl implements LocalFileStorageService{
     @Override
     public String storeFile(MultipartFile file, String prefix, Long userId, String subDirPath) {
         if (file == null || file.isEmpty()) {
+            System.out.println("The File is empty or null");
             return null;
         }
 
@@ -46,6 +47,7 @@ public class LocalFileStorageServiceImpl implements LocalFileStorageService{
             // 2. 构建物理存储路径
             String baseDir = fileStorageConfig.getBaseDir(); // "D:/Conpre_object/.../uploads"
             Path uploadDir = Paths.get(baseDir, subDirPath);   // e.g., D:/.../uploads + "immovables/property"
+            log.info("The document to be created: {}", uploadDir.toAbsolutePath());
             Files.createDirectories(uploadDir); // 如果不存在，创建多级目录
 
             // 3. 保存文件
@@ -56,7 +58,7 @@ public class LocalFileStorageServiceImpl implements LocalFileStorageService{
             return subDirPath + "/" + filename;
 
         } catch (IOException e) {
-            log.error("文件存储失败: prefix={}, userId={}, error={}", prefix, userId, e.getMessage(), e);
+            log.error("The file stored failed: prefix={}, userId={}, error={}", prefix, userId, e.getMessage(), e);
             throw new RuntimeException("文件存储失败: " + e.getMessage(), e);
         }
     }
