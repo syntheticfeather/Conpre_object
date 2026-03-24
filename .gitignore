@@ -12,3 +12,6 @@ JavaStudy/
 
 # Misc
 *.drawio.bkp
+
+# 上传的文件
+uploads/
