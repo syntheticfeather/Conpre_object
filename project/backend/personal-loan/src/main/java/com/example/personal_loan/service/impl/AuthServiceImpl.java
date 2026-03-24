@@ -109,7 +109,7 @@ public class AuthServiceImpl implements AuthService{
         }
 
         // 2. 存储所有文件（任一失败则整体回滚）
-        log.info("begin store all auth files:...");
+        log.info("Begin store all auth files:...");
         String propertyPath = fileStorageService.storeFile(propertyFile, "property", userId, fileStorageConfig.getPaths().getPropertyProof());
         String carPath = fileStorageService.storeFile(carFile, "car", userId, fileStorageConfig.getPaths().getCarProof());
         String empPath = fileStorageService.storeFile(employmentFile, "employment", userId, fileStorageConfig.getPaths().getEmploymentProof());

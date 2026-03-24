@@ -92,7 +92,7 @@ mybatis:
 # 文件存储配置
 file-storage:
   # 根目录（建议使用绝对路径，生产环境不要放在项目内）
-  base-dir: "D:/Conpre_object/project/backend/personal-loan/uploads"
+  base-dir: ./uploads
 
   # 各业务类型的相对路径（相对于 base-dir）
   paths:
