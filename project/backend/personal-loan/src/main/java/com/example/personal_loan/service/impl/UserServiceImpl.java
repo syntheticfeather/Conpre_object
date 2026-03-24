@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,6 @@ import com.example.personal_loan.dto.UserDetailResponse;
 import com.example.personal_loan.dto.UserListResponse;
 import com.example.personal_loan.dto.UserSearchDto;
 import com.example.personal_loan.dto.UserSelfResponse;
-import com.example.personal_loan.dto.UserUpdateRequest;
 import com.example.personal_loan.entity.BlackUser;
 import com.example.personal_loan.entity.Order;
 import com.example.personal_loan.entity.User;
@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
 
     /*
     * 用户认证（登录注册）
-     */
+    */
     @Override
     public LoginResponse login(LoginRequest request) {
 
@@ -99,6 +99,9 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    /*
+    * 刷新access token
+    */
     @Override
     public Map<String, String> refreshToken(Map<String, String> refreshToken) {
         if(refreshToken == null|| refreshToken.isEmpty()) {
@@ -127,6 +130,9 @@ public class UserServiceImpl implements UserService {
         );
     }
 
+    /*
+    * 用户注册
+    */
     @Override
     public RegisterResponse userRegister(RegisterRequest request) {
         //检验手机号是否已存在
@@ -149,11 +155,17 @@ public class UserServiceImpl implements UserService {
         return new RegisterResponse(user.getId(), user.getUserName(), user.getCreateTime());
     }
 
+    /*
+    * 删除用户
+    */
     @Override
     public void deleteUser(Long id) {
         userMapper.delete(id);
     }
 
+    /*
+    * 批量删除用户
+    */
     @Override
     @Transactional // 可选：根据业务决定是否加事务
     public void deleteUsers(List<Long> ids) {
@@ -165,6 +177,9 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    /*
+    * 更新用户
+    */
     @Override
     public User updateUser(Long id, User user) {
 
@@ -197,6 +212,9 @@ public class UserServiceImpl implements UserService {
         return old;
     }
 
+    /*
+    * 根据ID查询用户
+    */
     @Override
     public User getUserById(Long id) {
         User user = userMapper.findById(id);
@@ -228,14 +246,14 @@ public class UserServiceImpl implements UserService {
         return new UserSelfResponse(
                 user.getId(),
                 user.getUserName(),
-                user.getAvatar()
+                "/uploads/"+user.getAvatar()
         );
     }
 
-    // 修改个人信息
+    // 修改个人信息（仅昵称）
     @Override
     @Transactional
-    public UserSelfResponse updateUserSelfInfo(UserUpdateRequest request, Long id) {
+    public void updateUserSelfInfo(String newUserName, Long id) {
         User user = userMapper.findById(id);
         if (user == null) {
             throw new BusinessException(404, "用户不存在");
@@ -243,59 +261,62 @@ public class UserServiceImpl implements UserService {
         if (!id.equals(user.getId())) {
             throw new BusinessException(400, "只能更新自己的信息");
         }
+        if(newUserName.length() > 20 || newUserName.length() < 2){
+            throw new BusinessException(400,"用户名长度应在2-20之间");
+        }
+        // 仅更新允许的字段,用户名
+        if (StringUtils.isBlank(newUserName)) {
+            throw new BusinessException(400, "用户名不能为空或空格");
+        }
         
-        // 仅更新允许的字段,用户名和头像
-        if (request.getUserName() != null) {
-            user.setUserName(request.getUserName());
-        }
-        if (request.getAvatar() != null) {
-            user.setAvatar(request.getAvatar());
-        }
-
+        user.setUserName(newUserName.trim());
         user.setUpdateTime(LocalDateTime.now());
 
-        userMapper.update(user);
-        User user2 = userMapper.findById(id);
-        return new UserSelfResponse(
-                id,
-                user2.getUserName(),
-                user2.getAvatar()
-        );
+        userMapper.update(user);     
     }
 
-    // 上传头像
+    // 设置头像
     @Override
     @Transactional
     public String uploadAvatar(Long userId, MultipartFile file){
         // 1. 校验文件非空
         if (file.isEmpty()) {
-            throw new BusinessException(400, "上传的文件为空");
+            throw new BusinessException(400, "上传的头像为空");
         }
-
         // 2. 校验文件大小
         if (file.getSize() > MAX_FILE_SIZE) {
             throw new BusinessException(400, "头像不能超过 5MB");
         }
-
         // 3. 校验 Content-Type（防止伪装图片）
         String contentType = file.getContentType();
         if (contentType == null || !contentType.startsWith("image/")) {
             throw new BusinessException(400, "仅支持图片格式");
         }
 
-        // 4. 获取相对路径
-        String relativePath = fileStorageConfig.getPaths().getAvatar(); // e.g. "avatars"
-
-        // 5.存储图片
-        String avatarUrl = fileStorageService.storeFile(file,"avatar", userId, relativePath);
-
-        // 8. 更新数据库
+        // 4. 获取用户信息，旧头像路径
         User user = userMapper.findById(userId);
-        user.setAvatar(avatarUrl);
+        if (user == null) throw new BusinessException(404, "用户不存在");
+        String oldAvatarPath = user.getAvatar();
+
+        // 5. 获取相对路径,存新头像
+        String relativePath = fileStorageConfig.getPaths().getAvatar(); // e.g. "avatars"
+        String newAvatarUrl = fileStorageService.storeFile(file,"avatar", userId, relativePath);
+
+        // 6. 更新数据库
+        user.setAvatar(newAvatarUrl);
         userMapper.update(user);
-    
-        log.info("用户 {} 头像上传成功: {}", userId, avatarUrl);
-        return avatarUrl;
+        if (oldAvatarPath != null && !oldAvatarPath.isEmpty() && !oldAvatarPath.equals(newAvatarUrl)) {
+            try {
+                // 调用你的文件服务删除旧文件
+                fileStorageService.deleteFile(oldAvatarPath); 
+            } catch (Exception e) {
+                // 记录日志，但不要让异常抛出中断主流程
+                log.error("Delete old avatar failed: {}", oldAvatarPath, e);
+            }
+        }
+
+        log.info("User {} updates avatar to {} successfully", userId, newAvatarUrl);
+        return "/uploads/"+newAvatarUrl;
     }
 
     /*

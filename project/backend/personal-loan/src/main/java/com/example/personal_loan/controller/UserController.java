@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,14 +20,12 @@ import com.example.personal_loan.dto.UserDetailResponse;
 import com.example.personal_loan.dto.UserListResponse;
 import com.example.personal_loan.dto.UserSearchDto;
 import com.example.personal_loan.dto.UserSelfResponse;
-import com.example.personal_loan.dto.UserUpdateRequest;
 import com.example.personal_loan.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -57,23 +54,23 @@ public class UserController {
     /**
      * 用户更新自己的信息（仅限 userName 和 avatar）
      */
-    @PatchMapping(value = "/me", produces = "application/json")
-    @Operation(summary = "更新用户信息", description = "用户更新自己的信息（仅限用户名和头像）")
+    @PostMapping(value = "/me", produces = "application/json")
+    @Operation(summary = "更新用户信息", description = "用户更新自己的信息（仅限用户名）")
     public ResponseEntity<ApiResult<UserSelfResponse>> updateCurrentUser(
             HttpServletRequest request,
-            @Parameter(description = "用户更新信息") @RequestBody @Valid UserUpdateRequest userUpdateRequest) {
+            @Parameter(description = "新用户名") @RequestBody String newUserName) {
         Long userId = (Long) request.getAttribute("userId");
         log.info("/api/users/me success called for user {} to update his info", userId);
 
-        UserSelfResponse updated = userService.updateUserSelfInfo(userUpdateRequest,userId);
-        return ResponseEntity.ok(ApiResult.success(updated));
+        userService.updateUserSelfInfo(newUserName,userId);
+        return ResponseEntity.ok(ApiResult.success(null,"用户信息更新成功"));
     }
 
     /**
-     * 用户上传头像
+     * 用户设置头像
      */
     @PostMapping(value="/avatar", produces="application/json")
-    @Operation(summary = "上传头像", description = "用户上传头像图片")
+    @Operation(summary = "设置头像", description = "用户设置头像图片")
     public ResponseEntity<ApiResult<String>> uploadAvatar(
             HttpServletRequest request,
             @Parameter(description = "头像文件") @RequestParam("file") MultipartFile file) {
@@ -82,7 +79,7 @@ public class UserController {
         log.info("/api/users/avatar success called for user {} to upload avatar", userId);
         
         String avatarUrl = userService.uploadAvatar(userId, file);
-        return ResponseEntity.ok(ApiResult.success(avatarUrl));
+        return ResponseEntity.ok(ApiResult.success(avatarUrl,"头像设置成功"));
     }
 
     

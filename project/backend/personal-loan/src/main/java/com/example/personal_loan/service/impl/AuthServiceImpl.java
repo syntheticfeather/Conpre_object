@@ -110,12 +110,12 @@ public class AuthServiceImpl implements AuthService{
 
         // 2. 存储所有文件（任一失败则整体回滚）
         log.info("begin store all auth files:...");
-        String propertyPath = storeRequiredFile(propertyFile, "property", userId, fileStorageConfig.getPaths().getPropertyProof());
-        String carPath = storeRequiredFile(carFile, "car", userId, fileStorageConfig.getPaths().getCarProof());
-        String empPath = storeRequiredFile(employmentFile, "employment", userId, fileStorageConfig.getPaths().getEmploymentProof());
-        String salPath = storeRequiredFile(salaryFile, "salary", userId, fileStorageConfig.getPaths().getSalaryProof());
-        String ssPath = storeRequiredFile(socialSecurityFile, "social", userId, fileStorageConfig.getPaths().getSocialSecurity());
-        String crPath = storeRequiredFile(creditReportFile, "credit", userId, fileStorageConfig.getPaths().getCreditReport());
+        String propertyPath = fileStorageService.storeFile(propertyFile, "property", userId, fileStorageConfig.getPaths().getPropertyProof());
+        String carPath = fileStorageService.storeFile(carFile, "car", userId, fileStorageConfig.getPaths().getCarProof());
+        String empPath = fileStorageService.storeFile(employmentFile, "employment", userId, fileStorageConfig.getPaths().getEmploymentProof());
+        String salPath = fileStorageService.storeFile(salaryFile, "salary", userId, fileStorageConfig.getPaths().getSalaryProof());
+        String ssPath = fileStorageService.storeFile(socialSecurityFile, "social", userId, fileStorageConfig.getPaths().getSocialSecurity());
+        String crPath = fileStorageService.storeFile(creditReportFile, "credit", userId, fileStorageConfig.getPaths().getCreditReport());
         log.info("all auth files are stored successfully: propertyPath={}, carPath={}, empPath={}, salPath={}, ssPath={}, crPath={}", 
             propertyPath, carPath, empPath, salPath, ssPath, crPath);
 
@@ -130,8 +130,11 @@ public class AuthServiceImpl implements AuthService{
         log.info("tri cert is handled successfully: triCertId={}", userCert.getTriCertId());
 
         // 4. 更新主表中的银行卡号和信用分
-        userCert.setBankCardId(bankCardId);
+        if(bankCardId != null){
+            userCert.setBankCardId(bankCardId);
+        }
         userCert.setCreditScore(calScore(userId));
+        System.out.println("【calScore】=" + userCert.getCreditScore());
         userCertMapper.update(userCert);
         
         log.info("all other auth materials are submitted successfully: userId={}", userId);
@@ -195,56 +198,37 @@ public class AuthServiceImpl implements AuthService{
     @Override
     public GetCertResponse getCert(Long userId) {
         UserCert userCert = userCertMapper.selectByUserId(userId);
+        userCert.setCreditScore(calScore(userId));
         
         WorkCert workCert = null;
         if (userCert.getWorkCertId() != null) {
             workCert = workCertMapper.selectById(userCert.getWorkCertId());
             // 转换路径为公开 URL
             if (workCert.getEmploymentCertPath() != null) {
-                workCert.setEmploymentCertPath(buildPublicUrl(
-                    fileStorageConfig.getPaths().getEmploymentProof(),
-                    workCert.getEmploymentCertPath()
-                ));
+                workCert.setEmploymentCertPath("/uploads/"+workCert.getEmploymentCertPath());
             }
             if (workCert.getSalaryCertPath() != null) {
-                workCert.setSalaryCertPath(buildPublicUrl(
-                    fileStorageConfig.getPaths().getSalaryProof(),
-                    workCert.getSalaryCertPath()
-                ));
+                workCert.setSalaryCertPath("/uploads/"+workCert.getSalaryCertPath());
             }
         }
-
         TriCert triCert = null;
         if (userCert.getTriCertId() != null) {
             triCert = triCertMapper.selectById(userCert.getTriCertId());
             if (triCert.getSocialSecurityPath() != null) {
-                triCert.setSocialSecurityPath(buildPublicUrl(
-                    fileStorageConfig.getPaths().getSocialSecurity(),
-                    triCert.getSocialSecurityPath()
-                ));
+                triCert.setSocialSecurityPath("/uploads/"+triCert.getSocialSecurityPath());
             }
             if (triCert.getCreditReportPath() != null) {
-                triCert.setCreditReportPath(buildPublicUrl(
-                    fileStorageConfig.getPaths().getCreditReport(),
-                    triCert.getCreditReportPath()
-                ));
+                triCert.setCreditReportPath("/uploads/"+triCert.getCreditReportPath());
             }
         }
-
         ImmovablesCert immovablesCert = null;
         if (userCert.getImmovableCertId() != null) {
             immovablesCert = immovablesCertMapper.selectById(userCert.getImmovableCertId());
             if (immovablesCert.getPropertyCertPath() != null) {
-                immovablesCert.setPropertyCertPath(buildPublicUrl(
-                    fileStorageConfig.getPaths().getPropertyProof(),
-                    immovablesCert.getPropertyCertPath()
-                ));
+                immovablesCert.setPropertyCertPath("/uploads/"+immovablesCert.getPropertyCertPath());
             }
             if (immovablesCert.getCarCertPath() != null) {
-                immovablesCert.setCarCertPath(buildPublicUrl(
-                    fileStorageConfig.getPaths().getCarProof(),
-                    immovablesCert.getCarCertPath()
-                ));
+                immovablesCert.setCarCertPath("/uploads/"+immovablesCert.getCarCertPath());
             }
         }
         return new GetCertResponse(userCert, workCert, triCert, immovablesCert);
@@ -255,20 +239,6 @@ public class AuthServiceImpl implements AuthService{
     // public void creditAuth(){ 
 
     // }
-
-    // 工具方法
-    // 存储文件
-    private String storeRequiredFile(MultipartFile file, String type, Long userId, String basePath) {
-        if (file == null || file.isEmpty()) {
-            log.warn("file is empty: type={}, userId={}", type, userId);
-            return null;
-        }
-        log.info("begin store file: type={}, userId={}, originalFilename={}, size={}", 
-            type, userId, file.getOriginalFilename(), file.getSize());
-        String storedPath = fileStorageService.storeFile(file, type, userId, basePath);
-        log.info("The file is stored successfully: type={}, userId={}, storedPath={}", type, userId, storedPath);
-        return storedPath;
-    }
 
     // 处理不动产认证
     private void handleImmovablesCert(UserCert userCert, String propertyPath, String carPath) {
@@ -330,20 +300,6 @@ public class AuthServiceImpl implements AuthService{
         }
     }
 
-    /**
-     * 构建前端可直接访问的 URL：/uploads/{relativeBasePath}/{filename}
-     */
-    private String buildPublicUrl(String relativeBasePath, String filename) {
-        // 检查filename是否已经是完整的URL路径（包含/uploads/）
-        if (filename.startsWith("/uploads/")) {
-            return filename;
-        }
-        // 确保路径不以 / 开头或结尾，避免双斜杠
-        String cleanBase = relativeBasePath.replaceAll("/+$", "").replaceAll("^/+", "");
-        String cleanFile = filename.replaceAll("^/+", "");
-        return "/uploads/" + cleanBase + "/" + cleanFile;
-    }
-
     // 根据 workCertId 查询工作认证信息
     @Override
     public WorkCert getWorkCertById(Integer workCertId) {
@@ -351,16 +307,10 @@ public class AuthServiceImpl implements AuthService{
         if (workCert != null) {
             // 转换路径为公开 URL
             if (workCert.getEmploymentCertPath() != null) {
-                workCert.setEmploymentCertPath(buildPublicUrl(
-                    fileStorageConfig.getPaths().getEmploymentProof(),
-                    workCert.getEmploymentCertPath()
-                ));
+                workCert.setEmploymentCertPath("/uploads/"+workCert.getEmploymentCertPath());
             }
             if (workCert.getSalaryCertPath() != null) {
-                workCert.setSalaryCertPath(buildPublicUrl(
-                    fileStorageConfig.getPaths().getSalaryProof(),
-                    workCert.getSalaryCertPath()
-                ));
+                workCert.setSalaryCertPath("/uploads/"+workCert.getSalaryCertPath());
             }
         }
         return workCert;
@@ -373,16 +323,10 @@ public class AuthServiceImpl implements AuthService{
         if (triCert != null) {
             // 转换路径为公开 URL
             if (triCert.getSocialSecurityPath() != null) {
-                triCert.setSocialSecurityPath(buildPublicUrl(
-                    fileStorageConfig.getPaths().getSocialSecurity(),
-                    triCert.getSocialSecurityPath()
-                ));
+                triCert.setSocialSecurityPath("/uploads/"+triCert.getSocialSecurityPath());
             }
             if (triCert.getCreditReportPath() != null) {
-                triCert.setCreditReportPath(buildPublicUrl(
-                    fileStorageConfig.getPaths().getCreditReport(),
-                    triCert.getCreditReportPath()
-                ));
+                triCert.setCreditReportPath("/uploads/"+triCert.getCreditReportPath());
             }
         }
         return triCert;
@@ -395,16 +339,10 @@ public class AuthServiceImpl implements AuthService{
         if (immovablesCert != null) {
             // 转换路径为公开 URL
             if (immovablesCert.getPropertyCertPath() != null) {
-                immovablesCert.setPropertyCertPath(buildPublicUrl(
-                    fileStorageConfig.getPaths().getPropertyProof(),
-                    immovablesCert.getPropertyCertPath()
-                ));
+                immovablesCert.setPropertyCertPath("/uploads/"+immovablesCert.getPropertyCertPath());
             }
             if (immovablesCert.getCarCertPath() != null) {
-                immovablesCert.setCarCertPath(buildPublicUrl(
-                    fileStorageConfig.getPaths().getCarProof(),
-                    immovablesCert.getCarCertPath()
-                ));
+                immovablesCert.setCarCertPath("/uploads/"+immovablesCert.getCarCertPath());
             }
         }
         return immovablesCert;

@@ -14,7 +14,6 @@ import com.example.personal_loan.dto.UserDetailResponse;
 import com.example.personal_loan.dto.UserListResponse;
 import com.example.personal_loan.dto.UserSearchDto;
 import com.example.personal_loan.dto.UserSelfResponse;
-import com.example.personal_loan.dto.UserUpdateRequest;
 import com.example.personal_loan.entity.User;
 
 public interface UserService {
@@ -40,7 +39,7 @@ public interface UserService {
     UserSelfResponse getUserSelfInfo(Long userId);
     
     // 修改个人信息
-    UserSelfResponse updateUserSelfInfo(UserUpdateRequest request,Long id);
+    void updateUserSelfInfo(String newUserName, Long id);
 
     // 上传头像
     String uploadAvatar(Long userId, MultipartFile file);

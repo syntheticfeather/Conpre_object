@@ -90,13 +90,13 @@ public class AuthController {
     @Operation(summary = "提交其他认证材料", description = "用户提交银行卡号、房产、车辆、工作、工资、社保及征信报告等证明材料")
     public ResponseEntity<ApiResult<Void>> submitOtherAuth(
             HttpServletRequest request,
-            @Parameter(description = "银行卡号", required = true) @RequestPart String bankCardId,
-            @Parameter(description = "房产证明文件", required = false) @RequestPart MultipartFile propertyFile,
-            @Parameter(description = "车辆证明文件", required = false) @RequestPart MultipartFile carFile,
-            @Parameter(description = "工作证明文件", required = false) @RequestPart MultipartFile employmentFile,
-            @Parameter(description = "工资证明文件", required = false) @RequestPart MultipartFile salaryFile,
-            @Parameter(description = "社保证明文件", required = false) @RequestPart MultipartFile socialSecurityFile,
-            @Parameter(description = "征信报告文件", required = false) @RequestPart MultipartFile creditReportFile) {
+            @Parameter(description = "银行卡号") @RequestPart(value = "bankCardId", required = false) String bankCardId,
+            @Parameter(description = "房产证明文件") @RequestPart(value = "propertyFile", required = false) MultipartFile propertyFile,
+            @Parameter(description = "车辆证明文件") @RequestPart(value = "carFile", required = false) MultipartFile carFile,
+            @Parameter(description = "工作证明文件") @RequestPart(value = "employmentFile", required = false) MultipartFile employmentFile,
+            @Parameter(description = "工资证明文件") @RequestPart(value = "salaryFile", required = false) MultipartFile salaryFile,
+            @Parameter(description = "社保证明文件") @RequestPart(value = "socialSecurityFile", required = false) MultipartFile socialSecurityFile,
+            @Parameter(description = "征信报告文件") @RequestPart(value = "creditReportFile", required = false) MultipartFile creditReportFile) {
 
         Long userId = (Long) request.getAttribute("userId");
         log.info("/api/auth/submit-other called for user {} to authorize", userId);

@@ -8,44 +8,44 @@
 
 ## 用户使用
 
-### 用户修改信息
+### 用户修改信息（用户名）
 
 **网址** /api/users/me
 
-**请求方式** PATCH
+**请求方式** POST
 
 **请求参数（可选）**:
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
-| userName | integer | 否 | 新的用户名 | 汤姆 |
-| avatar | string | 否 | 新的头像 | 无,表示不更改头像 |
+| newUserName | string | 是 | 新的用户名 | 汤姆 |
+
+**请求头**
+
+|字段|值|说明|
+|--|--|--|
+|Content-Type|text/plain|文本字符串|
 
 **请求示例（请求体）**:
 
-``` json
-{
-    "userName":"汤姆"
-}
-```
+张为
 
 **返回数据**:
 
 ``` json
 {
     "code": 200,
-    "data": {
-        "userId": 1,
-        "userName": "汤姆",
-        "avatar": null
-    },
-    "message": "操作成功"
+    "data": null,
+    "message": "用户信息更新成功"
 }
 ```
 
 **postman测试结果**:
 
 ![](../UserImgs/userUpdate.png "用户更新信息成功")
+
+**异常处理**
+![](../UserImgs/updateNameFail.png "用户名不能为空或空格")
 
 **日志**:
 
@@ -63,9 +63,9 @@
 {
     "code": 200,
     "data": {
-        "userId": 1,
-        "userName": "Tom",
-        "avatar": null
+        "userId": 12,
+        "userName": "李四",
+        "avatar": "/uploads/avatars/avatar_12_20260324_92y1wu.png"
     },
     "message": "操作成功"
 }
@@ -79,7 +79,7 @@
 
 ![](../UserImgs/logUserSelf.png)
 
-### 上传头像
+### 设置头像
 
 **网址** /api/users/avatar
 
@@ -98,8 +98,8 @@
 ``` json
 {
     "code": 200,
-    "data": "/uploads/avatars/avatar_1_20251204_i6d1uv.jpg", // 上传后的路径
-    "message": "操作成功"
+    "data": "/uploads/avatars/avatar_11_20260324_rwd7q6.png",
+    "message": "头像设置成功"
 }
 ```
 
