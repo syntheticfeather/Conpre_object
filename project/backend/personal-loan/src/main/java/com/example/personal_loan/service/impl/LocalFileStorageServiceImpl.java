@@ -48,18 +48,18 @@ public class LocalFileStorageServiceImpl implements LocalFileStorageService{
     @Override
     public String storeFile(MultipartFile file, String prefix, Long userId, String subDirPath) {
         if (file == null || file.isEmpty()) {
-            log.warn("上传文件为空");
+            log.warn("The file is empty");
             return null;
         }
         // 校验文件扩展名
         String fileExtension = FileNamingUtil.getFileExtension(file.getOriginalFilename());
         if (!ALLOWED_EXTENSIONS.contains(fileExtension.toLowerCase())) {
-            log.warn("文件类型 {} 不被允许", fileExtension);
+            log.warn("File type {} is not allowed", fileExtension);
             return null;
         }
         // 校验文件大小
         if (file.getSize() > MAX_FILE_SIZE) {
-            log.warn("文件大小 {} 超过最大限制 {}", file.getSize(), MAX_FILE_SIZE);
+            log.warn("File size {} exceeds the maximum limit {}", file.getSize(), MAX_FILE_SIZE);
             return null;
         }
 
@@ -76,22 +76,26 @@ public class LocalFileStorageServiceImpl implements LocalFileStorageService{
 
             // 3. 构建物理存储路径
             String baseDirConfig = fileStorageConfig.getBaseDir(); // ./uploads
-            Path baseDirPath = moduleRoot.resolve(baseDirConfig);
+            Path baseDirPath = moduleRoot.resolve(baseDirConfig).normalize();
 
-            Path uploadDir = baseDirPath.resolve(subDirPath);
-            log.info("准备创建文档目录: {}", uploadDir.toAbsolutePath());
+            Path uploadDir = baseDirPath.resolve(subDirPath).normalize();
+            if (!uploadDir.startsWith(baseDirPath)) {
+                log.warn("Invalid file upload attempt (path traversal risk): {}", subDirPath);
+                return null;
+            }
+            log.info("Preparing to create document directory: {}", uploadDir.toAbsolutePath().normalize());
             Files.createDirectories(uploadDir); // 如果不存在，创建多级目录
 
             // 4. 保存文件
-            Path targetPath = uploadDir.resolve(filename);
+            Path targetPath = uploadDir.resolve(filename).normalize();
             file.transferTo(targetPath.toFile());
 
             // 5. 返回用于数据库存储的 Web 路径
             return subDirPath + "/" + filename;
 
         } catch (IOException | URISyntaxException e) {
-            log.error("文件存储失败: prefix={}, userId={}, error={}", prefix, userId, e.getMessage(), e);
-            throw new RuntimeException("文件存储失败: " + e.getMessage(), e);
+            log.error("File storage failed: prefix={}, userId={}, error={}", prefix, userId, e.getMessage(), e);
+            throw new RuntimeException("File storage failed: " + e.getMessage(), e);
         }
     }
 
@@ -121,7 +125,7 @@ public class LocalFileStorageServiceImpl implements LocalFileStorageService{
 
             // 4. 安全校验：防止路径遍历攻击
             if (!filePath.startsWith(baseDirPath)) {
-                log.warn("非法的文件删除尝试 (路径遍历风险): {}", relativePath);
+                log.warn("Invalid file delete attempt (path traversal risk): {}", relativePath);
                 return false;
             }
 
@@ -129,14 +133,14 @@ public class LocalFileStorageServiceImpl implements LocalFileStorageService{
             boolean deleted = Files.deleteIfExists(filePath);
 
             if (deleted) {
-                log.info("文件删除成功: {}", relativePath);
+                log.info("File deleted successfully: {}", relativePath);
             } else {
-                log.debug("文件未找到，无需删除: {}", relativePath);
+                log.debug("File not found, no need to delete: {}", relativePath);
             }
             return true;
 
         } catch (IOException | URISyntaxException e) {
-            log.error("文件删除失败: {}, 错误: {}", relativePath, e.getMessage(), e);
+            log.error("File delete failed: {}, error: {}", relativePath, e.getMessage(), e);
             return false;
         }
     }
