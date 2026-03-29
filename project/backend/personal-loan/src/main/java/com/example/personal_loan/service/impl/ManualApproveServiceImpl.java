@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.personal_loan.aop.RedisLocked;
 import com.example.personal_loan.dto.ApplicationDetailResponse;
 import com.example.personal_loan.dto.ManualCheckResponse;
 import com.example.personal_loan.dto.PendingApprovalResponse;
@@ -60,6 +61,7 @@ public class ManualApproveServiceImpl implements ManualApproveService{
     // 返回审核结果
     @Override
     @Transactional
+    @RedisLocked(key = "'lock:loan-application:manual-check:' + #p0")
     public ManualCheckResponse manualCheck(Long loanApplicationId, Boolean approved, String manualRejectReason){
         // 查询申请
         LoanApplication application = applicationMapper.selectById(loanApplicationId);

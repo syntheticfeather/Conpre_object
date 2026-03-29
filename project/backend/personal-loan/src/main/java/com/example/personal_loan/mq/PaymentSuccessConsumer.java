@@ -1,6 +1,8 @@
 package com.example.personal_loan.mq;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -11,9 +13,14 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 
 import com.example.personal_loan.config.RabbitMQConfig;
-import com.example.personal_loan.entity.LoanApplication;
+import com.example.personal_loan.dto.PaymentSuccessEvent;
+import com.example.personal_loan.entity.Order;
+import com.example.personal_loan.entity.OutboxMessage;
+import com.example.personal_loan.enums.OrderStatus;
+import com.example.personal_loan.mapper.OrderMapper;
+import com.example.personal_loan.mapper.OutboxMapper;
+import com.example.personal_loan.mapper.PaymentRecordMapper;
 import com.example.personal_loan.mapper.ProcessMessageMapper;
-import com.example.personal_loan.service.AIApproveService;
 import com.example.personal_loan.utils.RabbitUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
@@ -21,67 +28,76 @@ import com.rabbitmq.client.Channel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class LoanApplicationConsumer {
-
+public class PaymentSuccessConsumer {
     private final ProcessMessageMapper processedMessageMapper;
     private final ObjectMapper objectMapper;
-    private final AIApproveService aiApproveService; // 你的业务服务
     private final RabbitUtil rabbitUtil;
+    private final OrderMapper orderMapper;
+    private final OutboxMapper outboxMapper;
+    private final PaymentRecordMapper paymentRecordMapper;
     private static final int MAX_RETRIES = 3;
 
-    @RabbitListener(queues = RabbitMQConfig.LOAN_APPLICATION_QUEUE)
+    @RabbitListener(queues = RabbitMQConfig.PAYMENT_SUCCESS_QUEUE)
     public void consume(Message message, Channel channel) throws IOException {
         String payload = new String(message.getBody());
         String messageId = message.getMessageProperties().getHeader("messageId");
-        log.info("🔔 收到消息: {}", payload);
         Long tag = rabbitUtil.getTag(message);
-
         if (messageId == null) {
-            log.error("❌ 消息缺少 messageId 头");
             channel.basicNack(tag, false, false);
             return;
         }
-
-        // 幂等检查
         if (processedMessageMapper.isProcessMessage(messageId)) {
-            log.info("🔄 消息已处理: {}", messageId);
-            channel.basicAck(tag, false); //  Ack
+            channel.basicAck(tag, false);
             return;
         }
         try {
-            // 进入业务逻辑
-            LoanApplication app = objectMapper.readValue(payload, LoanApplication.class);
-            aiApproveService.AICheck(app);
-            markAsProcessed(messageId, "LOAN_APPLICATION", app.getId());
+            PaymentSuccessEvent event = objectMapper.readValue(payload, PaymentSuccessEvent.class);
+            try {
+                paymentRecordMapper.insert(event.getTxId(), event.getOrderId(), event.getAmount(), "SUCCESS", event.getPaidAt());
+            } catch (DuplicateKeyException ex) {
+                channel.basicAck(tag, false);
+                return;
+            }
+            Order order = orderMapper.selectById(event.getOrderId());
+            if (order == null) {
+                channel.basicAck(tag, false);
+                return;
+            }
+            BigDecimal newRepaidAmount = order.getRepaidAmount().add(event.getAmount());
+            Integer newCurrentTerm = order.getCurrentTerm() + 1;
+            OrderStatus newStatus = (newCurrentTerm.equals(order.getTerm())) ? OrderStatus.已完成 : OrderStatus.正常;
+            order.setRepaidAmount(newRepaidAmount);
+            order.setCurrentTerm(newCurrentTerm);
+            order.setStatus(newStatus);
+            orderMapper.update(order);
+
+            processedMessageMapper.insertMessage(messageId, "PAYMENT_SUCCESS", order.getId());
+
+            OutboxMessage outbox = new OutboxMessage();
+            outbox.setMessageId("order_repaid_" + order.getId() + "_" + System.currentTimeMillis());
+            outbox.setBusinessType("ORDER_REPAID");
+            outbox.setBusinessId(order.getId());
+            outbox.setTopic(RabbitMQConfig.ORDER_REPAID_ROUTING_KEY);
+            try {
+                outbox.setPayload(objectMapper.writeValueAsString(order));
+            } catch (Exception ex) {}
+            outbox.setStatus("PENDING");
+            outbox.setCreatedAt(LocalDateTime.now());
+            outboxMapper.insert(outbox);
+
             channel.basicAck(tag, false);
-            log.info("处理成功: {}", messageId);
         } catch (Exception e) {
-            // 读取主队列的 x-death 次数
-            int deathCount = getDeathCount(message, RabbitMQConfig.LOAN_APPLICATION_QUEUE);
-            // 超过最大重试次数(3次)，转入 DLQ并 ack 原消息，以避免再次重试
+            int deathCount = getDeathCount(message, RabbitMQConfig.PAYMENT_SUCCESS_QUEUE);
             if (deathCount >= MAX_RETRIES) {
                 Message dlqMsg = copyWithHeaders(message, messageId);
                 rabbitUtil.sendToDLX(RabbitMQConfig.DLQ, dlqMsg);
                 channel.basicAck(tag, false);
-                log.error("超过最大重试次数,转入DLQ: {}", messageId, e);
                 return;
             }
-            //  小于3次，Nack 并重新入队
             channel.basicNack(tag, false, false);
-            log.error("❌ 处理失败: {}", messageId, e);
-        }
-    }
-
-    private void markAsProcessed(String messageId, String businessType, Long loanApplicationId) {
-        try {
-            processedMessageMapper.insertMessage(messageId, businessType, loanApplicationId);
-        } catch (DuplicateKeyException e) {
-            // 并发场景下可能重复插入，忽略
-            log.warn("幂等记录已存在: {}", messageId);
         }
     }
 
@@ -112,4 +128,3 @@ public class LoanApplicationConsumer {
         return new Message(origin.getBody(), props);
     }
 }
-

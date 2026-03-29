@@ -7,13 +7,11 @@ import java.util.Map;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 
 import com.example.personal_loan.config.RabbitMQConfig;
-import com.example.personal_loan.entity.LoanApplication;
+import com.example.personal_loan.entity.Order;
 import com.example.personal_loan.mapper.ProcessMessageMapper;
-import com.example.personal_loan.service.AIApproveService;
 import com.example.personal_loan.utils.RabbitUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
@@ -21,67 +19,42 @@ import com.rabbitmq.client.Channel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class LoanApplicationConsumer {
-
+public class OrderRepaidConsumer {
     private final ProcessMessageMapper processedMessageMapper;
     private final ObjectMapper objectMapper;
-    private final AIApproveService aiApproveService; // 你的业务服务
     private final RabbitUtil rabbitUtil;
     private static final int MAX_RETRIES = 3;
 
-    @RabbitListener(queues = RabbitMQConfig.LOAN_APPLICATION_QUEUE)
+    @RabbitListener(queues = RabbitMQConfig.ORDER_REPAID_QUEUE)
     public void consume(Message message, Channel channel) throws IOException {
         String payload = new String(message.getBody());
         String messageId = message.getMessageProperties().getHeader("messageId");
-        log.info("🔔 收到消息: {}", payload);
         Long tag = rabbitUtil.getTag(message);
-
         if (messageId == null) {
-            log.error("❌ 消息缺少 messageId 头");
             channel.basicNack(tag, false, false);
             return;
         }
-
-        // 幂等检查
         if (processedMessageMapper.isProcessMessage(messageId)) {
-            log.info("🔄 消息已处理: {}", messageId);
-            channel.basicAck(tag, false); //  Ack
+            channel.basicAck(tag, false);
             return;
         }
         try {
-            // 进入业务逻辑
-            LoanApplication app = objectMapper.readValue(payload, LoanApplication.class);
-            aiApproveService.AICheck(app);
-            markAsProcessed(messageId, "LOAN_APPLICATION", app.getId());
+            Order order = objectMapper.readValue(payload, Order.class);
+            processedMessageMapper.insertMessage(messageId, "ORDER_REPAID", order.getId());
+            // 发送短信通知等业务
             channel.basicAck(tag, false);
-            log.info("处理成功: {}", messageId);
         } catch (Exception e) {
-            // 读取主队列的 x-death 次数
-            int deathCount = getDeathCount(message, RabbitMQConfig.LOAN_APPLICATION_QUEUE);
-            // 超过最大重试次数(3次)，转入 DLQ并 ack 原消息，以避免再次重试
+            int deathCount = getDeathCount(message, RabbitMQConfig.ORDER_REPAID_QUEUE);
             if (deathCount >= MAX_RETRIES) {
                 Message dlqMsg = copyWithHeaders(message, messageId);
                 rabbitUtil.sendToDLX(RabbitMQConfig.DLQ, dlqMsg);
                 channel.basicAck(tag, false);
-                log.error("超过最大重试次数,转入DLQ: {}", messageId, e);
                 return;
             }
-            //  小于3次，Nack 并重新入队
             channel.basicNack(tag, false, false);
-            log.error("❌ 处理失败: {}", messageId, e);
-        }
-    }
-
-    private void markAsProcessed(String messageId, String businessType, Long loanApplicationId) {
-        try {
-            processedMessageMapper.insertMessage(messageId, businessType, loanApplicationId);
-        } catch (DuplicateKeyException e) {
-            // 并发场景下可能重复插入，忽略
-            log.warn("幂等记录已存在: {}", messageId);
         }
     }
 
@@ -112,4 +85,3 @@ public class LoanApplicationConsumer {
         return new Message(origin.getBody(), props);
     }
 }
-

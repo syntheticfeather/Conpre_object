@@ -41,13 +41,14 @@ CREATE TABLE immovables_cert(
 )COMMENT '不动产认证表';
 
 
-/* bank_card_id 后续改为 VARCHAR(19) 国内借记卡有16 19位*/
+/* bank_card_id 改为 VARCHAR(19) 国内借记卡有16 19位 ,添加了real_name字段 */
 CREATE TABLE user_certification(
     user_id INT PRIMARY KEY COMMENT '用户ID',
+    real_name VARCHAR(16) COMMENT '真实姓名',
     id_card CHAR(18) COMMENT '身份证号',
     credit_score INT DEFAULT 0 COMMENT '信誉分',
     max_loan_amount DECIMAL(12,2) COMMENT '最高额度',
-    bank_card_id CHAR(16) COMMENT '银行卡号',
+    bank_card_id VARCHAR(19) COMMENT '银行卡号',
     work_cert_id INT UNIQUE COMMENT '工作证明',
     tri_cert_id INT UNIQUE COMMENT '第三方证明',
     immovable_cert_id INT UNIQUE COMMENT '不动产证明',
@@ -103,7 +104,7 @@ CREATE TABLE loan_options(
 
 
 /*
-* 加个合同，仍然存图片本地路径
+* 应该添加application_id字段，消除重复下单风险
 */
 CREATE TABLE orders(
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
@@ -123,6 +124,7 @@ CREATE TABLE orders(
     Foreign Key (user_id) REFERENCES users(id),
     Foreign Key (product_id) REFERENCES loan_products(id)
 )COMMENT '用户已贷款项目表';
+
 
 CREATE TABLE loan_applications(
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '申请ID',
@@ -156,6 +158,18 @@ CREATE TABLE outbox_message (
     INDEX idx_message_id (message_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='本地消息表（Outbox Pattern）';
 
+CREATE TABLE payment_record (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '自增主键',
+    tx_id VARCHAR(64) NOT NULL UNIQUE COMMENT '支付网关交易流水号/支付订单号',
+    order_id BIGINT NOT NULL COMMENT '关联订单ID',
+    amount DECIMAL(12,2) NOT NULL COMMENT '支付金额',
+    status VARCHAR(20) NOT NULL COMMENT '支付状态: SUCCESS/FAILED',
+    paid_at DATETIME NULL COMMENT '支付完成时间',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    INDEX idx_order_id (order_id),
+    INDEX idx_status_created (status, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='支付记录表';
+
 CREATE TABLE processed_message (
    message_id VARCHAR(64) PRIMARY KEY,
    business_type VARCHAR(50) NOT NULL,
@@ -172,9 +186,27 @@ INSERT INTO users (user_name, password, phone, role) VALUES
 ('wt', '$2a$10$ODq7dU6Bvz8Ks9b7mNGt5OLExUV3gmY2wPHXrXICJi0j.pjCfyuYC', '18888888888', 1),
 ('qyx', '$2a$10$UDcyeEjze0A3K8pNSzMoFOyoaN.G3/v/ilQpMv2/6J28.6GxvhhTK', '16666666666', 1)
 
+/* 
+* 插入普通用户,明文密码分别是 WangFang@2025 ZhangWei@2025 LiMing@2025 Alice2025!
+ */
+INSERT INTO users(user_name, password, phone, role) VALUES
+('王芳', '$2a$10$LjWKXLLidSLSdr2iS6.RZe785XyAy.LNpO2AlHKpj4x0WLLqOafO.', '13100001111', 0),
+('张伟', '$2a$10$J2gSAyblu0zxSMiKMXamF.wjn2z4yFDJNfBclb/CyPtQyYWY08eQe', '15098765432', 0),
+('李明', '$2a$10$n2eK0EQQBpBexTGD7KqMPuMI7bU149gMwq1W55.l48.pmO1NySmga', '13912345678', 0),
+('Alice', '$2a$10$MdGHJwB6IbBPrl7dbogSMOV2qsMkKT/u2Nd9DqF39C5EE5rS6CIVK', '13800138000', 0);
+
+/* 
+* 插入上面四个用户的认证记录
+ */
+INSERT INTO user_certification(user_id) VALUES
+(5),
+(6),
+(7),
+(8);
+
 -- 插入产品
 INSERT INTO loan_products (
-    product_name, description, loan_usage, status,
+    user_name, description, loan_usage, status,
     min_term, max_term, term_step,
     min_amount, max_amount, promotion_details
 ) VALUES (

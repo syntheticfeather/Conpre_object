@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.personal_loan.aop.RedisLocked;
 import com.example.personal_loan.config.FileStorageConfig;
 import com.example.personal_loan.dto.GetCertResponse;
 import com.example.personal_loan.entity.ImmovablesCert;
@@ -52,6 +53,7 @@ public class AuthServiceImpl implements AuthService{
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @RedisLocked(key = "'lock:auth:basic:' + #p0")
     public void submitBasicAuth(Long userId, String idCard) {
         UserCert userCert = userCertMapper.selectByUserId(userId);
 
@@ -86,6 +88,7 @@ public class AuthServiceImpl implements AuthService{
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @RedisLocked(key = "'lock:auth:other:' + #p0")
     public void submitOtherAuth(
             Long userId,
             String bankCardId,

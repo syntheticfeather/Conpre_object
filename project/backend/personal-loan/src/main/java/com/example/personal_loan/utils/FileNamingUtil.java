@@ -50,4 +50,26 @@ public class FileNamingUtil {
         }
         return sb.toString();
     }
+
+    /**
+     * 获取文件扩展名
+     * @param fileName 文件名（例如：avatar.png 或 report.final.pdf）
+     * @return 扩展名（例如：png 或 pdf），如果没有扩展名返回空字符串
+     */
+    public static String getFileExtension(String fileName) {
+        if (fileName == null || fileName.isEmpty()) {
+            return "";
+        }
+
+        // 获取最后一个点的位置
+        int lastIndexOfDot = fileName.lastIndexOf(".");
+
+        // 如果没有点，或者点在文件名开头（如 .htaccess），则无扩展名
+        if (lastIndexOfDot == -1 || lastIndexOfDot == 0) {
+            return "";
+        }
+
+        // 获取点之后的字符串，并转为小写以便统一比较
+        return fileName.substring(lastIndexOfDot + 1).toLowerCase();
+    }
 }

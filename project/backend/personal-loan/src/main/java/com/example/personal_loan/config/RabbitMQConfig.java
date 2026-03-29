@@ -1,8 +1,11 @@
 package com.example.personal_loan.config;
 
-import org.springframework.amqp.core.*;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.QueueBuilder;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
@@ -15,9 +18,17 @@ public class RabbitMQConfig {
 
     // ========== Queue ==========
     public static final String LOAN_APPLICATION_QUEUE = "loan.application.queue";
+    public static final String LOAN_APPLICATION_RETRY_QUEUE = "loan.application.retry.queue";
+    public static final String ORDER_REPAID_QUEUE = "order.repaid.queue";
+    public static final String PAYMENT_REQUESTED_QUEUE = "payment.requested.queue";
+    public static final String PAYMENT_SUCCESS_QUEUE = "payment.success.queue";
 
     // ========== Routing Key ==========
     public static final String LOAN_APPLICATION_ROUTING_KEY = "loan.application.submitted";
+    public static final String LOAN_APPLICATION_RETRY_ROUTING_KEY = "loan.application.retry";
+    public static final String ORDER_REPAID_ROUTING_KEY = "order.repaid";
+    public static final String PAYMENT_REQUESTED_ROUTING_KEY = "payment.requested";
+    public static final String PAYMENT_SUCCESS_ROUTING_KEY = "payment.success";
 
 
     public static final String DLQ = "order.dlq"; // 死信队列
@@ -37,6 +48,8 @@ public class RabbitMQConfig {
     @Bean
     public Queue loanApplicationQueue() {
         return QueueBuilder.durable(LOAN_APPLICATION_QUEUE)
+                .withArgument("x-dead-letter-exchange", DLX)
+                .withArgument("x-dead-letter-routing-key", LOAN_APPLICATION_RETRY_ROUTING_KEY)
                 .build();
     }
 
@@ -82,6 +95,58 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(dlq()) // 死信列队
                 .to(dlx()) // 死信交换机
                 .with(DLQ); // 路由键
+    }
+
+    @Bean
+    public Queue loanApplicationRetryQueue() {
+        return QueueBuilder.durable(LOAN_APPLICATION_RETRY_QUEUE)
+                .withArgument("x-message-ttl", 10000)
+                .withArgument("x-dead-letter-exchange", LOAN_EXCHANGE)
+                .withArgument("x-dead-letter-routing-key", LOAN_APPLICATION_ROUTING_KEY)
+                .build();
+    }
+
+    @Bean
+    public Binding retryBinding() {
+        return BindingBuilder.bind(loanApplicationRetryQueue())
+                .to(dlx())
+                .with(LOAN_APPLICATION_RETRY_ROUTING_KEY);
+    }
+
+    @Bean
+    public Queue orderRepaidQueue() {
+        return QueueBuilder.durable(ORDER_REPAID_QUEUE).build();
+    }
+
+    @Bean
+    public Binding bindOrderRepaidQueue() {
+        return BindingBuilder.bind(orderRepaidQueue())
+                .to(loanExchange())
+                .with(ORDER_REPAID_ROUTING_KEY);
+    }
+
+    @Bean
+    public Queue paymentRequestedQueue() {
+        return QueueBuilder.durable(PAYMENT_REQUESTED_QUEUE).build();
+    }
+
+    @Bean
+    public Binding bindPaymentRequestedQueue() {
+        return BindingBuilder.bind(paymentRequestedQueue())
+                .to(loanExchange())
+                .with(PAYMENT_REQUESTED_ROUTING_KEY);
+    }
+
+    @Bean
+    public Queue paymentSuccessQueue() {
+        return QueueBuilder.durable(PAYMENT_SUCCESS_QUEUE).build();
+    }
+
+    @Bean
+    public Binding bindPaymentSuccessQueue() {
+        return BindingBuilder.bind(paymentSuccessQueue())
+                .to(loanExchange())
+                .with(PAYMENT_SUCCESS_ROUTING_KEY);
     }
 
 }

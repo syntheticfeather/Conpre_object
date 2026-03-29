@@ -7,6 +7,7 @@ import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.personal_loan.aop.RedisLocked;
 import com.example.personal_loan.entity.LoanApplication;
 import com.example.personal_loan.entity.Order;
 import com.example.personal_loan.enums.ApplicationStatus;
@@ -32,6 +33,7 @@ public class AIApproveServiceImpl implements AIApproveService {
     private OrderMapper orderMapper;
 
     @Override
+    @RedisLocked(key = "'lock:loan-application:ai-check:' + #p0.id")
     public Boolean AICheck(LoanApplication application) {
         if (new Random().nextInt(100) < 50) {
             // AI审核成功

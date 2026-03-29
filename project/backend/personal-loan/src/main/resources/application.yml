@@ -52,6 +52,24 @@ spring:
     username: admin
     password: admin123
     virtual-host: /
+    # 1. 开启发布确认机制 (Publisher Confirm)
+    # 作用：让 RabbitMQ 在收到消息并持久化后，给生产者发一个 "ACK" 或 "NACK" 回执。
+    # 值 "correlated" 表示：回调时会携带你发送时绑定的唯一标识 (CorrelationData)，
+    # 这样你就能知道具体是哪条消息成功了，哪条失败了。
+    publisher-confirm-type: correlated 
+
+    # 2. 开启发布返回机制 (Publisher Returns)
+    # 作用：当消息成功到达 Exchange，但找不到对应的队列（路由失败）时，
+    # RabbitMQ 会把消息“退”回来给生产者，而不是直接丢弃。
+    publisher-returns: true
+
+    template:
+      # 3. 强制路由 (Mandatory Flag)
+      # 作用：配合上面的 returns 使用。
+      # 设置为 true 后，如果消息无法路由到任何队列，Broker 必须触发 "ReturnCallback"。
+      # 如果为 false (默认)，路由失败的消息会被 Broker 静默丢弃，你收不到任何通知。
+      mandatory: true
+      
     # 开启手动 ACK（推荐用于人工审核）
     listener:
       simple:

@@ -1,13 +1,13 @@
 package com.example.personal_loan.mapper;
 
-import com.example.personal_loan.entity.OutboxMessage;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import com.example.personal_loan.entity.OutboxMessage;
 
 @Mapper
 public interface OutboxMapper {
@@ -26,6 +26,12 @@ public interface OutboxMapper {
 
     @Update("update outbox_message set status = 'FAILED', sent_at = now() where message_id = #{messageId}")
     public void markAsFailed(String messageId);
+    
+    @Update("update outbox_message set status = 'SENDING' where message_id = #{messageId}")
+    public int updateStatusToSending(String messageId);
+
+    @Update("update outbox_message set status = 'PENDING' where status = 'SENDING' and TIMESTAMPDIFF(SECOND, created_at, now()) > #{timeoutSeconds}")
+    public int resetExpiredSendingToPending(int timeoutSeconds);
 }
 
 //public class OutboxMessage {

@@ -5,7 +5,10 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +27,14 @@ public class LocalFileStorageServiceImpl implements LocalFileStorageService{
     @Autowired
     private FileStorageConfig fileStorageConfig;
 
+    // 定义允许的文件类型白名单
+    private static final Set<String> ALLOWED_EXTENSIONS = new HashSet<>(Arrays.asList(
+            "jpg", "jpeg", "png", "gif", "bmp", "pdf", "doc", "docx", "txt"
+    ));
+
+    // 定义最大文件大小 (例如：10MB)
+    private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; 
+
     /**
      * 通用认证文件存储方法
      *
@@ -40,12 +51,23 @@ public class LocalFileStorageServiceImpl implements LocalFileStorageService{
             log.warn("上传文件为空");
             return null;
         }
+        // 校验文件扩展名
+        String fileExtension = FileNamingUtil.getFileExtension(file.getOriginalFilename());
+        if (!ALLOWED_EXTENSIONS.contains(fileExtension.toLowerCase())) {
+            log.warn("文件类型 {} 不被允许", fileExtension);
+            return null;
+        }
+        // 校验文件大小
+        if (file.getSize() > MAX_FILE_SIZE) {
+            log.warn("文件大小 {} 超过最大限制 {}", file.getSize(), MAX_FILE_SIZE);
+            return null;
+        }
 
         try {
             // 1. 生成安全文件名
             String filename = FileNamingUtil.generateFileName(prefix, userId, file.getOriginalFilename());
 
-            // 2. 获取项目根目录（核心修改点）
+            // 2. 获取项目根目录
             // getClass().getResource("/") 获取的是 target/classes 目录
             // .getParent() 获取 target 目录
             // .getParent() 再次获取 personal-loan 模块根目录

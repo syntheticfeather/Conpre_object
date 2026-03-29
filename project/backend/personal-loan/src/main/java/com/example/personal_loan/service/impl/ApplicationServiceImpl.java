@@ -2,12 +2,12 @@ package com.example.personal_loan.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.personal_loan.aop.RedisLocked;
 import com.example.personal_loan.config.RabbitMQConfig;
 import com.example.personal_loan.dto.ApplicationRequest;
 import com.example.personal_loan.dto.UserAppListResponse;
@@ -68,6 +68,7 @@ public class ApplicationServiceImpl implements ApplicationService{
      */
     @Override
     @Transactional
+    @RedisLocked(key = "'lock:loan-application:add:user:' + #p0")
     public void addApplication(Long userId, ApplicationRequest request){
         // 校验贷款选项是否存在，且属于该产品
         LoanOption option = loanOptionMapper.selectById(request.getOptionId());
@@ -115,6 +116,7 @@ public class ApplicationServiceImpl implements ApplicationService{
             throw new RuntimeException(e);
         }
         outbox.setStatus("PENDING");
+        outbox.setCreatedAt(LocalDateTime.now());
         log.info("插入 outbox 消息");
         outboxMapper.insert(outbox); // 同一事务中插入
     }
@@ -126,6 +128,7 @@ public class ApplicationServiceImpl implements ApplicationService{
      */
     @Override
     @Transactional
+    @RedisLocked(key = "'lock:loan-application:withdraw:' + #p1")
     public void withdrawApplication(Long userId, Long applicationId){
 
         LoanApplication application = applicationMapper.selectById(applicationId);

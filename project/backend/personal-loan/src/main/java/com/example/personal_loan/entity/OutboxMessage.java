@@ -47,7 +47,8 @@ public class OutboxMessage {
     private String payload;
 
     /**
-     * 状态: PENDING / SENT / FAILED
+     * 状态: PENDING（待投递）/ SENT（已投递）/ FAILED（投递失败）
+     * 增加 SENDING 状态 已取走投递中，防止并发重复投递
      */
     private String status;
 

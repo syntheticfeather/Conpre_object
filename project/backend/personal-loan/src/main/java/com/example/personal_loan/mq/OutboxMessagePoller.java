@@ -1,19 +1,21 @@
 package com.example.personal_loan.mq;
 
-import com.example.personal_loan.entity.OutboxMessage;
-import com.example.personal_loan.mapper.OutboxMapper;
-import com.example.personal_loan.utils.RabbitUtil;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import com.example.personal_loan.entity.OutboxMessage;
+import com.example.personal_loan.mapper.OutboxMapper;
+import com.example.personal_loan.utils.RabbitUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -42,7 +44,13 @@ public class OutboxMessagePoller {
             }
             log.info("找到 {} 条待发送消息，开始处理...", pendingMessages.size());
             for (OutboxMessage message : pendingMessages) {
-                sendAndMarkMessage(message);
+                // 发送前先更新状态为 SENDING
+                int rows = outboxMapper.updateStatusToSending(message.getMessageId());
+                if (rows == 0) {
+                    continue; // 如果更新失败，跳过
+                }
+                CorrelationData correlationData = new CorrelationData(message.getMessageId());
+                sendAndMarkMessage(message, correlationData);
             }
         } catch (Exception e) {
             log.error("轮询器异常", e);
@@ -56,22 +64,34 @@ public class OutboxMessagePoller {
         return new Message(outbox.getPayload().getBytes(), props);
     }
 
-    public void sendAndMarkMessage (OutboxMessage message){
+    public void sendAndMarkMessage (OutboxMessage message, CorrelationData correlationData){
         try {
-            // 发送消息到 RabbitMQ
             rabbitUtil.sendToApp(
                     message.getTopic(),
-                    createMessageWithHeaders(message)
+                    createMessageWithHeaders(message),
+                    correlationData
             );
-            // 标记为已发送（在独立事务中）
-            outboxMapper.markAsSent(message.getMessageId());
-            log.info("消息发送成功: messageId={}, topic={}",
+            log.info("消息已投递到Broker: messageId={}, topic={}",
                     message.getMessageId(), message.getTopic());
         } catch (Exception e) {
             log.info("发送消息失败，标记为 FAILED: messageId={}",
                     message.getMessageId(), e);
             outboxMapper.markAsFailed(message.getMessageId());
         }
+    }
+
+    @Scheduled(fixedDelay = 60000)
+    public void rollbackExpiredSending() {
+        try {
+            outboxMapper.resetExpiredSendingToPending(120);
+        } catch (Exception e) {
+            log.error("回滚SENDING超时消息失败", e);
+        }
+    }
+
+    public void sendAndMarkMessage(OutboxMessage message) {
+        CorrelationData correlationData = new CorrelationData(message.getMessageId());
+        sendAndMarkMessage(message, correlationData);
     }
 }
 

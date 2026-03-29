@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.personal_loan.aop.RedisLocked;
 import com.example.personal_loan.dto.AdminGetProDetailResponse;
 import com.example.personal_loan.dto.ListProductResponse;
 import com.example.personal_loan.dto.LoanOptionResponse;
@@ -50,6 +51,7 @@ public class LoanProductServiceImpl implements LoanProductService{
     // 新增产品
     @Override
     @Transactional
+    @RedisLocked(key = "'lock:loan-product:create:' + #p0.productName")
     public ProductDto createLoanProduct(ProductDto dto) {
 
         LoanProduct product = new LoanProduct();
@@ -95,6 +97,7 @@ public class LoanProductServiceImpl implements LoanProductService{
     // 上架产品
     @Override
     @Transactional
+    @RedisLocked(key = "'lock:loan-product:active:' + #p0")
     public void activeProduct(Long productId){
         LoanProduct product = loanProductMapper.findById(productId);
         if(product.getStatus().equals(ProductStatus.已下架)){
@@ -110,6 +113,7 @@ public class LoanProductServiceImpl implements LoanProductService{
     // 下架产品
     @Override
     @Transactional
+    @RedisLocked(key = "'lock:loan-product:deactive:' + #p0")
     public void deactiveProduct(Long productId){
         LoanProduct product = loanProductMapper.findById(productId);
         if(product.getStatus().equals(ProductStatus.上架中)){
@@ -124,6 +128,7 @@ public class LoanProductServiceImpl implements LoanProductService{
     // 批量创建产品选项
     @Override
     @Transactional
+    @RedisLocked(key = "'lock:loan-product:options:create:' + #p0")
     public void batchCreateLoanOptions(Long productId, List<LoanOption> options){
         if (loanProductMapper.findById(productId)==null) {
             throw new BusinessException(404,"该产品不存在，无法添加选项");
@@ -143,6 +148,7 @@ public class LoanProductServiceImpl implements LoanProductService{
     // 删除产品某个选项
     @Override
     @Transactional
+    @RedisLocked(key = "'lock:loan-option:delete:' + #p0")
     public int deleteLoanOption(Long optionId) {
         // 检查选项是否存在
         LoanOption option = loanOptionMapper.selectById(optionId);
@@ -166,6 +172,7 @@ public class LoanProductServiceImpl implements LoanProductService{
     // 删除产品
     @Override
     @Transactional
+    @RedisLocked(key = "'lock:loan-product:delete:' + #p0")
     public int deleteLoanProduct(Long productId){
         // 检查产品是否存在
         if (loanProductMapper.findById(productId) == null) {
@@ -189,6 +196,7 @@ public class LoanProductServiceImpl implements LoanProductService{
     //批量删除产品
     @Override
     @Transactional
+    @RedisLocked(key = "'lock:loan-product:batch-delete'")
     public void batchDeleteLoanProducts(List<Long> productIds){
         if (productIds == null || productIds.isEmpty()) {
             return;
@@ -212,6 +220,7 @@ public class LoanProductServiceImpl implements LoanProductService{
     //批量删除选项
     @Override
     @Transactional
+    @RedisLocked(key = "'lock:loan-option:batch-delete'")
     public void batchDeleteLoanOptionsByIds(List<Long> optionIds){
         if (optionIds == null || optionIds.isEmpty()) {
             return;
@@ -238,6 +247,7 @@ public class LoanProductServiceImpl implements LoanProductService{
 
     // 更新产品
     @Override
+    @RedisLocked(key = "'lock:loan-product:update:' + #p0")
     public ProductDto updateLoanProduct(Long productId,ProductDto dto){
 
         LoanProduct existing = loanProductMapper.findById(productId);

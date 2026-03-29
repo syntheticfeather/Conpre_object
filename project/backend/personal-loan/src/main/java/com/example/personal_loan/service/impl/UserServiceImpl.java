@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.personal_loan.aop.RedisLocked;
 import com.example.personal_loan.config.FileStorageConfig;
 import com.example.personal_loan.dto.BlackListDto;
 import com.example.personal_loan.dto.LoginRequest;
@@ -134,6 +135,7 @@ public class UserServiceImpl implements UserService {
     * 用户注册
     */
     @Override
+    @RedisLocked(key = "'lock:user:register:' + #p0.phone")
     public RegisterResponse userRegister(RegisterRequest request) {
         //检验手机号是否已存在
         if (userMapper.findByPhone(request.getPhone()) != null) {
@@ -159,6 +161,7 @@ public class UserServiceImpl implements UserService {
     * 删除用户
     */
     @Override
+    @RedisLocked(key = "'lock:user:delete:' + #p0")
     public void deleteUser(Long id) {
         userMapper.delete(id);
     }
@@ -181,6 +184,7 @@ public class UserServiceImpl implements UserService {
     * 更新用户
     */
     @Override
+    @RedisLocked(key = "'lock:user:update:' + #p0")
     public User updateUser(Long id, User user) {
 
         User old = userMapper.findById(user.getId());
@@ -253,6 +257,7 @@ public class UserServiceImpl implements UserService {
     // 修改个人信息（仅昵称）
     @Override
     @Transactional
+    @RedisLocked(key = "'lock:user:update-self:' + #p1")
     public void updateUserSelfInfo(String newUserName, Long id) {
         User user = userMapper.findById(id);
         if (user == null) {
@@ -278,6 +283,7 @@ public class UserServiceImpl implements UserService {
     // 设置头像
     @Override
     @Transactional
+    @RedisLocked(key = "'lock:user:avatar:' + #p0")
     public String uploadAvatar(Long userId, MultipartFile file){
         // 1. 校验文件非空
         if (file.isEmpty()) {
@@ -373,6 +379,7 @@ public class UserServiceImpl implements UserService {
 
     // 加入黑名单
     @Override
+    @RedisLocked(key = "'lock:blacklist:add:user:' + #p1")
     public void addToBlackList(Long adminId, Long userId, int blackLevel) {
         // 权限校验
         User admin = userMapper.findById(adminId);
@@ -410,6 +417,7 @@ public class UserServiceImpl implements UserService {
 
     // 移除黑名单
     @Override
+    @RedisLocked(key = "'lock:blacklist:remove:user:' + #p1")
     public void removeFromBlackList(Long adminId, Long userId){
         // 权限校验
         User admin = userMapper.findById(adminId);
