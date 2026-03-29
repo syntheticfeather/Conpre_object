@@ -234,6 +234,10 @@ public class AuthServiceImpl implements AuthService{
                 immovablesCert.setCarCertPath("/uploads/"+immovablesCert.getCarCertPath());
             }
         }
+        System.out.println(userCert);
+        System.out.println(workCert);
+        System.out.println(triCert);
+        System.out.println(immovablesCert);
         return new GetCertResponse(userCert, workCert, triCert, immovablesCert);
     }
 

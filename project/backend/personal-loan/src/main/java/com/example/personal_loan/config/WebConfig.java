@@ -1,5 +1,10 @@
 package com.example.personal_loan.config;
 
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -45,10 +50,35 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
         registry.addResourceHandler("/JS/**").addResourceLocations("classpath:/JS/");
 
-        // 映射 /uploads/** 到物理目录
-        String location = "file:" + fileStorageConfig.getBaseDir() + "/";
+        String location = resolveUploadsLocation();
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations(location);
+    }
+
+    private String resolveUploadsLocation() {
+        String baseDir = fileStorageConfig.getBaseDir();
+        if (baseDir == null || baseDir.isBlank()) {
+            return "file:./uploads/";
+        }
+
+        if (baseDir.startsWith("file:")) {
+            return baseDir.endsWith("/") ? baseDir : baseDir + "/";
+        }
+
+        Path basePath = Paths.get(baseDir);
+        if (!basePath.isAbsolute()) {
+            try {
+                Path moduleRoot = Paths.get(Objects.requireNonNull(WebConfig.class.getResource("/")).toURI())
+                        .getParent()
+                        .getParent();
+                basePath = moduleRoot.resolve(baseDir);
+            } catch (URISyntaxException | NullPointerException e) {
+                basePath = Paths.get(System.getProperty("user.dir")).resolve(baseDir);
+            }
+        }
+
+        String location = basePath.normalize().toAbsolutePath().toUri().toString();
+        return location.endsWith("/") ? location : location + "/";
     }
 
 }

@@ -206,7 +206,7 @@ INSERT INTO user_certification(user_id) VALUES
 
 -- 插入产品
 INSERT INTO loan_products (
-    user_name, description, loan_usage, status,
+    product_name, description, loan_usage, status,
     min_term, max_term, term_step,
     min_amount, max_amount, promotion_details
 ) VALUES (
