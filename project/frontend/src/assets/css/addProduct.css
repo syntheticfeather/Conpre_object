@@ -1,23 +1,21 @@
-
+/* 主内容区 */
 .add-product-view {
-  padding: 24px;
-  min-height: calc(100vh - 48px);
+  padding: 20px;
 }
-
+/* 标题 */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom:  16px;
-}
 
+  margin: 0 0 20px 0;
+}
 .header h1 {
   font-size: 24px;
   font-weight: 600;
-  color: #303133;
   margin: 0;
 }
-
+/* 返回按钮 */
 .btn-back {
   padding: 10px 20px;
   background-color: #409EFF;
@@ -28,46 +26,83 @@
   font-size: 14px;
   transition: background-color 0.3s;
 }
-
 .btn-back:hover {
   background-color: #88b5e1;
 }
 
+/*  一级表单容器 */
 .form-container {
-  background: white;
-  padding: 24px;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  max-width: 900px;
   margin: 0 auto;
+  padding: 24px;
+
+  min-width: 800px;
+  max-height: 556px;
+  background: white;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+/* 二级表单容器-基础信息 */
+.info-form-section {
+  display: flex;
+  justify-content: space-between;
+}
+/* 三级表单容器-左 */
+.form-section1 {
+  width: 48%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+/* 表单元素水平居中 */
+.form-section1 .el-form {
+  width: 100%;
+  max-width: 400px;
 }
 
-.form-section {
-  margin-bottom: 32px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid #ebeef5;
+/* 只选择名称、用途、描述、促销这四个文本输入框 */
+.form-section1 .el-form-item:not(:has(.el-input-number)) .el-input,
+.form-section1 .el-form-item:not(:has(.el-input-number)) .el-textarea {
+  width: 400px !important;
 }
 
-.form-section:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-  padding-bottom: 0;
+/* 期限相关输入框样式调整 */
+.form-section1 .el-row:has(.el-input-number) {
+  max-width: 600px !important;
 }
 
-.form-section h3 {
-  font-size: 18px;
-  font-weight: 600;
-  color: #303133;
-  margin-bottom: 20px;
+.form-section1 .el-form-item:has(.el-input-number) .el-input-number {
+  width: 100% !important;
+  min-width: 100px !important;
 }
 
+.form-section1 .el-form-item:has(.el-input-number) .el-input__inner {
+  padding-right: 30px !important;
+  text-align: left !important;
+  width: 100% !important;
+}
+
+/* 三级表单容器-右 */
+.form-section2 {
+  width: 48%;
+  border-left: 1px solid #ebeef5;
+  padding-left: 20px;
+}
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 5px;
+}
+.section-header h3 {
+  margin: 0;
+
+  font-size: 18px;
+  font-weight: 600;
+  color: #303133;
 }
 
+/* 添加选项按钮 */
 .btn-add {
   padding: 8px 16px;
   background-color: #409EFF;
@@ -80,25 +115,24 @@
   align-items: center;
   transition: background-color 0.3s;
 }
-
 .btn-add:hover {
   background-color: #66b1ff;
 }
-
+/* 选项表容器 */
 .table-container {
-  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 300px;
+  width: 100%;
 }
-
+/* 选项表 */
 .options-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 16px;
 }
-
 .options-table thead {
   background-color: #fafafa;
 }
-
 .options-table th {
   padding: 12px 16px;
   text-align: left;
@@ -106,29 +140,15 @@
   color: #606266;
   border-bottom: 1px solid #ebeef5;
 }
-
 .options-table td {
   padding: 16px;
   border-bottom: 1px solid #ebeef5;
   vertical-align: middle;
 }
-
 .options-table tbody tr:hover {
   background-color: #f5f7fa;
 }
-
-.empty-table {
-  text-align: center;
-  padding: 40px 16px;
-}
-
-.empty-table div {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
+/* 添加选项按钮 */
 .btn-add-empty {
   padding: 10px 20px;
   background-color: #409EFF;
@@ -139,11 +159,11 @@
   display: flex;
   align-items: center;
 }
-
 .btn-add-empty:hover {
   background-color: #66b1ff;
 }
 
+/* 删除选项按钮 */
 .btn-delete {
   padding: 8px 12px;
   background-color: #f56c6c;
@@ -154,16 +174,15 @@
   font-size: 14px;
   transition: background-color 0.3s;
 }
-
 .btn-delete:hover:not(:disabled) {
   background-color: #f78989;
 }
-
 .btn-delete:disabled {
   background-color: #c0c4cc;
   cursor: not-allowed;
 }
 
+/* 表单提示 */
 .form-tips {
   background-color: #f0f9ff;
   padding: 12px 16px;
@@ -171,13 +190,13 @@
   border-left: 4px solid #409EFF;
   margin-top: 16px;
 }
-
 .form-tips p {
   margin: 0;
   color: #606266;
   font-size: 14px;
 }
 
+/* 表单操作按钮 */
 .form-actions {
   display: flex;
   justify-content: flex-end;
@@ -186,7 +205,6 @@
   padding-top: 24px;
   border-top: 1px solid #ebeef5;
 }
-
 .btn-cancel,
 .btn-confirm {
   padding: 12px 28px;
@@ -199,20 +217,20 @@
   min-width: 100px;
 }
 
+/* 取消添加按钮 */
 .btn-cancel {
   background-color: #909399;
   color: white;
 }
-
 .btn-cancel:hover {
   background-color: #a6a9ad;
 }
 
+/* 确认添加按钮 */
 .btn-confirm {
   background-color: #409EFF;
   color: white;
 }
-
 .btn-confirm:hover {
   background-color: #66b1ff;
 }

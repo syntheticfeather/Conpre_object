@@ -21,7 +21,7 @@
       <!-- 信誉分列 -->
       <template #creditScore="{ record }">
         <span :style="{ color: getCreditScoreColor(record.creditScore) }">
-          {{ record.creditScore || '—' }}
+          {{ record.creditScore || '0' }}
         </span>
       </template>
       

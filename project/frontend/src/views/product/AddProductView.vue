@@ -9,9 +9,8 @@
 
     <div class="form-container">
       <!-- 基础信息表单 -->
-      <div class="form-section">
-        <h3>基础信息</h3>
-        <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
+      <div class="info-form-section">
+        <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" class="form-section1">
           <el-form-item label="产品名称" prop="productName">
             <el-input 
               v-model="form.productName" 
@@ -38,7 +37,17 @@
             />
           </el-form-item>
           
-          <el-row :gutter="20" style="max-width: 500px;">
+          <el-form-item label="促销信息">
+            <el-input
+              v-model="form.promotionDetails"
+              type="textarea"
+              :rows="2"
+              placeholder="请输入促销描述"
+              style="width: 100%; max-width: 400px;"
+            />
+          </el-form-item>
+
+          <el-row :gutter="20">
             <el-col :span="8">
               <el-form-item label="最短期限" prop="minTerm">
                 <el-input-number
@@ -100,102 +109,93 @@
               </el-form-item>
             </el-col>
           </el-row>
-          
-          <el-form-item label="促销信息">
-            <el-input
-              v-model="form.promotionDetails"
-              type="textarea"
-              :rows="2"
-              placeholder="请输入促销描述"
-              style="width: 100%; max-width: 400px;"
-            />
-          </el-form-item>
         </el-form>
-      </div>
 
-      <!-- 可选方案表格 -->
-      <div class="form-section">
-        <div class="section-header">
-          <h3>贷款可选方案</h3>
-          <button type="button" class="btn-add" @click="addOptionRow">
-            <span style="font-size: 18px; margin-right: 4px;">+</span> 增加方案
-          </button>
-        </div>
-        
-        <div class="table-container">
-          <table class="options-table">
-            <thead>
-              <tr>
-                <th>期限(月)</th>
-                <th>利率(%)</th>
-                <th>还款方式</th>
-                <th>操作</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(option, index) in form.options" :key="index">
-                <td>
-                  <el-input-number
-                    v-model="option.loanPeriod"
-                    :min="1"
-                    controls-position="right"
-                    style="width: 100px;"
-                    placeholder="期限"
-                  />
-                </td>
-                <td>
-                  <el-input-number
-                    v-model="option.interestRate"
-                    :min="0"
-                    :step="0.1"
-                    :precision="2"
-                    controls-position="right"
-                    style="width: 120px;"
-                    placeholder="利率"
-                  />
-                  <span style="margin-left: 4px;">%</span>
-                </td>
-                <td>
-                  <el-select 
-                    v-model="option.repaidType" 
-                    placeholder="选择还款方式"
-                    style="width: 140px;"
-                  >
-                    <el-option label="等额本息" value="等额本息" />
-                    <el-option label="等额本金" value="等额本金" />
-                    <el-option label="先息后本" value="先息后本" />
-                    <el-option label="一次性还本付息" value="一次性还本付息" />
-                  </el-select>
-                </td>
-                <td>
-                  <button 
-                    type="button" 
-                    class="btn-delete" 
-                    :disabled="form.options.length === 1"
-                    @click="removeOption(index)"
-                  >
-                    删除
-                  </button>
-                </td>
-              </tr>
-              <tr v-if="form.options.length === 0">
-                <td colspan="4" class="empty-table">
-                  <div>
-                    <span style="color: #999; display: block; margin-bottom: 10px;">
-                      暂无方案，请点击"增加方案"按钮添加
-                    </span>
-                    <button type="button" class="btn-add-empty" @click="addOptionRow">
-                      <span style="font-size: 18px; margin-right: 4px;">+</span> 添加第一个方案
+        <!-- 可选方案表格 -->
+        <div class="form-section2">
+          <div class="section-header">
+            <h3>贷款可选方案</h3>
+            <button type="button" class="btn-add" @click="addOptionRow">
+              <span style="font-size: 18px; margin-right: 4px;">+</span> 增加方案
+            </button>
+          </div>
+          
+          <div class="table-container">
+            <table class="options-table">
+              <thead>
+                <tr>
+                  <th>期限(月)</th>
+                  <th>利率(%)</th>
+                  <th>还款方式</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(option, index) in form.options" :key="index">
+                  <td>
+                    <el-input-number
+                      v-model="option.loanPeriod"
+                      :min="1"
+                      controls-position="right"
+                      style="width: 100px;"
+                      placeholder="期限"
+                    />
+                  </td>
+                  <td>
+                    <el-input-number
+                      v-model="option.interestRate"
+                      :min="0"
+                      :step="0.1"
+                      :precision="2"
+                      controls-position="right"
+                      style="width: 140px;"
+                      placeholder="利率"
+                    >
+                      <template #suffix>%</template>
+                    </el-input-number>
+                  </td>
+                  <td>
+                    <el-select 
+                      v-model="option.repaidType" 
+                      placeholder="选择还款方式"
+                      style="width: 140px;"
+                    >
+                      <el-option label="等额本息" value="等额本息" />
+                      <el-option label="等额本金" value="等额本金" />
+                      <el-option label="先息后本" value="先息后本" />
+                      <el-option label="一次性还本付息" value="一次性还本付息" />
+                    </el-select>
+                  </td>
+                  <td>
+                    <button 
+                      type="button" 
+                      class="btn-delete" 
+                      :disabled="form.options.length === 1"
+                      @click="removeOption(index)"
+                    >
+                      删除
                     </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        
-        <div class="form-tips">
-          <p>💡 提示：至少需要添加一个完整的贷款方案才能提交</p>
+                  </td>
+                </tr>
+                <tr v-if="form.options.length === 0">
+                  <td colspan="4" class="empty-table">
+                    <div>
+                      <span style="color: #999; display: block; margin-bottom: 10px;">
+                        暂无方案，请点击"增加方案"按钮添加
+                      </span>
+                      <button type="button" class="btn-add-empty" @click="addOptionRow">
+                        <span style="font-size: 18px; margin-right: 4px;">+</span> 添加第一个方案
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <div class="form-tips">
+            <p>💡 提示：至少需要添加一个完整的贷款方案才能提交</p>
+          </div>
         </div>
       </div>
 
@@ -209,6 +209,7 @@
         </button>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -414,4 +415,5 @@ const handleSubmit = async () => {
 
 <style scoped>
 @import '@/assets/css/addProduct.css';
+
 </style>

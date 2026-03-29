@@ -1,15 +1,16 @@
-[file name]: PendingApplicationView.vue
-[file content begin]
 <template>
+  <!-- 标题 -->
+  <div class="header">
+    待办审核
+  </div>
+  
+  <!-- 主要内容区域 -->
   <div class="apply-dashboard">
-    <div class="header">
-      <h2>待办审核</h2>
-    </div>
-
     <div v-if="loading" class="loading">
       加载中...
     </div>
 
+    <!-- 应用审核列表 -->
     <component 
       :is="currentComponent"
       v-else 
@@ -18,6 +19,7 @@
       @refresh="loadApplications"
     />
 
+    <!-- 应用审核详情弹窗 -->
     <ApplicationDetailModal 
       v-model="showDetailModal"
       :application-id="selectedApplicationId"
@@ -106,12 +108,6 @@ onMounted(async () => {
 <style scoped>
 .apply-dashboard {
   padding: 20px;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .tabs button {

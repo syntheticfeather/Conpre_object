@@ -81,6 +81,10 @@ const handleSearch = async () => {
 </script>
 
 <style scoped>
+.user-manage-view {
+  padding: 20px;
+}
+
 .header {
   display: flex;
   justify-content: space-between;
@@ -89,15 +93,15 @@ const handleSearch = async () => {
   margin-bottom: 20px;
 }
 
-.user-manage-view {
-  padding: 20px;
-}
-
 .title {
- margin: 0;
+  margin: 0;
+  
+  width: auto;
+  color: #4A5A6B;
 
-  font-size: 24px;
-  color: #333;
+  font-size: 25px;
+  font-weight: 600;
+  font-family: 方正小标宋，楷体，微软雅黑;
 }
 
 .search-section {

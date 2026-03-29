@@ -1,8 +1,8 @@
 <template>
-  <div class="black-user-manage-view">
     <div class="header">
-      <h2 class="title">黑名单管理</h2>
+      黑名单管理
     </div>
+  <div class="black-user-manage-view">
     
     <!-- 主内容区域 -->
     <div class="content-container">

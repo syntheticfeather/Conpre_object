@@ -59,12 +59,17 @@ const router = createRouter({
   routes
 })
 
+import { isTokenExpired } from '@/utils/jwt'
+
 function checkAuthFromStorage() {
   const stored = localStorage.getItem('auth-store')
   if (!stored) return false
   try {
     const data = JSON.parse(stored)
-    return !!(data.isAuthenticated && data.token)
+    if (!data.isAuthenticated || !data.token) return false
+    
+    // 检查 token 是否过期
+    return !isTokenExpired(data.token)
   } catch {
     return false
   }

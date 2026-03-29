@@ -34,6 +34,13 @@ const goToAddProduct = () => {
   justify-content: space-between;
   align-items: center;
 }
+.header h2 {
+  width: auto;
+
+  font-size: 25px;
+  font-weight: 600;
+  font-family: 方正小标宋，楷体，微软雅黑;
+}
 
 .add-product-btn {
   padding: 10px 20px;

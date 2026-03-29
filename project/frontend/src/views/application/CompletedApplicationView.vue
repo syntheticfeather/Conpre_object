@@ -1,9 +1,9 @@
 <template>
-  <div class="apply-dashboard">
-    <div class="header">
-      <h2>已办审核</h2>
-    </div>
+  <div class="header">
+    已办审核
+  </div>
 
+  <div class="apply-dashboard">
     <component 
       :is="currentComponent" 
       :applications="currentApplications"
@@ -68,12 +68,6 @@ onMounted(() => {
 <style scoped>
 .apply-dashboard {
   padding: 20px;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .tabs button {

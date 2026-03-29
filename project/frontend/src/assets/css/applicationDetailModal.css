@@ -47,43 +47,70 @@
 
 .rejectReasons {
   margin-top: 20px;
-
   justify-self: center;
 }
 
-.materials-section {
-  margin-top: 15px;
-}
-
-.materials-list {
+/* 用户信息布局 */
+.user-info {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 5px;
+  gap: 40px;
+  margin: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #dee2e6;
 }
 
+.left, .right {
+  flex: 1;
+}
+
+.detail-subtitle {
+  font-size: 16px;
+  color: #555;
+  margin: 0 0 12px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+#user-info-section1 p {
+  margin: 8px 0;
+  line-height: 1.6;
+}
+
+/* 认证材料样式 */
 .material-item {
   display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 8px;
-  background-color: #f0f2f5;
-  border-radius: 4px;
+  justify-content: space-between;
+  margin: 8px 0;
+  padding: 6px 0;
+  border-bottom: 1px dashed #eee;
 }
 
 .material-item.clickable {
   cursor: pointer;
-  transition: all 2s;
+  transition: all 0.2s;
 }
 
 .material-item.clickable:hover {
-  background-color: #e6f7ff;
-  transform: translateY(-1px);
+  background-color: #f8f9fa;
+  padding-left: 8px;
+  padding-right: 8px;
+  border-radius: 4px;
 }
 
 .material-item.clickable.has-image:hover {
   background-color: #e8f5e8;
   border-color: #27ae60;
+}
+
+.material-item:last-child {
+  border-bottom: none;
+}
+
+/* 头像样式 */
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
 }
 
 /* 操作按钮 */

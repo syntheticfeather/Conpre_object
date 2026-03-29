@@ -25,7 +25,7 @@ import Navbar from '@/components/layout/NavbarMenu.vue'
 
 <style scoped>
   .navbar-container {
-    height: 55px;
+    height: 75px;
   }
 
   .dashboard {
@@ -33,10 +33,16 @@ import Navbar from '@/components/layout/NavbarMenu.vue'
   }
 
   .sidebar-container {
-    color: aqua;
-  }
+    position: sticky;
+    top: 75px;
+    z-index: 100;
+
+    height: calc(100vh - 75px);
+    background-color: var(--sidebar-color);
+    transition: width 0.3s ease;
+  } 
 
   .main-content {
-    flex: 1;
+    flex: 1; 
   }
 </style>

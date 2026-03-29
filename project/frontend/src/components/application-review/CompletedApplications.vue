@@ -34,8 +34,10 @@
     </template>
 
     <!-- 审核状态格式化 -->
-    <template #status="{ record }">
-      {{ formatStatus(record.status) }}
+    <template #status="{ record }" >
+      <span :style="{ color: getStatusColor(record.status) }">
+        {{ formatStatus(record.status) }}
+      </span>
     </template>
   </BaseTable>
 </template>
@@ -137,5 +139,15 @@ const formatStatus = (status) => {
     '人工拒绝': '人工拒绝'
   }
   return statusMap[status] || status
+}
+
+const getStatusColor = (status) => {
+  const colorMap = {
+    '已通过': '#25ce25',
+    '人工拒绝': 'red',
+  }
+  console.log(colorMap[status])
+  
+  return colorMap[status] || 'default'
 }
 </script>

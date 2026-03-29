@@ -18,7 +18,7 @@
         
         <!-- 贷款申请统计图表 -->
         <div class="chart-item">
-          <h4 class="chart-title">贷款申请统计</h4>
+          <h4 class="chart-title">贷款申请状态分布</h4>
           <el-card shadow="hover">
             <div ref="loanApplicationChartRef" class="chart-container" style="height: 200px;"></div>
           </el-card>
@@ -40,7 +40,7 @@
       <div class="chart-grid">
         <!-- 用户信用分分布 -->
         <div class="chart-item">
-          <h4 class="chart-title">用户信用分分布</h4>
+          <h4 class="chart-title">用户信用分统计</h4>
           <el-card shadow="hover">
             <div ref="creditScoreDistributionRef" class="chart-container" style="height: 200px;"></div>
           </el-card>
@@ -60,19 +60,19 @@
     <div class="chart-section">
       <h3 class="section-title">数据趋势</h3>
       <div class="chart-grid">
+        <!-- 贷款申请趋势 -->
+        <div class="chart-item">
+          <h4 class="chart-title">贷款申请趋势</h4>
+          <el-card shadow="hover">
+            <div ref="loanApplicationTrendRef" class="chart-container" style="height: 200px;"></div>
+          </el-card>
+        </div>
+        
         <!-- 用户注册趋势 -->
-        <!-- <div class="chart-item full-width">
+        <div class="chart-item">
           <h4 class="chart-title">用户注册趋势</h4>
           <el-card shadow="hover">
             <div ref="userRegistrationTrendRef" class="chart-container" style="height: 200px;"></div>
-          </el-card>
-        </div> -->
-        
-        <!-- 贷款申请与用户注册趋势 -->
-        <div class="chart-item full-width">
-          <h4 class="chart-title">贷款申请与用户注册趋势</h4>
-          <el-card shadow="hover">
-            <div ref="loanApplicationTrendRef" class="chart-container" style="height: 200px;"></div>
           </el-card>
         </div>
       </div>
@@ -89,7 +89,7 @@ import * as echarts from 'echarts'
 // 图表引用
 const userChartRef = ref(null)
 const loanApplicationChartRef = ref(null)
-// const userRegistrationTrendRef = ref(null)
+const userRegistrationTrendRef = ref(null)
 const loanApplicationTrendRef = ref(null)
 const creditScoreDistributionRef = ref(null)
 const approvalRateRef = ref(null)
@@ -131,10 +131,39 @@ const fetchUserData = async () => {
       
       // 用户统计图表
       if (userChartRef.value) {
+        const totalUsers = Object.values(loanStatusCount).reduce((sum, value) => sum + value, 0);
         userChart = echarts.init(userChartRef.value)
         userChart.setOption({
           tooltip: {
-            trigger: 'item'
+            trigger: 'item',
+            formatter: function(params) {
+              const percentage = totalUsers > 0 ? ((params.value / totalUsers) * 100).toFixed(2) : 0;
+              return `${params.name}: ${percentage}%`;
+            },
+            position: function(point, params, dom, rect, size) {
+              // point: 鼠标位置
+              // size: 图表尺寸
+              const chartCenterX = size.viewSize[0] / 2;
+              const chartCenterY = size.viewSize[1] / 2;
+              // 计算tooltip的宽高
+              const tooltipWidth = dom.offsetWidth;
+              const tooltipHeight = dom.offsetHeight;
+              
+              // 根据鼠标位置判断象限
+              if (point[0] < chartCenterX && point[1] < chartCenterY) {
+                // 左上象限 - tooltip显示在鼠标左上
+                return [point[0] - tooltipWidth - 10, point[1] - tooltipHeight - 10];
+              } else if (point[0] < chartCenterX && point[1] >= chartCenterY) {
+                // 左下象限 - tooltip显示在鼠标左下
+                return [point[0] - tooltipWidth - 10, point[1] + 10];
+              } else if (point[0] >= chartCenterX && point[1] < chartCenterY) {
+                // 右上象限 - tooltip显示在鼠标右上
+                return [point[0] + 10, point[1] - tooltipHeight - 10];
+              } else {
+                // 右下象限 - tooltip显示在鼠标右下
+                return [point[0] + 10, point[1] + 10];
+              }
+            }
           },
           legend: {
             top: '5%',
@@ -219,7 +248,12 @@ const fetchUserData = async () => {
             {
               name: '用户数',
               type: 'bar',
-              data: Object.values(creditScoreRanges)
+              data: Object.values(creditScoreRanges),
+              label: {
+                show: true,
+                position: 'top',
+                formatter: '{c}'
+              }
             }
           ]
         })
@@ -293,10 +327,39 @@ const fetchLoanApplicationData = async () => {
       
       // 贷款申请统计图表
       if (loanApplicationChartRef.value) {
+        const totalApplications = Object.values(statusCount).reduce((sum, value) => sum + value, 0);
         loanApplicationChart = echarts.init(loanApplicationChartRef.value)
         loanApplicationChart.setOption({
           tooltip: {
-            trigger: 'item'
+            trigger: 'item',
+            formatter: function(params) {
+              const percentage = totalApplications > 0 ? ((params.value / totalApplications) * 100).toFixed(2) : 0;
+              return `${params.name}: ${percentage}%`;
+            },
+            position: function(point, params, dom, rect, size) {
+              // point: 鼠标位置
+              // size: 图表尺寸
+              const chartCenterX = size.viewSize[0] / 2;
+              const chartCenterY = size.viewSize[1] / 2;
+              // 计算tooltip的宽高
+              const tooltipWidth = dom.offsetWidth;
+              const tooltipHeight = dom.offsetHeight;
+              
+              // 根据鼠标位置判断象限
+              if (point[0] < chartCenterX && point[1] < chartCenterY) {
+                // 左上象限 - tooltip显示在鼠标左上
+                return [point[0] - tooltipWidth - 10, point[1] - tooltipHeight - 10];
+              } else if (point[0] < chartCenterX && point[1] >= chartCenterY) {
+                // 左下象限 - tooltip显示在鼠标左下
+                return [point[0] - tooltipWidth - 10, point[1] + 10];
+              } else if (point[0] >= chartCenterX && point[1] < chartCenterY) {
+                // 右上象限 - tooltip显示在鼠标右上
+                return [point[0] + 10, point[1] - tooltipHeight - 10];
+              } else {
+                // 右下象限 - tooltip显示在鼠标右下
+                return [point[0] + 10, point[1] + 10];
+              }
+            }
           },
           legend: {
             top: '5%',
@@ -352,7 +415,31 @@ const fetchLoanApplicationData = async () => {
         approvalRateChart = echarts.init(approvalRateRef.value)
         approvalRateChart.setOption({
           tooltip: {
-            trigger: 'item'
+            trigger: 'item',
+            position: function(point, params, dom, rect, size) {
+              // point: 鼠标位置
+              // size: 图表尺寸
+              const chartCenterX = size.viewSize[0] / 2;
+              const chartCenterY = size.viewSize[1] / 2;
+              // 计算tooltip的宽高
+              const tooltipWidth = dom.offsetWidth;
+              const tooltipHeight = dom.offsetHeight;
+              
+              // 根据鼠标位置判断象限
+              if (point[0] < chartCenterX && point[1] < chartCenterY) {
+                // 左上象限 - tooltip显示在鼠标左上
+                return [point[0] - tooltipWidth - 10, point[1] - tooltipHeight - 10];
+              } else if (point[0] < chartCenterX && point[1] >= chartCenterY) {
+                // 左下象限 - tooltip显示在鼠标左下
+                return [point[0] - tooltipWidth - 10, point[1] + 10];
+              } else if (point[0] >= chartCenterX && point[1] < chartCenterY) {
+                // 右上象限 - tooltip显示在鼠标右上
+                return [point[0] + 10, point[1] - tooltipHeight - 10];
+              } else {
+                // 右下象限 - tooltip显示在鼠标右下
+                return [point[0] + 10, point[1] + 10];
+              }
+            }
           },
           series: [
             {
@@ -448,6 +535,7 @@ const fetchRiskLevelData = async () => {
       
       // 处理风险等级数据
       const riskLevelCount = {
+        '0': 0, // 无风险
         '1': 0,
         '2': 0,
         '3': 0
@@ -458,6 +546,13 @@ const fetchRiskLevelData = async () => {
           riskLevelCount[item.blackLevel] = (riskLevelCount[item.blackLevel] || 0) + 1
         }
       })
+      
+      // 计算无风险用户数
+      // 先获取总用户数
+      const totalUsersResponse = await userAPI.searchUsersByCredit('>0');
+      const totalUsers = Array.isArray(totalUsersResponse) ? totalUsersResponse.length : 0;
+      // 无风险用户数 = 总用户数 - 黑名单用户数
+      riskLevelCount['0'] = totalUsers - blacklist.length;
       
       // 风险等级统计图表
       if (riskLevelRef.value) {
@@ -477,7 +572,7 @@ const fetchRiskLevelData = async () => {
           },
           xAxis: {
             type: 'category',
-            data: ['低风险', '中风险', '高风险']
+            data: ['无风险', '低风险', '中风险', '高风险']
           },
           yAxis: {
             type: 'value'
@@ -486,7 +581,12 @@ const fetchRiskLevelData = async () => {
             {
               name: '用户数',
               type: 'bar',
-              data: [riskLevelCount['1'], riskLevelCount['2'], riskLevelCount['3']]
+              data: [riskLevelCount['0'], riskLevelCount['1'], riskLevelCount['2'], riskLevelCount['3']],
+              label: {
+                show: true,
+                position: 'top',
+                formatter: '{c}'
+              }
             }
           ]
         })
@@ -501,9 +601,15 @@ const fetchRiskLevelData = async () => {
 const fetchUserRegistrationTrend = async () => {
   try {
     const response = await userAPI.searchUsersByCredit('>0')
+    console.log('searchUsersByCredit response:', response)
+    let users = []
+    
+    // 根据接口文档，直接返回用户数组
     if (Array.isArray(response)) {
-      const users = response
-      
+      users = response
+    }
+    
+    if (users.length > 0) {
       // 处理注册时间数据
       const registrationTimeData = {}
       
@@ -527,6 +633,7 @@ const fetchUserRegistrationTrend = async () => {
         monthlyRegistrationData[month] = (monthlyRegistrationData[month] || 0) + count
       })
       
+      console.log('monthlyRegistrationData:', monthlyRegistrationData)
       return monthlyRegistrationData
     }
     return {}
@@ -542,43 +649,42 @@ onMounted(async () => {
   const monthlyLoanData = await fetchLoanApplicationData()
   await fetchRiskLevelData()
   const monthlyRegistrationData = await fetchUserRegistrationTrend()
+  console.log('monthlyRegistrationData:', monthlyRegistrationData)
   
-  // 合并贷款申请和用户注册数据到同一个图表
-  const allMonths = new Set([...Object.keys(monthlyLoanData), ...Object.keys(monthlyRegistrationData)])
-  
-  // 确保包含1-12月份
+  // 处理贷款申请趋势数据
+  const loanMonths = new Set(Object.keys(monthlyLoanData))
   const currentYear = new Date().getFullYear()
   for (let i = 1; i <= 12; i++) {
     const monthStr = `${currentYear}-${i.toString().padStart(2, '0')}`
-    allMonths.add(monthStr)
+    loanMonths.add(monthStr)
   }
-  
-  // 按月份排序
-  const sortedMonths = Array.from(allMonths).sort((a, b) => {
-    return a.localeCompare(b)
-  })
-  
-  // 格式化月份显示，如 2025-12 显示为 12月
-  const formattedMonths = sortedMonths.map(month => {
+  const sortedLoanMonths = Array.from(loanMonths).sort((a, b) => a.localeCompare(b))
+  const formattedLoanMonths = sortedLoanMonths.map(month => {
     const parts = month.split('-')
     return parts[1] + '月'
   })
+  const loanCounts = sortedLoanMonths.map(month => monthlyLoanData[month] || 0)
   
-  // 准备数据，确保每个月份都有对应的数据
-  const loanCounts = sortedMonths.map(month => monthlyLoanData[month] || 0)
-  const registrationCounts = sortedMonths.map(month => monthlyRegistrationData[month] || 0)
+  // 处理用户注册趋势数据
+  const registrationMonths = new Set(Object.keys(monthlyRegistrationData))
+  for (let i = 1; i <= 12; i++) {
+    const monthStr = `${currentYear}-${i.toString().padStart(2, '0')}`
+    registrationMonths.add(monthStr)
+  }
+  const sortedRegistrationMonths = Array.from(registrationMonths).sort((a, b) => a.localeCompare(b))
+  const formattedRegistrationMonths = sortedRegistrationMonths.map(month => {
+    const parts = month.split('-')
+    return parts[1] + '月'
+  })
+  const registrationCounts = sortedRegistrationMonths.map(month => monthlyRegistrationData[month] || 0)
+  console.log('registrationCounts:', registrationCounts)
   
-  // 贷款申请趋势图表 - 合并贷款申请和用户注册数据
+  // 贷款申请趋势图表
   if (loanApplicationTrendRef.value) {
     loanApplicationTrendChart = echarts.init(loanApplicationTrendRef.value)
     loanApplicationTrendChart.setOption({
       tooltip: {
         trigger: 'axis'
-      },
-      legend: {
-        data: ['申请数', '注册数'],
-        top: '5%',
-        left: 'center'
       },
       grid: {
         left: '3%',
@@ -589,12 +695,14 @@ onMounted(async () => {
       xAxis: {
         type: 'category',
         boundaryGap: false,
-        data: formattedMonths,
+        data: formattedLoanMonths,
         axisLine: {
           onZero: false
         },
         axisLabel: {
-          interval: 0
+          interval: 0,
+          fontSize: 10,
+          rotate: 30
         }
       },
       yAxis: {
@@ -616,7 +724,47 @@ onMounted(async () => {
           lineStyle: {
             width: 2
           }
+        }
+      ]
+    })
+  }
+  
+  // 用户注册趋势图表
+  if (userRegistrationTrendRef.value) {
+    userRegistrationTrendChart = echarts.init(userRegistrationTrendRef.value)
+    userRegistrationTrendChart.setOption({
+      tooltip: {
+        trigger: 'axis'
+      },
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'category',
+        boundaryGap: false,
+        data: formattedRegistrationMonths,
+        axisLine: {
+          onZero: false
         },
+        axisLabel: {
+          interval: 0,
+          fontSize: 10,
+          rotate: 30
+        }
+      },
+      yAxis: {
+        type: 'value',
+        splitLine: {
+          show: true,
+          lineStyle: {
+            type: 'dashed'
+          }
+        }
+      },
+      series: [
         {
           name: '注册数',
           type: 'line',

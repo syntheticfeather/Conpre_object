@@ -5,9 +5,9 @@
       :default-active="activeIndex"
       :collapse="isCollapse"
       :collapse-transition="true"
-      background-color="#545c64"
+      background-color="--sidebar-color"
       text-color="#fff"
-      active-text-color="#ffd04b"
+      active-text-color="#25e0bf"
       class="el-menu-vertical"
       router
       :unique-opened="true"
@@ -74,11 +74,27 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { ArrowLeftBold, ArrowRightBold, User, Histogram, List, Warning, Setting } from '@element-plus/icons-vue'
 
 const isCollapse = ref(false)
-const activeIndex = ref('/dashboard/applications') // 默认激活子项
+const activeIndex = ref('/dashboard/pending-applications') // 默认激活子项
+const route = useRoute()
+
+// 监听路由变化，更新激活状态
+watch(
+  () => route.path,
+  (newPath) => {
+    activeIndex.value = newPath
+  },
+  { immediate: true }
+)
+
+// 组件挂载时初始化激活状态
+onMounted(() => {
+  activeIndex.value = route.path
+})
 
 const toggleCollapse = () => {
   isCollapse.value = !isCollapse.value
@@ -88,32 +104,60 @@ const toggleCollapse = () => {
 <style scoped>
 .sidebar {
   display: flex;
+  
   align-items: center;
   justify-content: center;
   
   padding-top: 10px;
 
   width: auto;
-  min-height: calc(100vh - 55px);
   height: 100%;
-  background-color: #545c64;
-  box-shadow: 2px 0 8px rgb(5 29 64);
+  background-color: var(--sidebar-color);
+  box-shadow: 2px 0 8px rgb(104, 131, 173);
 }
 
 .collapse-btn {
   margin-bottom: 10px;
-  background-color: #47515a;
-  border-color: #47515a;
+  background-color: var(--sidebar-color);
+  border-color: var(--sidebar-color);  
   color: #fff;
 }
 
 .collapse-btn:hover {
-  background-color: #3a4249;
+  background-color: #003461;
 }
 
 /* 菜单宽度 */
 .el-menu-vertical:not(.el-menu--collapse) {
-  width: 200px;
+  width:150px;
+}
+
+/* 菜单项悬停颜色 */
+.sidebar :deep(.el-menu-item:hover),
+.sidebar :deep(.el-sub-menu__title:hover) {
+  --el-menu-hover-bg-color: rgb(72, 118, 203);
+}
+/* 二级菜单项激活状态样式 */
+.sidebar :deep(.el-sub-menu .el-menu-item.is-active) {
+  color: #25e0bf; /* 激活状态的字体颜色 */
+  border-left: 3px solid #25e0bf; /* 左侧边框 */
+  --el-menu-hover-bg-color: rgb(72, 118, 203); /* 保持与悬停相同的背景色 */
+}
+
+/* 折叠后弹出菜单样式 */
+:global(.el-menu--popup) {
+  background-color: var(--sidebar-color) !important;
+  border: none !important;
+}
+:global(.el-menu--popup .el-menu-item) {
+  color: #fff !important;
+}
+:global(.el-menu--popup .el-menu-item:hover) {
+  --el-menu-hover-bg-color: rgb(72, 118, 203) !important;
+}
+:global(.el-menu--popup .el-menu-item.is-active) {
+  color: #25e0bf !important;
+  --el-menu-hover-bg-color: rgb(72, 118, 203) !important;
 }
 
 /* 折叠时隐藏文字 */
@@ -122,7 +166,7 @@ const toggleCollapse = () => {
   display: none;
 }
 
-/* 修复折叠后图标居中问题 */
+/* 折叠后图标居中 */
 .el-menu--collapse .el-menu-item,
 .el-menu--collapse .el-sub-menu .el-sub-menu__title {
   justify-content: center;
@@ -142,7 +186,7 @@ const toggleCollapse = () => {
   width: 6px;
 }
 .el-menu::-webkit-scrollbar-thumb {
-  background: #47515a;
+  background: var(--sidebar-color);
   border-radius: 3px;
 }
 </style>

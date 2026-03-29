@@ -164,7 +164,7 @@ export default {
   justify-content: space-between;
   width: 100%;
   height: 75px;
-  background-color: #2c3e50;
+  background-color: var(--nabar-color);
   color: white;
   align-items: center;
   box-shadow: 5px 5px 6px rgba(0, 0, 0, 0.3);

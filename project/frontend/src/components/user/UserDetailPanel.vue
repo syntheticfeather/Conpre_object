@@ -30,13 +30,13 @@
             <div style="display: flex; align-items: flex-start; margin-bottom: 16px;">
               <img :src="userDetail.user?.avatar" alt="用户头像" class="avatar" style="margin-right: 16px;">
               <div style="display: flex; flex-direction: column;">
-                <p style="margin: 0 0 4px 0;"><span>{{ userDetail.user?.id || '—' }}</span></p>
+                <p style="margin: 0 0 4px 0;"><span>ID: {{ userDetail.user?.id || '—' }}</span></p>
                 <p style="margin: 0;"><span>{{ userDetail.user?.userName || '—' }}</span></p>
               </div>
             </div>
             <p><strong>手机号：</strong><span>{{ userDetail.user?.phone || '—' }}</span></p>
-            <p><strong>订单总数：</strong><span>{{ userDetail.order.length || '—' }}</span></p>
-            <p><strong>申请贷款总数：</strong><span>{{ userDetail.loanApplication.length || '—' }}</span></p>
+            <p><strong>订单总数：</strong><span>{{ userDetail.order.length || '0' }}</span></p>
+            <p><strong>申请贷款总数：</strong><span>{{ userDetail.loanApplication.length || '0' }}</span></p>
             <p><strong>最近上线时间：</strong><span>{{ formatDate(userDetail.user?.updateTime) }}</span></p>
             <p><strong>注册时间：</strong><span>{{ formatDate(userDetail.user?.createTime) }}</span></p>
             <!-- 黑名单信息 -->
@@ -50,7 +50,7 @@
             <div class="material-item">
               <span>信誉分：</span>
               <span :style="{ color: userDetail.userCert?.creditScore != null ? '#27ae60' : '#e74c3c' }">
-                {{ userDetail.userCert?.creditScore != null ? userDetail.userCert.creditScore : '—' }}
+                {{ userDetail.userCert?.creditScore != null ? userDetail.userCert.creditScore : '0' }}
               </span>
             </div>
             <div 

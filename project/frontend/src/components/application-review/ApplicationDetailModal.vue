@@ -7,29 +7,27 @@
     </div>
 
     <!-- 用户基本信息 -->
-    <div class="section">
-      <h4>用户基本信息</h4>
-      <div class="detail-grid">
-        <div class="detail-item">
-          <span>真实姓名：</span>
-          <span>{{ applicationDetail?.data?.user?.userName || '—' }}</span>
-        </div>
-        <div class="detail-item">
-          <span>手机号：</span>
-          <span>{{ applicationDetail?.data?.user?.phone || '—' }}</span>
-        </div>
-        <div class="detail-item">
-          <span>注册时间：</span>
-          <span>{{ formatDate(applicationDetail?.data?.user?.createTime) || '—' }}</span>
-        </div>
-        <div class="detail-item">
-          <span>信誉分：</span>
-          <span>{{ applicationDetail?.userCert?.creditScore || '—' }}</span>
+    <div class="user-info">
+      <div class="left">
+        <h3 class="detail-subtitle">基本信息</h3>
+        <div id="user-info-section1">
+          <div style="display: flex; align-items: flex-start; margin-bottom: 16px;">
+            <img :src="applicationDetail?.data?.user?.avatar" alt="用户头像" class="avatar" style="margin-right: 16px;">
+            <div style="display: flex; flex-direction: column;">
+              <p style="margin: 0 0 4px 0;"><span>ID: {{ applicationDetail?.data?.user?.id || '—' }}</span></p>
+              <p style="margin: 0;"><span>{{ applicationDetail?.data?.user?.userName || '—' }}</span></p>
+            </div>
+          </div>
+          <p><strong>手机号：</strong><span>{{ applicationDetail?.data?.user?.phone || '—' }}</span></p>
+          <p><strong>注册时间：</strong><span>{{ formatDate(applicationDetail?.data?.user?.createTime) || '—' }}</span></p>
+          <p><strong>信誉分：</strong><span :style="{ color: getCreditColor(applicationDetail?.userCert?.creditScore) }">
+            {{ applicationDetail?.userCert?.creditScore || '0' }}
+          </span></p>
         </div>
       </div>
-      <div class="materials-section">
-        <span>认证材料：</span>
-        <div class="materials-list">
+      <div class="right">
+        <h3 class="detail-subtitle">认证材料</h3>
+        <div id="user-auth-section">
           <div 
             v-for="(label, key) in materialMap" 
             :key="key"
@@ -37,7 +35,7 @@
             :class="{ 'has-image': isMaterialUploaded(key) }"
             @click="handleMaterialClick(key, applicationDetail?.userCert?.[key])"
           >
-            <span>{{ label }}</span>
+            <span>{{ label }}：</span>
             <span :style="{ color: isMaterialUploaded(key) ? '#27ae60' : '#e74c3c' }">
               {{ isMaterialUploaded(key) ? '已上传 (点击查看)' : '未上传' }}
             </span>
@@ -190,6 +188,18 @@ const fetchApplicationDetail = async (id) => {
   }
 }
 
+// 根式化信誉分颜色
+const getCreditColor = (credit) => {
+  if (credit >= 600) {
+    return '#25ce25'
+  } else if (credit > 100 && credit < 600) {
+    return 'brown'
+  }else if (credit <= 100) {
+    return 'red'
+  }
+  return 'default'
+}
+
 // 检查材料是否已上传
 const isMaterialUploaded = (key) => {
   return applicationDetail.value?.userCert?.[key] != null
@@ -250,7 +260,7 @@ const handleMaterialClick = (key, certId) => {
 
 // 格式化货币
 const formatCurrency = (amount) => {
-  if (amount == null) return '—'
+  if (amount == null) return '0'
   return new Intl.NumberFormat('zh-CN', {
     style: 'currency',
     currency: 'CNY',
