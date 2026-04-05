@@ -48,6 +48,7 @@ services:
     command: 
       - --default-authentication-plugin=mysql_native_password
       - --character-set-server=utf8mb4
+      - --default-time-zone=+08:00
       - --collation-server=utf8mb4_unicode_ci
     restart: unless-stopped
     networks:

@@ -46,7 +46,12 @@ public class PaymentSuccessConsumer {
         String messageId = message.getMessageProperties().getHeader("messageId");
         Long tag = rabbitUtil.getTag(message);
         if (messageId == null) {
-            channel.basicNack(tag, false, false);
+            MessageProperties props = new MessageProperties();
+            props.getHeaders().putAll(message.getMessageProperties().getHeaders());
+            props.setHeader("messageId", "missing_" + System.currentTimeMillis());
+            props.setContentType(message.getMessageProperties().getContentType());
+            rabbitUtil.sendToDLX(RabbitMQConfig.DLQ, new Message(message.getBody(), props));
+            channel.basicAck(tag, false);
             return;
         }
         if (processedMessageMapper.isProcessMessage(messageId)) {
@@ -56,11 +61,14 @@ public class PaymentSuccessConsumer {
         try {
             PaymentSuccessEvent event = objectMapper.readValue(payload, PaymentSuccessEvent.class);
             try {
+                // 插入支付记录
                 paymentRecordMapper.insert(event.getTxId(), event.getOrderId(), event.getAmount(), "SUCCESS", event.getPaidAt());
             } catch (DuplicateKeyException ex) {
                 channel.basicAck(tag, false);
                 return;
             }
+            // 更新订单状态, 增加已还金额, 更新当前期数
+            // 如果当前期数等于总期数, 则订单状态为已完成
             Order order = orderMapper.selectById(event.getOrderId());
             if (order == null) {
                 channel.basicAck(tag, false);
@@ -74,8 +82,10 @@ public class PaymentSuccessConsumer {
             order.setStatus(newStatus);
             orderMapper.update(order);
 
+            // 记录已处理信息，插入幂等表
             processedMessageMapper.insertMessage(messageId, "PAYMENT_SUCCESS", order.getId());
 
+            // 写order_repaid消息到outbox,用于后续发通知
             OutboxMessage outbox = new OutboxMessage();
             outbox.setMessageId("order_repaid_" + order.getId() + "_" + System.currentTimeMillis());
             outbox.setBusinessType("ORDER_REPAID");
@@ -88,6 +98,7 @@ public class PaymentSuccessConsumer {
             outbox.setCreatedAt(LocalDateTime.now());
             outboxMapper.insert(outbox);
 
+            // 确认消费成功
             channel.basicAck(tag, false);
         } catch (Exception e) {
             int deathCount = getDeathCount(message, RabbitMQConfig.PAYMENT_SUCCESS_QUEUE);
@@ -95,9 +106,11 @@ public class PaymentSuccessConsumer {
                 Message dlqMsg = copyWithHeaders(message, messageId);
                 rabbitUtil.sendToDLX(RabbitMQConfig.DLQ, dlqMsg);
                 channel.basicAck(tag, false);
+                log.error("payment success consume failed, moved to dlq: {}", messageId, e);
                 return;
             }
             channel.basicNack(tag, false, false);
+            log.error("payment success consume failed, retrying: {}", messageId, e);
         }
     }
 

@@ -1,22 +1,27 @@
 package com.example.personal_loan.utils;
 
 public class BankCardUtils {
+
     /**
      * 校验银行卡号是否合法：
-     * - 必须为纯数字
-     * - 长度通常为 13~19 位（国内常见 16/19）
+     * - 必须为纯数字（允许包含空格）
+     * - 长度通常为 16~19 位
      * - 通过 Luhn 算法校验
      */
     public static boolean isValid(String cardNumber) {
         if (cardNumber == null) {
             return false;
         }
-        String cleanCard = cardNumber.replaceAll("\\s+", ""); // 去除空格
-        // 必须为16位，后续需要修改，支持19位
-        if (cleanCard.length() != 16) {
+        // 1. 去除空格
+        String cleanCard = cardNumber.replaceAll("\\s+", "");
+
+        // 2. 校验是否为纯数字且长度在合理范围内 (16-19位是常见标准)
+        if (!cleanCard.matches("\\d{16,19}")) {
             return false;
         }
-        return true;
+
+        // 3. 执行Luhn算法校验
+        return passesLuhnCheck(cleanCard);
     }
 
     /**
@@ -24,18 +29,21 @@ public class BankCardUtils {
      */
     private static boolean passesLuhnCheck(String cardNumber) {
         int sum = 0;
-        boolean alternate = false;
+        boolean alternate = false; // 用于标记是否需要加倍
+        // 从右向左遍历
         for (int i = cardNumber.length() - 1; i >= 0; i--) {
             int digit = Character.getNumericValue(cardNumber.charAt(i));
             if (alternate) {
                 digit *= 2;
+                // 如果加倍后大于9，则减去9 (等同于将两位数的个位与十位相加)
                 if (digit > 9) {
-                    digit = (digit % 10) + 1;
+                    digit -= 9;
                 }
             }
             sum += digit;
             alternate = !alternate;
         }
+        // 如果总和能被10整除，则校验通过
         return sum % 10 == 0;
     }
 

@@ -1,5 +1,6 @@
 package com.example.personal_loan.mapper;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Insert;
@@ -8,6 +9,8 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import com.example.personal_loan.entity.OutboxMessage;
+
+import io.lettuce.core.dynamic.annotation.Param;
 
 @Mapper
 public interface OutboxMapper {
@@ -21,8 +24,8 @@ public interface OutboxMapper {
     @Select("select * from outbox_message where status = 'PENDING' limit #{BATCH_SIZE}")
     public List<OutboxMessage> selectPendingMessages(int BATCH_SIZE);
 
-    @Update("update outbox_message set status = 'SENT' ,sent_at = now() where message_id = #{messageId}")
-    public void markAsSent(String messageId);
+    @Update("update outbox_message set status = 'SENT' ,sent_at = #{sentAt} where message_id = #{messageId}")
+    public void markAsSent(@Param("messageId") String messageId, @Param("sentAt") LocalDateTime sentAt);
 
     @Update("update outbox_message set status = 'FAILED', sent_at = now() where message_id = #{messageId}")
     public void markAsFailed(String messageId);

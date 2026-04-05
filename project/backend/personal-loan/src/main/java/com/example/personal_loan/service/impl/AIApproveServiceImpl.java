@@ -6,6 +6,7 @@ import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.personal_loan.aop.RedisLocked;
 import com.example.personal_loan.entity.LoanApplication;
@@ -14,6 +15,7 @@ import com.example.personal_loan.enums.ApplicationStatus;
 import com.example.personal_loan.enums.OrderStatus;
 import com.example.personal_loan.mapper.ApplicationMapper;
 import com.example.personal_loan.mapper.OrderMapper;
+import com.example.personal_loan.mq.NotificationOutboxPublisher;
 import com.example.personal_loan.service.AIApproveService;
 import com.example.personal_loan.service.AuthService;
 
@@ -32,7 +34,11 @@ public class AIApproveServiceImpl implements AIApproveService {
     @Autowired 
     private OrderMapper orderMapper;
 
+    @Autowired
+    private NotificationOutboxPublisher notificationOutboxPublisher;
+
     @Override
+    @Transactional
     @RedisLocked(key = "'lock:loan-application:ai-check:' + #p0.id")
     public Boolean AICheck(LoanApplication application) {
         if (new Random().nextInt(100) < 50) {
@@ -54,11 +60,13 @@ public class AIApproveServiceImpl implements AIApproveService {
             order.setLoanPeriod(application.getLoanPeriod());
             // contract 后续生成
             order.setContract(null); 
-            order.setTerm(application.getLoanPeriod()); 
+            order.setTerm(application.getTerm()); 
             order.setCurrentTerm(0); // 初始为0，尚未还款（？）
             order.setOverdueDays(0);
             order.setStartTime(LocalDateTime.now());
             orderMapper.insert(order); // 插入订单表
+
+            notificationOutboxPublisher.enqueueLoanApplicationStatus(application.getUserId(), application.getId(), "已通过");
 
             log.info("AI approve success");
             return true;

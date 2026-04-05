@@ -68,7 +68,14 @@ public class LoanProductServiceImpl implements LoanProductService{
         if (dto.getMinTerm() != null && dto.getMaxTerm() != null && dto.getMinTerm() > dto.getMaxTerm()) {
             throw new BusinessException(400, "最短期数不能大于最长期数");
         }
-
+        // 基础非负校验
+        if (dto.getMinTerm() <= 0 || dto.getMaxTerm() <= 0 || dto.getTermStep().compareTo(dto.getMinTerm()) <= 0 || dto.getTermStep() <= 0) {
+            throw new BusinessException(400, "期数和步长必须大于0");
+        }
+        // 期数，步长合法性校验，满足等差关系
+        if ((dto.getMaxTerm() - dto.getMinTerm()) % dto.getTermStep() != 0) {
+            throw new BusinessException(400, "不合法的期数或步长");
+        }
         if (dto.getMinAmount() == null || dto.getMaxAmount() == null) {
             throw new BusinessException(400, "最小贷款金额和最大贷款金额不能为空");
         }
@@ -130,10 +137,12 @@ public class LoanProductServiceImpl implements LoanProductService{
     @Transactional
     @RedisLocked(key = "'lock:loan-product:options:create:' + #p0")
     public void batchCreateLoanOptions(Long productId, List<LoanOption> options){
-        if (loanProductMapper.findById(productId)==null) {
+        // 校验产品是否存在
+        LoanProduct product = loanProductMapper.findById(productId);
+        if (product == null) {
             throw new BusinessException(404,"该产品不存在，无法添加选项");
         }
-    
+       
         for (LoanOption option : options) {
             if (option == null) continue;
             option.setCreateTime(LocalDateTime.now());
@@ -254,12 +263,27 @@ public class LoanProductServiceImpl implements LoanProductService{
         if (existing == null) {
             throw new BusinessException(404,"该产品不存在");
         }
-        //校验期数和金额
-        if (dto.getMinTerm() != null && dto.getMaxTerm() != null) {
+        // minTerm,maxTerm,termStep必须同时提供或同时不提供
+        if (!((dto.getMinTerm() != null && dto.getMaxTerm() != null && dto.getTermStep() != null)
+            || (dto.getMinTerm() == null && dto.getMaxTerm() == null && dto.getTermStep() == null))) {
+            throw new BusinessException(400, "期数和步长必须同时提供");
+        }
+        //校验期数和步长
+        if (dto.getMinTerm() != null && dto.getMaxTerm() != null && dto.getTermStep() != null) {
+            // 非0校验
+            if (dto.getMinTerm() <= 0 || dto.getMaxTerm() <= 0 || dto.getTermStep() <= 0) {
+                throw new BusinessException(400, "期数和步长必须大于0");
+            }
+            // 最短期数不能大于最长期数
             if (dto.getMinTerm() > dto.getMaxTerm()) {
                 throw new BusinessException(400, "最短期数不能大于最长期数");
             }
+            // 期数，步长合法性校验，满足等差关系
+            if ((dto.getMaxTerm() - dto.getMinTerm()) % dto.getTermStep() != 0) {
+                throw new BusinessException(400, "不合法的期数或步长");
+            }
         }
+        // 校验金额
         if (dto.getMinAmount() != null && dto.getMaxAmount() != null) {
             if (dto.getMinAmount().compareTo(dto.getMaxAmount()) >= 0) {
                 throw new BusinessException(400, "最小贷款金额必须小于最大贷款金额");
@@ -272,11 +296,12 @@ public class LoanProductServiceImpl implements LoanProductService{
             (dto.getMinAmount() == null && dto.getMaxAmount() != null)) {
             throw new BusinessException(400, "最小贷款金额和最大贷款金额必须同时提供");
         }
+
         // 更新
         BeanUtils.copyProperties(dto, existing);
         existing.setUpdateTime(LocalDateTime.now());
         loanProductMapper.update(existing);
-
+        
         // 处理 options：仅更新已存在的选项（带 id）
         if (dto.getOptions() != null) {
             for (LoanOption opt : dto.getOptions()) {
@@ -292,7 +317,7 @@ public class LoanProductServiceImpl implements LoanProductService{
                 if (!productId.equals(dbOpt.getProductId())) {
                     throw new BusinessException(400, "贷款选项不属于当前产品: " + opt.getOptionId());
                 }
-
+               
                 // 执行选择性更新（只更新非空字段）
                 opt.setProductId(productId); 
                 opt.setUpdateTime(LocalDateTime.now());
@@ -321,15 +346,7 @@ public class LoanProductServiceImpl implements LoanProductService{
 
         List<LoanOption> options = loanOptionMapper.selectByProductId(id);
 
-        List<Integer> terms = new ArrayList<>();
-        int min = product.getMinTerm();
-        int max = product.getMaxTerm();
-        int step = product.getTermStep();
-        if (min > 0 && max >= min && step > 0) {
-            for (int term = min; term <= max; term += step) {
-                terms.add(term);
-            }
-        }
+        List<Integer> terms = generateTerms(product);
         
         AdminGetProDetailResponse response = new AdminGetProDetailResponse();
         response.setProductId(product.getId());
@@ -395,12 +412,7 @@ public class LoanProductServiceImpl implements LoanProductService{
         // 2. 转换为 UserGetProductResponse 列表（复用之前的转换逻辑）
         return products.stream().map(product -> {
             // 生成 terms
-            List<Integer> terms = new ArrayList<>();
-            if (product.getMinTerm() != null && product.getMaxTerm() != null && product.getTermStep() != null) {
-                for (int t = product.getMinTerm(); t <= product.getMaxTerm(); t += product.getTermStep()) {
-                    terms.add(t);
-                }
-            }
+            List<Integer> terms = generateTerms(product);
 
             // 查询并转换 options
             List<LoanOption> options = loanOptionMapper.selectByProductId(product.getId());
@@ -439,12 +451,7 @@ public class LoanProductServiceImpl implements LoanProductService{
         List<LoanProduct> products = loanProductMapper.findAllActive();
         return products.stream().map(product -> {
             // 生成 terms 列表
-            List<Integer> terms = new ArrayList<>();
-            if (product.getMinTerm() != null && product.getMaxTerm() != null && product.getTermStep() != null) {
-                for (int t = product.getMinTerm(); t <= product.getMaxTerm(); t += product.getTermStep()) {
-                    terms.add(t);
-                }
-            }
+            List<Integer> terms = generateTerms(product);
 
             // 查询并转换贷款选项
             List<LoanOption> options = loanOptionMapper.selectByProductId(product.getId());
@@ -473,5 +480,16 @@ public class LoanProductServiceImpl implements LoanProductService{
 
             return response;
         }).collect(Collectors.toList());
+    }
+
+    // 内部工具方法，生成terms列表
+    private List<Integer> generateTerms(LoanProduct product) {
+        List<Integer> terms = new ArrayList<>();
+        if (product.getMinTerm() != null && product.getMaxTerm() != null && product.getTermStep() != null) {
+            for (int t = product.getMinTerm(); t <= product.getMaxTerm(); t += product.getTermStep()) {
+                terms.add(t);
+            }
+        }
+        return terms;
     }
 }

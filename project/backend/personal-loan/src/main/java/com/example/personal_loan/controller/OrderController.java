@@ -1,8 +1,5 @@
 package com.example.personal_loan.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +15,9 @@ import com.example.personal_loan.dto.UserGetOrderResponse;
 import com.example.personal_loan.dto.UserOrderListResponse;
 import com.example.personal_loan.service.OrderService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
@@ -57,14 +57,14 @@ public class OrderController {
 
     @PostMapping(value = "/{orderId}/repay", produces = "application/json")
     @Operation(summary = "还款操作", description = "用户对指定贷款订单进行还款操作")
-    public ResponseEntity<ApiResult<UserGetOrderResponse>> repayOrder(
+    public ResponseEntity<ApiResult<String>> repayOrder(
             HttpServletRequest request,
             @Parameter(description = "订单ID") @PathVariable Long orderId) {
     
         Long currentUserId = (Long) request.getAttribute("userId"); 
-        UserGetOrderResponse response = orderService.repay(orderId);
+        orderService.repay(orderId);
         log.info("/api/orders/{}/repay success called for user {} to repay order {}", orderId, currentUserId, orderId);
-        return ResponseEntity.ok(ApiResult.success(response));
+        return ResponseEntity.ok(ApiResult.success("已发起还款"));
     }
 
 }

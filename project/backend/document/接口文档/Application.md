@@ -52,6 +52,7 @@
 **失败**:
 ![](../ApplicationImgs/applyFail_1.png "用户申请贷款失败，贷款金额低于最低额度")
 ![](../ApplicationImgs/applyFail_2.png "用户申请贷款失败，贷款金额高于最高额度")
+![](../ApplicationImgs/applyFailNoAuth.png "用户申请贷款失败，未实名认证，需要先认证姓名、身份证号、银行卡号")
 
 
 **日志**:

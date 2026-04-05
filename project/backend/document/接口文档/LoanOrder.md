@@ -93,3 +93,25 @@
 **postman测试结果**
 
 ![](../LoanOrderImgs/detail.png "用户获取单个订单详情")
+
+## 用户发起还款
+
+**网址** /api/orders/{orderId}/repay
+
+**请求方式** POST
+
+**请求示例（网址）** /api/orders/1/repay
+
+**返回数据**
+
+``` json
+{
+    "code": 200,
+    "data": "已发起还款",
+    "message": "操作成功"
+}
+```
+
+**postman测试结果**
+
+![](../LoanOrderImgs/repay.png "用户发起还款")

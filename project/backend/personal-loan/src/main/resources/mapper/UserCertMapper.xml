@@ -8,6 +8,9 @@
     <update id="update" parameterType="com.example.personal_loan.entity.UserCert">
         UPDATE user_certification
         <set>
+            <if test="realName != null">
+                real_name = #{realName},
+            </if>
             <if test="idCard != null">
                 id_card = #{idCard},
             </if>

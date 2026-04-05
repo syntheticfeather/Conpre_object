@@ -15,12 +15,15 @@ import com.example.personal_loan.entity.LoanApplication;
 import com.example.personal_loan.entity.LoanOption;
 import com.example.personal_loan.entity.LoanProduct;
 import com.example.personal_loan.entity.OutboxMessage;
+import com.example.personal_loan.entity.UserCert;
 import com.example.personal_loan.enums.ApplicationStatus;
 import com.example.personal_loan.exception.BusinessException;
 import com.example.personal_loan.mapper.ApplicationMapper;
 import com.example.personal_loan.mapper.LoanOptionMapper;
 import com.example.personal_loan.mapper.LoanProductMapper;
 import com.example.personal_loan.mapper.OutboxMapper;
+import com.example.personal_loan.mapper.UserCertMapper;
+import com.example.personal_loan.mq.NotificationOutboxPublisher;
 import com.example.personal_loan.service.ApplicationService;
 import com.example.personal_loan.service.AuthService;
 import com.example.personal_loan.service.LoanProductService;
@@ -47,6 +50,9 @@ public class ApplicationServiceImpl implements ApplicationService{
     private LoanProductMapper loanProductMapper;
 
     @Autowired
+    private UserCertMapper userCertMapper;
+
+    @Autowired
     private UserService userService;
 
     @Autowired
@@ -60,6 +66,9 @@ public class ApplicationServiceImpl implements ApplicationService{
 
     @Autowired
     private ObjectMapper mapper;
+
+    @Autowired
+    private NotificationOutboxPublisher notificationOutboxPublisher;
 
     /**
      * 添加贷款申请
@@ -86,6 +95,11 @@ public class ApplicationServiceImpl implements ApplicationService{
         }
         if (request.getLoanAmount().compareTo(product.getMinAmount()) < 0 || request.getLoanAmount().compareTo(product.getMaxAmount()) > 0) {
             throw new BusinessException(400, "贷款金额超出范围");
+        }
+        // 检验是否实名认证
+        UserCert userCert = userCertMapper.selectByUserId(userId);
+        if (userCert.getRealName() == null || userCert.getIdCard() == null || userCert.getBankCardId() == null) {
+            throw new BusinessException(400, "请先完成实名认证");
         }
 
         // 构建申请记录
@@ -119,6 +133,8 @@ public class ApplicationServiceImpl implements ApplicationService{
         outbox.setCreatedAt(LocalDateTime.now());
         log.info("插入 outbox 消息");
         outboxMapper.insert(outbox); // 同一事务中插入
+
+        notificationOutboxPublisher.enqueueLoanApplicationStatus(userId, application.getId(), "审核中");
     }
 
     /**
@@ -144,6 +160,8 @@ public class ApplicationServiceImpl implements ApplicationService{
         // 需要审核？通过后状态变更
         application.setStatus(ApplicationStatus.已取消);
         applicationMapper.update(application);
+
+        notificationOutboxPublisher.enqueueLoanApplicationStatus(userId, applicationId, "已取消");
     }
 
     /**

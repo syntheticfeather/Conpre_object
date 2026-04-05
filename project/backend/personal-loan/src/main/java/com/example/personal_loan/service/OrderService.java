@@ -13,7 +13,7 @@ public interface OrderService {
     List<UserOrderListResponse> userGetAllOrders(Long userId);
 
     // 还款
-    UserGetOrderResponse repay(Long orderId); 
+    void repay(Long orderId); 
 
     // 延期(加1期的时间)(先默认给人工审核)
     Boolean postpone(Long orderId);

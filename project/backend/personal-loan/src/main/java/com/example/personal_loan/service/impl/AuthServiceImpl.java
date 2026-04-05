@@ -48,35 +48,47 @@ public class AuthServiceImpl implements AuthService{
 
     /**
      * 提交基本认证信息
-     * @param userId 用户ID
-     * @param idCard 身份证号
+     * @param userId 用户ID 
+     * @param idCard 身份证号 必须填写
+     * @param realName 真实姓名 必须填写
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @RedisLocked(key = "'lock:auth:basic:' + #p0")
-    public void submitBasicAuth(Long userId, String idCard) {
+    public void submitBasicAuth(Long userId, String idCard, String realName) {
         UserCert userCert = userCertMapper.selectByUserId(userId);
 
         // 1. 参数校验
-        if (userCert.getIdCard() == null) {
-            if (idCard == null || idCard.trim().isEmpty()) {
-                throw new BusinessException(400, "身份证号不能为空");
-            }
-            if (!IdCardUtils.isValid(idCard)) {
-                throw new BusinessException(400, "身份证号格式无效");
-            }
+        if (idCard == null || idCard.trim().isEmpty()) {
+            throw new BusinessException(400, "身份证号不能为空");
         }
-
-        // 2. 更新主表中的身份证号
+        if (!IdCardUtils.isValid(idCard)) {
+            throw new BusinessException(400, "身份证号格式无效");
+        }
+        
+       
+        if (realName == null || realName.trim().isEmpty()) {
+            throw new BusinessException(400, "真实姓名不能为空");
+        }
+        if (!realName.matches("^[\\u4e00-\\u9fa5\\u3400-\\u4dbf]+$")) {
+            throw new BusinessException(400, "请填写正确的姓名");
+        }
+        if (realName.length() < 2 || realName.length() > 4) {
+            throw new BusinessException(400, "请填写正确的姓名");
+        }
+        // 校验姓名是否与身份证号匹配，需要接入第三方API，暂不实现
+        
+        // 2. 更新主表中的信息
         userCert.setIdCard(idCard);
+        userCert.setRealName(realName);
         userCert.setCreditScore(calScore(userId));
         userCertMapper.update(userCert);
         
-        log.info("basic auth is submitted successfully: userId={}", userId);
+        log.info("Basic auth is submitted successfully: userId={}", userId);
     }
 
     /**
-     * 提交其他认证信息，包括银行卡及各类证明材料
+     * 提交或更新其他认证信息，包括银行卡及各类证明材料
      * @param userId 用户ID
      * @param bankCardId 银行卡号
      * @param propertyFile 资产证明文件
@@ -102,13 +114,8 @@ public class AuthServiceImpl implements AuthService{
         UserCert userCert = userCertMapper.selectByUserId(userId);
 
         // 1. 验证银行卡号
-        if (userCert.getBankCardId() == null) {
-            if (bankCardId == null || bankCardId.trim().isEmpty()) {
-                throw new BusinessException(400, "银行卡号不能为空");
-            }
-            if (!BankCardUtils.isValid(bankCardId)) {
-                throw new BusinessException(400, "银行卡号格式无效");
-            }
+        if (bankCardId != null && !BankCardUtils.isValid(bankCardId)) {
+            throw new BusinessException(400, "银行卡号格式无效");
         }
 
         // 2. 存储所有文件（任一失败则整体回滚）
@@ -132,13 +139,14 @@ public class AuthServiceImpl implements AuthService{
         handleTriCert(userCert, ssPath, crPath);
         log.info("tri cert is handled successfully: triCertId={}", userCert.getTriCertId());
 
-        // 4. 更新主表中的银行卡号和信用分
+        // 4. 更新主表中的银行卡号
         if(bankCardId != null){
             userCert.setBankCardId(bankCardId);
         }
-        userCert.setCreditScore(calScore(userId));
-        System.out.println("【calScore】=" + userCert.getCreditScore());
         userCertMapper.update(userCert);
+        // 计算信誉分
+        userCert.setCreditScore(calScore(userId));
+        userCertMapper.updateCreditScore(userId, userCert.getCreditScore());
         
         log.info("all other auth materials are submitted successfully: userId={}", userId);
     }
@@ -202,6 +210,7 @@ public class AuthServiceImpl implements AuthService{
     public GetCertResponse getCert(Long userId) {
         UserCert userCert = userCertMapper.selectByUserId(userId);
         userCert.setCreditScore(calScore(userId));
+        userCert.setBankCardId(BankCardUtils.maskCard(userCert.getBankCardId()));
         
         WorkCert workCert = null;
         if (userCert.getWorkCertId() != null) {
@@ -240,12 +249,6 @@ public class AuthServiceImpl implements AuthService{
         System.out.println(immovablesCert);
         return new GetCertResponse(userCert, workCert, triCert, immovablesCert);
     }
-
-    // 个人征信认证
-    // @Override
-    // public void creditAuth(){ 
-
-    // }
 
     // 处理不动产认证
     private void handleImmovablesCert(UserCert userCert, String propertyPath, String carPath) {
@@ -307,7 +310,7 @@ public class AuthServiceImpl implements AuthService{
         }
     }
 
-    // 根据 workCertId 查询工作认证信息
+    // 管理员根据 workCertId 查询工作认证信息
     @Override
     public WorkCert getWorkCertById(Integer workCertId) {
         WorkCert workCert = workCertMapper.selectById(workCertId);
@@ -323,7 +326,7 @@ public class AuthServiceImpl implements AuthService{
         return workCert;
     }
 
-    // 根据 triCertId 查询第三方认证信息
+    // 管理员根据 triCertId 查询第三方认证信息
     @Override
     public TriCert getTriCertById(Integer triCertId) {
         TriCert triCert = triCertMapper.selectById(triCertId);
@@ -339,7 +342,7 @@ public class AuthServiceImpl implements AuthService{
         return triCert;
     }
 
-    // 根据 immovableCertId 查询不动产认证信息
+    // 管理员根据 immovableCertId 查询不动产认证信息
     @Override
     public ImmovablesCert getImmovablesCertById(Integer immovableCertId) {
         ImmovablesCert immovablesCert = immovablesCertMapper.selectById(immovableCertId);

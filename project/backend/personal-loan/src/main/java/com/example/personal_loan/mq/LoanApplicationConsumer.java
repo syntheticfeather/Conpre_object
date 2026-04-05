@@ -63,7 +63,7 @@ public class LoanApplicationConsumer {
             // 读取主队列的 x-death 次数
             int deathCount = getDeathCount(message, RabbitMQConfig.LOAN_APPLICATION_QUEUE);
             // 超过最大重试次数(3次)，转入 DLQ并 ack 原消息，以避免再次重试
-            if (deathCount >= MAX_RETRIES) {
+            if (deathCount >= MAX_RETRIES) {   // 或者直接直接 Ack 掉原消息，手动记录死信？
                 Message dlqMsg = copyWithHeaders(message, messageId);
                 rabbitUtil.sendToDLX(RabbitMQConfig.DLQ, dlqMsg);
                 channel.basicAck(tag, false);

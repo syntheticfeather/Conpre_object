@@ -73,12 +73,13 @@ public class AuthController {
     @Operation(summary = "提交基本认证", description = "用户提交身份证信息进行基本认证")
     public ResponseEntity<ApiResult<Void>> submitBasicAuth(
             HttpServletRequest request,
-            @Parameter(description = "身份证号", required = true) @RequestPart String idCard) {
+            @Parameter(description = "身份证号", required = true) @RequestPart String idCard,
+            @Parameter(description = "真实姓名", required = true) @RequestPart String realName) {
 
         Long userId = (Long) request.getAttribute("userId");
         log.info("/api/auth/submit-basic called for user {} to authorize", userId);
 
-        authService.submitBasicAuth(userId, idCard);
+        authService.submitBasicAuth(userId, idCard, realName);
 
         return ResponseEntity.ok(ApiResult.success(null, "基本认证提交成功"));
     }

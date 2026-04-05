@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserCert {
     private Long userId;
+    private String realName;
     private String idCard;
     private Integer creditScore;
     private String bankCardId;

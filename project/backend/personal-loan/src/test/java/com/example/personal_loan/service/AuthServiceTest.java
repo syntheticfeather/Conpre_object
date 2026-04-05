@@ -106,7 +106,7 @@ class AuthServiceTest {
     void testSubmitAllAuth_InvalidIdCard() {
         BusinessException exception = assertThrows(BusinessException.class, () -> 
             authService.submitBasicAuth(
-                1L, ""
+                1L, "", "张三"
             )
         );
         assertEquals(400, exception.getCode());

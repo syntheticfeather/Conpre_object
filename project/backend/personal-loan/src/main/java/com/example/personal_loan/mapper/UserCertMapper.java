@@ -14,6 +14,7 @@ public interface UserCertMapper {
     @Select(
         "SELECT " +
         "    user_id, " +
+        "    real_name, " +
         "    id_card, " +
         "    credit_score, " +
         "    work_cert_id, " +
@@ -28,6 +29,7 @@ public interface UserCertMapper {
     @Insert(
         "INSERT INTO user_certification (" +
         "  user_id, " +
+        "  real_name, " +
         "  id_card, " +
         "  credit_score, " +
         "  bank_card_id, " +
@@ -46,6 +48,12 @@ public interface UserCertMapper {
     )
     @Options(useGeneratedKeys = false) // user_id 是主键，由业务传入，无自增
     int insert(UserCert cert);
+
+    //修改信誉分
+    @Update(
+        "UPDATE user_certification SET credit_score = #{creditScore} WHERE user_id = #{userId}"
+    )
+    int updateCreditScore(@Param("userId") Long userId, @Param("creditScore") Integer creditScore);
 
     int update(UserCert cert);
 }

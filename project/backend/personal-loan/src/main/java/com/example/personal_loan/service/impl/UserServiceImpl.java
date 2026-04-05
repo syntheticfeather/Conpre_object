@@ -151,6 +151,7 @@ public class UserServiceImpl implements UserService {
         // 创建认证记录
         UserCert cert = new UserCert();
         cert.setUserId(user.getId()); // 主键
+        cert.setCreditScore(0);
         // 其他字段（idCard, bankCardId, workCertId...）留 null
         userCertMapper.insert(cert);
 

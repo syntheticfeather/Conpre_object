@@ -1,5 +1,6 @@
 package com.example.personal_loan.mq;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.amqp.core.Message;
@@ -73,6 +74,7 @@ public class OutboxMessagePoller {
             );
             log.info("消息已投递到Broker: messageId={}, topic={}",
                     message.getMessageId(), message.getTopic());
+            outboxMapper.markAsSent(message.getMessageId(), LocalDateTime.now());
         } catch (Exception e) {
             log.info("发送消息失败，标记为 FAILED: messageId={}",
                     message.getMessageId(), e);

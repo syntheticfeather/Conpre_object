@@ -20,6 +20,7 @@ import com.example.personal_loan.enums.OrderStatus;
 import com.example.personal_loan.exception.BusinessException;
 import com.example.personal_loan.mapper.ApplicationMapper;
 import com.example.personal_loan.mapper.OrderMapper;
+import com.example.personal_loan.mq.NotificationOutboxPublisher;
 import com.example.personal_loan.service.ManualApproveService;
 import com.example.personal_loan.service.UserService;
 
@@ -34,6 +35,9 @@ public class ManualApproveServiceImpl implements ManualApproveService{
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private NotificationOutboxPublisher notificationOutboxPublisher;
 
     // 获得本审核员所有代办审核申请
     @Override
@@ -92,7 +96,7 @@ public class ManualApproveServiceImpl implements ManualApproveService{
             order.setLoanPeriod(application.getLoanPeriod());
             // contract 后续生成
             order.setContract(null); 
-            order.setTerm(application.getLoanPeriod()); 
+            order.setTerm(application.getTerm()); 
             order.setCurrentTerm(0); // 初始为0，尚未还款（？）
             order.setOverdueDays(0);
             order.setStartTime(LocalDateTime.now());
@@ -115,6 +119,9 @@ public class ManualApproveServiceImpl implements ManualApproveService{
 
         application.setStatus(newStatus);
         applicationMapper.update(application);
+
+        String visibleStatus = approved ? "已通过" : "申请失败";
+        notificationOutboxPublisher.enqueueLoanApplicationStatus(application.getUserId(), application.getId(), visibleStatus);
 
         response.setLoanApplicationId(loanApplicationId);
         response.setStatus(newStatus);

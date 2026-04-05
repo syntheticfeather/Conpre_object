@@ -19,16 +19,26 @@ public class RabbitMQConfig {
     // ========== Queue ==========
     public static final String LOAN_APPLICATION_QUEUE = "loan.application.queue";
     public static final String LOAN_APPLICATION_RETRY_QUEUE = "loan.application.retry.queue";
+
+    public static final String NOTIFICATION_QUEUE = "notification.queue";
+    public static final String NOTIFICATION_RETRY_QUEUE = "notification.retry.queue";
+
     public static final String ORDER_REPAID_QUEUE = "order.repaid.queue";
     public static final String PAYMENT_REQUESTED_QUEUE = "payment.requested.queue";
     public static final String PAYMENT_SUCCESS_QUEUE = "payment.success.queue";
+    public static final String PAYMENT_SUCCESS_RETRY_QUEUE = "payment.success.retry.queue";
 
     // ========== Routing Key ==========
     public static final String LOAN_APPLICATION_ROUTING_KEY = "loan.application.submitted";
     public static final String LOAN_APPLICATION_RETRY_ROUTING_KEY = "loan.application.retry";
+
+    public static final String NOTIFICATION_ROUTING_KEY = "notification.loan-application";
+    public static final String NOTIFICATION_RETRY_ROUTING_KEY = "notification.retry";
+    
     public static final String ORDER_REPAID_ROUTING_KEY = "order.repaid";
     public static final String PAYMENT_REQUESTED_ROUTING_KEY = "payment.requested";
     public static final String PAYMENT_SUCCESS_ROUTING_KEY = "payment.success";
+    public static final String PAYMENT_SUCCESS_RETRY_ROUTING_KEY = "payment.success.retry";
 
 
     public static final String DLQ = "order.dlq"; // 死信队列
@@ -53,6 +63,14 @@ public class RabbitMQConfig {
                 .build();
     }
 
+    @Bean
+    public Queue notificationQueue() {
+        return QueueBuilder.durable(NOTIFICATION_QUEUE)
+                .withArgument("x-dead-letter-exchange", DLX)
+                .withArgument("x-dead-letter-routing-key", NOTIFICATION_RETRY_ROUTING_KEY)
+                .build();
+    }
+
     /**
      * 将队列绑定到 Exchange + Routing Key
      */
@@ -61,6 +79,13 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(loanApplicationQueue())
                 .to(loanExchange())
                 .with(LOAN_APPLICATION_ROUTING_KEY);
+    }
+
+    @Bean
+    public Binding bindNotificationQueue() {
+        return BindingBuilder.bind(notificationQueue())
+                .to(loanExchange())
+                .with(NOTIFICATION_ROUTING_KEY);
     }
 
     /**
@@ -107,10 +132,26 @@ public class RabbitMQConfig {
     }
 
     @Bean
+    public Queue notificationRetryQueue() {
+        return QueueBuilder.durable(NOTIFICATION_RETRY_QUEUE)
+                .withArgument("x-message-ttl", 10000)
+                .withArgument("x-dead-letter-exchange", LOAN_EXCHANGE)
+                .withArgument("x-dead-letter-routing-key", NOTIFICATION_ROUTING_KEY)
+                .build();
+    }
+
+    @Bean
     public Binding retryBinding() {
         return BindingBuilder.bind(loanApplicationRetryQueue())
                 .to(dlx())
                 .with(LOAN_APPLICATION_RETRY_ROUTING_KEY);
+    }
+
+    @Bean
+    public Binding notificationRetryBinding() {
+        return BindingBuilder.bind(notificationRetryQueue())
+                .to(dlx())
+                .with(NOTIFICATION_RETRY_ROUTING_KEY);
     }
 
     @Bean
@@ -139,7 +180,10 @@ public class RabbitMQConfig {
 
     @Bean
     public Queue paymentSuccessQueue() {
-        return QueueBuilder.durable(PAYMENT_SUCCESS_QUEUE).build();
+        return QueueBuilder.durable(PAYMENT_SUCCESS_QUEUE)
+                .withArgument("x-dead-letter-exchange", DLX)
+                .withArgument("x-dead-letter-routing-key", PAYMENT_SUCCESS_RETRY_ROUTING_KEY)
+                .build();
     }
 
     @Bean
@@ -147,6 +191,22 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(paymentSuccessQueue())
                 .to(loanExchange())
                 .with(PAYMENT_SUCCESS_ROUTING_KEY);
+    }
+
+    @Bean
+    public Queue paymentSuccessRetryQueue() {
+        return QueueBuilder.durable(PAYMENT_SUCCESS_RETRY_QUEUE)
+                .withArgument("x-message-ttl", 10000)
+                .withArgument("x-dead-letter-exchange", LOAN_EXCHANGE)
+                .withArgument("x-dead-letter-routing-key", PAYMENT_SUCCESS_ROUTING_KEY)
+                .build();
+    }
+
+    @Bean
+    public Binding paymentSuccessRetryBinding() {
+        return BindingBuilder.bind(paymentSuccessRetryQueue())
+                .to(dlx())
+                .with(PAYMENT_SUCCESS_RETRY_ROUTING_KEY);
     }
 
 }

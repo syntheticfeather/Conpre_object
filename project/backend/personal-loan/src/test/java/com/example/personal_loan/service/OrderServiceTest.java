@@ -146,9 +146,8 @@ class OrderServiceTest {
         when(orderMapper.selectById(1L)).thenReturn(order);
         when(loanProductMapper.findById(1L)).thenReturn(loanProduct);
 
-        UserGetOrderResponse response = orderService.repay(1L);
+        orderService.repay(1L);
 
-        assertNotNull(response);
         assertEquals(6, order.getCurrentTerm());
         assertEquals(OrderStatus.正常, order.getStatus());
         verify(orderMapper).update(any(Order.class));
@@ -161,9 +160,7 @@ class OrderServiceTest {
         when(orderMapper.selectById(1L)).thenReturn(order);
         when(loanProductMapper.findById(1L)).thenReturn(loanProduct);
 
-        UserGetOrderResponse response = orderService.repay(1L);
-
-        assertNotNull(response);
+        orderService.repay(1L);
         assertEquals(12, order.getCurrentTerm());
         assertEquals(OrderStatus.已完成, order.getStatus());
         verify(orderMapper).update(any(Order.class));
@@ -213,9 +210,8 @@ class OrderServiceTest {
         when(orderMapper.selectById(1L)).thenReturn(order);
         when(loanProductMapper.findById(1L)).thenReturn(loanProduct);
 
-        UserGetOrderResponse response = orderService.repay(1L);
+        orderService.repay(1L);
 
-        assertNotNull(response);
         assertEquals(6, order.getCurrentTerm());
         assertEquals(OrderStatus.正常, order.getStatus());
         verify(orderMapper).update(any(Order.class));
@@ -340,9 +336,8 @@ class OrderServiceTest {
         when(orderMapper.selectById(1L)).thenReturn(order);
         when(loanProductMapper.findById(1L)).thenReturn(loanProduct);
 
-        UserGetOrderResponse response = orderService.repay(1L);
+        orderService.repay(1L);
 
-        assertNotNull(response);
         assertEquals(1, order.getCurrentTerm());
         verify(orderMapper).update(any(Order.class));
     }

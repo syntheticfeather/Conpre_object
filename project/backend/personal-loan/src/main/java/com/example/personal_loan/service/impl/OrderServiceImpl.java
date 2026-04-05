@@ -62,20 +62,25 @@ public class OrderServiceImpl implements OrderService{
     
     @Override
     @RedisLocked(key = "'lock:order:repay:' + #p0")
-    public UserGetOrderResponse repay(Long orderId) {
+    public void repay(Long orderId) {
+        // 查找订单
         Order order = orderMapper.selectById(orderId);
         if (order == null) {
             throw new BusinessException(404, "订单不存在");
         }
+        // 获取订单状态
         OrderStatus status = order.getStatus();
+        // 检查订单状态是否逾期
         if (status != OrderStatus.正常 && status != OrderStatus.已逾期) {
             throw new BusinessException(400, "订单不可还款，当前状态：" + status);
         }
+        // 检查订单是否已结清
         if (order.getCurrentTerm() >= order.getTerm()) {
             throw new BusinessException(400, "订单已结清，无需还款");
         }
+        // 计算当前期应还款金额
         BigDecimal dueAmount = CalculateUtil.calculateCurrentTermPayment(order);
-
+        // 发送还款请求事件，写Outbox
         PaymentRequestedEvent event = new PaymentRequestedEvent(order.getId(), dueAmount, LocalDateTime.now());
         OutboxMessage outbox = new OutboxMessage();
         outbox.setMessageId("payment_requested_" + order.getId() + "_" + System.currentTimeMillis());
@@ -90,10 +95,6 @@ public class OrderServiceImpl implements OrderService{
         outbox.setStatus("PENDING");
         outbox.setCreatedAt(LocalDateTime.now());
         outboxMapper.insert(outbox);
-
-        LoanProduct product = loanProductMapper.findById(order.getProductId());
-        String productName = product.getProductName();
-        return new UserGetOrderResponse(productName,order);
     }
     
     @Override

@@ -5,6 +5,7 @@ CREATE TABLE users(
     avatar VARCHAR(255) COMMENT '头像，存路径，二期工程',
     password VARCHAR(255) COMMENT '密码',
     phone CHAR(11) COMMENT '手机号',
+    area VARCHAR(16) COMMENT '地区',
     role INT NOT NULL DEFAULT 0 COMMENT '用户权限',
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
@@ -59,16 +60,6 @@ CREATE TABLE user_certification(
 )COMMENT '用户认证表';
 
 /*
-* 工作证明和第三方证明，和不动产证明一样，建表，然后路径部分，说清楚，存图片的本地文件路径
-* 二期工程
-*/
-/*
- 以库的xxx_cert中的xxx作为文件夹名
- 以{业务前缀}_{用户ID或业务ID}_{时间戳(YYYYMMDD)}_{随机字符串}.{原始扩展名}作为文件名
- */
-
-
-/*
 * 评论功能？二期工程
 新增了最大和最小额度
 */
@@ -89,7 +80,7 @@ CREATE TABLE loan_products(
 )COMMENT '贷款产品表';
 
 /* 
-* 删除了loan_amount DECIMAL(12,2) COMMENT '贷款金额'
+* loan_period是否应该改为 DECIMAL？例如期限6个月，0.5年
  */
 CREATE TABLE loan_options(
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -177,6 +168,22 @@ CREATE TABLE processed_message (
    processed_at DATETIME DEFAULT CURRENT_TIMESTAMP
 ) COMMENT '幂等性记录表';
 
+CREATE TABLE notifications(
+    id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '通知ID',
+    user_id INT NOT NULL COMMENT '用户ID',
+    business_id BIGINT COMMENT '关联业务ID',
+    business_type VARCHAR(50) COMMENT '业务类型,如LOAN_APPLICATION, REPAYMENT',
+    title VARCHAR(100) NOT NULL COMMENT '通知标题',
+    content VARCHAR(255) NOT NULL COMMENT '通知内容',
+    read_flag TINYINT NOT NULL DEFAULT 0 COMMENT '是否已读 0未读 1已读',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    read_at DATETIME COMMENT '已读时间',
+    INDEX idx_notifications_user_created (user_id, created_at),
+    INDEX idx_notifications_user_read (user_id, read_flag, created_at),
+    INDEX idx_notifications_business (business_type, business_id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+) COMMENT '站内通知表';
+
 /* 
 * 插入管理员，明文密码分别是 @Gcc1234  @Zff1234  @Wting1234  @Qyx1234
  */
@@ -214,14 +221,14 @@ INSERT INTO loan_products (
     '助力小微企业发展，快速审批，灵活还款',
     '进货周转、设备采购、门店扩张',
     '上架中',
-    3, 36, 3,
+    12, 36, 6,
     10000.00, 500000.00,
     '前2期只还利息'
 );
 
 INSERT INTO loan_options (product_id, interest_rate, loan_period, repaid_type) VALUES
-(1, 0.0650, 12, '先息后本'),
-(1, 0.0720, 24, '等额本息');
+(1, 0.0650, 1, '先息后本'),
+(1, 0.0720, 2, '等额本息');
 
 INSERT INTO loan_products (
     product_name, description, loan_usage, status,
@@ -232,14 +239,14 @@ INSERT INTO loan_products (
     '专为初创企业设计，低门槛准入，快速放款',
     '办公租赁、人员工资、品牌推广',
     '上架中',
-    6, 24, 6,
+    12, 36, 6,
     20000.00, 100000.00,
     '首月免息，赠财务咨询'
 );
 
 INSERT INTO loan_options (product_id, interest_rate, loan_period, repaid_type) VALUES
-(2, 0.0720, 12, '等额本息'),
-(2, 0.0780, 24, '等额本息');
+(2, 0.0720, 1, '等额本息'),
+(2, 0.0780, 2, '等额本息');
 
 INSERT INTO loan_products (
     product_name, description, loan_usage, status,
@@ -256,8 +263,7 @@ INSERT INTO loan_products (
 );
 
 INSERT INTO loan_options (product_id, interest_rate, loan_period, repaid_type) VALUES
-(3, 0.0800, 6, '先息后本'),
-(3, 0.0900, 12, '先息后本');
+(3, 0.0800, 1, '先息后本');
 
 INSERT INTO loan_products (
     product_name, description, loan_usage, status,
@@ -268,15 +274,15 @@ INSERT INTO loan_products (
     '专项用于购置或更新生产设备，支持制造业转型',
     '购买数控机床、自动化设备等',
     '上架中',
-    12, 60, 6,
+    20, 60, 4,
     50000.00, 1000000.00,
     '合作厂商可享利率优惠0.5%'
 );
 
 INSERT INTO loan_options (product_id, interest_rate, loan_period, repaid_type) VALUES
-(4, 0.0580, 24, '等额本息'),
-(4, 0.0620, 36, '等额本息'),
-(4, 0.0650, 60, '等额本金');
+(4, 0.0580, 5, '等额本息'),
+(4, 0.0620, 10, '等额本息'),
+(4, 0.0650, 5, '等额本金');
 
 INSERT INTO loan_products (
     product_name, description, loan_usage, status,
