@@ -51,7 +51,6 @@ const closeUserDetail = () => {
 <style scoped>
 .black-user-manage-view {
   padding: 20px;
-  height: 100%;
   display: flex;
   flex-direction: column;
 }

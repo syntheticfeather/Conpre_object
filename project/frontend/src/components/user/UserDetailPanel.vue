@@ -35,6 +35,7 @@
               </div>
             </div>
             <p><strong>手机号：</strong><span>{{ userDetail.user?.phone || '—' }}</span></p>
+            <p><strong>地区：</strong><span>{{ userDetail.user?.area || '—' }}</span></p>
             <p><strong>订单总数：</strong><span>{{ userDetail.order.length || '0' }}</span></p>
             <p><strong>申请贷款总数：</strong><span>{{ userDetail.loanApplication.length || '0' }}</span></p>
             <p><strong>最近上线时间：</strong><span>{{ formatDate(userDetail.user?.updateTime) }}</span></p>
@@ -103,7 +104,7 @@
             <tbody>
               <tr v-for="(order, index) in userDetail.order || []" :key="index">
                 <td>{{ index + 1 }}</td>
-                <td>{{ order.productId || '—' }}</td>
+                <td>{{ productMap[order.productId] || order.productId || '—' }}</td>
                 <td>{{ order.status || '—' }}</td>
                 <td>{{ formatAmount(order.repaidAmount) }}</td>
                 <td>{{ formatAmount(order.loanAmount) }}</td>
@@ -145,7 +146,7 @@
             <tbody>
               <tr v-for="(app, index) in userDetail.loanApplication || []" :key="index">
                 <td>{{ index + 1 }}</td>
-                <td>{{ app.productId || '—' }}</td>
+                <td>{{ productMap[app.productId] || app.productId || '—' }}</td>
                 <td>{{ formatAmount(app.loanAmount) }}</td>
                 <td>{{ app.term || '—' }}</td>
                 <td>{{ app.repaidType || '—' }}</td>
@@ -179,9 +180,10 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref, watch, computed } from 'vue'
+import { defineProps, defineEmits, ref, watch, computed, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { authAPI } from '@/api'
+import { loanAPI } from '@/api'
 import ImagePreview from '@/components/shared/ImagePreview.vue'
 import { ElMessage } from 'element-plus' 
 
@@ -207,6 +209,16 @@ const previewImageUrl = ref('')
 const previewTitle = ref('')
 const showCertDetails = ref({})
 // const certImages = ref({})
+
+// 产品列表缓存（用于映射产品名称）
+const productList = ref([])
+const productMap = computed(() => {
+  const map = {}
+  productList.value.forEach(product => {
+    map[product.id] = product.productName
+  })
+  return map
+})
 
 // 判断是否为黑名单用户
 const isBlacklistUser = computed(() => {
@@ -378,14 +390,34 @@ const close = () => {
   visible.value = false
   emit('close')
 }
+
+// 加载产品列表（用于映射产品名称）
+const fetchProductList = async () => {
+  try {
+    const response = await loanAPI.getProducts()
+    if (response.code === 200) {
+      productList.value = response.data || []
+    }
+  } catch (error) {
+    console.error('获取产品列表失败:', error)
+  }
+}
+
+// 组件挂载时加载产品列表
+onMounted(() => {
+  fetchProductList()
+})
 </script>
 
 <style scoped>
 /* 详情容器样式 */
 .detail-container {
-  height: 100%;
   display: flex;
   flex-direction: column;
+
+  margin: 0;
+  padding: 0;
+
   background: white;
   overflow: hidden;
 }
@@ -533,11 +565,6 @@ tbody td {
   border-bottom: 1px solid #eee;
   font-size: 14px;
 }
-
-tbody tr:hover {
-  background: #f8f9fa;
-}
-
 /* 加载和错误状态 */
 .loading-state {
   text-align: center;

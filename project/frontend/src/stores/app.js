@@ -31,11 +31,29 @@ export const useAppStore = defineStore('app', {
 
     setTheme(theme) {
       this.theme = theme
+      this.applyTheme()
+    },
+
+    toggleTheme() {
+      this.theme = this.theme === 'light' ? 'dark' : 'light'
+      this.applyTheme()
+    },
+
+    applyTheme() {
+      if (this.theme === 'dark') {
+        document.documentElement.classList.add('dark')
+      } else {
+        document.documentElement.classList.remove('dark')
+      }
     },
 
     resetState() {
       this.loading = false
       this.loadingCount = 0
+    },
+
+    initTheme() {
+      this.applyTheme()
     }
   },
 

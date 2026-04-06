@@ -35,7 +35,13 @@
 
     <!-- 审核状态格式化 -->
     <template #status="{ record }" >
-      <span :style="{ color: getStatusColor(record.status) }">
+      <span 
+      class="status-tag" 
+      :style="{
+        '--status-color': getStatusColor(record.status).color,
+      '--status-bg': getStatusColor(record.status).background,
+      '--status-border': getStatusColor(record.status).border
+      }">
         {{ formatStatus(record.status) }}
       </span>
     </template>
@@ -45,6 +51,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import BaseTable from '@/components/shared/BaseTable.vue'
+// import { color } from 'echarts'
 
 const props = defineProps({
   applications: {
@@ -142,12 +149,43 @@ const formatStatus = (status) => {
 }
 
 const getStatusColor = (status) => {
-  const colorMap = {
-    '已通过': '#25ce25',
-    '人工拒绝': 'red',
+  const colorMap_pass = {
+    color: '#389e0d',
+    background: '#f6ffed',
+    border: '#b7eb8f'
   }
-  console.log(colorMap[status])
-  
-  return colorMap[status] || 'default'
+  const colorMap_reject = {
+    color: 'red',
+    background: '#fff3f3',
+    border: '#ffd6d6'
+  }
+
+  if(status === '已通过') {
+    return colorMap_pass
+  }
+  else if(status === '人工拒绝') {
+    return colorMap_reject
+  }
+  else {
+    console.log(status)
+    return {
+      color: '#999',
+      background: '#f5f5f5',
+      border: '#d9d9d9'
+    }
+  }
 }
+
 </script>
+
+<style scoped>
+  .status-tag {
+    padding: 2px 4px;
+
+    background-color: var(--status-bg);
+
+    border-radius: 4px;
+    color: var(--status-color);
+    border:1px solid var(--status-border);
+  }
+</style>

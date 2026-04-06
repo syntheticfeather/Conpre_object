@@ -2,23 +2,38 @@
   <div class="nav-bar">
     <div class="logo-container">
       <img src="@/assets/images/logo.jpg" alt="logo">
-      <div class="search-container">
-        <el-input
-          v-model="searchText"
-          placeholder="搜索..."
-          class="search-input"
-          @keyup.enter="handleSearch"
-        >
-          <template #prefix>
-            <el-icon><SearchIcon /></el-icon>
-          </template>
-        </el-input>
+      <!-- 面包屑导航 -->
+      <div class="breadcrumb-container">
+        <el-breadcrumb separator="/">
+          <el-breadcrumb-item>管理平台</el-breadcrumb-item>
+          <el-breadcrumb-item>{{ currentRouteName }}</el-breadcrumb-item>
+        </el-breadcrumb>
       </div>
     </div>
 
     <div class="right-info">
-      <el-icon class="message-icon"><ChatDotRound /></el-icon>
-      <el-icon class="message-icon"><ChatLineSquare /></el-icon>
+      <BellOutlined class="BellOutlined" />
+      <!-- 主题切换图标 -->
+      <div class="theme-icons">
+        <!-- 太阳图标：亮色模式下隐藏 -->
+        <el-icon 
+          v-show="appStore.theme !== 'dark'"
+          class="theme-icon moon" 
+          @click="setTheme('dark')"
+          title="切换到暗色模式"
+        >
+          <Moon />
+        </el-icon>
+        <!-- 月亮图标：暗色模式下隐藏 -->
+        <el-icon 
+          v-show="appStore.theme !== 'light'"
+          class="theme-icon sunny" 
+          @click="setTheme('light')"
+          title="切换到亮色模式"
+        >
+          <Sunny />
+        </el-icon>
+      </div>
       <div class="admin-info" @mouseenter="showAdminTable" @mouseleave="hideAdminTable">
         <div class="avatar-container">
           <img :src="avatarUrl" alt="admin" class="avatar">
@@ -55,17 +70,44 @@
 
 <script>
 import { useAuthStore } from '@/stores/auth'
-import { ChatDotRound, ChatLineSquare, Search as SearchIcon } from '@element-plus/icons-vue' 
+import { useAppStore } from '@/stores/app'
+import { Moon, Sunny } from '@element-plus/icons-vue'
+import { BellOutlined } from '@ant-design/icons-vue'
+import { useRoute } from 'vue-router'
+import { computed } from 'vue'
 
 export default {
   name: 'NavbarMenu',
   components: {
-    ChatDotRound, ChatLineSquare, SearchIcon
+    BellOutlined, Moon, Sunny
+  },
+  setup() {
+    const route = useRoute()
+    
+    // 当前路由名称
+    const currentRouteName = computed(() => {
+      const nameMap = {
+        'Applications': '待审核申请',
+        'CompletedApplications': '已完成申请',
+        'Products': '产品管理',
+        'AddProduct': '添加产品',
+        'Users': '用户管理',
+        'BlackUsers': '黑名单管理',
+        'Risk': '风险管理',
+        'CollectManagement': '催收管理'
+      }
+      return nameMap[route.name] || route.name || ''
+    })
+    
+    return {
+      currentRouteName
+    }
   },
   data() {
     return {
       admin: '管理员',
       authStore: useAuthStore(),
+      appStore: useAppStore(),
       avatarUrl: '@/assets/images/admin.png',
       previewUrl: '',
       dialogVisible: false,
@@ -145,13 +187,9 @@ export default {
         this.$message.success('头像上传成功')
       }
     },
-    // 搜索处理
-    handleSearch() {
-      if (this.searchText.trim()) {
-        console.log('搜索内容:', this.searchText)
-        // 这里可以添加实际的搜索逻辑
-        // 例如：跳转到搜索结果页面或调用搜索API
-      }
+    // 切换主题
+    setTheme(theme) {
+      this.appStore.setTheme(theme)
     }
   }
 }
@@ -167,7 +205,7 @@ export default {
   background-color: var(--nabar-color);
   color: white;
   align-items: center;
-  box-shadow: 5px 5px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--nabar-shadow-color);
   z-index: 9990;
 }
 
@@ -178,36 +216,59 @@ export default {
   flex: 1;
 }
 
-.search-container {
-  margin-left: 30px;
-  flex: 1;
-  max-width: 400px;
+.BellOutlined {
+  font-size: 20px;
+  margin-right: 5px;
 }
-
-.search-input {
-  width: 100%;
-}
-
-.search-input :deep(.el-input__wrapper) {
+.theme-toggle {
+  margin-right: 10px;
+  border: none;
   background-color: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.3);
-}
-
-.search-input :deep(.el-input__placeholder) {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.search-input :deep(.el-input__inner) {
   color: white;
 }
-
-.search-input :deep(.el-icon) {
-  color: rgba(255, 255, 255, 0.7);
+.theme-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.3);
 }
-
-.message-icon {
-  font-size: 24px;
-  margin-right: 5px;
+/* 主题切换图标容器 */
+.theme-icons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+/* 主题图标基础样式 */
+.theme-icon {
+  font-size: 25px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.3s ease;
+  padding: 4px;
+  border-radius: 4px;
+}
+.theme-icon:hover {
+  color: rgba(255, 255, 255, 1);
+  background-color: rgba(255, 255, 255, 0.15);
+  transform: scale(1.15);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+/* 太阳图标特殊样式 */
+.theme-icon.sunny {
+  font-size: 30px;
+  color: rgba(255, 255, 255, 0.8);
+}
+.theme-icon.sunny:hover {
+  color: #ffffff;
+  background-color: rgba(131, 179, 198, 0.2);
+  box-shadow: 0 0 12px rgba(201, 203, 204, 0.5);
+}
+/* 月亮图标特殊样式 */
+.theme-icon.moon {
+  font-size: 30px;
+  color: rgba(255, 255, 255, 0.8);
+}
+.theme-icon.moon:hover {
+  color: #a0c4ff;
+  background-color: rgba(160, 196, 255, 0.2);
+  box-shadow: 0 0 12px rgba(198, 208, 223, 0.5);
 }
 
 img[alt="logo"] {
@@ -215,22 +276,38 @@ img[alt="logo"] {
   height: 55px;
 }
 
+.breadcrumb-container {
+  margin-left: 30px;
+  display: flex;
+  align-items: center;
+}
+
+/* 面包屑导航文字颜色 */
+.breadcrumb-container :deep(.el-breadcrumb__inner) {
+  color: white !important;
+}
+.breadcrumb-container :deep(.el-breadcrumb__separator) {
+  color: white !important;
+}
+
 .right-info {
   display: flex;
   justify-content: space-around;
   align-items: center;
   margin-right: 40px;
-  width: 255px;
+  width: 220px;
 }
 
 .admin-info {
   display: flex;
   align-items: center;
-  padding: 5px 10px;
-  
+  padding: 5px 10px;  
+  justify-content: space-around;
+
+  width: 148px;
   background-color: #055986;
   border-radius: 5px;
-  position: relative;
+  position: relative;  
 }
 
 .admin-info span {
@@ -284,7 +361,7 @@ img[alt="admin"] {
   border-radius: 3px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   display: none;
-  min-width: 120px;
+  min-width: 150px;
   z-index: 1000;
 }
 

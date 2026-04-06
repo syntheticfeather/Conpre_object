@@ -113,7 +113,8 @@ const toggleCollapse = () => {
   width: auto;
   height: 100%;
   background-color: var(--sidebar-color);
-  box-shadow: 2px 0 8px rgb(104, 131, 173);
+  box-shadow: var(--sidebar-shadow-color);
+  transition: all 0.3s ease;
 }
 
 .collapse-btn {
@@ -121,6 +122,7 @@ const toggleCollapse = () => {
   background-color: var(--sidebar-color);
   border-color: var(--sidebar-color);  
   color: #fff;
+  transition: all 0.3s ease;
 }
 
 .collapse-btn:hover {

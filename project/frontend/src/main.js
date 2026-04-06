@@ -12,8 +12,9 @@ import 'element-plus/dist/index.css'
 import 'ant-design-vue/dist/reset.css'
 import './assets/iconfont/iconfont.css'
 
-// 导入认证相关工具和store
+// 导入认证相关工具和 store
 import { useAuthStore } from './stores/auth'
+import { useAppStore } from './stores/app'
 import { isTokenExpired, isTokenAboutToExpire } from './utils/jwt'
 
 const app = createApp(App)
@@ -92,6 +93,10 @@ async function checkAuthStatus() {
 
 // 检查认证状态
 checkAuthStatus()
+
+// 初始化主题
+const appStore = useAppStore()
+appStore.initTheme()
 
 app.use(router)
 app.use(ElementPlus)

@@ -22,6 +22,10 @@ export default defineConfig({
             proxyReq.setHeader('Origin', 'http://localhost:8080')
           })
         }
+      },
+      '/uploads': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
       }
     }
   }

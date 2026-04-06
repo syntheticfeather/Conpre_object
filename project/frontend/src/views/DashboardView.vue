@@ -43,6 +43,6 @@ import Navbar from '@/components/layout/NavbarMenu.vue'
   } 
 
   .main-content {
-    flex: 1; 
+    flex: 1;
   }
 </style>

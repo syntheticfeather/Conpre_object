@@ -88,6 +88,7 @@
             type="primary"
             size="small"
             @click.stop="toggleProductStatus(record, 'deactive')"
+            class="btn off"
           >
             下架
           </a-button>
@@ -95,6 +96,7 @@
             v-else
             size="small"
             @click.stop="toggleProductStatus(record, 'active')"
+            class="btn on"
           >
             上架
           </a-button>
@@ -505,7 +507,7 @@ const formatDate = (dateString) => {
 .product-table-container {
   width: 100%;
 }
-
+/* 按日期筛选 */
 .product-search {
   display: flex;
   gap: 10px;
@@ -513,32 +515,29 @@ const formatDate = (dateString) => {
   align-items: center;
   flex-wrap: wrap;
 }
-
 .input-group {
   display: flex;
   align-items: center;
   gap: 5px;
 }
-
+/* 上下架按钮 */
 .btn {
-  padding: 8px 16px;
-  background-color: #409EFF;
   color: white;
+  background-color: #3e97f6;
   border: none;
   border-radius: 4px;
   cursor: pointer;
 }
-
 .btn:hover {
   background-color: #66b1ff;
 }
 
+/* 批量操作按钮 */
 .batch-actions-container {
   display: flex;
   gap: 10px;
   align-items: center;
 }
-
 .batch-btn {
   padding: 8px 16px;
   background-color: #409EFF;
@@ -548,23 +547,18 @@ const formatDate = (dateString) => {
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
-
 .batch-btn:hover {
   background-color: #66b1ff;
 }
-
 .batch-btn.danger {
   background-color: #F56C6C;
 }
-
 .batch-btn.danger:hover {
   background-color: #f78989;
 }
-
 .batch-btn.primary {
   background-color: #409EFF;
 }
-
 .batch-btn.primary:hover {
   background-color: #66b1ff;
 }

@@ -5,7 +5,7 @@
       :data-source="paginatedUsers"
       :columns="columns"
       :current-page="currentPage"
-      :total="userStore.users.length"
+      :total="filteredTotal"
       :page-size="pageSize"
       :row-key="'userId'"
       :show-row-selection="false"
@@ -71,6 +71,7 @@ const currentPage = ref(1)
 const pageSize = 5
 const selectedUserId = ref(null)
 const sortInfo = ref({ field: null, order: null })
+const filterConditions = ref({})
 
 const columns = [
   {
@@ -109,8 +110,33 @@ const columns = [
 ]
 
 const paginatedUsers = computed(() => {
-  const users = [...userStore.users]
+  let users = [...userStore.users]
   
+  // 应用筛选条件
+  if (filterConditions.value.creditScore) {
+    const condition = filterConditions.value.creditScore
+    if (condition.startsWith('>=')) {
+      const minScore = parseInt(condition.substring(2))
+      users = users.filter(u => u.creditScore >= minScore)
+    } else if (condition.startsWith('<')) {
+      const maxScore = parseInt(condition.substring(1))
+      users = users.filter(u => u.creditScore < maxScore)
+    }
+  }
+  
+  // 黑名单筛选
+  if (filterConditions.value.inBlacklist) {
+    users = users.filter(u => userStore.blacklist.some(b => b.userId === u.userId))
+  } else if (filterConditions.value.notInBlacklist) {
+    users = users.filter(u => !userStore.blacklist.some(b => b.userId === u.userId))
+  } else if (filterConditions.value.orInBlacklist) {
+    // 信誉分<600 或 在黑名单
+    users = users.filter(u => 
+      u.creditScore < 600 || userStore.blacklist.some(b => b.userId === u.userId)
+    )
+  }
+  
+  // 应用排序
   if (sortInfo.value.field && sortInfo.value.order) {
     const order = sortInfo.value.order === 'ascend' ? 1 : -1
     users.sort((a, b) => {
@@ -122,6 +148,36 @@ const paginatedUsers = computed(() => {
   
   const start = (currentPage.value - 1) * pageSize
   return users.slice(start, start + pageSize)
+})
+
+// 筛选后的总用户数
+const filteredTotal = computed(() => {
+  let users = [...userStore.users]
+  
+  // 应用筛选条件
+  if (filterConditions.value.creditScore) {
+    const condition = filterConditions.value.creditScore
+    if (condition.startsWith('>=')) {
+      const minScore = parseInt(condition.substring(2))
+      users = users.filter(u => u.creditScore >= minScore)
+    } else if (condition.startsWith('<')) {
+      const maxScore = parseInt(condition.substring(1))
+      users = users.filter(u => u.creditScore < maxScore)
+    }
+  }
+  
+  // 黑名单筛选
+  if (filterConditions.value.inBlacklist) {
+    users = users.filter(u => userStore.blacklist.some(b => b.userId === u.userId))
+  } else if (filterConditions.value.notInBlacklist) {
+    users = users.filter(u => !userStore.blacklist.some(b => b.userId === u.userId))
+  } else if (filterConditions.value.orInBlacklist) {
+    users = users.filter(u => 
+      u.creditScore < 600 || userStore.blacklist.some(b => b.userId === u.userId)
+    )
+  }
+  
+  return users.length
 })
 
 const handlePageChange = (page) => {
@@ -185,26 +241,28 @@ const selectUser = async (record) => {
     }
   }
 }
-
-/**
- * 处理将用户加入黑名单的操作
- * @param {Object} user - 要加入黑名单的用户记录
- */
 const addToBlacklist = async (user) => {
   try {
     const { value: blackLevel } = await ElMessageBox.prompt(
-      `请输入用户【${user.userName}】的黑名单等级：`,
+      `请输入用户【${user.userName}】的黑名单等级（1-3）：`,
       '加入黑名单',
       {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        inputPattern: /^\d+$/,
-        inputErrorMessage: '请输入有效数字'
+        inputPattern: /^[123]$/,
+        inputErrorMessage: '黑名单等级只能为 1、2 或 3'
       }
     )
 
+    // 验证等级是否在 1-3 范围内
+    const level = parseInt(blackLevel)
+    if (level < 1 || level > 3) {
+      ElMessage.error('黑名单等级只能为 1、2 或 3')
+      return
+    }
+
     await ElMessageBox.confirm(
-      `确定将用户【${user.userName}】（ID: ${user.userId}）加入黑名单？等级：${blackLevel}`,
+      `确定将用户【${user.userName}】（ID: ${user.userId}）加入黑名单？等级：${level}`,
       '确认操作',
       {
         confirmButtonText: '确定',
@@ -213,7 +271,7 @@ const addToBlacklist = async (user) => {
       }
     )
 
-    await userStore.addToBlacklist(user.userId, blackLevel)
+    await userStore.addToBlacklist(user.userId, level)
     ElMessage.success('已成功加入黑名单')
   } catch (error) {
     if (error !== 'cancel' && error !== 'close') {
@@ -221,6 +279,29 @@ const addToBlacklist = async (user) => {
     }
   }
 }
+
+/**
+ * 设置筛选条件
+ * @param {Object} filters - 筛选条件对象
+ */
+const setFilter = (filters) => {
+  filterConditions.value = filters
+  currentPage.value = 1 // 重置到第一页
+}
+
+/**
+ * 重置筛选条件
+ */
+const resetFilter = () => {
+  filterConditions.value = {}
+  currentPage.value = 1
+}
+
+// 暴露方法给父组件
+defineExpose({
+  setFilter,
+  resetFilter
+})
 
 /**
  * 格式化金额，保留两位小数

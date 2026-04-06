@@ -72,7 +72,7 @@
 
     <!-- 分页组件 -->
     <BasePagination
-      v-if="showPagination"
+      v-if="showPagination "
       :current-page="currentPage"
       :total="total"
       :page-size="pageSize"

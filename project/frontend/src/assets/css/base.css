@@ -13,6 +13,7 @@ li {
 body {
   font: 14px/1.5 "Microsoft Yahei", "Hiragino Sans GB", "Heiti SC", "WenQuanYi Micro Hei", sans-serif;
   color: #333;
+  background-color: var(--html-bg);
 }
 
 a {
@@ -20,10 +21,33 @@ a {
   text-decoration: none;
 }
 
-/* 通用属性值预设 */
+/* 通用属性值预设 - 亮色模式 */
 :root {
+    /* 基础颜色 */
+    --html-bg:#eceef2;
+
+    /* 导航栏颜色 */
     --nabar-color: #041a4a;
+    --nabar-shadow-color:  5px 5px 6px rgba(0, 0, 0, 0.3);
+    
+    /* 侧栏颜色 */
     --sidebar-color: #26528f;
+    --sidebar-bg-color: #26528f;
+    --sidebar-shadow-color:  2px 0 8px rgb(104, 131, 173);
+
+    /*标题颜色*/
+    --title-color: #4A5A6B;
+
+    /* 表格颜色 */
+    --table-bg-color: #f5f7fa;
+    --table-tr-hover: #f5f7fa;
+    --table-head-bg: #8b92a9;
+
+    --card-bg: #ffffff;
+    --text-color: #303133;
+    --text-secondary: #606266;
+    --border-color: #dcdfe6;
+    --hover-bg: #f5f7fa;
 
     --primary-color: #2c3e50;
     --secondary-color: #3498db;
@@ -35,6 +59,45 @@ a {
     --danger-color: #e74c3c;
     --border-radius: 6px;
     --box-shadow: 0 2px 10px rgba(31, 31, 31, 0.1);
+}
+
+/* 深色模式 */
+html.dark {
+    --html-bg:#1a1a2e;
+
+    --nabar-color: #1a1a2e;
+    --nabar-shadow-color: 5px 5px 6px rgb(0 0 0);
+
+    --sidebar-color: #16213e;
+    --sidebar-bg-color: #16213e;
+    --sidebar-shadow-color: 2px 0 8px rgb(40 52 71);
+
+    /*标题颜色*/
+    --title-color: #d0d2d6;
+
+    /* 表格颜色 */
+    --table-bg-color: #0f0f23;
+    --table-tr-hover: #1f2a40;
+    --table-head-bg: #2d3748;
+
+    /* 卡片和文字颜色 */
+    --card-bg: #1a1a2e;
+    --text-color: #e0e0e0;
+    --text-secondary: #b0b0b0;
+    --border-color: #444;
+    --hover-bg: #252542;
+    
+    /* 面包屑导航颜色 */
+    --breadcrumb-color: #e0e0e0;
+    --breadcrumb-separator-color: #9ca3af;
+    
+    /* 主题切换图标颜色 */
+    --theme-icon-color: rgba(224, 224, 224, 0.7);
+    --theme-icon-hover-color: rgba(224, 224, 224, 1);
+    
+    /* 管理员信息区域 */
+    --admin-info-bg: #1f2937;
+    --admin-info-text: #e5e7eb;
 }
 
 /*字体图标-右尖括号*/
@@ -75,6 +138,9 @@ a {
     display: none;
     justify-content: space-between;
     width: 100%;
+
+    background-color: var(--html-bg);
+    transition: all 0.3s ease;
 }
 /* 侧栏 */
 .side-bar {
@@ -140,14 +206,15 @@ a {
     flex: 1;
     flex-direction: column;
 
-    background-color: #eceef2;
+    background-color: var(--html-bg);
+    transition: all 0.3s ease;
 }
 /*标题*/
 .header {
     margin-top: 10px;
 
     width: auto;
-    color: #4A5A6B;
+    color: var(--title-color);
 
     /* 居中对齐 */
     text-align: center;
@@ -175,8 +242,9 @@ a {
     padding: 6px 20px;
     width: 100%;
     
-    color: #525457;
+    color: var(--text-color);
     overflow-y: hidden;
+    transition: color 0.3s ease;
 }
 /* 实际表 */
 .data-table table {
@@ -186,7 +254,8 @@ a {
     border-collapse: collapse;
 }
 .data-table table tr {
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--border-color);
+    transition: border-color 0.3s ease;
 }
 .data-table table th,
 td {
@@ -200,11 +269,25 @@ td {
     overflow: hidden;
     text-overflow: ellipsis;
 }
-.data-table table tbody tr:hover {
-    background-color: #d1d0d0;
-    transition: transform 3s;
-    cursor: pointer;
+
+/* 所有表格表头背景色 */
+.data-table table thead th,
+#application-table thead th,
+#application-table1 thead th,
+#order-table thead th,
+#order-table1 thead th,
+#option-table thead th,
+#searchResultTable thead th {
+    background-color: var(--table-head-bg);
+    color: #fff;
+    transition: background-color 0.3s ease;
 }
+
+.ant-table-tbody > tr:hover > td {
+  background: #f2f3f5 !important;
+  
+}
+
 .data-table table button {
     border: none;
     background-color: transparent;

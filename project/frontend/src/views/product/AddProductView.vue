@@ -52,10 +52,12 @@
               <el-form-item label="最短期限" prop="minTerm">
                 <el-input-number
                   v-model="form.minTerm"
-                  :min="0"
+                  :min="1"
+                  :max="form.maxTerm"
                   controls-position="right"
                   style="width: 100%;"
                   placeholder="最短期限"
+                  @change="updateTermStepOptions"
                 />
               </el-form-item>
             </el-col>
@@ -67,18 +69,25 @@
                   controls-position="right"
                   style="width: 100%;"
                   placeholder="最长期限"
+                  @change="updateTermStepOptions"
                 />
               </el-form-item>
             </el-col>
             <el-col :span="8">
               <el-form-item label="期限步长" prop="termStep">
-                <el-input-number
+                <el-select
                   v-model="form.termStep"
-                  :min="1"
-                  controls-position="right"
+                  placeholder="请选择步长"
                   style="width: 100%;"
-                  placeholder="期限步长"
-                />
+                  @change="validateTermStep"
+                >
+                  <el-option
+                    v-for="step in termStepOptions"
+                    :key="step"
+                    :label="step + '个月'"
+                    :value="step"
+                  />
+                </el-select>
               </el-form-item>
             </el-col>
           </el-row>
@@ -214,7 +223,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useLoanStore } from '@/stores/loan'
@@ -223,22 +232,71 @@ const router = useRouter()
 const loanStore = useLoanStore()
 const formRef = ref()
 
+// 步长选项
+const termStepOptions = ref([])
+
 // 表单数据
 const form = reactive({
   productName: '',
   description: '',
   loanUsage: '',
-  minTerm: 3,
-  maxTerm: 24,
-  termStep: 3,
+  minTerm: 1,
+  maxTerm: 12,
+  termStep: 1,
   minAmount: 10000,
   maxAmount: 50000,
   promotionDetails: '',
   options: []
 })
 
+// 计算并更新步长选项
+const updateTermStepOptions = () => {
+  const min = form.minTerm || 1
+  const max = form.maxTerm || 12
+  
+  // 确保 max >= min
+  if (max < min) {
+    form.maxTerm = min
+  }
+  
+  // 计算差值
+  const diff = form.maxTerm - form.minTerm
+  
+  // 找出所有可能的步长值（能整除差值的数）
+  const options = []
+  for (let i = 1; i <= diff; i++) {
+    if (diff % i === 0) {
+      options.push(i)
+    }
+  }
+  
+  // 如果差值为 0，只提供步长 1
+  if (diff === 0) {
+    termStepOptions.value = [1]
+    form.termStep = 1
+  } else {
+    termStepOptions.value = options
+    
+    // 如果当前步长不在选项中，选择第一个（最小的）
+    if (!options.includes(form.termStep)) {
+      form.termStep = options[0]
+    }
+  }
+}
+
+// 验证步长
+const validateTermStep = () => {
+  const diff = form.maxTerm - form.minTerm
+  if (diff % form.termStep !== 0) {
+    ElMessage.warning('步长必须能整除期限差值，已自动调整为最接近的有效值')
+    form.termStep = termStepOptions.value[0]
+  }
+}
+
 // 初始化时添加一个默认方案
 onMounted(() => {
+  // 初始化步长选项
+  updateTermStepOptions()
   addOptionRow()
 })
 
@@ -260,7 +318,7 @@ const rules = {
     { required: true, message: '请输入最长期限', trigger: 'blur' }
   ],
   termStep: [
-    { required: true, message: '请输入期限步长', trigger: 'blur' }
+    { required: true, message: '请选择期限步长', trigger: 'change' }
   ]
 }
 
@@ -268,6 +326,11 @@ const rules = {
 const goBack = () => {
   router.push('/dashboard/products')
 }
+
+// 监听期限变化，自动更新步长选项
+watch(() => [form.minTerm, form.maxTerm], () => {
+  updateTermStepOptions()
+}, { deep: true })
 
 // 检查是否有未保存的内容
 const hasUnsavedChanges = () => {
@@ -333,9 +396,31 @@ const validateForm = () => {
     return false
   }
   
+  // 验证期限和步长
+  if (!form.minTerm || form.minTerm <= 0) {
+    ElMessage.warning('最短期限必须大于 0')
+    return false
+  }
+  
+  if (!form.maxTerm || form.maxTerm <= 0) {
+    ElMessage.warning('最长期限必须大于 0')
+    return false
+  }
+  
+  if (!form.termStep || form.termStep <= 0) {
+    ElMessage.warning('期限步长必须大于 0')
+    return false
+  }
+  
   // 验证期限范围
   if (form.maxTerm < form.minTerm) {
     ElMessage.warning('最长期限不能小于最短期限')
+    return false
+  }
+  
+  // 验证期数和步长的等差关系
+  if ((form.maxTerm - form.minTerm) % form.termStep !== 0) {
+    ElMessage.warning('最长期限与最短期限的差值必须是步长的整数倍')
     return false
   }
   
