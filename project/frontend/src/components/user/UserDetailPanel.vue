@@ -418,7 +418,8 @@ onMounted(() => {
   margin: 0;
   padding: 0;
 
-  background: white;
+  color: var(--detail-color);
+  background: var(--detail-bg);
   overflow: hidden;
 }
 
@@ -428,7 +429,7 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  background: #f8f9fa;
+  background: var(--detail-bg);
   border-bottom: 1px solid #dee2e6;
 }
 

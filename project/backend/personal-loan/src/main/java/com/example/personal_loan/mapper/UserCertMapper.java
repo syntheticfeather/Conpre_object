@@ -38,6 +38,7 @@ public interface UserCertMapper {
         "  immovable_cert_id " +
         ") VALUES (" +
         "  #{userId}, " +
+        "  #{realName}, " +
         "  #{idCard}, " +
         "  #{creditScore}, " +
         "  #{bankCardId}, " +

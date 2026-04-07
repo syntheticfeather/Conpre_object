@@ -73,7 +73,7 @@ onMounted(() => {
 .tabs button {
   padding: 8px 16px;
   margin-left: 10px;
-  background: #f5f7fa;
+  background: var(--);
   border: 1px solid #ddd;
   border-radius: 4px;
   cursor: pointer;
@@ -82,6 +82,7 @@ onMounted(() => {
 
 .tabs button:hover {
   background: #e6f7ff;
+  background: var(--hover-bg);
 }
 
 .tabs button.active {

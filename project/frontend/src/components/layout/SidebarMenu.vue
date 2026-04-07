@@ -58,8 +58,8 @@
         <el-icon><Setting /></el-icon>
           <span>系统管理</span>
         </template>
-        <el-menu-item index="5-1">数据统计</el-menu-item>
         <el-menu-item index="5-2">系统设置</el-menu-item>
+        <el-menu-item index="/dashboard/knowledge">知识库管理</el-menu-item>
       </el-sub-menu>
     </el-menu>
 

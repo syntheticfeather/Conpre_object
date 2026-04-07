@@ -259,18 +259,19 @@ defineExpose({
 
 <style scoped>
 .table-content {
-  padding: 10px 20px;
-  background-color: #fff;
-  border-radius: 5px;
-  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+  padding-bottom: 10px;
+
+  background-color: var(--table-content-bg);
+  border-radius: 8px;
+  box-shadow: var(--table-content-shadow);
   transition: transform 0.3s;
 }
 
 .data-table {
-  padding: 6px 0px;
+
   width: 100%;
   min-height: v-bind(minHeight);
-  color: #525457;
+  color: var(--table-color);
   overflow-y: hidden;
 }
 
@@ -283,43 +284,59 @@ defineExpose({
 
   height: 44px;
   
-  background-color: #f6ffed;
-  border: 1px solid #b7eb8f;
+  background-color: var(--batch-actions-bg);
+  border: 1px solid var(--batch-actions-border);
   border-radius: 4px;
 }
 
 .selected-info {
   font-size: 14px;
-  color: #52c41a;
+  color: var(--selected-info-color);
   font-weight: 500;
 }
 
 :deep(.ant-table) {
   font-size: 14px;
+  color: var(--table-color);
+  background-color: var(--table-bg);
   border: none;
 }
 
-:deep(.ant-table-thead > tr > th) {
-  background-color: transparent;
-  font-weight: 600;
-  color: #525457;
-  border-bottom: 1px solid #e0e0e0;
+:deep(.ant-table-thead > tr > th) { 
   padding: 7px;
   text-align: center;
+
+  font-weight: 600;
+  color: var(--table-color);  
+  background-color: var(--table-head-bg);
+  border-bottom: 1px solid var(--table-th-td-border);
+}
+
+:deep(.ant-table-tbody) {
+  background-color: transparent !important;
+}
+
+:deep(.ant-table-tbody > tr) {
+  background-color: transparent !important;
 }
 
 :deep(.ant-table-tbody > tr > td) {
   padding: 7px;
   text-align: center;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--table-th-td-border);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  background-color: transparent !important;
 }
 
 :deep(.ant-table-tbody > tr:hover > td) {
-  background-color: #d1d0d0;
-  transition: background-color 0.3s;
+  background-color: var(--table-tr-hover) !important;
+  transition: background-color 0.2s;
+}
+
+:deep(.ant-table-tbody > tr.ant-table-row-selected > td) {
+  background-color: var(--table-tr-hover) !important;
 }
 
 :deep(.ant-table-tbody > tr) {

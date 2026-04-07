@@ -91,15 +91,17 @@ const changePage = (page) => {
 
 .page-btn, .page-number {
   padding: 6px 12px;
+
+  color: var(--pag-color);
   border: 1px solid #ddd;
-  background: white;
+  background: var(--pag-buttom-bg);
   cursor: pointer;
   border-radius: 4px;
   transition: all 0.2s;
 }
 
 .page-btn:hover, .page-number:hover {
-  background: #f5f7fa;
+  background: var(--pag-hover-bg);
 }
 
 .page-number.active {
@@ -110,7 +112,7 @@ const changePage = (page) => {
 
 .page-info {
   margin-left: 20px;
-  color: #666;
+  color: var(--page-info-color);
   font-size: 14px;
 }
 </style>

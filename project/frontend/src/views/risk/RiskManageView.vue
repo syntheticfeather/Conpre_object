@@ -450,7 +450,34 @@ const fetchUserData = async () => {
         userChart.setOption({
           tooltip: {
             trigger: 'item',
-            formatter: '{b}: {c} ({d}%)'
+            formatter: function(params) {
+              const percentage = totalUsers > 0 ? ((params.value / totalUsers) * 100).toFixed(2) : 0;
+              return `${params.name}: ${percentage}%`;
+            },
+            position: function(point, params, dom, rect, size) {
+              // point: 鼠标位置
+              // size: 图表尺寸
+              const chartCenterX = size.viewSize[0] / 2;
+              const chartCenterY = size.viewSize[1] / 2;
+              // 计算 tooltip 的宽高
+              const tooltipWidth = dom.offsetWidth;
+              const tooltipHeight = dom.offsetHeight;
+              
+              // 根据鼠标位置判断象限
+              if (point[0] < chartCenterX && point[1] < chartCenterY) {
+                // 左上象限 - tooltip 显示在鼠标左上
+                return [point[0] - tooltipWidth - 10, point[1] - tooltipHeight - 10];
+              } else if (point[0] < chartCenterX && point[1] >= chartCenterY) {
+                // 左下象限 - tooltip 显示在鼠标左下
+                return [point[0] - tooltipWidth - 10, point[1] + 10];
+              } else if (point[0] >= chartCenterX && point[1] < chartCenterY) {
+                // 右上象限 - tooltip 显示在鼠标右上
+                return [point[0] + 10, point[1] - tooltipHeight - 10];
+              } else {
+                // 右下象限 - tooltip 显示在鼠标右下
+                return [point[0] + 10, point[1] + 10];
+              }
+            }
           },
           legend: {
             top: '5%',
@@ -692,11 +719,39 @@ const fetchLoanApplicationData = async () => {
     
     // 贷款申请统计图表
     if (loanApplicationChartRef.value) {
+      const totalApplications = Object.values(statusCount).reduce((sum, value) => sum + value, 0)
       loanApplicationChart = echarts.init(loanApplicationChartRef.value)
       loanApplicationChart.setOption({
         tooltip: {
           trigger: 'item',
-          formatter: '{b}: {c} ({d}%)'
+          formatter: function(params) {
+            const percentage = totalApplications > 0 ? ((params.value / totalApplications) * 100).toFixed(2) : 0;
+            return `${params.name}: ${percentage}%`;
+          },
+          position: function(point, params, dom, rect, size) {
+            // point: 鼠标位置
+            // size: 图表尺寸
+            const chartCenterX = size.viewSize[0] / 2;
+            const chartCenterY = size.viewSize[1] / 2;
+            // 计算 tooltip 的宽高
+            const tooltipWidth = dom.offsetWidth;
+            const tooltipHeight = dom.offsetHeight;
+            
+            // 根据鼠标位置判断象限
+            if (point[0] < chartCenterX && point[1] < chartCenterY) {
+              // 左上象限 - tooltip 显示在鼠标左上
+              return [point[0] - tooltipWidth - 10, point[1] - tooltipHeight - 10];
+            } else if (point[0] < chartCenterX && point[1] >= chartCenterY) {
+              // 左下象限 - tooltip 显示在鼠标左下
+              return [point[0] - tooltipWidth - 10, point[1] + 10];
+            } else if (point[0] >= chartCenterX && point[1] < chartCenterY) {
+              // 右上象限 - tooltip 显示在鼠标右上
+              return [point[0] + 10, point[1] - tooltipHeight - 10];
+            } else {
+              // 右下象限 - tooltip 显示在鼠标右下
+              return [point[0] + 10, point[1] + 10];
+            }
+          }
         },
         legend: {
           top: '5%',
@@ -1021,7 +1076,34 @@ const fetchRiskLevelData = async () => {
         riskDistributionChart = echarts.init(riskDistributionRef.value)
         riskDistributionChart.setOption({
           tooltip: {
-            trigger: 'item'
+            trigger: 'item',
+            formatter: function(params) {
+              return `${params.name}: ${params.value} 人<br/>占比：${((params.value / riskStats.totalUsers) * 100).toFixed(1)}%`
+            },
+            position: function(point, params, dom, rect, size) {
+              // point: 鼠标位置
+              // size: 图表尺寸
+              const chartCenterX = size.viewSize[0] / 2;
+              const chartCenterY = size.viewSize[1] / 2;
+              // 计算 tooltip 的宽高
+              const tooltipWidth = dom.offsetWidth;
+              const tooltipHeight = dom.offsetHeight;
+              
+              // 根据鼠标位置判断象限
+              if (point[0] < chartCenterX && point[1] < chartCenterY) {
+                // 左上象限 - tooltip 显示在鼠标左上
+                return [point[0] - tooltipWidth - 10, point[1] - tooltipHeight - 10];
+              } else if (point[0] < chartCenterX && point[1] >= chartCenterY) {
+                // 左下象限 - tooltip 显示在鼠标左下
+                return [point[0] - tooltipWidth - 10, point[1] + 10];
+              } else if (point[0] >= chartCenterX && point[1] < chartCenterY) {
+                // 右上象限 - tooltip 显示在鼠标右上
+                return [point[0] + 10, point[1] - tooltipHeight - 10];
+              } else {
+                // 右下象限 - tooltip 显示在鼠标右下
+                return [point[0] + 10, point[1] + 10];
+              }
+            }
           },
           series: [
             {

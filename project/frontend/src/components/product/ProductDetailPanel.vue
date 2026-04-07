@@ -320,7 +320,8 @@ watch(() => props.productId, (newVal) => {
 <style scoped>
 .product-detail-panel {
   border-radius: 8px;
-  background: white;
+  background: var(--detail-bg);
+  color: var(--detail-color);
 }
 
 .panel-header {
@@ -328,49 +329,52 @@ watch(() => props.productId, (newVal) => {
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  border-bottom: 1px solid #e4e7ed;
-  background-color: #f8f9fa;
+  border-bottom: 1px solid var(--detail-border);
+  background-color: var(--detail-head-bg);
   border-radius: 8px 8px 0 0;
 }
 
 .panel-header h3 {
   margin: 0;
-  font-size: 16px;
-  color: #303133;
+  font-size: 18px;
+  color: var(--detail-color);
+  font-weight: 600;
 }
 
 .btn-close-panel {
   background: none;
   border: none;
-  font-size: 18px;
-  color: #909399;
+  font-size: 24px;
+  color: #666;
   cursor: pointer;
-  padding: 4px;
-  border-radius: 4px;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s;
-  width: 32px;
-  height: 32px;
+  transition: all 0.2s;
 }
 
 .btn-close-panel:hover {
-  background-color: #f0f0f0;
-  color: #606266;
+  color: #333;
+  background-color: #e9ecef;
+  border-radius: 4px;
 }
 
 .panel-content {
   padding: 20px;
+  overflow-y: auto;
 }
 
 .panel-footer {
   padding: 16px 20px;
-  border-top: 1px solid #e4e7ed;
+  border-top: 1px solid var(--detail-border);
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  background-color: #f8f9fa;
+  background-color: var(--detail-bg);
   border-radius: 0 0 8px 8px;
 }
 
@@ -382,6 +386,7 @@ watch(() => props.productId, (newVal) => {
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
+  transition: all 0.2s;
 }
 
 .btn-edit {
@@ -415,38 +420,44 @@ watch(() => props.productId, (newVal) => {
 .prod-base-info {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .info-row {
   display: flex;
+  line-height: 1.6;
 }
 
 .label {
-  font-weight: bold;
+  font-weight: 600;
   min-width: 100px;
+  color: var(--detail-subtitle-color);
 }
 
 .value {
   flex: 1;
+  color: var(--detail-color);
 }
 
 .options-section {
-  margin-top: 20px;
+  margin-top: 24px;
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--detail-border);
 }
 
 .section-header h4 {
   margin: 0;
   font-size: 16px;
-  color: #303133;
+  color: var(--detail-subtitle-color);
+  font-weight: 600;
 }
 
 .btn-add-option {
@@ -456,6 +467,7 @@ watch(() => props.productId, (newVal) => {
   border: none;
   border-radius: 3px;
   cursor: pointer;
+  font-size: 13px;
 }
 
 .btn-add-option:hover {
@@ -468,11 +480,22 @@ watch(() => props.productId, (newVal) => {
   margin-top: 10px;
 }
 
-.options-table th,
-.options-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
+.options-table th {
+  background: #f8f9fa;
+  padding: 12px;
   text-align: center;
+  border-bottom: 2px solid var(--detail-border);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--detail-color);
+}
+
+.options-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+  text-align: center;
+  color: var(--detail-color);
 }
 
 .btn-delete {
@@ -482,6 +505,7 @@ watch(() => props.productId, (newVal) => {
   border: none;
   border-radius: 3px;
   cursor: pointer;
+  font-size: 13px;
 }
 
 .btn-delete:hover {

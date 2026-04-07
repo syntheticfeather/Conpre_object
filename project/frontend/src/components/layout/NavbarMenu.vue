@@ -12,7 +12,6 @@
     </div>
 
     <div class="right-info">
-      <BellOutlined class="BellOutlined" />
       <!-- 主题切换图标 -->
       <div class="theme-icons">
         <!-- 太阳图标：亮色模式下隐藏 -->
@@ -34,6 +33,7 @@
           <Sunny />
         </el-icon>
       </div>
+      <BellOutlined class="BellOutlined" />
       <div class="admin-info" @mouseenter="showAdminTable" @mouseleave="hideAdminTable">
         <div class="avatar-container">
           <img :src="avatarUrl" alt="admin" class="avatar">

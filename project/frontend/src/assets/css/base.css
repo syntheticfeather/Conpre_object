@@ -39,9 +39,29 @@ a {
     --title-color: #4A5A6B;
 
     /* 表格颜色 */
-    --table-bg-color: #f5f7fa;
-    --table-tr-hover: #f5f7fa;
-    --table-head-bg: #8b92a9;
+    --table-content-bg: #fff;
+    --table-content-shadow:3px 3px 6px rgba(0, 0, 0, 0.3);
+    --table-color: #525457;
+    --table-bg: #fff;
+    --table-head-bg: #eaebecf2;
+    --table-th-td-border: #e0e0e0;
+    --table-tr-hover:  #e2e2e2;
+    /*批量处理框*/
+    --batch-actions-bg: #f6ffed;
+    --batch-actions-border: #b7eb8f;
+    --selected-info-color: #52c41a;
+    /*详情框*/
+    --detail-color: #525457;
+    --detail-bg: #fff;
+    --detail-border: #ebe6e6;
+    --detail-shadow: 3px 3px 6px rgba(84, 87, 87, 0.3);
+    --detail-subtitle-color: #555;
+
+    /*分页组件颜色*/
+    --pag-buttom-bg: white;
+    --pag-color: #5d5d62;
+    --pag-hover-bg: #f5f7fa;
+    --page-info-color:#666;
 
     --card-bg: #ffffff;
     --text-color: #303133;
@@ -68,17 +88,39 @@ html.dark {
     --nabar-color: #1a1a2e;
     --nabar-shadow-color: 5px 5px 6px rgb(0 0 0);
 
-    --sidebar-color: #16213e;
+    --sidebar-color:#1c2b52;
     --sidebar-bg-color: #16213e;
-    --sidebar-shadow-color: 2px 0 8px rgb(40 52 71);
+    --sidebar-shadow-color: 2px 0 8px rgb(17 22 36);
 
     /*标题颜色*/
     --title-color: #d0d2d6;
 
     /* 表格颜色 */
-    --table-bg-color: #0f0f23;
+    --table-content-bg: #1a1a2e;
+    --table-content-shadow:3px 3px 6px rgb(186 181 209 / 30%);
+    --table-color: #b8bcc2;
+    --table-bg: #1a1a2e;
+    --table-head-bg: #4e5057;
+    --table-th-td-border: #525591;
     --table-tr-hover: #1f2a40;
-    --table-head-bg: #2d3748;
+    /*批量处理框*/
+    --batch-actions-bg: #f6ffed;
+    --batch-actions-border: #b7eb8f;
+    --selected-info-color: #52c41a;
+    /*详情框*/
+    --detail-color: #ced3dc;
+    --detail-bg:#5c5c71;
+    --detail-head-bg:#1a1a2e;
+    --detail-border:#f5f5f5;
+    --detail-shadow: 3px 3px 6px rgb(136 139 142 / 56%);
+    --detail-subtitle-color: #94c4ea;
+    --option-th-color: #2b2b2c;
+
+    /*分页组件颜色*/
+    --pag-buttom-bg: #252542;
+    --pag-color: #e0e0e0;
+    --pag-hover-bg: #252542;
+    --page-info-color:#d0cdcd;
 
     /* 卡片和文字颜色 */
     --card-bg: #1a1a2e;
@@ -229,17 +271,7 @@ html.dark {
 /* 整个表格的布局和边框基础样式 */
 
 /* 列表整体 */
-.table-content {
-    padding: 10px 20px;
-
-    background-color: #fff; 
-    border-radius: 5px;
-    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
-    
-    transition: transform 0.3s;
-}
 .data-table {
-    padding: 6px 20px;
     width: 100%;
     
     color: var(--text-color);
@@ -279,13 +311,12 @@ td {
 #option-table thead th,
 #searchResultTable thead th {
     background-color: var(--table-head-bg);
-    color: #fff;
+    color: var(--table-color);
     transition: background-color 0.3s ease;
 }
 
 .ant-table-tbody > tr:hover > td {
-  background: #f2f3f5 !important;
-  
+  background: var(--table-tr-hover) !important;
 }
 
 .data-table table button {
@@ -330,7 +361,7 @@ td {
     padding: 20px 40px;
     border: 1px solid #ddd;
     border-radius: 8px;
-    background: white;
+    background: var(--detail-bg);
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 .credit-score {
