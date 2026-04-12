@@ -115,3 +115,98 @@
 **postman测试结果**
 
 ![](../LoanOrderImgs/repay.png "用户发起还款")
+
+## 用户获取还款计划
+
+**网址** /api/orders/{orderId}/repayment-plan
+
+**请求方式** GET
+
+**请求示例（网址）** /api/orders/2/repayment-plan
+
+**返回数据**
+
+``` json
+{
+    "code": 200,
+    "data": [
+        {
+            "term": 1,
+            "principal": 0.00,
+            "interest": 54.17,
+            "total": 54.17
+        },
+        {
+            "term": 2,
+            "principal": 0.00,
+            "interest": 54.17,
+            "total": 54.17
+        },
+        {
+            "term": 3,
+            "principal": 0.00,
+            "interest": 54.17,
+            "total": 54.17
+        },
+        {
+            "term": 4,
+            "principal": 0.00,
+            "interest": 54.17,
+            "total": 54.17
+        },
+        {
+            "term": 5,
+            "principal": 0.00,
+            "interest": 54.17,
+            "total": 54.17
+        },
+        {
+            "term": 6,
+            "principal": 0.00,
+            "interest": 54.17,
+            "total": 54.17
+        },
+        {
+            "term": 7,
+            "principal": 0.00,
+            "interest": 54.17,
+            "total": 54.17
+        },
+        {
+            "term": 8,
+            "principal": 0.00,
+            "interest": 54.17,
+            "total": 54.17
+        },
+        {
+            "term": 9,
+            "principal": 0.00,
+            "interest": 54.17,
+            "total": 54.17
+        },
+        {
+            "term": 10,
+            "principal": 0.00,
+            "interest": 54.17,
+            "total": 54.17
+        },
+        {
+            "term": 11,
+            "principal": 0.00,
+            "interest": 54.17,
+            "total": 54.17
+        },
+        {
+            "term": 12,
+            "principal": 10000.00,
+            "interest": 54.17,
+            "total": 10054.17
+        }
+    ],
+    "message": "操作成功"
+}
+```
+
+**postman测试结果**
+
+![](../LoanOrderImgs/repaymentPlan.png "用户获取还款计划")
