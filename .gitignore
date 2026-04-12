@@ -15,3 +15,13 @@ JavaStudy/
 
 # 上传的文件
 uploads/
+
+# 环境变量
+.env
+
+# 数据库
+chroma_db/
+test_chroma_db/
+
+__pycache__/
+.pytest_cache/
