@@ -7,6 +7,14 @@
 .DS_Store
 Thumbs.db
 
+# Dependencies
+node_modules/
+
+# Build
+dist/
+dist-ssr/
+build/
+
 # JavaStudy (学习笔记，不纳入版本控制)
 JavaStudy/
 
