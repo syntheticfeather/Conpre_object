@@ -52,19 +52,63 @@ class NotificationServiceTest {
     }
 
     @Test
-    void markAsRead_success_shouldNotThrow() {
-        when(notificationMapper.markAsRead(LocalDateTime.now(), 3L, 9L)).thenReturn(1);
+    void getMyNotifications_normalLimit_shouldUseGivenLimit() {
+        List<Notification> expected = Collections.emptyList();
+        when(notificationMapper.selectLatestByUserId(3L, 50)).thenReturn(expected);
 
-        assertDoesNotThrow(() -> notificationService.markAsRead(3L, 9L));
-        verify(notificationMapper).markAsRead(LocalDateTime.now(), 3L, 9L);
+        List<Notification> actual = notificationService.getMyNotifications(3L, 50);
+
+        assertEquals(expected, actual);
+        verify(notificationMapper).selectLatestByUserId(3L, 50);
+    }
+
+    @Test
+    void markAsRead_success_shouldNotThrow() {
+        when(notificationMapper.markAsRead(org.mockito.ArgumentMatchers.any(LocalDateTime.class), org.mockito.ArgumentMatchers.eq(9L))).thenReturn(1);
+
+        assertDoesNotThrow(() -> notificationService.markAsRead(9L));
+        verify(notificationMapper).markAsRead(org.mockito.ArgumentMatchers.any(LocalDateTime.class), org.mockito.ArgumentMatchers.eq(9L));
     }
 
     @Test
     void markAsRead_notFound_shouldThrowBusinessException() {
-        when(notificationMapper.markAsRead(LocalDateTime.now(), 3L, 9L)).thenReturn(0);
+        when(notificationMapper.markAsRead(org.mockito.ArgumentMatchers.any(LocalDateTime.class), org.mockito.ArgumentMatchers.eq(9L))).thenReturn(0);
 
-        BusinessException ex = assertThrows(BusinessException.class, () -> notificationService.markAsRead(3L, 9L));
+        BusinessException ex = assertThrows(BusinessException.class, () -> notificationService.markAsRead(9L));
         assertEquals(404, ex.getCode());
+    }
+
+    @Test
+    void getAdminNotifications_limitUpperBound_shouldClampTo100() {
+        List<Notification> expected = Collections.emptyList();
+        when(notificationMapper.selectByBusinessType("LOAN_APPLICATION_APPROVE", 100)).thenReturn(expected);
+
+        List<Notification> actual = notificationService.getAdminNotifications(1000);
+
+        assertEquals(expected, actual);
+        verify(notificationMapper).selectByBusinessType("LOAN_APPLICATION_APPROVE", 100);
+    }
+
+    @Test
+    void getAdminNotifications_limitLowerBound_shouldClampTo1() {
+        List<Notification> expected = Collections.emptyList();
+        when(notificationMapper.selectByBusinessType("LOAN_APPLICATION_APPROVE", 1)).thenReturn(expected);
+
+        List<Notification> actual = notificationService.getAdminNotifications(0);
+
+        assertEquals(expected, actual);
+        verify(notificationMapper).selectByBusinessType("LOAN_APPLICATION_APPROVE", 1);
+    }
+
+    @Test
+    void getAdminNotifications_normalLimit_shouldUseGivenLimit() {
+        List<Notification> expected = Collections.emptyList();
+        when(notificationMapper.selectByBusinessType("LOAN_APPLICATION_APPROVE", 50)).thenReturn(expected);
+
+        List<Notification> actual = notificationService.getAdminNotifications(50);
+
+        assertEquals(expected, actual);
+        verify(notificationMapper).selectByBusinessType("LOAN_APPLICATION_APPROVE", 50);
     }
 }
 

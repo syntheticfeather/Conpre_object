@@ -135,6 +135,7 @@ public class UserServiceImpl implements UserService {
     * 用户注册
     */
     @Override
+    @Transactional
     @RedisLocked(key = "'lock:user:register:' + #p0.phone")
     public RegisterResponse userRegister(RegisterRequest request) {
         //检验手机号是否已存在

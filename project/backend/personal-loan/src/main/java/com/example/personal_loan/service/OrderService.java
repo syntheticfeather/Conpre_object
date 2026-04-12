@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.example.personal_loan.dto.UserGetOrderResponse;
 import com.example.personal_loan.dto.UserOrderListResponse;
+import com.example.personal_loan.utils.RepaymentPlanItem;
 
 public interface OrderService {
     // 用户获取单个订单详情
@@ -17,4 +18,7 @@ public interface OrderService {
 
     // 延期(加1期的时间)(先默认给人工审核)
     Boolean postpone(Long orderId);
+    
+    // 获取还款计划
+    List<RepaymentPlanItem> getRepaymentPlan(Long userId, Long orderId);
 }

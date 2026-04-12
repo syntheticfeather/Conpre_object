@@ -27,11 +27,19 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Transactional
-    public void markAsRead(Long userId, Long notificationId) {
-        int rows = notificationMapper.markAsRead(LocalDateTime.now(), userId, notificationId);
+    public void markAsRead(Long notificationId) {
+        int rows = notificationMapper.markAsRead(LocalDateTime.now(), notificationId);
         if (rows == 0) {
             throw new BusinessException(404, "通知不存在");
         }
     }
+
+    @Override
+    @Transactional
+    public List<Notification> getAdminNotifications(int limit) {
+        int safeLimit = Math.max(1, Math.min(limit, 100));
+        return notificationMapper.selectByBusinessType("LOAN_APPLICATION_APPROVE", safeLimit);
+    }
+
 }
 

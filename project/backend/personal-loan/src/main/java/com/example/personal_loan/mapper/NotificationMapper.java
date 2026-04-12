@@ -60,8 +60,29 @@ public interface NotificationMapper {
     @Update(
         "UPDATE notifications " +
         "SET read_flag = 1, read_at = #{readAt} " +
-        "WHERE id = #{id} AND user_id = #{userId}"
+        "WHERE id = #{id}"
     )
-    int markAsRead(@Param("readAt") LocalDateTime readAt, @Param("userId") Long userId, @Param("id") Long id);
+    int markAsRead(@Param("readAt") LocalDateTime readAt, @Param("id") Long id);
+
+    // 根据业务类型查询通知列表
+    @Select(
+        "SELECT " +
+        "  id, " +
+        "  user_id as userId, " +
+        "  business_id as businessId, " +
+        "  business_type as businessType, " +
+        "  title, " +
+        "  content, " +
+        "  read_flag as readFlag, " +
+        "  created_at as createdAt, " +
+        "  read_at as readAt " +
+        "FROM notifications " +
+        "WHERE business_type = #{businessType} " +
+        "ORDER BY created_at DESC " +
+        "LIMIT #{limit}"
+    )
+    List<Notification> selectByBusinessType(@Param("businessType") String businessType, @Param("limit") int limit);
+    
 }
+
 

@@ -49,24 +49,26 @@ public class AIApproveServiceImpl implements AIApproveService {
             applicationMapper.update(application);
 
             // 创建订单
-            Order order = new Order();
-            order.setUserId(application.getUserId());
-            order.setProductId(application.getProductId()); 
-            order.setStatus(OrderStatus.正常); 
-            order.setRepaidAmount(BigDecimal.ZERO);
-            order.setLoanAmount(application.getLoanAmount()); 
-            order.setInterestRate(application.getInterestRate()); 
-            order.setRepaidType(application.getRepaidType()); 
-            order.setLoanPeriod(application.getLoanPeriod());
-            // contract 后续生成
-            order.setContract(null); 
-            order.setTerm(application.getTerm()); 
-            order.setCurrentTerm(0); // 初始为0，尚未还款（？）
-            order.setOverdueDays(0);
-            order.setStartTime(LocalDateTime.now());
+            Order order = new Order(
+                null,
+                application.getUserId(),
+                application.getProductId(),
+                OrderStatus.正常,
+                BigDecimal.ZERO,
+                application.getLoanAmount(),
+                application.getInterestRate(),
+                application.getRepaidType(),
+                application.getLoanPeriod(),
+                application.getTerm(),
+                0,
+                null,
+                0,
+                LocalDateTime.now()
+            ); 
             orderMapper.insert(order); // 插入订单表
 
-            notificationOutboxPublisher.enqueueLoanApplicationStatus(application.getUserId(), application.getId(), "已通过");
+            // 写outbox消息发送通知
+            notificationOutboxPublisher.enqueueNotification(application.getUserId(), application.getId(), "LOAN_APPLICATION_STATUS");
 
             log.info("AI approve success");
             return true;
@@ -76,6 +78,10 @@ public class AIApproveServiceImpl implements AIApproveService {
             application.setStatus(ApplicationStatus.AI拒绝);
             application.setRejectReason("AI审核未通过\n");
             applicationMapper.update(application);
+            
+            // 通知管理员
+            notificationOutboxPublisher.enqueueAdminNotification(application.getId(), "LOAN_APPLICATION_APPROVE");
+            
             log.info("AI reject success");
             return false;
         }

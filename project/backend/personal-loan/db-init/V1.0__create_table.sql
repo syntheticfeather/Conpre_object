@@ -170,7 +170,7 @@ CREATE TABLE processed_message (
 
 CREATE TABLE notifications(
     id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '通知ID',
-    user_id INT NOT NULL COMMENT '用户ID',
+    user_id INT COMMENT '用户ID',
     business_id BIGINT COMMENT '关联业务ID',
     business_type VARCHAR(50) COMMENT '业务类型,如LOAN_APPLICATION, REPAYMENT',
     title VARCHAR(100) NOT NULL COMMENT '通知标题',
