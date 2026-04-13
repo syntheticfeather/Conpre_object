@@ -33,6 +33,7 @@ import com.example.personal_loan.enums.OrderStatus;
 import com.example.personal_loan.exception.BusinessException;
 import com.example.personal_loan.mapper.ApplicationMapper;
 import com.example.personal_loan.mapper.OrderMapper;
+import com.example.personal_loan.mq.NotificationOutboxPublisher;
 import com.example.personal_loan.service.impl.ManualApproveServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,6 +47,9 @@ class ManualApproveServiceTest {
 
     @Mock
     private UserService userService;
+
+    @Mock
+    private NotificationOutboxPublisher notificationOutboxPublisher;
 
     @InjectMocks
     private ManualApproveServiceImpl manualApproveService;
@@ -181,6 +185,7 @@ class ManualApproveServiceTest {
         assertEquals(ApplicationStatus.已通过, loanApplication.getStatus());
         assertNotNull(response.getReviewTime());
         verify(orderMapper).insert(any(Order.class));
+        verify(notificationOutboxPublisher).enqueueNotification(2L, 1L, "LOAN_APPLICATION_STATUS");
     }
 
     @Test
@@ -194,6 +199,7 @@ class ManualApproveServiceTest {
         assertEquals(ApplicationStatus.人工拒绝, response.getStatus());
         assertTrue(response.getRejectReason().contains("人工审核未通过: 资料不完整"));
         assertEquals(ApplicationStatus.人工拒绝, loanApplication.getStatus());
+        verify(notificationOutboxPublisher).enqueueNotification(2L, 1L, "LOAN_APPLICATION_STATUS");
     }
 
     @Test
@@ -206,6 +212,7 @@ class ManualApproveServiceTest {
         assertEquals(1L, response.getLoanApplicationId());
         assertEquals(ApplicationStatus.人工拒绝, response.getStatus());
         assertTrue(response.getRejectReason().contains("人工审核未通过: 未填写原因"));
+        verify(notificationOutboxPublisher).enqueueNotification(2L, 1L, "LOAN_APPLICATION_STATUS");
     }
 
     @Test
@@ -219,6 +226,7 @@ class ManualApproveServiceTest {
         assertNotNull(response);
         assertTrue(response.getRejectReason().contains("AI审核未通过"));
         assertTrue(response.getRejectReason().contains("人工审核未通过: 人工审核不通过"));
+        verify(notificationOutboxPublisher).enqueueNotification(2L, 1L, "LOAN_APPLICATION_STATUS");
     }
 
     @Test

@@ -134,7 +134,7 @@ public class ApplicationServiceImpl implements ApplicationService{
         log.info("插入 outbox 消息");
         outboxMapper.insert(outbox); // 同一事务中插入
 
-        notificationOutboxPublisher.enqueueLoanApplicationStatus(userId, application.getId(), "审核中");
+        notificationOutboxPublisher.enqueueNotification(userId, application.getId(), "LOAN_APPLICATION_STATUS");
     }
 
     /**
@@ -154,14 +154,14 @@ public class ApplicationServiceImpl implements ApplicationService{
         if (!application.getUserId().equals(userId)) {
             throw new BusinessException(403, "无权操作他人的申请");  // 可选
         }
-        if (!ApplicationStatus.审核中.equals(application.getStatus())) {
+        if (!(ApplicationStatus.审核中.equals(application.getStatus())||ApplicationStatus.AI拒绝.equals(application.getStatus()))) {
             throw new BusinessException(400, "仅可撤回待审核的申请");
         }
         // 需要审核？通过后状态变更
         application.setStatus(ApplicationStatus.已取消);
         applicationMapper.update(application);
 
-        notificationOutboxPublisher.enqueueLoanApplicationStatus(userId, applicationId, "已取消");
+        notificationOutboxPublisher.enqueueNotification(userId, applicationId, "LOAN_APPLICATION_STATUS");
     }
 
     /**

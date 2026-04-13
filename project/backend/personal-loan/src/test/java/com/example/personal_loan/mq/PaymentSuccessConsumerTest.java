@@ -49,6 +49,9 @@ class PaymentSuccessConsumerTest {
     private PaymentRecordMapper paymentRecordMapper;
 
     @Mock
+    private NotificationOutboxPublisher notificationOutboxPublisher;
+
+    @Mock
     private Channel channel;
 
     //验证当收到一条“新的”支付成功消息时，系统是否按顺序执行了所有必要的业务操作（记录流水、更新订单、发送下游消息）。
@@ -74,8 +77,8 @@ class PaymentSuccessConsumerTest {
                 objectMapper,
                 rabbitUtil,
                 orderMapper,
-                outboxMapper,
-                paymentRecordMapper
+                paymentRecordMapper,
+                notificationOutboxPublisher
         );
         consumer.consume(message, channel);
 
@@ -106,8 +109,8 @@ class PaymentSuccessConsumerTest {
                 objectMapper,
                 rabbitUtil,
                 orderMapper,
-                outboxMapper,
-                paymentRecordMapper
+                paymentRecordMapper,
+                notificationOutboxPublisher
         );
         consumer.consume(message, channel);
 
@@ -129,8 +132,8 @@ class PaymentSuccessConsumerTest {
                 objectMapper,
                 rabbitUtil,
                 orderMapper,
-                outboxMapper,
-                paymentRecordMapper
+                paymentRecordMapper,
+                notificationOutboxPublisher
         );
         consumer.consume(message, channel);
 

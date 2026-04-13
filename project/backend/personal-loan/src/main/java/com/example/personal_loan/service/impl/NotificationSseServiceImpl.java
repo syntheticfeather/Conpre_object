@@ -16,6 +16,9 @@ public class NotificationSseServiceImpl implements NotificationSseService {
 
     private final Map<Long, CopyOnWriteArrayList<SseEmitter>> emittersByUserId = new ConcurrentHashMap<>();
 
+    // 管理员虚拟ID
+    public static final Long ADMIN_USER_ID = 999999L;
+
     @Override
     public SseEmitter subscribe(Long userId) {
         // 创建一个 SSE 发射器，参数 0L 表示连接永不超时

@@ -2,12 +2,11 @@ package com.example.personal_loan.mq;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.verify;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import static org.mockito.Mockito.verify;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -25,12 +24,12 @@ class NotificationOutboxPublisherTest {
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
     @Test
-    void enqueueLoanApplicationStatus_shouldInsertOutbox() {
+    void enqueueNotification_shouldInsertOutbox() {
         NotificationOutboxPublisher publisher = new NotificationOutboxPublisher();
         ReflectionTestUtils.setField(publisher, "outboxMapper", outboxMapper);
         ReflectionTestUtils.setField(publisher, "objectMapper", objectMapper);
 
-        publisher.enqueueLoanApplicationStatus(2L, 11L, "已通过");
+        publisher.enqueueNotification(2L, 11L, "LOAN_APPLICATION_STATUS");
 
         ArgumentCaptor<OutboxMessage> captor = ArgumentCaptor.forClass(OutboxMessage.class);
         verify(outboxMapper).insert(captor.capture());
@@ -39,6 +38,24 @@ class NotificationOutboxPublisherTest {
         assertEquals(11L, outbox.getBusinessId());
         assertEquals("PENDING", outbox.getStatus());
         assertEquals(RabbitMQConfig.NOTIFICATION_ROUTING_KEY, outbox.getTopic());
-        assertTrue(outbox.getPayload().contains("已通过"));
+        assertTrue(outbox.getPayload().contains("LOAN_APPLICATION_STATUS"));
+    }
+
+    @Test
+    void enqueueAdminNotification_shouldInsertOutbox() {
+        NotificationOutboxPublisher publisher = new NotificationOutboxPublisher();
+        ReflectionTestUtils.setField(publisher, "outboxMapper", outboxMapper);
+        ReflectionTestUtils.setField(publisher, "objectMapper", objectMapper);
+
+        publisher.enqueueAdminNotification(11L, "LOAN_APPLICATION_STATUS");
+
+        ArgumentCaptor<OutboxMessage> captor = ArgumentCaptor.forClass(OutboxMessage.class);
+        verify(outboxMapper).insert(captor.capture());
+        OutboxMessage outbox = captor.getValue();
+        assertEquals("NOTIFICATION", outbox.getBusinessType());
+        assertEquals(11L, outbox.getBusinessId());
+        assertEquals("PENDING", outbox.getStatus());
+        assertEquals(RabbitMQConfig.NOTIFICATION_ROUTING_KEY, outbox.getTopic());
+        assertTrue(outbox.getPayload().contains("AI审核拒绝通知"));
     }
 }

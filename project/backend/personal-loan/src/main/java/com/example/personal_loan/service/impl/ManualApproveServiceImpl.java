@@ -120,8 +120,7 @@ public class ManualApproveServiceImpl implements ManualApproveService{
         application.setStatus(newStatus);
         applicationMapper.update(application);
 
-        String visibleStatus = approved ? "已通过" : "申请失败";
-        notificationOutboxPublisher.enqueueLoanApplicationStatus(application.getUserId(), application.getId(), visibleStatus);
+        notificationOutboxPublisher.enqueueNotification(application.getUserId(), application.getId(), "LOAN_APPLICATION_STATUS");
 
         response.setLoanApplicationId(loanApplicationId);
         response.setStatus(newStatus);

@@ -102,6 +102,13 @@ project/
 - `GET /users/blacklist/list` - 获取黑名单列表
 - `GET /users/search-by-credit` - 按信用分搜索用户
 
+### 7. NotificationController (`/api/notification`)
+- `GET /notifications/my` - 获取用户通知列表
+- `PUT /notifications/{id}/read` - 标记通知为已读
+- `GET /notifications/stream` - SSE用户实时通知流
+- `GET /notifications/admin` - 管理员获取所有通知
+- `GET /notifications/admin/stream` - SSE管理员实时通知流
+
 ### Backend Services (Business Logic)
 
 | Service | Description |
@@ -117,6 +124,8 @@ project/
 | PayService | 支付服务（待开发） |
 | CacheService | 缓存服务（Redis） |
 | LocalFileStorageService | 本地文件存储服务 |
+| NotificationService | 通知服务 |
+| NotificationSseService | SSE实时通知推送服务 |
 
 ### Data Entities
 
@@ -133,6 +142,7 @@ project/
 | ImmovablesCert | 不动产证明（房产、车辆） |
 | BlackUser | 黑名单用户 |
 | OutboxMessage | 消息队列（RabbitMQ） |
+| Notification | 通知（用户、类型、内容、状态） |
 
 ### Enumerations
 
@@ -223,6 +233,7 @@ project/
 - [x] Redis缓存集成
 - [x] RabbitMQ消息队列
 - [x] 前端管理后台（11个页面）
+- [x] 通知系统（实时推送、消息管理）
 
 ### In Progress
 - [ ] AI智能审批模块（AIApproveService）

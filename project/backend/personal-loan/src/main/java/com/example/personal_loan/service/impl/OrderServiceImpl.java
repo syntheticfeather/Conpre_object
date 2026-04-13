@@ -23,6 +23,7 @@ import com.example.personal_loan.mapper.OrderMapper;
 import com.example.personal_loan.mapper.OutboxMapper;
 import com.example.personal_loan.service.OrderService;
 import com.example.personal_loan.utils.CalculateUtil;
+import com.example.personal_loan.utils.RepaymentPlanItem;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
@@ -110,5 +111,22 @@ public class OrderServiceImpl implements OrderService{
             throw new BusinessException("逾期订单无法申请延期");
         }
         return true;
+    }
+    
+    @Override
+    public List<RepaymentPlanItem> getRepaymentPlan(Long userId, Long orderId) {
+        Order order = orderMapper.selectById(orderId);
+        if (order == null) {
+            throw new BusinessException(404, "订单不存在");
+        }
+        if (!order.getUserId().equals(userId)) {
+            throw new BusinessException(403, "无权查看他人订单");
+        }
+        return CalculateUtil.calculateRepaymentPlan(
+            order.getLoanAmount(),
+            order.getInterestRate(),
+            order.getTerm(),
+            order.getRepaidType()
+        );
     }
 }

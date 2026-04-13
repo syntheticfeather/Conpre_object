@@ -14,6 +14,7 @@ import com.example.personal_loan.dto.ApiResult;
 import com.example.personal_loan.dto.UserGetOrderResponse;
 import com.example.personal_loan.dto.UserOrderListResponse;
 import com.example.personal_loan.service.OrderService;
+import com.example.personal_loan.utils.RepaymentPlanItem;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -65,6 +66,18 @@ public class OrderController {
         orderService.repay(orderId);
         log.info("/api/orders/{}/repay success called for user {} to repay order {}", orderId, currentUserId, orderId);
         return ResponseEntity.ok(ApiResult.success("已发起还款"));
+    }
+    
+    @GetMapping(value = "/{orderId}/repayment-plan", produces = "application/json")
+    @Operation(summary = "获取还款计划", description = "用户获取指定贷款订单的还款计划")
+    public ResponseEntity<ApiResult<List<RepaymentPlanItem>>> getRepaymentPlan(
+            HttpServletRequest request,
+            @Parameter(description = "订单ID") @PathVariable Long orderId) {
+    
+        Long userId = (Long) request.getAttribute("userId");
+        log.info("/api/orders/{}/repayment-plan success called for user {} to get repayment plan for order {}", orderId, userId, orderId);
+        List<RepaymentPlanItem> plan = orderService.getRepaymentPlan(userId, orderId);
+        return ResponseEntity.ok(ApiResult.success(plan));
     }
 
 }

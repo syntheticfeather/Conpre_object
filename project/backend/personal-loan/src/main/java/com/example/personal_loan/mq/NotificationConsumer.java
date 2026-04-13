@@ -1,7 +1,6 @@
 package com.example.personal_loan.mq;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -12,8 +11,10 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 
 import com.example.personal_loan.config.RabbitMQConfig;
-import com.example.personal_loan.dto.NotificationEvent;
+import com.example.personal_loan.entity.LoanApplication;
 import com.example.personal_loan.entity.Notification;
+import com.example.personal_loan.enums.ApplicationStatus;
+import com.example.personal_loan.mapper.ApplicationMapper;
 import com.example.personal_loan.mapper.NotificationMapper;
 import com.example.personal_loan.mapper.ProcessMessageMapper;
 import com.example.personal_loan.service.NotificationSseService;
@@ -32,6 +33,7 @@ public class NotificationConsumer {
     private final ProcessMessageMapper processedMessageMapper;
     private final NotificationMapper notificationMapper;
     private final ObjectMapper objectMapper;
+    private final ApplicationMapper applicationMapper;
     private final RabbitUtil rabbitUtil;
     private final NotificationSseService notificationSseService;
     private static final int MAX_RETRIES = 3;
@@ -53,22 +55,31 @@ public class NotificationConsumer {
         }
 
         try {
-            NotificationEvent event = objectMapper.readValue(payload, NotificationEvent.class);
-            Notification notification = new Notification();
-            notification.setUserId(event.getUserId());
-            notification.setBusinessId(event.getBusinessId());
-            notification.setBusinessType(event.getBusinessType());
-            notification.setTitle(buildTitle(event));
-            notification.setContent(buildContent(event));
-            notification.setReadFlag(false);
-            notification.setCreatedAt(LocalDateTime.now());
-            notification.setReadAt(null);
-            notificationMapper.insert(notification);
+            Notification notification = objectMapper.readValue(payload, Notification.class);
+            //处理管理员通知，使用虚拟管理员ID 999999L
+            if (notification.getBusinessType().equals("LOAN_APPLICATION_APPROVE")) {
+                notificationMapper.insert(notification);
+                notificationSseService.publish(999999L, notification);
+                markAsProcessed(messageId, "NOTIFICATION", notification.getBusinessId());
+                channel.basicAck(tag, false);
+                
+            }else{
+                // 处理普通通知
+                // 补充标题和内容（如果为空）
+                if (notification.getTitle() == null || notification.getTitle().isEmpty()) {
+                    notification.setTitle(buildTitle(notification));
+                }
+                if (notification.getContent() == null || notification.getContent().isEmpty()) {
+                    notification.setContent(buildContent(notification));
+                }
+                
+                notificationMapper.insert(notification);
+                notificationSseService.publish(notification.getUserId(), notification);
 
-            notificationSseService.publish(notification.getUserId(), notification);
+                markAsProcessed(messageId, "NOTIFICATION", notification.getBusinessId());
+                channel.basicAck(tag, false);
+            }
 
-            markAsProcessed(messageId, "NOTIFICATION", event.getBusinessId());
-            channel.basicAck(tag, false);
         } catch (Exception e) {
             int deathCount = getDeathCount(message, RabbitMQConfig.NOTIFICATION_QUEUE);
             if (deathCount >= MAX_RETRIES) {
@@ -83,68 +94,41 @@ public class NotificationConsumer {
         }
     }
 
-    private String buildTitle(NotificationEvent event) {
-        if (event == null) {
+    private String buildTitle(Notification notification) {
+        if (notification == null) {
             return "通知";
         }
-        String status = event.getVisibleStatus();
-        if ("审核中".equals(status)) {
-            return "贷款申请已提交";
+        String businessType = notification.getBusinessType();
+        if ("LOAN_APPLICATION_STATUS".equals(businessType)) {
+            return "贷款申请状态更新";
+        } else if ("REPAYMENT".equals(businessType)) {
+            return "还款状态更新";
         }
-        if ("已通过".equals(status)) {
-            return "贷款申请已通过";
-        }
-        if ("申请失败".equals(status)) {
-            return "贷款申请未通过";
-        }
-        if ("已取消".equals(status)) {
-            return "贷款申请已取消";
-        }
-        return "贷款申请状态更新";
+        return "通知";
     }
 
-    private String buildContent(NotificationEvent event) {
-        if (event == null) {
+    private String buildContent(Notification notification) {
+        if (notification == null) {
             return "您有一条新通知";
         }
-        String status = event.getVisibleStatus();
-        String businessType = event.getBusinessType();
-        Long businessId = event.getBusinessId();
-        if (businessId == null) {
-            if ("LOAN_APPLICATION".equals(businessType)) {
-                if ("审核中".equals(status)) {
-                    return "您的贷款申请已提交，正在审核中";
-                }
-                if ("已通过".equals(status)) {
-                    return "您的贷款申请已通过";
-                }
-                if ("申请失败".equals(status)) {
-                    return "您的贷款申请未通过审核";
-                }
-                if ("已取消".equals(status)) {
-                    return "您的贷款申请已取消";
-                }
-                return "您的贷款申请状态已更新";
-            } else if ("REPAYMENT".equals(businessType)) {
-                return "您的还款已处理";
+        String businessType = notification.getBusinessType();
+        Long businessId = notification.getBusinessId();
+        if ("LOAN_APPLICATION_STATUS".equals(businessType)) {
+            // 处理贷款申请状态更新通知
+            LoanApplication application = applicationMapper.selectById(businessId);
+            if (application == null) {
+                return "您有一条新通知";
             }
-            return "您有一条新通知";
-        }
-
-        if ("LOAN_APPLICATION".equals(businessType)) {
-            if ("审核中".equals(status)) {
+            ApplicationStatus status = application.getStatus();
+            if (status == ApplicationStatus.审核中 || status == ApplicationStatus.AI拒绝) {
                 return "您的贷款申请(" + businessId + ")已提交，正在审核中";
+            }else if (status == ApplicationStatus.人工拒绝) {
+                return "您的贷款申请(" + businessId + ")未通过审核，拒绝原因：" + application.getRejectReason();
+            }else if (status == ApplicationStatus.已取消) {
+                return "您的贷款申请(" + businessId + ")已成功取消";
+            }else if (status == ApplicationStatus.已通过) {
+                return "您的贷款申请(" + businessId + ")已通过审核";
             }
-            if ("已通过".equals(status)) {
-                return "您的贷款申请(" + businessId + ")已通过";
-            }
-            if ("申请失败".equals(status)) {
-                return "您的贷款申请(" + businessId + ")未通过审核";
-            }
-            if ("已取消".equals(status)) {
-                return "您的贷款申请(" + businessId + ")已取消";
-            }
-            return "您的贷款申请(" + businessId + ")状态已更新";
         } else if ("REPAYMENT".equals(businessType)) {
             return "您的还款(" + businessId + ")已处理";
         }

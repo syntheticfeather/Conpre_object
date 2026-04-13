@@ -20,7 +20,7 @@ public class JwtInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String uri = request.getRequestURI();
-        log.info("【JwtInterceptor】请求路径: " + uri);
+        log.info("【JwtInterceptor】request uri: " + uri);
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             log.info("【JwtInterceptor】OPTIONS 请求，不做任何校验");
             return true; // 不做任何校验
@@ -33,8 +33,8 @@ public class JwtInterceptor implements HandlerInterceptor {
         }
         String token = authorizationHeader.substring(7);
         if (!jwtUtil.validateToken(token)) {
-            log.error("JWT 验证失败");
-            sendUnauthorizedJson(response, 401, "JWT 验证失败");
+            log.error("JWT token is invalid");
+            sendUnauthorizedJson(response, 401, "JWT token is invalid");
             return false;
         }
         Long userId = jwtUtil.getUserIdFromToken(token);
@@ -44,7 +44,7 @@ public class JwtInterceptor implements HandlerInterceptor {
          */
         request.setAttribute("userId", userId);
         request.setAttribute("userPhone", userPhone);
-        log.info("【JwtInterceptor】请求成功，userId: " + userId + ", userPhone: " + userPhone);
+        log.info("【JwtInterceptor】request success, userId: " + userId + ", userPhone: " + userPhone);
         return true;
     }
 

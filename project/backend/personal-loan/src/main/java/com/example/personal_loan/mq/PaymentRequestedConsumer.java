@@ -2,6 +2,8 @@ package com.example.personal_loan.mq;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
@@ -31,6 +33,7 @@ public class PaymentRequestedConsumer {
     private final RabbitUtil rabbitUtil;
     private final PayService payService;
     private final OutboxMapper outboxMapper;
+    private static final int MAX_RETRIES = 3;
 
     @RabbitListener(queues = RabbitMQConfig.PAYMENT_REQUESTED_QUEUE)
     public void consume(Message message, Channel channel) throws IOException {
@@ -70,11 +73,38 @@ public class PaymentRequestedConsumer {
             processedMessageMapper.insertMessage(messageId, "PAYMENT_REQUESTED", event.getOrderId());
             channel.basicAck(tag, false);
         } catch (Exception e) {
-            Message dlqMsg = copyWithHeaders(message, messageId);
-            rabbitUtil.sendToDLX(RabbitMQConfig.DLQ, dlqMsg);
+            int deathCount = getDeathCount(message, RabbitMQConfig.PAYMENT_REQUESTED_QUEUE);
+            if (deathCount >= MAX_RETRIES) {
+                Message dlqMsg = copyWithHeaders(message, messageId);
+                rabbitUtil.sendToDLX(RabbitMQConfig.DLQ, dlqMsg);
+                channel.basicAck(tag, false);
+                log.error("payment requested consume failed, moved to dlq: {}", messageId, e);
+                return;
+            }
+            Message retryMsg = copyWithHeaders(message, messageId);
+            rabbitUtil.sendToDLX(RabbitMQConfig.PAYMENT_REQUESTED_RETRY_ROUTING_KEY, retryMsg);
             channel.basicAck(tag, false);
-            log.error("payment requested consume failed, moved to dlq: {}", messageId, e);
+            log.error("payment requested consume failed, moved to retry queue: {}", messageId, e);
         }
+    }
+
+    private int getDeathCount(Message message, String queue) {
+        Map<String, Object> headers = message.getMessageProperties().getHeaders();
+        Object xDeath = headers.get("x-death");
+        if (!(xDeath instanceof List)) {
+            return 0;
+        }
+        int count = 0;
+        for (Object entry : (List<?>) xDeath) {
+            if (entry instanceof Map) {
+                Object q = ((Map<?, ?>) entry).get("queue");
+                Object c = ((Map<?, ?>) entry).get("count");
+                if (q != null && q.toString().equals(queue) && c instanceof Long) {
+                    count = Math.max(count, ((Long) c).intValue());
+                }
+            }
+        }
+        return count;
     }
 
     private Message copyWithHeaders(Message origin, String messageId) {

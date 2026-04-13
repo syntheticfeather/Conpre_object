@@ -5,5 +5,12 @@
         "."
     ],
     "java.project.referencedLibraries": [],
-    "notebook.defaultFormatter": "esbenp.prettier-vscode"
+    "notebook.defaultFormatter": "esbenp.prettier-vscode",
+    "python-envs.pythonProjects": [
+        {
+            "path": "smart-customer-service",
+            "envManager": "ms-python.python:venv",
+            "packageManager": "ms-python.python:pip"
+        }
+    ]
 }

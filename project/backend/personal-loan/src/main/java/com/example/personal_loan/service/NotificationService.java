@@ -7,6 +7,9 @@ import com.example.personal_loan.entity.Notification;
 public interface NotificationService {
     List<Notification> getMyNotifications(Long userId, int limit);
 
-    void markAsRead(Long userId, Long notificationId);
+    void markAsRead(Long notificationId);
+    
+    List<Notification> getAdminNotifications(int limit);
+    
 }
 

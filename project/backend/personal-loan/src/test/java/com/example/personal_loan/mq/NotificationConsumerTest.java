@@ -13,8 +13,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 
-import com.example.personal_loan.dto.NotificationEvent;
 import com.example.personal_loan.entity.Notification;
+import com.example.personal_loan.mapper.ApplicationMapper;
 import com.example.personal_loan.mapper.NotificationMapper;
 import com.example.personal_loan.mapper.ProcessMessageMapper;
 import com.example.personal_loan.service.NotificationSseService;
@@ -30,6 +30,9 @@ class NotificationConsumerTest {
 
     @Mock
     private NotificationMapper notificationMapper;
+
+    @Mock
+    private ApplicationMapper applicationMapper;
 
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
@@ -47,13 +50,20 @@ class NotificationConsumerTest {
         when(rabbitUtil.getTag(any())).thenReturn(1L);
         when(processedMessageMapper.isProcessMessage("mid")).thenReturn(false);
 
-        NotificationEvent event = new NotificationEvent("LOAN_APPLICATION_STATUS", 2L, 11L, null, "已通过", LocalDateTime.now());
-        Message message = buildMessage(objectMapper.writeValueAsBytes(event), "mid", 1L);
+        Notification notification = new Notification();
+        notification.setUserId(2L);
+        notification.setBusinessId(11L);
+        notification.setBusinessType("LOAN_APPLICATION_STATUS");
+        notification.setReadFlag(false);
+        notification.setCreatedAt(LocalDateTime.now());
+
+        Message message = buildMessage(objectMapper.writeValueAsBytes(notification), "mid", 1L);
 
         NotificationConsumer consumer = new NotificationConsumer(
                 processedMessageMapper,
                 notificationMapper,
                 objectMapper,
+                applicationMapper,
                 rabbitUtil,
                 notificationSseService
         );
@@ -69,14 +79,20 @@ class NotificationConsumerTest {
     void consume_missingMessageId_shouldNack() throws Exception {
         when(rabbitUtil.getTag(any())).thenReturn(2L);
 
+        Notification notification = new Notification();
+        notification.setUserId(2L);
+        notification.setBusinessId(11L);
+        notification.setBusinessType("LOAN_APPLICATION_STATUS");
+
         MessageProperties props = new MessageProperties();
         props.setDeliveryTag(2L);
-        Message message = new Message(objectMapper.writeValueAsBytes(new NotificationEvent()), props);
+        Message message = new Message(objectMapper.writeValueAsBytes(notification), props);
 
         NotificationConsumer consumer = new NotificationConsumer(
                 processedMessageMapper,
                 notificationMapper,
                 objectMapper,
+                applicationMapper,
                 rabbitUtil,
                 notificationSseService
         );
