@@ -6,6 +6,7 @@ import router from './router'
 
 import ElementPlus from 'element-plus'
 import Antd from 'ant-design-vue'
+import DataVVue3 from '@kjgl77/datav-vue3'
 
 import './assets/css/base.css'
 import 'element-plus/dist/index.css'
@@ -101,5 +102,6 @@ appStore.initTheme()
 app.use(router)
 app.use(ElementPlus)
 app.use(Antd)
+app.use(DataVVue3)
 
 app.mount('#app')

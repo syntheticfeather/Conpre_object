@@ -1,6 +1,6 @@
 <template>
   <div class="container" :style="{ backgroundImage: `url(${bgImage})`,backgroundSize: 'cover' }">
-    <h1>借贷APP管理员控制系统</h1>
+    <h1>管理员控制系统</h1>
     <div class="main wrapper">
       <h2>———Login———</h2>
 

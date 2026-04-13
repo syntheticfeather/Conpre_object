@@ -15,6 +15,7 @@ const UserManageView = () => import('@/views/user/UserManageView.vue')
 const BlackUserManageView = () => import('@/views/user/BlackUserManageView.vue')
 
 const RiskManageView = () => import('@/views/risk/RiskManageView.vue')
+const DVScreenView = () => import('@/views/risk/DVScreenView.vue')
 const CollectManagementView = () => import('@/views/risk/CollectManagementView.vue')
 
 const KnowledgeManagementView = () => import('@/views/system/KnowledgeManagementView.vue')
@@ -55,7 +56,9 @@ const routes = [
 
       { path: 'knowledge', name: 'Knowledge', component: KnowledgeManagementView }
     ]
-  }
+  },
+
+    { path: '/dv-screen', name: 'DVScreen', component: DVScreenView }
 ]
 
 const router = createRouter({
