@@ -91,6 +91,52 @@
       </div>
     </div>
 
+    <!-- 底部区域：最新动态 + 月度审批统计 -->
+    <div class="bottom-section">
+      <!-- 最新动态 -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3 class="chart-title">最新动态</h3>
+          <a href="#" class="view-all">
+            查看全部
+            <el-icon><ArrowRight /></el-icon>
+          </a>
+        </div>
+        <div class="activity-list">
+          <div v-for="(activity, index) in activities" :key="index" class="activity-item">
+            <span class="activity-dot" :style="{ backgroundColor: activity.color }"></span>
+            <div class="activity-content">
+              <div class="activity-text">{{ activity.text }}</div>
+              <div class="activity-time">{{ activity.time }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 月度审批统计 -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <h3 class="chart-title">月度审批统计</h3>
+            <p class="chart-subtitle">通过 / 拒绝 对比</p>
+          </div>
+        </div>
+        <div ref="monthlyApprovalRef" class="monthly-chart"></div>
+        <div class="approval-stats">
+          <div class="approval-stat approved">
+            <el-icon><CircleCheck /></el-icon>
+            <div class="stat-label">通过率</div>
+            <div class="stat-value">{{ approvalStats.rate }}%</div>
+          </div>
+          <div class="approval-stat rejected">
+            <el-icon><Warning /></el-icon>
+            <div class="stat-label">拒绝率</div>
+            <div class="stat-value">{{ approvalStats.rejectionRate }}%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- 中间图表区域 -->
     <div class="charts-section">
       <!-- 左侧：申请趋势图 -->
@@ -172,52 +218,6 @@
       </div>
     </div>
 
-    <!-- 底部区域：最新动态 + 月度审批统计 -->
-    <div class="bottom-section">
-      <!-- 最新动态 -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <h3 class="chart-title">最新动态</h3>
-          <a href="#" class="view-all">
-            查看全部
-            <el-icon><ArrowRight /></el-icon>
-          </a>
-        </div>
-        <div class="activity-list">
-          <div v-for="(activity, index) in activities" :key="index" class="activity-item">
-            <span class="activity-dot" :style="{ backgroundColor: activity.color }"></span>
-            <div class="activity-content">
-              <div class="activity-text">{{ activity.text }}</div>
-              <div class="activity-time">{{ activity.time }}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 月度审批统计 -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <div>
-            <h3 class="chart-title">月度审批统计</h3>
-            <p class="chart-subtitle">通过 / 拒绝 对比</p>
-          </div>
-        </div>
-        <div ref="monthlyApprovalRef" class="monthly-chart"></div>
-        <div class="approval-stats">
-          <div class="approval-stat approved">
-            <el-icon><CircleCheck /></el-icon>
-            <div class="stat-label">通过率</div>
-            <div class="stat-value">{{ approvalStats.rate }}%</div>
-          </div>
-          <div class="approval-stat rejected">
-            <el-icon><Warning /></el-icon>
-            <div class="stat-label">拒绝率</div>
-            <div class="stat-value">{{ approvalStats.rejectionRate }}%</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- 原有图表区域 -->
     <div class="original-charts-section">
       <h3 class="section-title">详细数据分析</h3>
@@ -251,7 +251,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { userAPI, loanApplicationAPI } from '@/api'
+import { userAPI, loanApplicationAPI, notificationAPI } from '@/api'
 import * as echarts from 'echarts'
 import { 
   User, 
@@ -1167,18 +1167,48 @@ const fetchPurposeDistribution = async () => {
 // 获取最新动态数据
 const fetchActivities = async () => {
   try {
-    // TODO: 当后端提供动态消息 API 时，替换此处模拟数据
-    // 目前使用模拟数据
-    activities.value = [
-      { text: '用户 张伟 的贷款申请 A20240001 已批准', time: '10 分钟前', color: '#5AD8A6' },
-      { text: '新用户 周婷 注册，提交信用极速贷申请', time: '25 分钟前', color: '#5B8FF9' },
-      { text: '用户 赵丽 账户已被冻结 (风控触发)', time: '1 小时前', color: '#F6BD16' },
-      { text: '用户 吴磊 的申请 A20240008 已批准放款', time: '2 小时前', color: '#5AD8A6' },
-      { text: '系统检测到 5 条可疑申请，已转人工复核', time: '3 小时前', color: '#F87474' }
-    ]
+    // 调用通知API获取管理员通知
+    const response = await notificationAPI.getAdminNotifications()
+    if (response.code === 200) {
+      // 将通知数据映射为活动数据
+      activities.value = response.data.map(notification => {
+        // 根据是否已读确定颜色
+        const color = notification.readFlag ? '#5AD8A6' : '#F87474'
+        // 格式化时间：显示创建时间的小时和分钟
+        let timeStr = notification.createdAt
+        if (timeStr && timeStr.includes(' ')) {
+          timeStr = timeStr.split(' ')[1].substring(0, 5) // 提取 "HH:mm"
+        }
+        // 使用内容作为文本（更具体）
+        const text = notification.content
+        
+        return {
+          text,
+          time: timeStr,
+          color
+        }
+      })
+    } else {
+      console.error('获取通知数据失败:', response.message)
+      // 如果API失败，使用模拟数据作为后备
+      useFallbackActivities()
+    }
   } catch (error) {
     console.error('获取最新动态数据失败:', error)
+    // 出错时使用模拟数据作为后备
+    useFallbackActivities()
   }
+}
+
+// 后备模拟数据函数
+const useFallbackActivities = () => {
+  activities.value = [
+    { text: '用户 张伟 的贷款申请 A20240001 已批准', time: '10 分钟前', color: '#5AD8A6' },
+    { text: '新用户 周婷 注册，提交信用极速贷申请', time: '25 分钟前', color: '#5B8FF9' },
+    { text: '用户 赵丽 账户已被冻结 (风控触发)', time: '1 小时前', color: '#F6BD16' },
+    { text: '用户 吴磊 的申请 A20240008 已批准放款', time: '2 小时前', color: '#5AD8A6' },
+    { text: '系统检测到 5 条可疑申请，已转人工复核', time: '3 小时前', color: '#F87474' }
+  ]
 }
 
 // 组件挂载时加载数据

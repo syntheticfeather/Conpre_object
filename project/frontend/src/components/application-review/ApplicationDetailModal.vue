@@ -12,16 +12,16 @@
         <h3 class="detail-subtitle">基本信息</h3>
         <div id="user-info-section1">
           <div style="display: flex; align-items: flex-start; margin-bottom: 16px;">
-            <img :src="applicationDetail?.data?.user?.avatar" alt="用户头像" class="avatar" style="margin-right: 16px;">
-            <div style="display: flex; flex-direction: column;">
-              <p style="margin: 0 0 4px 0;"><span>ID: {{ applicationDetail?.data?.user?.id || '—' }}</span></p>
-              <p style="margin: 0;"><span>{{ applicationDetail?.data?.user?.userName || '—' }}</span></p>
-            </div>
+            <img :src="avatarUrl" alt="用户头像" class="avatar" style="margin-right: 16px;">
+              <div style="display: flex; flex-direction: column;">
+                <p style="margin: 0 0 4px 0;"><span>ID: {{ userDetail?.user?.id || applicationDetail?.data?.user?.id || '—' }}</span></p>
+                <p style="margin: 0;"><span>{{ userDetail?.user?.userName || applicationDetail?.data?.user?.userName || '—' }}</span></p>
+              </div>
           </div>
-          <p><strong>手机号：</strong><span>{{ applicationDetail?.data?.user?.phone || '—' }}</span></p>
-          <p><strong>注册时间：</strong><span>{{ formatDate(applicationDetail?.data?.user?.createTime) || '—' }}</span></p>
-          <p><strong>信誉分：</strong><span :style="{ color: getCreditColor(applicationDetail?.userCert?.creditScore) }">
-            {{ applicationDetail?.userCert?.creditScore || '0' }}
+          <p><strong>手机号：</strong><span>{{ userDetail?.user?.phone || applicationDetail?.data?.user?.phone || '—' }}</span></p>
+          <p><strong>注册时间：</strong><span>{{ formatDate(userDetail?.user?.createTime || applicationDetail?.data?.user?.createTime) || '—' }}</span></p>
+          <p><strong>信誉分：</strong><span :style="{ color: getCreditColor(userDetail?.userCert?.creditScore || applicationDetail?.userCert?.creditScore) }">
+            {{ userDetail?.userCert?.creditScore || applicationDetail?.userCert?.creditScore || '0' }}
           </span></p>
         </div>
       </div>
@@ -33,11 +33,21 @@
             :key="key"
             class="material-item clickable"
             :class="{ 'has-image': isMaterialUploaded(key) }"
-            @click="handleMaterialClick(key, applicationDetail?.userCert?.[key])"
+            @click="key === 'idCard' || key === 'bankCardId' ? (showCertDetails[key] = !showCertDetails[key]) : handleMaterialClick(key, userDetail?.userCert?.[key] || applicationDetail?.userCert?.[key])"
           >
             <span>{{ label }}：</span>
             <span :style="{ color: isMaterialUploaded(key) ? '#27ae60' : '#e74c3c' }">
-              {{ isMaterialUploaded(key) ? '已上传 (点击查看)' : '未上传' }}
+              <template v-if="isMaterialUploaded(key)">
+                <template v-if="(key === 'idCard' || key === 'bankCardId') && showCertDetails[key]">
+                  {{ userDetail?.userCert?.[key] || applicationDetail?.userCert?.[key] }}
+                </template>
+                <template v-else>
+                  {{ key === 'idCard' || key === 'bankCardId' ? '已上传 (点击查看)' : '已上传 (点击查看)' }}
+                </template>
+              </template>
+              <template v-else>
+                未上传
+              </template>
             </span>
           </div>
         </div>
@@ -77,7 +87,7 @@
       <!-- 拒绝理由 -->
       <div v-if="applicationDetail?.data?.application?.rejectReason" class="rejectReasons">
         <span>拒绝原因：</span>
-        <span>{{ applicationDetail.data.application.rejectReason }}</span>
+        <span>{{ applicationDetail?.data?.application?.rejectReason || '—' }}</span>
       </div>
     </div>
 
@@ -101,7 +111,7 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue';
-import { applicationAPI, authAPI } from '@/api';
+import { applicationAPI, authAPI, userAPI } from '@/api';
 import ImagePreview from '@/components/shared/ImagePreview.vue';
 import { ElMessage } from 'element-plus';
 
@@ -132,11 +142,13 @@ const emit = defineEmits(['update:modelValue', 'close', 'submit']);
 
 // 内部状态
 const applicationDetail = ref(null);
+const userDetail = ref(null); // 从用户详情接口获取的用户信息
 const loading = ref(false);
 
 const showImagePreview = ref(false)
 const previewImageUrl = ref('')
 const previewTitle = ref('')
+const showCertDetails = ref({})
 
 const certTypeMap = {
   workCertId: 'workCert',
@@ -151,10 +163,41 @@ const materialMap = {
   workCertId: '工作证明',
   triCertId: '第三方认证',
   immovableCertId: '不动产证明'
-};
+}
+
+// 计算属性：头像URL
+const avatarUrl = computed(() => {
+  const avatar = userDetail.value?.user?.avatar || applicationDetail.value?.data?.user?.avatar
+  if (!avatar) return '/1.jpg'
+  
+  // 处理相对路径
+  let processedUrl = avatar.replace(/[\\/]/g, '/')
+  
+  // 如果已经是完整URL，直接返回
+  if (processedUrl.startsWith('http')) {
+    return processedUrl
+  }
+  
+  // 处理上传路径
+  if (processedUrl.startsWith('/uploads/')) {
+    return processedUrl
+  }
+  
+  // 对于 avatars/ 开头的路径，添加 /uploads/ 前缀
+  if (processedUrl.startsWith('avatars/')) {
+    return '/uploads/' + processedUrl
+  }
+  
+  // 确保以 / 开头
+  if (!processedUrl.startsWith('/')) {
+    processedUrl = '/' + processedUrl
+  }
+  
+  return processedUrl
+})
 
 // 计算属性：是否应该显示
-const shouldShow = computed(() => props.modelValue && !!props.applicationId);
+const shouldShow = computed(() => props.modelValue && !!props.applicationId)
 
 // 监听 applicationId 变化，获取详情
 watch(() => props.applicationId, async (newId) => {
@@ -170,6 +213,7 @@ watch(() => props.modelValue, (newValue) => {
   if (!newValue) {
     // 关闭时清空数据
     applicationDetail.value = null;
+    userDetail.value = null;
   }
 });
 
@@ -177,9 +221,24 @@ watch(() => props.modelValue, (newValue) => {
 const fetchApplicationDetail = async (id) => {
   loading.value = true
   try {
+    // 1. 获取申请详情
     const response = await applicationAPI.getApplicationDetail(id)
     // 直接使用响应，因为response已经是response.data
     applicationDetail.value = response
+    
+    // 2. 从申请详情中获取用户ID，然后获取用户详情
+    const userId = applicationDetail.value?.data?.user?.id
+    if (userId) {
+      try {
+        const userResponse = await userAPI.getUserDetail(userId)
+        if (userResponse.code === 200) {
+          userDetail.value = userResponse.data
+        }
+      } catch (userError) {
+        console.error('获取用户详情失败:', userError)
+        // 可以继续显示，只是没有用户详情
+      }
+    }
   } catch (error) {
     console.error('Failed to fetch application detail:', error)
     // 错误处理逻辑
@@ -202,10 +261,11 @@ const getCreditColor = (credit) => {
 
 // 检查材料是否已上传
 const isMaterialUploaded = (key) => {
-  return applicationDetail.value?.userCert?.[key] != null
+  // 优先使用 userDetail，如果不存在则使用 applicationDetail
+  return userDetail.value?.userCert?.[key] != null || applicationDetail.value?.userCert?.[key] != null
 }
 
-const fetchCertImage = async (certId, certType) => {
+const fetchCertImage = async (certId, certType, materialKey) => {
   if (!certId) {
     ElMessage.warning('该材料未上传')
     return
@@ -213,30 +273,71 @@ const fetchCertImage = async (certId, certType) => {
 
   try {
     let response
+    let imageUrl
+    
     switch (certType) {
       case 'workCert':
         response = await authAPI.getWorkCert(certId)
+        if (response.code === 200 && response.data) {
+          // WorkCert 对象包含 employmentCertPath 和 salaryCertPath
+          imageUrl = response.data.employmentCertPath || response.data.salaryCertPath
+        }
         break
       case 'triCert':
         response = await authAPI.getTriCert(certId)
+        if (response.code === 200 && response.data) {
+          // TriCert 对象包含 socialSecurityPath 和 creditReportPath
+          imageUrl = response.data.socialSecurityPath || response.data.creditReportPath
+        }
         break
       case 'immovableCert':
         response = await authAPI.getImmovablesCert(certId)
+        if (response.code === 200 && response.data) {
+          // ImmovablesCert 对象包含 propertyCertPath 和 carCertPath
+          imageUrl = response.data.propertyCertPath || response.data.carCertPath
+        }
         break
       default:
         ElMessage.warning('不支持的认证类型')
         return
     }
 
-    if (response.code === 200 && response.data) {
-      const imageUrl = response.data.fileUrl || response.data.imageUrl
-      if (imageUrl) {
-        previewImageUrl.value = imageUrl
-        previewTitle.value = materialMap[certType] || '认证材料'
-        showImagePreview.value = true
+    if (imageUrl) {
+      // 处理路径问题
+      imageUrl = imageUrl.replace(/[\\/]/g, '/')
+      
+      // 处理上传路径
+      if (imageUrl.startsWith('/uploads/')) {
+        // 如果是上传路径，直接使用
+        // 确保路径正确
+        if (!imageUrl.startsWith('/')) {
+          imageUrl = '/' + imageUrl
+        }
       } else {
-        ElMessage.warning('未找到图片')
+        // 移除可能的前缀
+        if (imageUrl.includes('project/frontend/public/')) {
+          imageUrl = imageUrl.replace('project/frontend/public/', '')
+        }
+        if (imageUrl.includes('public/')) {
+          imageUrl = imageUrl.replace('public/', '')
+        }
+        
+        // 处理文件名差异
+        if (imageUrl === 'thr_c.jpg') {
+          imageUrl = 'thir_c.jpg'
+        }
+        
+        // 确保路径正确
+        if (!imageUrl.startsWith('/')) {
+          imageUrl = '/' + imageUrl
+        }
       }
+      
+      previewImageUrl.value = imageUrl
+      previewTitle.value = materialMap[materialKey] || '认证材料'
+      showImagePreview.value = true
+    } else {
+      ElMessage.warning('未找到图片')
     }
   } catch (error) {
     console.error('获取认证材料失败:', error)
@@ -250,9 +351,14 @@ const handleMaterialClick = (key, certId) => {
     return
   }
 
+  // 跳过身份证和银行卡，因为它们直接显示号码
+  if (key === 'idCard' || key === 'bankCardId') {
+    return
+  }
+
   const certType = certTypeMap[key]
   if (certType) {
-    fetchCertImage(certId, certType)
+    fetchCertImage(certId, certType, key)
   } else {
     ElMessage.warning('该材料类型不支持图片查看')
   }

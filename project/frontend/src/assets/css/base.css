@@ -56,12 +56,17 @@ a {
     --detail-border: #ebe6e6;
     --detail-shadow: 3px 3px 6px rgba(84, 87, 87, 0.3);
     --detail-subtitle-color: #555;
+    --detail-option-th-bg: #f8f9fa;
 
     /*分页组件颜色*/
     --pag-buttom-bg: white;
     --pag-color: #5d5d62;
     --pag-hover-bg: #f5f7fa;
     --page-info-color:#666;
+
+    /*日期搜索*/
+    --search-color: #c9ced3;
+    --search-label-color: rgb(34, 33, 33);
 
     --card-bg: #ffffff;
     --text-color: #303133;
@@ -115,12 +120,17 @@ html.dark {
     --detail-shadow: 3px 3px 6px rgb(136 139 142 / 56%);
     --detail-subtitle-color: #94c4ea;
     --option-th-color: #2b2b2c;
+    --detail-option-th-bg: #0c073559;
 
     /*分页组件颜色*/
     --pag-buttom-bg: #252542;
     --pag-color: #e0e0e0;
     --pag-hover-bg: #252542;
     --page-info-color:#d0cdcd;
+
+    /*日期搜索*/
+    --search-color: #1e252c;
+    --search-label-color: rgb(217, 212, 212);
 
     /* 卡片和文字颜色 */
     --card-bg: #1a1a2e;

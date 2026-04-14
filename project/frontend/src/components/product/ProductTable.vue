@@ -3,7 +3,7 @@
     <!-- 搜索区域 -->
     <div class="product-search">
       <div class="input-group">
-        <label>创建时间：</label>
+        <span class="label">创建时间：</span>
         <el-date-picker
           v-model="createDateRange"
           type="daterange"
@@ -14,7 +14,7 @@
         />
       </div>
       <div class="input-group">
-        <label>更新时间：</label>
+        <span class="label">更新时间：</span>
         <el-date-picker
           v-model="updateDateRange"
           type="daterange"
@@ -520,6 +520,10 @@ const formatDate = (dateString) => {
   align-items: center;
   gap: 5px;
 }
+.input-group .label {
+  color: var(--search-label-color);
+}
+
 /* 上下架按钮 */
 .btn {
   color: white;

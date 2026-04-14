@@ -28,7 +28,7 @@
           <h3 class="detail-subtitle">基本信息</h3>
           <div id="user-info-section1">
             <div style="display: flex; align-items: flex-start; margin-bottom: 16px;">
-              <img :src="userDetail.user?.avatar" alt="用户头像" class="avatar" style="margin-right: 16px;">
+              <img :src="avatarUrl" alt="用户头像" class="avatar" style="margin-right: 16px;">
               <div style="display: flex; flex-direction: column;">
                 <p style="margin: 0 0 4px 0;"><span>ID: {{ userDetail.user?.id || '—' }}</span></p>
                 <p style="margin: 0;"><span>{{ userDetail.user?.userName || '—' }}</span></p>
@@ -253,6 +253,37 @@ const materialMap = {
   triCertId: '第三方认证',
   immovableCertId: '不动产证明'
 }
+
+// 计算属性：头像URL
+const avatarUrl = computed(() => {
+  const avatar = userDetail.value?.user?.avatar
+  if (!avatar) return '/1.jpg'
+  
+  // 处理相对路径
+  let processedUrl = avatar.replace(/[\\/]/g, '/')
+  
+  // 如果已经是完整URL，直接返回
+  if (processedUrl.startsWith('http')) {
+    return processedUrl
+  }
+  
+  // 处理上传路径
+  if (processedUrl.startsWith('/uploads/')) {
+    return processedUrl
+  }
+  
+  // 对于 avatars/ 开头的路径，添加 /uploads/ 前缀
+  if (processedUrl.startsWith('avatars/')) {
+    return '/uploads/' + processedUrl
+  }
+  
+  // 确保以 / 开头
+  if (!processedUrl.startsWith('/')) {
+    processedUrl = '/' + processedUrl
+  }
+  
+  return processedUrl
+})
 
 const certTypeMap = {
   workCertId: 'workCert',

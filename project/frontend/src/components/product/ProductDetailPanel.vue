@@ -481,7 +481,7 @@ watch(() => props.productId, (newVal) => {
 }
 
 .options-table th {
-  background: #f8f9fa;
+  background: var(--detail-option-th-bg);
   padding: 12px;
   text-align: center;
   border-bottom: 2px solid var(--detail-border);

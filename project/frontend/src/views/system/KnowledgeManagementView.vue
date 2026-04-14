@@ -27,8 +27,9 @@
     </el-card>
 
     <!-- 知识列表 -->
-    <el-card class="knowledge-list">
-      <h3>知识库列表</h3>
+    <div class="knowledge-list-container">
+     <el-card class="knowledge-list">
+      <h3>常见/通用问题</h3>
       <el-table :data="knowledgeList" stripe>
         <el-table-column prop="question" label="问题" />
         <el-table-column prop="answer" label="答案" show-overflow-tooltip />
@@ -42,6 +43,55 @@
         </el-table-column>
       </el-table>
     </el-card>
+    
+    <el-card class="knowledge-list">
+      <h3>申请流程</h3>
+      <el-table :data="knowledgeList" stripe>
+        <el-table-column prop="question" label="问题" />
+        <el-table-column prop="answer" label="答案" show-overflow-tooltip />
+        <el-table-column prop="category" label="分类" width="100" />
+        <el-table-column label="操作" width="100">
+          <template #default="{ row }">
+            <el-button type="danger" size="small" @click="deleteKnowledge(row.id)">
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
+    
+    <el-card class="knowledge-list">
+      <h3>产品咨询</h3>
+      <el-table :data="knowledgeList" stripe>
+        <el-table-column prop="question" label="问题" />
+        <el-table-column prop="answer" label="答案" show-overflow-tooltip />
+        <el-table-column prop="category" label="分类" width="100" />
+        <el-table-column label="操作" width="100">
+          <template #default="{ row }">
+            <el-button type="danger" size="small" @click="deleteKnowledge(row.id)">
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
+
+    <el-card class="knowledge-list">
+      <h3>还款问题</h3>
+      <el-table :data="knowledgeList" stripe>
+        <el-table-column prop="question" label="问题" />
+        <el-table-column prop="answer" label="答案" show-overflow-tooltip />
+        <el-table-column prop="category" label="分类" width="100" />
+        <el-table-column label="操作" width="100">
+          <template #default="{ row }">
+            <el-button type="danger" size="small" @click="deleteKnowledge(row.id)">
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
+    </div>
   </div>
 </template>
 
@@ -103,4 +153,13 @@ onMounted(fetchKnowledge)
 .add-form {
   margin-bottom: 20px;
 }
+.knowledge-list-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.knowledge-list {
+  margin-top: 10px;
+}
+
 </style>

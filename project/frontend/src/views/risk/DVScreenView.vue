@@ -957,7 +957,7 @@ export default {
   justify-content: center;
   align-items: center;
   
-  padding: 12px 30px;
+  padding: 10px 30px;
 
   background: rgba(55, 71, 106, 0.6);
   color: #00e0ff;
@@ -966,10 +966,10 @@ export default {
   backdrop-filter: blur(5px);
   border: 1px solid rgba(78, 127, 243, 0.3);
   box-shadow: 0 0 20px rgba(106, 129, 132, 0.2);
-  pointer-events: auto;
-  z-index: 11;     
-  
-  
+  border-radius: 3px;
+
+  z-index: 11;    
+  pointer-events: auto; 
 }
 
 /* Loading 居中 */
