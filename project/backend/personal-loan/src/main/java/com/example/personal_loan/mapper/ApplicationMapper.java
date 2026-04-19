@@ -10,6 +10,8 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import com.example.personal_loan.dto.ApplicationDetailResponse;
+import com.example.personal_loan.dto.ApprovalTypeStatistics;
+import com.example.personal_loan.dto.MonthlyStatistics;
 import com.example.personal_loan.dto.PendingApprovalResponse;
 import com.example.personal_loan.dto.UserAppListResponse;
 import com.example.personal_loan.entity.LoanApplication;
@@ -133,7 +135,7 @@ public interface ApplicationMapper {
         "FROM loan_applications la " +
         "JOIN users u ON la.user_id = u.id " +
         "JOIN loan_products lp ON la.product_id = lp.id " +
-        "WHERE la.status = '已通过' OR la.status = '人工拒绝' " +
+        "WHERE la.status = 'AI通过' OR la.status = '人工通过' OR la.status = '人工拒绝' " +
         "ORDER BY la.apply_time DESC"
     )
     List<PendingApprovalResponse> listCompletedApprovals();
@@ -145,4 +147,16 @@ public interface ApplicationMapper {
     // 批量检查产品是否被贷款申请引用
     @Select("SELECT COUNT(*) FROM loan_applications WHERE product_id IN <foreach collection='productIds' item='id' open='(' separator=',' close=')'>#{id}</foreach>")
     int countByProductIds(@Param("productIds") List<Long> productIds);
+
+    // 统计每月申请量
+    @Select("SELECT DATE_FORMAT(apply_time, '%Y-%m') as month, COUNT(*) as count FROM loan_applications GROUP BY DATE_FORMAT(apply_time, '%Y-%m') ORDER BY month DESC")
+    List<MonthlyStatistics> countMonthlyApplications();
+
+    // 统计每月通过量（包括AI通过和人工通过）
+    @Select("SELECT DATE_FORMAT(apply_time, '%Y-%m') as month, COUNT(*) as count FROM loan_applications WHERE status = 'AI通过' OR status = '人工通过' GROUP BY DATE_FORMAT(apply_time, '%Y-%m') ORDER BY month DESC")
+    List<MonthlyStatistics> countMonthlyApprovals();
+
+    // 统计每月AI通过和人工通过的数量
+    @Select("SELECT DATE_FORMAT(apply_time, '%Y-%m') as month, status, COUNT(*) as count FROM loan_applications WHERE status = 'AI通过' OR status = '人工通过' GROUP BY DATE_FORMAT(apply_time, '%Y-%m'), status ORDER BY month DESC, status")
+    List<ApprovalTypeStatistics> countApprovalTypesByMonth();
 }

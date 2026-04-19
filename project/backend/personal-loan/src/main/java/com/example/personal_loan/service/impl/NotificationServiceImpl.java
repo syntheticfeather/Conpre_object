@@ -18,6 +18,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Autowired
     private NotificationMapper notificationMapper;
 
+    // 获取用户最新通知
     @Override
     @Transactional
     public List<Notification> getMyNotifications(Long userId, int limit) {
@@ -25,6 +26,7 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationMapper.selectLatestByUserId(userId, safeLimit);
     }
 
+    // 标记通知为已读
     @Override
     @Transactional
     public void markAsRead(Long notificationId) {
@@ -34,6 +36,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
+    // 获取管理员最新通知
     @Override
     @Transactional
     public List<Notification> getAdminNotifications(int limit) {
@@ -41,5 +44,24 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationMapper.selectByBusinessType("LOAN_APPLICATION_APPROVE", safeLimit);
     }
 
+    // 删除通知
+    @Override
+    @Transactional
+    public void deleteNotification(Long notificationId) {
+        int rows = notificationMapper.deleteById(notificationId);
+        if (rows == 0) {
+            throw new BusinessException(404, "通知不存在");
+        }
+    }
+
+    // 批量删除通知
+    @Override
+    @Transactional
+    public void batchDeleteNotifications(List<Long> notificationIds) {
+        int rows = notificationMapper.batchDelete(notificationIds);
+        if (rows == 0) {
+            throw new BusinessException(404, "通知不存在");
+        }
+    }
 }
 

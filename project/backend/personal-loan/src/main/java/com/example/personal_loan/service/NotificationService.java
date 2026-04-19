@@ -11,5 +11,8 @@ public interface NotificationService {
     
     List<Notification> getAdminNotifications(int limit);
     
+    void deleteNotification(Long notificationId);
+    
+    void batchDeleteNotifications(List<Long> notificationIds);
 }
 

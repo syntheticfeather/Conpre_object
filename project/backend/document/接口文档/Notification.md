@@ -205,3 +205,55 @@ Content-Type: text/event-stream
 **postman测试结果**  
 
 ![](../NotificationImgs/adminGetList.png "获取所有通知")
+
+## 用户管理员 删除通知
+
+**网址** /api/notifications/{notificationId}
+
+**请求方式** DELETE
+
+**参数**  
+
+| 参数 | 描述 | 类型 | 是否必填 |
+| ---- | ---- | ---- | ---- |
+| notificationId | 通知ID | Long | 是 |
+
+**请求示例（网址）** /api/notifications/70
+
+**返回数据**  
+
+``` json
+{
+    "code": 200,
+    "data": "删除成功",
+    "message": "操作成功"
+}
+```
+
+## 用户管理员 批量删除通知
+
+**网址** /api/notifications/batch
+
+**请求方式** DELETE
+
+**参数**  
+
+| 参数 | 描述 | 类型 | 是否必填 |
+| ---- | ---- | ---- | ---- |
+| notificationIds | 通知ID列表 | List<Long> | 是 |
+
+**请求示例（请求体）**
+
+``` json
+[67,70,73]
+```
+
+**返回数据**  
+
+``` json
+{
+    "code": 200,
+    "data": "批量删除成功",
+    "message": "操作成功"
+}
+```

@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 import com.example.personal_loan.enums.ApplicationStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonGetter;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,4 +25,9 @@ public class PendingApprovalResponse {
     private ApplicationStatus status;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime applyTime;
+    
+    @JsonGetter("status")
+    public String getStatusDisplay() {
+        return status.getDisplayStatus();
+    }
 }

@@ -101,5 +101,20 @@ public interface UserMapper {
     )
     User findByPhone(@Param("phone") String phone);
 
+    // 根据角色查询用户
+    @Select(
+        "SELECT " +
+        "  id, " +
+        "  user_name, " +
+        "  avatar, " +
+        "  password, " +
+        "  phone, " +
+        "  role, " +
+        "  create_time, " +
+        "  update_time " +
+        "FROM users WHERE role = #{role}"
+    )
+    List<User> findByRole(@Param("role") Integer role);
+
     UserDetailResponse selectUserDetail(@Param("userId") Long userId);
 }

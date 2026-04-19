@@ -5,9 +5,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -63,6 +65,7 @@ public class NotificationController {
         return notificationSseService.subscribe(userId);
     }
     
+    // 标记通知已读（用户管理员共用）
     @PatchMapping(value = "/{notificationId}/read", produces = "application/json")
     @Operation(summary = "标记通知已读", description = "用户将指定通知标记为已读")
     public ResponseEntity<ApiResult<String>> markAsRead(
@@ -104,5 +107,28 @@ public class NotificationController {
         log.info("/api/notifications/admin success called for admin {}", userId);
         return ResponseEntity.ok(ApiResult.success(list));
     }
+
+    // 删除一条通知
+    @DeleteMapping(value = "/{notificationId}", produces = "application/json")
+    @Operation(summary = "删除通知", description = "管理员删除指定通知")
+    public ResponseEntity<ApiResult<String>> deleteNotification(
+            HttpServletRequest request,
+            @Parameter(description = "通知ID") @PathVariable Long notificationId) {
+        notificationService.deleteNotification(notificationId);
+        log.info("/api/notifications/{}/delete success called for notification {}", notificationId);
+        return ResponseEntity.ok(ApiResult.success("删除成功"));
+    }
+
+    // 批量删除通知
+    @DeleteMapping(value = "/batch", produces = "application/json")
+    @Operation(summary = "批量删除通知", description = "管理员批量删除指定通知")
+    public ResponseEntity<ApiResult<String>> deleteDeleteNotifications(
+            HttpServletRequest request,
+            @Parameter(description = "通知ID列表") @RequestBody List<Long> notificationIds) {
+        notificationService.batchDeleteNotifications(notificationIds);
+        log.info("/api/notifications/batch/delete success called for notifications {}", notificationIds);
+        return ResponseEntity.ok(ApiResult.success("批量删除成功"));
+    }
+
     
 }

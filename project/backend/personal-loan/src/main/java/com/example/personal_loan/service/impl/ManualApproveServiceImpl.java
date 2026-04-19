@@ -79,7 +79,7 @@ public class ManualApproveServiceImpl implements ManualApproveService{
         if (approved) {
             // 人工通过
             application.setRejectReason("无");
-            newStatus = ApplicationStatus.已通过;
+            newStatus = ApplicationStatus.人工通过;
             application.setReviewTime(LocalDateTime.now());
             response.setReviewTime(LocalDateTime.now());
             response.setRejectReason("无");

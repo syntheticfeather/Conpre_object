@@ -63,7 +63,6 @@ class NotificationConsumerTest {
                 processedMessageMapper,
                 notificationMapper,
                 objectMapper,
-                applicationMapper,
                 rabbitUtil,
                 notificationSseService
         );
@@ -92,7 +91,6 @@ class NotificationConsumerTest {
                 processedMessageMapper,
                 notificationMapper,
                 objectMapper,
-                applicationMapper,
                 rabbitUtil,
                 notificationSseService
         );

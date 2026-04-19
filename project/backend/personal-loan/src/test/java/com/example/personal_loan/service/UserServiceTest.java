@@ -115,7 +115,7 @@ class UserServiceTest {
         loanApplication.setId(1L);
         loanApplication.setUserId(1L);
         loanApplication.setLoanAmount(new BigDecimal("10000"));
-        loanApplication.setStatus(ApplicationStatus.已通过);
+        loanApplication.setStatus(ApplicationStatus.AI通过);
 
         when(mockFile.isEmpty()).thenReturn(false);
         when(mockFile.getOriginalFilename()).thenReturn("avatar.jpg");

@@ -72,14 +72,14 @@ class AIApproveServiceTest {
     @Test
     void testAICheck_Approve_StatusChangedToApproved() {
         aiApproveService.AICheck(loanApplication);
-        assertTrue(loanApplication.getStatus() == ApplicationStatus.已通过 || 
+        assertTrue(loanApplication.getStatus() == ApplicationStatus.AI通过 || 
                    loanApplication.getStatus() == ApplicationStatus.AI拒绝);
     }
 
     @Test
     void testAICheck_Approve_CreatesOrder() {
         aiApproveService.AICheck(loanApplication);
-        if (loanApplication.getStatus() == ApplicationStatus.已通过) {
+        if (loanApplication.getStatus() == ApplicationStatus.AI通过) {
             verify(orderMapper).insert(any(Order.class));
         }
     }
@@ -95,7 +95,7 @@ class AIApproveServiceTest {
     @Test
     void testAICheck_Approve_OrderFieldsCorrect() {
         aiApproveService.AICheck(loanApplication);
-        if (loanApplication.getStatus() == ApplicationStatus.已通过) {
+        if (loanApplication.getStatus() == ApplicationStatus.AI通过) {
             verify(orderMapper).insert(argThat(order -> 
                 order.getUserId().equals(1L) &&
                 order.getProductId().equals(1L) &&
@@ -122,7 +122,7 @@ class AIApproveServiceTest {
     @Test
     void testAICheck_Approve_RejectReasonSetToNone() {
         aiApproveService.AICheck(loanApplication);
-        if (loanApplication.getStatus() == ApplicationStatus.已通过) {
+        if (loanApplication.getStatus() == ApplicationStatus.AI通过) {
             assertEquals("无", loanApplication.getRejectReason());
         }
     }

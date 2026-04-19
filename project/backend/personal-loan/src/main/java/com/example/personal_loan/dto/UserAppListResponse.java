@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 import com.example.personal_loan.enums.ApplicationStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonGetter;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,4 +26,9 @@ public class UserAppListResponse {
 
     // 可选：拒绝原因（仅当状态为拒绝时返回）
     private String rejectReason;
+    
+    @JsonGetter("status")
+    public String getStatusDisplay() {
+        return status.getDisplayStatus();
+    }
 }

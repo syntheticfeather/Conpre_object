@@ -43,7 +43,7 @@ public class AIApproveServiceImpl implements AIApproveService {
     public Boolean AICheck(LoanApplication application) {
         if (new Random().nextInt(100) < 50) {
             // AI审核成功
-            application.setStatus(ApplicationStatus.已通过);
+            application.setStatus(ApplicationStatus.AI通过);
             application.setRejectReason("无");
             application.setReviewTime(LocalDateTime.now());
             applicationMapper.update(application);

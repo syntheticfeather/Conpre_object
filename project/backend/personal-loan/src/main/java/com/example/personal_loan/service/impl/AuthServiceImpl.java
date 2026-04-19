@@ -210,7 +210,7 @@ public class AuthServiceImpl implements AuthService{
     public GetCertResponse getCert(Long userId) {
         UserCert userCert = userCertMapper.selectByUserId(userId);
         userCert.setCreditScore(calScore(userId));
-        userCert.setBankCardId(BankCardUtils.maskCard(userCert.getBankCardId()));
+        userCert.setBankCardId(userCert.getBankCardId());
         
         WorkCert workCert = null;
         if (userCert.getWorkCertId() != null) {

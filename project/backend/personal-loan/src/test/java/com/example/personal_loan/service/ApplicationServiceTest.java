@@ -191,7 +191,7 @@ class ApplicationServiceTest {
 
     @Test
     void testWithdrawApplication_NotPending() {
-        loanApplication.setStatus(ApplicationStatus.已通过);
+        loanApplication.setStatus(ApplicationStatus.AI通过);
         when(applicationMapper.selectById(1L)).thenReturn(loanApplication);
 
         BusinessException exception = assertThrows(BusinessException.class, () -> 

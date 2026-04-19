@@ -3,6 +3,7 @@ package com.example.personal_loan.mapper;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
@@ -83,6 +84,21 @@ public interface NotificationMapper {
     )
     List<Notification> selectByBusinessType(@Param("businessType") String businessType, @Param("limit") int limit);
     
+    @Delete(
+        "DELETE FROM notifications " +
+        "WHERE id = #{id}"
+    )
+    int deleteById(@Param("id") Long id);
+
+    @Delete({
+        "<script>",
+        "DELETE FROM notifications WHERE id IN",
+        "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+            "#{id}",
+        "</foreach>",
+        "</script>"
+    })
+    int batchDelete(@Param("ids") List<Long> ids);
 }
 
 

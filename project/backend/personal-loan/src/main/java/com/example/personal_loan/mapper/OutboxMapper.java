@@ -3,6 +3,7 @@ package com.example.personal_loan.mapper;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -35,6 +36,9 @@ public interface OutboxMapper {
 
     @Update("update outbox_message set status = 'PENDING' where status = 'SENDING' and TIMESTAMPDIFF(SECOND, created_at, now()) > #{timeoutSeconds}")
     public int resetExpiredSendingToPending(int timeoutSeconds);
+
+    @Delete("delete from outbox_message where status = 'SENT' and created_at < #{thresholdTime}")
+    public int deleteExpiredSuccessMessages(@Param("thresholdTime") LocalDateTime thresholdTime);
 }
 
 //public class OutboxMessage {

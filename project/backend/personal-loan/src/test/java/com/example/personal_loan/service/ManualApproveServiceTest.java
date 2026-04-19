@@ -180,9 +180,9 @@ class ManualApproveServiceTest {
 
         assertNotNull(response);
         assertEquals(1L, response.getLoanApplicationId());
-        assertEquals(ApplicationStatus.已通过, response.getStatus());
+        assertEquals(ApplicationStatus.人工通过, response.getStatus());
         assertEquals("无", response.getRejectReason());
-        assertEquals(ApplicationStatus.已通过, loanApplication.getStatus());
+        assertEquals(ApplicationStatus.人工通过, loanApplication.getStatus());
         assertNotNull(response.getReviewTime());
         verify(orderMapper).insert(any(Order.class));
         verify(notificationOutboxPublisher).enqueueNotification(2L, 1L, "LOAN_APPLICATION_STATUS");
