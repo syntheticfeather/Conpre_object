@@ -1,9 +1,9 @@
 <template>
-  <div class="header">
-    用户管理
-  </div>
+  <div class="user-manage-view" v-show="showUserTable">
+    <div class="header">
+      用户管理
+    </div>
 
-  <div class="user-manage-view">
     <div class="banner">
       <!-- 分类卡片 -->
       <div class="card-container">
@@ -45,7 +45,6 @@
           </template>
         </el-input>
       </div>
-
     </div>
     
     <!-- 用户列表 -->
@@ -54,15 +53,14 @@
       @user-selected="handleUserSelected"
     />
     
-    <!-- 用户详情模态框 -->
-    <div class="user-detail-section">
-      <UserDetailPanel 
-        v-if="showUserDetail"
-        :user-id="selectedUserId"
-        :is-visible="showUserDetail"
-        @close="closeUserDetail"
-      />  
-      </div>
+  </div>
+  <!-- 用户详情 -->
+  <div class="user-detail-section" v-show="showUserDetail">
+    <UserDetailPanel 
+      :user-id="selectedUserId"
+      :is-visible="showUserDetail"
+      @close="closeUserDetail"
+    />  
   </div>
 </template>
 
@@ -79,6 +77,7 @@ const selectedUserId = ref(null)
 const showUserDetail = ref(false)
 const searchText = ref('')
 const tableRef = ref(null)
+const showUserTable = ref(true)
 
 // 筛选状态：'all' | 'normal' | 'abnormal' | 'blacklist'
 const filterType = ref('all')
@@ -119,6 +118,7 @@ const handleUserSelected = (userId) => {
   console.log('UserManageView: 接收到用户选择事件，userId:', userId)
   selectedUserId.value = userId
   showUserDetail.value = true
+  showUserTable.value = false
 }
 
 // 关闭用户详情
@@ -126,6 +126,7 @@ const closeUserDetail = () => {
   console.log('UserManageView: 关闭用户详情')
   showUserDetail.value = false
   selectedUserId.value = null
+  showUserTable.value = true
 }
 
 // 处理'全部用户'点击事件
@@ -264,9 +265,5 @@ onMounted(() => {
 #btn-search {
   background-color: #1890ff;
   color: #fff;
-}
-
-.detail-container {
-  margin-top: 20px;
 }
 </style>

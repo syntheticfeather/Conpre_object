@@ -33,7 +33,78 @@
           <Sunny />
         </el-icon>
       </div>
-      <BellOutlined class="BellOutlined" />
+      
+      <!-- 通知铃铛图标 -->
+      <div class="notification-wrapper" @click="toggleNotificationPanel">
+        <el-badge :value="unreadCount" :hidden="unreadCount === 0" class="notification-badge">
+          <BellOutlined class="bell-icon" />
+        </el-badge>
+        
+        <!-- 通知下拉面板 -->
+        <div v-show="showNotificationPanel" class="notification-panel" @mouseenter="keepNotificationVisible" @mouseleave="hideNotificationPanel">
+          <div class="panel-header">
+            <span>通知中心</span>
+            <div class="header-actions">
+              <el-button size="small" type="primary" @click="markAllRead" :disabled="unreadCount === 0">
+                全部已读
+              </el-button>
+              <el-button size="small" type="danger" @click="clearAll" :disabled="notifications.length === 0">
+                清空全部
+              </el-button>
+            </div>
+          </div>
+          
+          <div class="notification-list" v-loading="loading">
+            <div v-if="notifications.length === 0 && !loading" class="empty-notice">
+              <el-empty description="暂无通知" :image-size="80" />
+            </div>
+            
+            <div 
+              v-for="notif in notifications" 
+              :key="notif.id" 
+              class="notification-item"
+              :class="{ unread: !notif.readFlag }"
+              @click="handleNotificationClick(notif)"
+            >
+              <div class="notif-left">
+                <div class="notif-title">
+                  {{ notif.title }}
+                  <el-tag v-if="!notif.readFlag" size="small" type="danger" class="unread-tag">未读</el-tag>
+                </div>
+                <div class="notif-content">{{ notif.content }}</div>
+                <div class="notif-footer">
+                  <span class="notif-time">{{ formatTime(notif.createdAt) }}</span>
+                  <el-tag v-if="getBusinessTypeLabel(notif.businessType)" size="small" class="type-tag">
+                    {{ getBusinessTypeLabel(notif.businessType) }}
+                  </el-tag>
+                </div>
+              </div>
+              <div class="notif-actions">
+                <el-button 
+                  v-if="!notif.readFlag" 
+                  type="primary" 
+                  size="small" 
+                  @click.stop="markAsRead(notif.id)"
+                >
+                  已读
+                </el-button>
+                <el-button 
+                  type="danger" 
+                  size="small" 
+                  @click.stop="deleteNotification(notif.id)"
+                >
+                  删除
+                </el-button>
+              </div>
+            </div>
+          </div>
+          
+          <div v-if="notifications.length > 0" class="panel-footer">
+            <el-button size="small" @click="loadMore" :disabled="loading">加载更多</el-button>
+          </div>
+        </div>
+      </div>
+      
       <div class="admin-info" @mouseenter="showAdminTable" @mouseleave="hideAdminTable">
         <div class="avatar-container">
           <img :src="avatarUrl" alt="admin" class="avatar">
@@ -73,8 +144,10 @@ import { useAuthStore } from '@/stores/auth'
 import { useAppStore } from '@/stores/app'
 import { Moon, Sunny } from '@element-plus/icons-vue'
 import { BellOutlined } from '@ant-design/icons-vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { computed } from 'vue'
+import notificationAPI from '@/api/modules/notification'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 export default {
   name: 'NavbarMenu',
@@ -83,6 +156,7 @@ export default {
   },
   setup() {
     const route = useRoute()
+    const router = useRouter()
     
     // 当前路由名称
     const currentRouteName = computed(() => {
@@ -100,7 +174,8 @@ export default {
     })
     
     return {
-      currentRouteName
+      currentRouteName,
+      router
     }
   },
   data() {
@@ -113,7 +188,14 @@ export default {
       dialogVisible: false,
       selectedFile: null,
       hideTimer: null,
-      searchText: ''
+      searchText: '',
+      
+      // 通知相关
+      notifications: [],
+      unreadCount: 0,
+      showNotificationPanel: false,
+      loading: false,
+      notificationPanelTimer: null
     }
   },
   mounted() {
@@ -122,6 +204,8 @@ export default {
     if (savedAvatar) {
       this.avatarUrl = savedAvatar
     }
+    // 加载通知列表
+    this.fetchNotifications()
   },
   methods: {
     handleLogout() {
@@ -190,6 +274,189 @@ export default {
     // 切换主题
     setTheme(theme) {
       this.appStore.setTheme(theme)
+    },
+    
+    // ========== 通知相关方法 ==========
+    
+    // 切换通知面板
+    toggleNotificationPanel() {
+      this.showNotificationPanel = !this.showNotificationPanel
+      if (this.showNotificationPanel) {
+        this.fetchNotifications()
+      }
+    },
+    
+    // 保持通知面板可见
+    keepNotificationVisible() {
+      if (this.notificationPanelTimer) {
+        clearTimeout(this.notificationPanelTimer)
+        this.notificationPanelTimer = null
+      }
+    },
+    
+    // 隐藏通知面板
+    hideNotificationPanel() {
+      this.notificationPanelTimer = setTimeout(() => {
+        this.showNotificationPanel = false
+        this.notificationPanelTimer = null
+      }, 300)
+    },
+    
+    // 获取通知列表
+    async fetchNotifications() {
+      this.loading = true
+      try {
+        const res = await notificationAPI.getAdminNotifications()
+        if (res.code === 200) {
+          this.notifications = res.data || []
+          this.unreadCount = this.notifications.filter(n => !n.readFlag).length
+        }
+      } catch (error) {
+        console.error('获取通知失败:', error)
+      } finally {
+        this.loading = false
+      }
+    },
+    
+    // 标记为已读
+    async markAsRead(id) {
+      try {
+        await notificationAPI.markAsRead(id)
+        // 更新本地状态
+        const notification = this.notifications.find(n => n.id === id)
+        if (notification) {
+          notification.readFlag = true
+        }
+        this.unreadCount = Math.max(0, this.unreadCount - 1)
+        ElMessage.success('已标记为已读')
+      } catch (error) {
+        ElMessage.error('操作失败'+error)
+      }
+    },
+    
+    // 全部标记已读
+    async markAllRead() {
+      try {
+        // 批量标记已读
+        const unreadIds = this.notifications.filter(n => !n.readFlag).map(n => n.id)
+        const promises = unreadIds.map(id => notificationAPI.markAsRead(id))
+        await Promise.all(promises)
+        
+        // 更新本地状态
+        this.notifications.forEach(n => n.readFlag = true)
+        this.unreadCount = 0
+        ElMessage.success('全部标记为已读')
+      } catch (error) {
+        ElMessage.error('操作失败'+error)
+      }
+    },
+    
+    // 删除通知
+    async deleteNotification(id) {
+      try {
+        await ElMessageBox.confirm('确定要删除该通知吗？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+        
+        await notificationAPI.deleteNotification(id)
+        // 更新本地列表
+        this.notifications = this.notifications.filter(n => n.id !== id)
+        this.unreadCount = this.notifications.filter(n => !n.readFlag).length
+        ElMessage.success('删除成功')
+      } catch (error) {
+        if (error !== 'cancel') {
+          ElMessage.error('删除失败')
+        }
+      }
+    },
+    
+    // 清空全部
+    async clearAll() {
+      try {
+        await ElMessageBox.confirm('确定要清空所有通知吗？', '警告', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+        
+        const allIds = this.notifications.map(n => n.id)
+        await notificationAPI.batchDelete(allIds)
+        
+        this.notifications = []
+        this.unreadCount = 0
+        ElMessage.success('清空成功')
+      } catch (error) {
+        if (error !== 'cancel') {
+          ElMessage.error('清空失败')
+        }
+      }
+    },
+    
+    // 加载更多（暂时只刷新）
+    loadMore() {
+      this.fetchNotifications()
+    },
+    
+    // 点击通知处理
+    handleNotificationClick(notif) {
+      // 先标记为已读
+      if (!notif.readFlag) {
+        this.markAsRead(notif.id)
+      }
+      
+      // 根据业务类型跳转
+      const route = this.getBusinessRoute(notif.businessType, notif.businessId)
+      if (route) {
+        this.router.push(route)
+        this.showNotificationPanel = false
+      }
+    },
+    
+    // 获取业务路由
+    getBusinessRoute(businessType, businessId) {
+      switch (businessType) {
+        case 'LOAN_APPLICATION_APPROVE':
+          return { path: '/dashboard/pending-applications', query: { applicationId: businessId } }
+        default:
+          return null
+      }
+    },
+    
+    // 获取业务类型标签
+    getBusinessTypeLabel(type) {
+      const labels = {
+        'LOAN_APPLICATION_APPROVE': '贷款审核',
+        'OVERDUE_WARNING': '逾期预警',
+        'SYSTEM': '系统通知'
+      }
+      return labels[type] || ''
+    },
+    
+    // 格式化时间
+    formatTime(time) {
+      if (!time) return ''
+      const date = new Date(time)
+      const now = new Date()
+      const diff = now - date
+      
+      // 一小时内显示"刚刚"
+      if (diff < 60 * 60 * 1000) {
+        return '刚刚'
+      }
+      // 24 小时内显示"X 小时前"
+      if (diff < 24 * 60 * 60 * 1000) {
+        const hours = Math.floor(diff / (60 * 60 * 1000))
+        return `${hours}小时前`
+      }
+      // 7 天内显示"X 天前"
+      if (diff < 7 * 24 * 60 * 60 * 1000) {
+        const days = Math.floor(diff / (24 * 60 * 60 * 1000))
+        return `${days}天前`
+      }
+      // 其他显示日期
+      return date.toLocaleDateString('zh-CN')
     }
   }
 }
@@ -219,6 +486,162 @@ export default {
 .BellOutlined {
   font-size: 20px;
   margin-right: 5px;
+}
+
+/* 通知铃铛样式 */
+.notification-wrapper {
+  position: relative;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.notification-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bell-icon {
+  font-size: 22px;
+  color: rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+}
+
+.bell-icon:hover {
+  color: #ffffff;
+  transform: scale(1.1);
+}
+
+/* 通知面板样式 */
+.notification-panel {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 10px;
+  width: 400px;
+  max-height: 500px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid #f0f0f0;
+  background-color: #fafafa;
+}
+
+.panel-header span {
+  font-size: 16px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.notification-list {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 400px;
+}
+
+.empty-notice {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.notification-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 20px;
+  border-bottom: 1px solid #f5f5f5;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.notification-item:hover {
+  background-color: #f5f7fa;
+}
+
+.notification-item.unread {
+  background-color: #ecf5ff;
+  border-left: 3px solid #409EFF;
+}
+
+.notif-left {
+  flex: 1;
+  margin-right: 15px;
+}
+
+.notif-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #303133;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.unread-tag {
+  font-size: 10px;
+  padding: 1px 6px;
+}
+
+.notif-content {
+  font-size: 13px;
+  color: #606266;
+  margin-bottom: 8px;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.notif-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.notif-time {
+  font-size: 12px;
+  color: #909399;
+}
+
+.type-tag {
+  font-size: 10px;
+  padding: 1px 6px;
+}
+
+.notif-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.notification-item:hover .notif-actions {
+  opacity: 1;
+}
+
+.panel-footer {
+  padding: 12px 20px;
+  border-top: 1px solid #f0f0f0;
+  text-align: center;
+  background-color: #fafafa;
 }
 .theme-toggle {
   margin-right: 10px;

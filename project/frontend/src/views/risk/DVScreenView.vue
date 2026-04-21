@@ -14,7 +14,12 @@
       <!-- 顶部标题栏 -->
        <!-- 横向装饰线（默认从左向右流动） -->
       <div class="deco-horizontal top-bar">
-        <div >数据大屏</div>
+        <div class="title-content">
+          <span>{{ currentProvince || '全国' }}</span>数据大屏
+          <el-button class="back-btn" @click="goBack" size="small">
+            返回
+          </el-button>
+        </div>
         <dv-decoration2 :dur="2" style="width:200px; height:5px;" />
       </div>
 
@@ -22,26 +27,32 @@
       <div class="chart-container">
         <!-- 左侧图表列 -->
         <div class="chart-panel left">
-          <!-- 每月注册人数柱状图 -->
-          <div ref="registerChart" class="chart-item"></div>
-          <!-- 用户风险等级环图 -->
-          <div ref="riskChart" class="chart-item"></div>
-          <!-- 在线人数波浪图 -->
-          <div ref="onlineChart" class="chart-item"></div>
-          <!-- 每月贷款申请数量锥形柱图 -->
-          <div ref="loanChart" class="chart-item"></div>
+          <!-- 每月注册/登录人数-堆叠柱状图-登录人数包括注册人数 -->
+          <RegisterChart ref="register" />
+
+          <!-- 每月申请与放款趋势-堆叠面积图+折线 -->
+          <AuditChart ref="audit" />
+
+          <!-- 用户生命周期活跃度-堆叠条形图 -->
+          <OnlineChart ref="online" />
+
+          <!-- 贷款申请状态分布-3D立体环形图 -->
+          <LoanChart ref="loan" />
         </div>
         
         <!-- 右侧图表列 -->
         <div class="chart-panel right">
-          <!-- 贷款申请用途胶囊柱图 -->
-          <div ref="purposeChart" class="chart-item"></div>
-          <!-- 用户状态环图 -->
-          <div ref="statusChart" class="chart-item"></div>
-          <!-- 每月总放款金额/总还款金额双线波浪图 -->
-          <div ref="amountChart" class="chart-item"></div>
-          <!-- 数据集柱状图 -->
-          <div ref="datasetChart" class="chart-item"></div>
+          <!-- 资金用途分类-南丁格尔玫瑰图 -->
+          <PurposeChart ref="purpose" />
+
+          <!-- 用户状态分布-待定 -->
+          <StatusChart ref="status" />
+
+          <!-- 资金流入流出-三线波浪图 -->
+          <AmountChart ref="amount" />
+
+          <!-- 还款方式偏好-正负对比柱状图 -->
+          <RepayChart ref="repay" />
         </div>
       </div>
 
@@ -60,502 +71,65 @@
 import Map3d from "@/utils/Map3d.js"
 import TWEEN from "@tweenjs/tween.js"
 import * as THREE from "three"
-import * as echarts from "echarts"
 import { onBeforeUnmount, onMounted, ref, reactive } from "vue"
+import { useRouter } from 'vue-router'
 import useFileLoader from "@/hooks/useFileLoader.js"
 import useCoord from "@/hooks/useCoord.js"
 import useConversionStandardData from "@/hooks/useConversionStandardData.js"
 import useCountryMesh from "@/hooks/useCountryMesh.js"
+import useMap3DCamera from "@/hooks/useMap3DCamera.js"
+import useMapInteraction from "@/hooks/useMapInteraction.js"
+import RegisterChart from "@/components/risk/charts/RegisterChart.vue"
+import AuditChart from "@/components/risk/charts/AuditChart.vue"
+import OnlineChart from "@/components/risk/charts/OnlineChart.vue"
+import LoanChart from "@/components/risk/charts/LoanChart.vue"
+import PurposeChart from "@/components/risk/charts/PurposeChart.vue"
+import StatusChart from "@/components/risk/charts/StatusChart.vue"
+import AmountChart from "@/components/risk/charts/AmountChart.vue"
+import RepayChart from "@/components/risk/charts/RepayChart.vue"
 
 let centerXY = [106.59893798828125, 26.918846130371094]
 
-// 图表引用
-const registerChart = ref(null)
-const riskChart = ref(null)
-const onlineChart = ref(null)
-const loanChart = ref(null)
-const purposeChart = ref(null)
-const statusChart = ref(null)
-const amountChart = ref(null)
-const datasetChart = ref(null)
-
-// 图表实例
-let registerChartInstance = null
-let riskChartInstance = null
-let onlineChartInstance = null
-let loanChartInstance = null
-let purposeChartInstance = null
-let statusChartInstance = null
-let amountChartInstance = null
-let datasetChartInstance = null
-
-// 初始化每月注册人数柱状图
-const initRegisterChart = () => {
-  if (!registerChart.value) return
-  registerChartInstance = echarts.init(registerChart.value)
-  const option = {
-    grid: {
-      left: '3%',
-      right: '4%',
-      top: '15%',
-      bottom: '3%',
-      containLabel: true
-    },
-    title: {
-      text: '每月注册人数',
-      textStyle: {
-        color: '#fff',
-        fontSize: 16
-      },
-      left: 'center'
-    },
-    xAxis: {
-      type: 'category',
-      data: ['1 月', '2 月', '3 月', '4 月', '5 月', '6 月'],
-      axisLabel: {
-        color: '#fff'
-      }
-    },
-    yAxis: {
-      type: 'value',
-      axisLabel: {
-        color: '#fff'
-      },
-      maxInterval: 1500
-    },
-    series: [{
-      data: [1200, 1900, 1500, 2100, 1800, 2500],
-      type: 'bar',
-      itemStyle: {
-        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-          { offset: 0, color: '#83bff6' },
-          { offset: 0.5, color: '#188df0' },
-          { offset: 1, color: '#188df0' }
-        ])
-      }
-    }]
-  }
-  registerChartInstance.setOption(option)
+const chartRefs = {
+  register: ref(null),
+  audit: ref(null),
+  online: ref(null),
+  loan: ref(null),
+  purpose: ref(null),
+  status: ref(null),
+  amount: ref(null),
+  repay: ref(null)
 }
 
-// 初始化用户风险等级环图
-const initRiskChart = () => {
-  if (!riskChart.value) return
-  riskChartInstance = echarts.init(riskChart.value)
-  const option = {
-    title: {
-      text: '用户风险等级',
-      textStyle: {
-        color: '#fff',
-      },
-      left: 'center'
-    },
-    tooltip: {
-      trigger: 'item'
-    },
-    legend: {
-      orient: 'vertical',
-      left: 'left',
-      textStyle: {
-        color: '#fff'
-      }
-    },
-    series: [{
-      name: '风险等级',
-      type: 'pie',
-      radius: ['40%', '70%'],
-      avoidLabelOverlap: false,
-      itemStyle: {
-        borderRadius: 5,
-        borderColor: '#000',
-        borderWidth: 2
-      },
-      label: {
-        show: false,
-        position: 'center'
-      },
-      emphasis: {
-        label: {
-          show: true,
-          fontSize: '18',
-          fontWeight: 'bold',
-          color: '#fff'
-        }
-      },
-      labelLine: {
-        show: false
-      },
-      data: [
-        { value: 300, name: '低风险' },
-        { value: 200, name: '中风险' },
-        { value: 100, name: '高风险' },
-        { value: 50, name: '极高风险' }
-      ]
-    }]
-  }
-  riskChartInstance.setOption(option)
-}
-
-// 初始化在线人数波浪图
-const initOnlineChart = () => {
-  if (!onlineChart.value) return
-  onlineChartInstance = echarts.init(onlineChart.value)
-  const option = {
-    grid: {
-      left: '3%',
-      right: '4%',
-      top: '15%',
-      bottom: '3%',
-      containLabel: true
-    },
-    title: {
-      text: '在线人数',
-      textStyle: {
-        color: '#fff'
-      },
-      left: 'center'
-    },
-    xAxis: {
-      type: 'category',
-      data: ['0 时', '4 时', '8 时', '12 时', '16 时', '20 时'],
-      axisLabel: {
-        color: '#fff'
-      }
-    },
-    yAxis: {
-      type: 'value',
-      axisLabel: {
-        color: '#fff'
-      }
-    },
-    series: [{
-      data: [300, 400, 800, 1200, 1000, 600],
-      type: 'line',
-      smooth: true,
-      areaStyle: {
-        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-          { offset: 0, color: 'rgba(0, 150, 255, 0.5)' },
-          { offset: 1, color: 'rgba(0, 150, 255, 0.1)' }
-        ])
-      },
-      lineStyle: {
-        color: '#0096ff'
-      },
-      itemStyle: {
-        color: '#0096ff'
-      }
-    }]
-  }
-  onlineChartInstance.setOption(option)
-}
-
-// 初始化每月贷款申请数量锥形柱图
-const initLoanChart = () => {
-  if (!loanChart.value) return
-  loanChartInstance = echarts.init(loanChart.value)
-  const option = {
-    grid: {
-      left: '3%',
-      right: '4%',
-      top: '15%',
-      bottom: '3%',
-      containLabel: true
-    },
-    title: {
-      text: '每月贷款申请数量',
-      textStyle: {
-        color: '#fff'
-      },
-      left: 'center'
-    },
-    xAxis: {
-      type: 'category',
-      data: ['1 月', '2 月', '3 月', '4 月', '5 月', '6 月'],
-      axisLabel: {
-        color: '#fff'
-      }
-    },
-    yAxis: {
-      type: 'value',
-      axisLabel: {
-        color: '#fff'
-      }
-    },
-    series: [{
-      data: [120, 190, 150, 210, 180, 250],
-      type: 'bar',
-      itemStyle: {
-        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-          { offset: 0, color: '#ff9a9e' },
-          { offset: 1, color: '#fad0c4' }
-        ]),
-        borderRadius: [4, 4, 0, 0]
-      }
-    }]
-  }
-  loanChartInstance.setOption(option)
-}
-
-// 初始化贷款申请用途胶囊柱图
-const initPurposeChart = () => {
-  if (!purposeChart.value) return
-  purposeChartInstance = echarts.init(purposeChart.value)
-  const option = {
-    grid: {
-      left: '3%',
-      right: '4%',
-      top: '15%',
-      bottom: '3%',
-      containLabel: true
-    },
-    title: {
-      text: '贷款申请用途',
-      textStyle: {
-        color: '#fff'
-      },
-      left: 'center'
-    },
-    xAxis: {
-      type: 'category',
-      data: ['消费', '教育', '医疗', '旅游', '其他'],
-      axisLabel: {
-        color: '#fff'
-      }
-    },
-    yAxis: {
-      type: 'value',
-      axisLabel: {
-        color: '#fff'
-      }
-    },
-    series: [{
-      data: [300, 200, 150, 100, 50],
-      type: 'bar',
-      itemStyle: {
-        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-          { offset: 0, color: '#a8edea' },
-          { offset: 1, color: '#fed6e3' }
-        ]),
-        borderRadius: [20, 20, 20, 20]
-      }
-    }]
-  }
-  purposeChartInstance.setOption(option)
-}
-
-// 初始化用户状态环图
-const initStatusChart = () => {
-  if (!statusChart.value) return
-  statusChartInstance = echarts.init(statusChart.value)
-  const option = {
-    title: {
-      text: '用户状态',
-      textStyle: {
-        color: '#fff'
-      },
-      left: 'center'
-    },
-    tooltip: {
-      trigger: 'item'
-    },
-    legend: {
-      orient: 'vertical',
-      left: 'left',
-      textStyle: {
-        color: '#fff'
-      }
-    },
-    series: [{
-      name: '用户状态',
-      type: 'pie',
-      radius: ['40%', '70%'],
-      avoidLabelOverlap: false,
-      itemStyle: {
-        borderRadius: 5,
-        borderColor: '#000',
-        borderWidth: 2
-      },
-      label: {
-        show: false,
-        position: 'center'
-      },
-      emphasis: {
-        label: {
-          show: true,
-          fontSize: '18',
-          fontWeight: 'bold',
-          color: '#fff'
-        }
-      },
-      labelLine: {
-        show: false
-      },
-      data: [
-        { value: 300, name: '还款中' },
-        { value: 150, name: '申请贷款中' },
-        { value: 400, name: '正常' },
-        { value: 80, name: '逾期' },
-        { value: 20, name: '黑名单' }
-      ]
-    }]
-  }
-  statusChartInstance.setOption(option)
-}
-
-// 初始化每月总放款金额/总还款金额双线波浪图
-const initAmountChart = () => {
-  if (!amountChart.value) return
-  amountChartInstance = echarts.init(amountChart.value)
-  const option = {
-    grid: {
-      left: '3%',
-      right: '4%',
-      top: '15%',
-      bottom: '3%',
-      containLabel: true
-    },
-    title: {
-      text: '每月放款/还款金额',
-      textStyle: {
-        color: '#fff'
-      },
-      left: 'center'
-    },
-    xAxis: {
-      type: 'category',
-      data: ['1 月', '2 月', '3 月', '4 月', '5 月', '6 月'],
-      axisLabel: {
-        color: '#fff'
-      }
-    },
-    yAxis: {
-      type: 'value',
-      axisLabel: {
-        color: '#fff'
-      }
-    },
-    series: [
-      {
-        name: '放款金额',
-        data: [1200000, 1900000, 1500000, 2100000, 1800000, 2500000],
-        type: 'line',
-        smooth: true,
-        areaStyle: {
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            { offset: 0, color: 'rgba(255, 99, 132, 0.5)' },
-            { offset: 1, color: 'rgba(255, 99, 132, 0.1)' }
-          ])
-        },
-        lineStyle: {
-          color: '#ff6384'
-        },
-        itemStyle: {
-          color: '#ff6384'
-        }
-      },
-      {
-        name: '还款金额',
-        data: [1000000, 1600000, 1300000, 1800000, 1500000, 2200000],
-        type: 'line',
-        smooth: true,
-        areaStyle: {
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            { offset: 0, color: 'rgba(75, 192, 192, 0.5)' },
-            { offset: 1, color: 'rgba(75, 192, 192, 0.1)' }
-          ])
-        },
-        lineStyle: {
-          color: '#4bc0c0'
-        },
-        itemStyle: {
-          color: '#4bc0c0'
-        }
-      }
-    ]
-  }
-  amountChartInstance.setOption(option)
-}
-
-// 初始化数据集柱状图
-const initDatasetChart = () => {
-  if (!datasetChart.value) return
-  datasetChartInstance = echarts.init(datasetChart.value)
-  const option = {
-    grid: {
-      left: '3%',
-      right: '4%',
-      top: '15%',
-      bottom: '3%',
-      containLabel: true
-    },
-    title: {
-      text: '每月申请审核情况',
-      textStyle: {
-        color: '#fff'
-      },
-      left: 'center'
-    },
-    xAxis: {
-      type: 'category',
-      data: ['1 月', '2 月', '3 月', '4 月', '5 月', '6 月'],
-      axisLabel: {
-        color: '#fff'
-      }
-    },
-    yAxis: {
-      type: 'value',
-      axisLabel: {
-        color: '#fff'
-      }
-    },
-    series: [
-      {
-        name: '待审核',
-        data: [120, 190, 150, 210, 180, 250],
-        type: 'bar',
-        itemStyle: {
-          color: '#ff9800'
-        }
-      },
-      {
-        name: 'AI 通过',
-        data: [100, 160, 130, 180, 150, 220],
-        type: 'bar',
-        itemStyle: {
-          color: '#4caf50'
-        }
-      },
-      {
-        name: '人工拒绝',
-        data: [20, 30, 20, 30, 30, 30],
-        type: 'bar',
-        itemStyle: {
-          color: '#f44336'
-        }
-      }
-    ]
-  }
-  datasetChartInstance.setOption(option)
-}
-
-// 自适应 resize
 const handleResize = () => {
-  registerChartInstance?.resize()
-  riskChartInstance?.resize()
-  onlineChartInstance?.resize()
-  loanChartInstance?.resize()
-  purposeChartInstance?.resize()
-  statusChartInstance?.resize()
-  amountChartInstance?.resize()
-  datasetChartInstance?.resize()
+  chartRefs.register.value?.resize()
+  chartRefs.audit.value?.resize()
+  chartRefs.online.value?.resize()
+  chartRefs.loan.value?.resize()
+  chartRefs.purpose.value?.resize()
+  chartRefs.status.value?.resize()
+  chartRefs.amount.value?.resize()
+  chartRefs.repay.value?.resize()
 }
 
 export default {
   name: "3dMap",
+  components: {
+    RegisterChart,
+    AuditChart,
+    OnlineChart,
+    LoanChart,
+    PurposeChart,
+    StatusChart,
+    AmountChart,
+    RepayChart
+  },
   setup() {
+    const router = useRouter()
     let baseEarth = null
     const loading = ref(true) // 加载状态
     const cityName = ref('测试')
+    const currentProvince = ref('') // 当前选中的省份
     const cityValue = ref(58)
     const conf = reactive({
       lineWidth: 24,
@@ -596,6 +170,11 @@ export default {
       baseEarth.resize()
     }
 
+    // 更新省份名称
+    const updateProvinceName = (name) => {
+      currentProvince.value = name
+    }
+
     const { requestData } = useFileLoader()
     const { transfromGeoJSON } = useConversionStandardData()
     const { getBoundingBox } = useCoord()
@@ -625,6 +204,14 @@ export default {
           this.rotatingApertureMesh = null
           this.rotatingPointMesh = null
           this.css2dRender = null
+          // 相机移动动画相关
+          this.isMoving = false
+          this.moveStartTime = 0
+          this.moveDuration = 1500
+          this.startPos = null
+          this.targetPos = null
+          this.startLook = null
+          this.targetLook = null
         }
         initCamera() {
           let { width, height } = this.options
@@ -683,12 +270,156 @@ export default {
         initControls() {
           super.initControls()
           this.controls.target = new THREE.Vector3(...centerXY, 0)
+          
+          // 初始化 Composables 并挂载到实例上
+          this.cameraControl = useMap3DCamera(this, centerXY)
+          this.mapInteraction = useMapInteraction(this, this.handleProvinceClick.bind(this), () => {
+            // 重置标题为"全国"
+            if (this.updateProvinceName) {
+              this.updateProvinceName('')
+            }
+          })
+          
+          // 使用 Composables 初始化事件监听
+          this.mapInteraction.initClickEvent(this.container)
+          this.mapInteraction.initRightClickReset(this.container, this.cameraControl.resetCamera.bind(this.cameraControl))
+        }
+        
+        // 处理省份点击
+        handleProvinceClick(center, provinceName) {
+          if (this.cameraControl) {
+            this.cameraControl.moveToProvince(center)
+          }
+          // 更新省份名称
+          if (provinceName) {
+            this.updateProvinceName(provinceName)
+          }
+        }
+        
+        // 重置相机到初始位置
+        resetCamera() {
+          console.log('重置相机位置')
+          
+          // 保存当前相机状态
+          const currentPos = this.camera.position.clone()
+          
+          // 设置目标位置（地图中心）
+          const targetPos = {
+            x: 100,  // 初始 X 位置
+            y: -3,   // 初始 Y 位置
+            z: 40    // 初始 Z 位置
+          }
+          
+          const targetLook = {
+            x: centerXY[0],
+            y: centerXY[1],
+            z: 0
+          }
+          
+          // 保存起始位置
+          this.startPos = currentPos
+          this.startLook = this.controls.target.clone()
+          this.targetPos = targetPos
+          this.targetLook = targetLook
+          
+          // 设置动画参数
+          this.isMoving = true
+          this.moveStartTime = performance.now()
+        }
+        
+        // 初始化点击事件
+        initClickEvent() {
+          this.container.addEventListener('click', (event) => {
+            // 获取容器的边界框
+            const rect = this.container.getBoundingClientRect()
+            // 计算鼠标在标准化设备坐标中的位置（-1 到 +1）
+            this.mouse.x = ((event.clientX - rect.left) / this.options.width) * 2 - 1
+            this.mouse.y = -((event.clientY - rect.top) / this.options.height) * 2 + 1
+            
+            // 更新射线投射器
+            this.raycaster.setFromCamera(this.mouse, this.camera)
+            
+            // 检测与地图组中对象的交集
+            let intersects = []
+            if (this.mapGroup) {
+              intersects = this.raycaster.intersectObjects(this.mapGroup.children, true)
+            }
+            
+            if (intersects.length > 0) {
+              // 按距离排序，取最近的
+              intersects.sort((a, b) => a.distance - b.distance)
+              
+              for (let i = 0; i < intersects.length; i++) {
+                let object = intersects[i].object
+                
+                // 跳过边界线对象，只处理省份 Mesh
+                if (object.type === 'LineSegments' || object.type === 'Line' || object.type === 'LineLoop') {
+                  continue
+                }
+                
+                // 检查是否是省份网格
+                if (object.type === 'Mesh' && object.userData && object.userData.hoverColor !== undefined) {
+                  // 获取省份名称
+                  const provinceName = object.name || '未知省份'
+                  
+                  // 获取省份中心点（使用包围盒）
+                  const box = new THREE.Box3().setFromObject(object)
+                  const center = box.getCenter(new THREE.Vector3())
+                  
+                  // 移动到省份中心
+                  this.moveToProvince(center, provinceName)
+                  
+                  break
+                }
+              }
+            }
+          })
+        }
+        
+        // 相机移动到指定省份
+        moveToProvince(target) {
+          if (!this.camera || !this.controls) {
+            return
+          }
+          
+          // 计算目标相机位置
+          const currentPos = this.camera.position.clone()
+          
+          // 计算从省份中心到相机的偏移向量
+          const offset = new THREE.Vector3(
+            currentPos.x - centerXY[0],
+            currentPos.y - centerXY[1],
+            30
+          )
+          
+          // 目标相机位置 = 省份中心 + 偏移
+          // 增加 Z 轴高度让相机上升，同时扩大 X/Y 偏移让相机后移
+          this.targetPos = {
+            x: target.x + offset.x * 0.5,  // 从 0.3 增加到 0.5，后移
+            y: target.y + offset.y * 0.5,  // 从 0.3 增加到 0.5，后移
+            z: 35                          // 从 25 增加到 35，上升
+          }
+          
+          // 目标观察点就是省份中心
+          this.targetLook = {
+            x: target.x,
+            y: target.y,
+            z: 0
+          }
+          
+          // 保存起始位置
+          this.startPos = currentPos
+          this.startLook = this.controls.target.clone()
+          
+          // 设置动画参数
+          this.isMoving = true
+          this.moveStartTime = performance.now()
         }
         initLight() {
-          //   平行光1
+          //   平行光 1
           let directionalLight1 = new THREE.DirectionalLight(0x7af4ff, 1)
           directionalLight1.position.set(...centerXY, 30)
-          //   平行光2
+          //   平行光 2
           let directionalLight2 = new THREE.DirectionalLight(0x7af4ff, 1)
           directionalLight2.position.set(...centerXY, 30)
           // 环境光
@@ -746,11 +477,16 @@ export default {
           if (typeof this.handleMouseHover === 'function') {
             this.handleMouseHover()
           }
-          // 这里是你自己业务上需要的code
+          
+          // 处理相机移动动画（使用 Composable）
+          if (this.cameraControl) {
+            this.cameraControl.updateCamera()
+          }
+          
+          // 这里是你自己业务上需要的 code
           this.renderer.render(this.scene, this.camera)
           // 控制相机旋转缩放的更新
           if (this.options.controls.visibel && this.controls) {
-            // this.controls.target.set(...centerXY, 0)
             this.controls.update()
           }
           // 统计更新
@@ -775,12 +511,12 @@ export default {
               }
             }
           }
-          TWEEN.update()
-          // console.log(this.camera.position)
+          // 更新 TWEEN 动画（必须传入时间参数）
+          TWEEN.update(performance.now())
         }
         resize() {
           super.resize()
-          // 这里是你自己业务上需要的code
+          // 这里是你自己业务上需要的 code
           this.renderer.render(this.scene, this.camera)
           this.renderer.setPixelRatio(window.devicePixelRatio)
 
@@ -798,19 +534,13 @@ export default {
           maxPolarAngle: (Math.PI / 2) * 0.98,
         },
       })
+      // 绑定更新省份名称的方法到 baseEarth 实例
+      baseEarth.updateProvinceName = updateProvinceName
       baseEarth.run()
       loading.value = false // 加载完成
       window.addEventListener("resize", resize)
     })
     onMounted(() => {
-      initRegisterChart()
-      initRiskChart()
-      initOnlineChart()
-      initLoanChart()
-      initPurposeChart()
-      initStatusChart()
-      initAmountChart()
-      initDatasetChart()
       window.addEventListener('resize', handleResize)
     })
 
@@ -822,39 +552,21 @@ export default {
         baseEarth.destroy()
         baseEarth = null
       }
-      // 销毁图表实例
-      registerChartInstance?.dispose()
-      riskChartInstance?.dispose()
-      onlineChartInstance?.dispose()
-      loanChartInstance?.dispose()
-      purposeChartInstance?.dispose()
-      statusChartInstance?.dispose()
-      amountChartInstance?.dispose()
-      datasetChartInstance?.dispose()
-      registerChartInstance = null
-      riskChartInstance = null
-      onlineChartInstance = null
-      loanChartInstance = null
-      purposeChartInstance = null
-      statusChartInstance = null
-      amountChartInstance = null
-      datasetChartInstance = null
     })
+
+    // 返回风险管理页面
+    const goBack = () => {
+      router.push('/dashboard/risk')
+    }
 
     return {
       loading,
       cityName,
+      currentProvince,
       cityValue,
       conf,
       addData,
-      registerChart,
-      riskChart,
-      onlineChart,
-      loanChart,
-      purposeChart,
-      statusChart,
-      amountChart,
-      datasetChart
+      goBack
     }
   },
 }
@@ -925,17 +637,6 @@ export default {
   transform: perspective(1000px) rotateY(10deg);
   transform-origin: left center;
 }
-.chart-item {
-  width: 100%;
-  height: 160px;
-  background: rgba(123, 166, 194, 0.5);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  padding: 0px;
-  color: white;
-  pointer-events: auto;
-}
 
 /* 具体的 UI 模块：需要响应鼠标事件的，重置 pointer-events */
 .top-bar,
@@ -970,6 +671,28 @@ export default {
 
   z-index: 11;    
   pointer-events: auto; 
+}
+
+.title-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.back-btn {
+  background: rgba(0, 224, 255, 0.2) !important;
+  border: 1px solid rgba(0, 224, 255, 0.5) !important;
+  color: #00e0ff !important;
+  font-size: 12px !important;
+  padding: 4px 12px !important;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+  background: rgba(0, 224, 255, 0.3) !important;
+  border-color: #00e0ff !important;
+  box-shadow: 0 0 10px rgba(0, 224, 255, 0.5);
 }
 
 /* Loading 居中 */

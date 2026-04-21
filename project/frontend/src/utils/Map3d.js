@@ -173,18 +173,22 @@ export default class Map3d {
     );
   }
   initLight() {
-    //   平行光1
-    let directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.6);
+    //   平行光 1（主光源，增强亮度）
+    let directionalLight1 = new THREE.DirectionalLight(0xffffff, 1.2);
     directionalLight1.position.set(400, 200, 200);
-    //   平行光2
-    let directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.6);
+    //   平行光 2（补光，增强亮度）
+    let directionalLight2 = new THREE.DirectionalLight(0xffffff, 1.0);
     directionalLight2.position.set(-400, -200, -300);
-    // 环境光
-    let ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    // 环境光（增强整体亮度）
+    let ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    // 添加半球光，模拟天空和地面的反射
+    let hemisphereLight = new THREE.HemisphereLight(0x87CEEB, 0x003366, 0.6);
+    hemisphereLight.position.set(0, 500, 0);
     // 将光源添加到场景中
     this.addObject(directionalLight1);
     this.addObject(directionalLight2);
     this.addObject(ambientLight);
+    this.addObject(hemisphereLight);
   }
 
   initStats() {
@@ -328,8 +332,6 @@ export default class Map3d {
           material.color.setHex(this.hoveredObject.userData.originalColor);
         }
       }
-      // 恢复原始缩放
-      this.hoveredObject.scale.set(1, 1, 1);
       this.hideTooltip();
       this.hoveredObject = null;
     }
@@ -363,9 +365,6 @@ export default class Map3d {
             material.color.setHex(object.userData.hoverColor);
           }
 
-          // 增加厚度（Z 轴缩放）
-          this.hoveredObject.scale.set(1, 1, 1.33);
-          
           // 显示省份名称 tooltip
           const provinceName = object.name || object.userData.name || '未知省份';
           this.showTooltip(provinceName);

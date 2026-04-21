@@ -25,6 +25,7 @@ a {
 :root {
     /* 基础颜色 */
     --html-bg:#eceef2;
+    --text-color: #303133;
 
     /* 导航栏颜色 */
     --nabar-color: #041a4a;
@@ -68,8 +69,10 @@ a {
     --search-color: #c9ced3;
     --search-label-color: rgb(34, 33, 33);
 
+    /* 添加产品 */
+    --add-container-bg: white;
+
     --card-bg: #ffffff;
-    --text-color: #303133;
     --text-secondary: #606266;
     --border-color: #dcdfe6;
     --hover-bg: #f5f7fa;
@@ -89,6 +92,7 @@ a {
 /* 深色模式 */
 html.dark {
     --html-bg:#1a1a2e;
+    --text-color: #e0e0e0;
 
     --nabar-color: #1a1a2e;
     --nabar-shadow-color: 5px 5px 6px rgb(0 0 0);
@@ -132,9 +136,11 @@ html.dark {
     --search-color: #1e252c;
     --search-label-color: rgb(217, 212, 212);
 
+    /* 添加产品 */
+    --add-container-bg: #24243b;
+
     /* 卡片和文字颜色 */
     --card-bg: #1a1a2e;
-    --text-color: #e0e0e0;
     --text-secondary: #b0b0b0;
     --border-color: #444;
     --hover-bg: #252542;
@@ -378,3 +384,7 @@ td {
     color: #e74c3c; 
     font-weight: bold;
 }
+
+.el-message {
+  top: 90px !important; /* 调整警告消息位置，比默认更低 */
+} 

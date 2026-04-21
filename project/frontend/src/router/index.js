@@ -19,6 +19,10 @@ const DVScreenView = () => import('@/views/risk/DVScreenView.vue')
 const CollectManagementView = () => import('@/views/risk/CollectManagementView.vue')
 
 const KnowledgeManagementView = () => import('@/views/system/KnowledgeManagementView.vue')
+const ConversationLogsView = () => import('@/views/system/ConversationLogsView.vue')
+const AgentConfigView = () => import('@/views/system/AgentConfigView.vue')
+const MCPToolsView = () => import('@/views/system/MCPToolsView.vue')
+const DashboardStatsView = () => import('@/views/system/DashboardStatsView.vue')
 
 const routes = [
   {
@@ -54,7 +58,11 @@ const routes = [
       { path: 'risk', name: 'Risk', component: RiskManageView },
       { path: 'collect-management', name: 'CollectManagement', component: CollectManagementView },
 
-      { path: 'knowledge', name: 'Knowledge', component: KnowledgeManagementView }
+      { path: 'knowledge', name: 'Knowledge', component: KnowledgeManagementView },
+      { path: 'conversation-logs', name: 'ConversationLogs', component: ConversationLogsView },
+      { path: 'agent-config', name: 'AgentConfig', component: AgentConfigView },
+      { path: 'mcp-tools', name: 'MCPTools', component: MCPToolsView },
+      { path: 'dashboard-stats', name: 'DashboardStats', component: DashboardStatsView }
     ]
   },
 

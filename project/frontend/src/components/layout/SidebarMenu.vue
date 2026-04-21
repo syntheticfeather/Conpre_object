@@ -11,6 +11,7 @@
       class="el-menu-vertical"
       router
       :unique-opened="true"
+      ref="menuRef"
     >
       <!-- 待办审核 -->
       <el-sub-menu index="/dashboard/pending-applications">
@@ -59,8 +60,11 @@
         <el-icon><Setting /></el-icon>
           <span>系统管理</span>
         </template>
-        <el-menu-item index="5-2">系统设置</el-menu-item>
+        <!-- <el-menu-item index="/dashboard/dashboard-stats">数据统计</el-menu-item> -->
         <el-menu-item index="/dashboard/knowledge">知识库管理</el-menu-item>
+        <!-- <el-menu-item index="/dashboard/conversation-logs">对话日志</el-menu-item>
+        <el-menu-item index="/dashboard/agent-config">Agent 配置</el-menu-item> -->
+        <el-menu-item index="/dashboard/mcp-tools">MCP 工具管理</el-menu-item>
       </el-sub-menu>
     </el-menu>
 
@@ -82,6 +86,16 @@ import { ArrowLeftBold, ArrowRightBold, User, Histogram, List, Warning, Setting 
 const isCollapse = ref(false)
 const activeIndex = ref('/dashboard/pending-applications') // 默认激活子项
 const route = useRoute()
+const menuRef = ref(null)
+
+// 所有子菜单的 index
+const subMenuIndexes = [
+  '/dashboard/pending-applications',
+  '/dashboard/products',
+  '/dashboard/users',
+  '4',
+  '5'
+]
 
 // 监听路由变化，更新激活状态
 watch(
@@ -98,7 +112,20 @@ onMounted(() => {
 })
 
 const toggleCollapse = () => {
-  isCollapse.value = !isCollapse.value
+  // 如果当前是展开状态，准备收起，先关闭所有子菜单
+  if (!isCollapse.value) {
+    // 关闭所有展开的子菜单
+    subMenuIndexes.forEach(index => {
+      if (menuRef.value) {
+        menuRef.value.close(index)
+      }
+    })
+  }
+  
+  // 延迟一点时间让子菜单收起动画完成，再收起侧栏
+  setTimeout(() => {
+    isCollapse.value = !isCollapse.value
+  }, 200)
 }
 </script>
 
@@ -161,12 +188,6 @@ const toggleCollapse = () => {
 :global(.el-menu--popup .el-menu-item.is-active) {
   color: #25e0bf !important;
   --el-menu-hover-bg-color: rgb(72, 118, 203) !important;
-}
-
-/* 折叠时隐藏文字 */
-.el-menu--collapse .el-sub-menu .el-sub-menu__title span,
-.el-menu--collapse .el-menu-item span {
-  display: none;
 }
 
 /* 折叠后图标居中 */

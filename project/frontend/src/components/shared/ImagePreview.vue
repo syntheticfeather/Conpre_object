@@ -205,21 +205,21 @@ onUnmounted(() => {
 }
 
 .image-preview-container {
-  width: 90vw;
-  height: 90vh;
-  background: white;
-  border-radius: 8px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+
+  width: 59vw;
+  height: 66vh;
+  background: white;
+  border-radius: 8px;
 }
 
 .preview-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 20px;
+  padding: 9px 20px;
   background: #f8f9fa;
   border-bottom: 1px solid #dee2e6;
 }
@@ -262,7 +262,6 @@ onUnmounted(() => {
 .preview-content {
   flex: 1;
   display: flex;
-  align-items: center;
   justify-content: center;
   overflow: auto;
   background: #f5f5f5;

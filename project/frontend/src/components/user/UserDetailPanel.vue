@@ -1,21 +1,24 @@
 <template>
-  <div v-if="visible" class="detail-container">
+  <div v-if="visible" class="user-detail-container">
     <div class="detail-header">
-      <h2 class="detail-title">用户详情</h2>
-      <div class="header-actions">
-        <!-- 如果是黑名单用户，显示黑名单标记 -->
-        <span v-if="isBlacklistUser" class="blacklist-badge">
-          ⚠️ 黑名单用户（等级: {{ blacklistLevel }}）
-        </span>
-        <button class="close-btn" @click="close">×</button>
+      <!-- 返回键 -->
+      <button class="close-btn" @click="close">
+        <el-icon><Back /></el-icon>
+      </button>
+      <!-- 用户详情标题 -->
+      <div class="detail-title">
+        用户详情
       </div>
+      <!-- 如果是黑名单用户，显示黑名单标记 -->
+      <span v-if="isBlacklistUser" class="blacklist-badge">
+        ⚠️ 黑名单用户（等级: {{ blacklistLevel }}）
+      </span>
     </div>
     
     <!-- 加载状态 -->
     <div v-if="loading" class="loading-state">
       加载中...
     </div>
-    
     <!-- 错误状态 -->
     <div v-else-if="error" class="error-state">
       加载失败: {{ error }}
@@ -186,6 +189,7 @@ import { authAPI } from '@/api'
 import { loanAPI } from '@/api'
 import ImagePreview from '@/components/shared/ImagePreview.vue'
 import { ElMessage } from 'element-plus' 
+import { Back } from '@element-plus/icons-vue'
 
 const props = defineProps({
   userId: { 
@@ -390,16 +394,72 @@ const handleMaterialClick = (key, certId) => {
   }
 }
 
+// 加载用户详情数据
+const loadUserDetail = async () => {
+  if (!props.userId) {
+    console.log('UserDetailPanel: 没有用户ID，跳过加载')
+    return
+  }
+  
+  console.log('UserDetailPanel: 开始加载用户详情，userId:', props.userId)
+  loading.value = true
+  error.value = null
+  
+  try {
+    // 清除旧的用户详情数据，避免显示错误数据
+    userStore.clearUserDetail()
+    userStore.clearBlacklistUserDetail()
+    
+    // 确保黑名单数据已加载，用于检查用户是否在黑名单中
+    if (userStore.blacklist.length === 0) {
+      try {
+        await userStore.fetchBlacklist()
+      } catch (blacklistErr) {
+        console.warn('加载黑名单失败，可能影响黑名单用户识别:', blacklistErr)
+      }
+    }
+    
+    // 检查用户是否在黑名单中
+    const userInBlacklist = userStore.blacklist.some(user => user.userId === props.userId)
+    
+    if (userInBlacklist) {
+      // 用户是黑名单用户，加载黑名单详情
+      await userStore.fetchBlacklistUserDetail(props.userId)
+    } else {
+      // 普通用户，加载普通用户详情
+      await userStore.fetchUserDetail(props.userId)
+    }
+    
+    console.log('UserDetailPanel: 用户详情加载完成，是否为黑名单用户:', userInBlacklist)
+  } catch (err) {
+    console.error('UserDetailPanel: 加载用户详情失败:', err)
+    error.value = err.message || '加载用户详情失败'
+    ElMessage.error('加载用户详情失败: ' + (err.message || '未知错误'))
+  } finally {
+    loading.value = false
+  }
+}
+
 // 监听可见性变化
 watch(() => props.isVisible, (val) => {
   console.log('UserDetailPanel isVisible changed:', val)
   visible.value = val
-})
+  
+  // 当组件变为可见且有用户ID时，加载数据
+  if (val && props.userId) {
+    loadUserDetail()
+  }
+}, { immediate: true })
 
 // 监听 userId 变化
-watch(() => props.userId, (newUserId) => {
-  console.log('UserDetailPanel userId changed:', newUserId)
-})
+watch(() => props.userId, (newUserId, oldUserId) => {
+  console.log('UserDetailPanel userId changed:', oldUserId, '->', newUserId)
+  
+  // 当用户ID变化且组件可见时，重新加载数据
+  if (newUserId && visible.value) {
+    loadUserDetail()
+  }
+}, { immediate: true })
 
 // 方法
 const formatDate = (dateString) => {
@@ -441,193 +501,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 详情容器样式 */
-.detail-container {
-  display: flex;
-  flex-direction: column;
-
-  margin: 0;
-  padding: 0;
-
-  color: var(--detail-color);
-  background: var(--detail-bg);
-  overflow: hidden;
-}
-
-/* 详情头部 */
-.detail-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  background: var(--detail-bg);
-  border-bottom: 1px solid #dee2e6;
-}
-
-.detail-title {
-  font-size: 18px;
-  color: #333;
-  margin: 0;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.blacklist-badge {
-  background: #f8d7da;
-  color: #721c24;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: bold;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 24px;
-  color: #666;
-  cursor: pointer;
-  padding: 0;
-  width: 30px;
-  height: 30px;
-  line-height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.close-btn:hover {
-  color: #333;
-  background-color: #e9ecef;
-  border-radius: 4px;
-}
-
-/* 内容区域 */
-.user-info-container {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px;
-}
-
-.detail-subtitle {
-  font-size: 16px;
-  color: #555;
-  margin: 0 0 12px 0;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #dee2e6;
-}
-
-.user-info {
-  display: flex;
-  gap: 40px;
-  margin-bottom: 24px;
-}
-
-.left, .right {
-  flex: 1;
-}
-
-#user-info-section1 p {
-  margin: 8px 0;
-  line-height: 1.6;
-}
-
-.blacklist-level {
-  color: #dc3545;
-  font-weight: bold;
-}
-
-.material-item {
-  display: flex;
-  justify-content: space-between;
-  margin: 8px 0;
-  padding: 6px 0;
-  border-bottom: 1px dashed #eee;
-}
-
-.material-item.clickable {
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.material-item.clickable:hover {
-  background-color: #f8f9fa;
-  padding-left: 8px;
-  padding-right: 8px;
-  border-radius: 4px;
-}
-
-.material-item.clickable.has-image:hover {
-  background-color: #e8f5e8;
-  border-color: #27ae60;
-}
-
-.material-item:last-child {
-  border-bottom: none;
-}
-
-/* 表格容器 */
-.section-container {
-  margin-bottom: 24px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 10px 0 0 0;
-}
-
-thead th {
-  background: #f8f9fa;
-  padding: 12px;
-  text-align: left;
-  border-bottom: 2px solid #dee2e6;
-  font-weight: 600;
-  font-size: 14px;
-  position: sticky;
-  top: 0;
-}
-
-tbody td {
-  padding: 10px 12px;
-  border-bottom: 1px solid #eee;
-  font-size: 14px;
-}
-/* 加载和错误状态 */
-.loading-state {
-  text-align: center;
-  padding: 40px;
-  color: #666;
-}
-
-.error-state {
-  text-align: center;
-  padding: 20px;
-  color: #f56c6c;
-  border: 1px solid #f56c6c;
-  border-radius: 4px;
-  margin: 20px;
-}
-
-.no-data {
-  text-align: center;
-  padding: 60px;
-  color: #999;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* 头像样式 */
-.avatar {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-}
-
+  @import '@/assets/css/user/userDetailPanel.css';
 </style>

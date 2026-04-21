@@ -10,9 +10,15 @@
           <span>数据实时更新</span>
         </div>
       </div>
-      <div class="pending-badge" @click="goToPendingApplications" style="cursor: pointer;">
-        <el-icon><Clock /></el-icon>
-        待审核申请 ({{ pendingCount }})
+      <div class="action-buttons">
+        <el-button class="screen-btn" @click="goToDVScreen" type="primary" size="default">
+          <el-icon><Monitor /></el-icon>
+          数据大屏
+        </el-button>
+        <div class="pending-badge" @click="goToPendingApplications" style="cursor: pointer;">
+          <el-icon><Clock /></el-icon>
+          待审核申请 ({{ pendingCount }})
+        </div>
       </div>
     </div>
 
@@ -91,19 +97,29 @@
       </div>
     </div>
 
-    <!-- 底部区域：最新动态 + 月度审批统计 -->
+    <!-- 区域：最新动态 + 月度审批统计 -->
     <div class="bottom-section">
       <!-- 最新动态 -->
       <div class="chart-card">
         <div class="chart-header">
-          <h3 class="chart-title">最新动态</h3>
-          <a href="#" class="view-all">
-            查看全部
+          <div class="title-section">
+            <h3 class="chart-title">最新动态</h3>
+            <!-- <div class="connection-status" :class="{ connected: isStreamConnected, disconnected: !isStreamConnected }">
+              <el-icon v-if="isStreamConnected"><CircleCheck /></el-icon>
+              <el-icon v-else><Warning /></el-icon>
+              <span>{{ isStreamConnected ? '实时连接中' : '连接断开' }}</span>
+              <el-button v-if="!isStreamConnected" size="small" @click="reconnectStream" type="primary" plain>
+                重新连接
+              </el-button>
+            </div> -->
+          </div>
+          <a href="javascript:void(0)" class="view-all" @click="toggleViewAll">
+            {{ showAllActivities ? '收起' : '查看详细信息' }}
             <el-icon><ArrowRight /></el-icon>
           </a>
         </div>
         <div class="activity-list">
-          <div v-for="(activity, index) in activities" :key="index" class="activity-item">
+          <div v-for="(activity, index) in displayActivities" :key="index" class="activity-item" :class="{ 'new-item': activity.isNew }" @mouseenter="activity.isNew = false">
             <span class="activity-dot" :style="{ backgroundColor: activity.color }"></span>
             <div class="activity-content">
               <div class="activity-text">{{ activity.text }}</div>
@@ -217,39 +233,11 @@
         </div>
       </div>
     </div>
-
-    <!-- 原有图表区域 -->
-    <div class="original-charts-section">
-      <h3 class="section-title">详细数据分析</h3>
-      <div class="chart-grid">
-        <div class="chart-item">
-          <h4 class="chart-title">用户贷款状态分布</h4>
-          <el-card shadow="hover">
-            <div ref="userChartRef" class="chart-container"></div>
-          </el-card>
-        </div>
-        
-        <div class="chart-item">
-          <h4 class="chart-title">贷款申请状态分布</h4>
-          <el-card shadow="hover">
-            <div ref="loanApplicationChartRef" class="chart-container"></div>
-          </el-card>
-        </div>
-        
-        <div class="chart-item">
-          <h4 class="chart-title">用户信用分统计</h4>
-          <el-card shadow="hover">
-            <div ref="creditScoreDistributionRef" class="chart-container"></div>
-          </el-card>
-        </div>
-        
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, reactive } from 'vue'
+import { ref, onMounted, onUnmounted, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { userAPI, loanApplicationAPI, notificationAPI } from '@/api'
 import * as echarts from 'echarts'
@@ -262,10 +250,14 @@ import {
   Top, 
   Bottom, 
   ArrowRight,
-  CircleCheck 
+  CircleCheck,
+  Monitor
 } from '@element-plus/icons-vue'
+import { createPieTooltipConfig } from '@/utils/pieTooltipHelper'
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
+const authStore = useAuthStore()
 
 // 当前日期 - 使用真实日期
 const getCurrentDate = () => {
@@ -283,6 +275,11 @@ const pendingCount = ref(0)
 // 跳转到待办审核页面
 const goToPendingApplications = () => {
   router.push('/dashboard/pending-applications')
+}
+
+// 跳转到数据大屏页面
+const goToDVScreen = () => {
+  router.push('/dv-screen')
 }
 
 // 统计数据
@@ -313,6 +310,27 @@ const purposeDistribution = ref([])
 
 // 最新动态
 const activities = ref([])
+const showAllActivities = ref(false)
+
+// SSE 实时消息流相关变量
+const isStreamConnected = ref(false)
+const streamError = ref(null)
+const reconnectAttempts = ref(0)
+const MAX_RECONNECT_ATTEMPTS = 10
+let sseReader = null
+
+// 显示的活动列表（默认只显示最新 5 条）
+const displayActivities = computed(() => {
+  if (showAllActivities.value) {
+    return activities.value
+  }
+  return activities.value.slice(0, 5)
+})
+
+// 切换显示详细信息/收起
+const toggleViewAll = () => {
+  showAllActivities.value = !showAllActivities.value
+}
 
 // 审批统计
 const approvalStats = reactive({
@@ -331,10 +349,7 @@ const monthlyApprovalData = ref({
 // 图表引用
 const userChartRef = ref(null)
 const loanApplicationChartRef = ref(null)
-// const userRegistrationTrendRef = ref(null)
-// const loanApplicationTrendRef = ref(null)
 const creditScoreDistributionRef = ref(null)
-// const approvalRateRef = ref(null)
 const riskLevelRef = ref(null)
 const applicationTrendRef = ref(null)
 const riskDistributionRef = ref(null)
@@ -343,10 +358,7 @@ const monthlyApprovalRef = ref(null)
 // 图表实例
 let userChart = null
 let loanApplicationChart = null
-let userRegistrationTrendChart = null
-let loanApplicationTrendChart = null
 let creditScoreDistributionChart = null
-let approvalRateChart = null
 let riskLevelChart = null
 let applicationTrendChart = null
 let riskDistributionChart = null
@@ -357,10 +369,7 @@ const handleResize = () => {
   const charts = [
     userChart,
     loanApplicationChart,
-    userRegistrationTrendChart,
-    loanApplicationTrendChart,
     creditScoreDistributionChart,
-    approvalRateChart,
     riskLevelChart,
     applicationTrendChart,
     riskDistributionChart,
@@ -371,6 +380,18 @@ const handleResize = () => {
       chart.resize()
     }
   })
+}
+
+// 金额格式化辅助函数
+const formatToWan = (amount, defaultValue = '4.56 万') => {
+  if (!amount || amount <= 0) return defaultValue
+  return (amount / 10000).toFixed(2) + ' 万'
+}
+
+const formatToYuan = (amount, defaultValue = '3,200') => {
+  if (!amount || amount <= 0) return defaultValue
+  // 添加千位分隔符
+  return amount.toLocaleString('zh-CN') + ' 元'
 }
 
 // 获取用户数据
@@ -425,14 +446,14 @@ const fetchUserData = async () => {
         const lastMonthCount = userGrowthByMonth[months[months.length - 1]]
         const prevMonthCount = userGrowthByMonth[months[months.length - 2]]
         if (prevMonthCount > 0) {
-          stats.userGrowth = ((lastMonthCount - prevMonthCount) / prevMonthCount * 100).toFixed(1)
+          stats.userGrowth = ((lastMonthCount - prevMonthCount) / prevMonthCount * 100).toFixed(1) 
         }
       }
       
       // 模拟贷款金额数据（如果 API 没有返回）
       // TODO: 当后端提供贷款金额统计 API 时，替换此处
-      stats.totalLoanAmount = (totalLoanAmount / 100000000).toFixed(2) + '亿' || '4.56 亿'
-      stats.monthlyLoanAmount = (monthlyLoanAmount / 10000).toFixed(0) + '万' || '3,200 万'
+      stats.totalLoanAmount = formatToWan(totalLoanAmount)
+      stats.monthlyLoanAmount = formatToYuan(monthlyLoanAmount)
       stats.loanGrowth = 18.7 // TODO: 从 API 获取
       
       // 计算逾期率
@@ -445,40 +466,9 @@ const fetchUserData = async () => {
       if (userChartRef.value) {
         const totalUsers = Object.values(loanStatusCount).reduce((sum, value) => sum + value, 0);
         // 使用 totalUsers 计算百分比或显示总数
-        console.log(`总用户数: ${totalUsers}`);
         userChart = echarts.init(userChartRef.value)
         userChart.setOption({
-          tooltip: {
-            trigger: 'item',
-            formatter: function(params) {
-              const percentage = totalUsers > 0 ? ((params.value / totalUsers) * 100).toFixed(2) : 0;
-              return `${params.name}: ${percentage}%`;
-            },
-            position: function(point, params, dom, rect, size) {
-              // point: 鼠标位置
-              // size: 图表尺寸
-              const chartCenterX = size.viewSize[0] / 2;
-              const chartCenterY = size.viewSize[1] / 2;
-              // 计算 tooltip 的宽高
-              const tooltipWidth = dom.offsetWidth;
-              const tooltipHeight = dom.offsetHeight;
-              
-              // 根据鼠标位置判断象限
-              if (point[0] < chartCenterX && point[1] < chartCenterY) {
-                // 左上象限 - tooltip 显示在鼠标左上
-                return [point[0] - tooltipWidth - 10, point[1] - tooltipHeight - 10];
-              } else if (point[0] < chartCenterX && point[1] >= chartCenterY) {
-                // 左下象限 - tooltip 显示在鼠标左下
-                return [point[0] - tooltipWidth - 10, point[1] + 10];
-              } else if (point[0] >= chartCenterX && point[1] < chartCenterY) {
-                // 右上象限 - tooltip 显示在鼠标右上
-                return [point[0] + 10, point[1] - tooltipHeight - 10];
-              } else {
-                // 右下象限 - tooltip 显示在鼠标右下
-                return [point[0] + 10, point[1] + 10];
-              }
-            }
-          },
+          tooltip: createPieTooltipConfig(totalUsers),
           legend: {
             top: '5%',
             left: 'center'
@@ -722,37 +712,7 @@ const fetchLoanApplicationData = async () => {
       const totalApplications = Object.values(statusCount).reduce((sum, value) => sum + value, 0)
       loanApplicationChart = echarts.init(loanApplicationChartRef.value)
       loanApplicationChart.setOption({
-        tooltip: {
-          trigger: 'item',
-          formatter: function(params) {
-            const percentage = totalApplications > 0 ? ((params.value / totalApplications) * 100).toFixed(2) : 0;
-            return `${params.name}: ${percentage}%`;
-          },
-          position: function(point, params, dom, rect, size) {
-            // point: 鼠标位置
-            // size: 图表尺寸
-            const chartCenterX = size.viewSize[0] / 2;
-            const chartCenterY = size.viewSize[1] / 2;
-            // 计算 tooltip 的宽高
-            const tooltipWidth = dom.offsetWidth;
-            const tooltipHeight = dom.offsetHeight;
-            
-            // 根据鼠标位置判断象限
-            if (point[0] < chartCenterX && point[1] < chartCenterY) {
-              // 左上象限 - tooltip 显示在鼠标左上
-              return [point[0] - tooltipWidth - 10, point[1] - tooltipHeight - 10];
-            } else if (point[0] < chartCenterX && point[1] >= chartCenterY) {
-              // 左下象限 - tooltip 显示在鼠标左下
-              return [point[0] - tooltipWidth - 10, point[1] + 10];
-            } else if (point[0] >= chartCenterX && point[1] < chartCenterY) {
-              // 右上象限 - tooltip 显示在鼠标右上
-              return [point[0] + 10, point[1] - tooltipHeight - 10];
-            } else {
-              // 右下象限 - tooltip 显示在鼠标右下
-              return [point[0] + 10, point[1] + 10];
-            }
-          }
-        },
+        tooltip: createPieTooltipConfig(totalApplications),
         legend: {
           top: '5%',
           left: 'center'
@@ -1167,7 +1127,7 @@ const fetchPurposeDistribution = async () => {
 // 获取最新动态数据
 const fetchActivities = async () => {
   try {
-    // 调用通知API获取管理员通知
+    // 调用通知 API 获取管理员通知
     const response = await notificationAPI.getAdminNotifications()
     if (response.code === 200) {
       // 将通知数据映射为活动数据
@@ -1179,18 +1139,20 @@ const fetchActivities = async () => {
         if (timeStr && timeStr.includes(' ')) {
           timeStr = timeStr.split(' ')[1].substring(0, 5) // 提取 "HH:mm"
         }
-        // 使用内容作为文本（更具体）
-        const text = notification.content
+        // 添加用户 ID 前缀
+        const text = `用户${notification.userId}的${notification.content}`
         
         return {
           text,
           time: timeStr,
-          color
+          color,
+          rawNotification: notification,
+          isNew: false // 历史数据不标记为新消息
         }
       })
     } else {
       console.error('获取通知数据失败:', response.message)
-      // 如果API失败，使用模拟数据作为后备
+      // 如果 API 失败，使用模拟数据作为后备
       useFallbackActivities()
     }
   } catch (error) {
@@ -1200,24 +1162,263 @@ const fetchActivities = async () => {
   }
 }
 
+// ==================== SSE 实时消息流实现 ====================
+
+// 使用 Fetch API 建立 SSE 连接
+const initNotificationStreamWithFetch = async () => {
+  try {
+    console.log('正在建立 SSE 实时通知流连接...')
+    
+    // 检查用户是否已登录
+    if (!authStore.isAuthenticated) {
+      console.log('用户未登录，跳过 SSE 连接')
+      isStreamConnected.value = false
+      streamError.value = '用户未登录'
+      return
+    }
+    
+    // 关闭现有连接
+    closeNotificationStream()
+    
+    // 重置连接状态
+    isStreamConnected.value = false
+    streamError.value = null
+    
+    // 构建 SSE 连接 URL
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || window.location.origin
+    const streamUrl = `${baseUrl}/api/notifications/admin/stream`
+    
+    console.log('SSE 连接 URL:', streamUrl)
+    
+    // 使用 Fetch API 建立 SSE 连接
+    const headers = {
+      'Accept': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive'
+    }
+    
+    // 添加认证头（使用 auth-store 中的 token）
+    const getToken = () => {
+      const stored = localStorage.getItem('auth-store')
+      if (!stored) return null
+      try {
+        const data = JSON.parse(stored)
+        return data.token || null
+      } catch {
+        return null
+      }
+    }
+    
+    const token = getToken() || authStore.token
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+      console.log('已添加认证头，token 长度:', token.length)
+    } else {
+      console.warn('未找到有效的 token，SSE 连接可能因认证失败')
+    }
+    
+    const response = await fetch(streamUrl, { headers })
+    
+    if (!response.ok) {
+      throw new Error(`SSE 连接失败: ${response.status} ${response.statusText}`)
+    }
+    
+    // 获取可读流
+    const reader = response.body.getReader()
+    sseReader = reader
+    isStreamConnected.value = true
+    reconnectAttempts.value = 0
+    console.log('SSE 连接已建立')
+    
+    // 持续读取流数据
+    const decoder = new TextDecoder()
+    
+    const readStream = async () => {
+      try {
+        while (true) {
+          const { done, value } = await reader.read()
+          
+          if (done) {
+            console.log('SSE 流已结束')
+            isStreamConnected.value = false
+            // 尝试重连
+            retryConnect()
+            break
+          }
+          
+          // 解码并处理数据块
+          const chunk = decoder.decode(value, { stream: true })
+          processSSEMessages(chunk)
+        }
+      } catch (error) {
+        console.error('读取 SSE 流失败:', error)
+        isStreamConnected.value = false
+        streamError.value = error.message
+        // 尝试重连
+        retryConnect()
+      }
+    }
+    
+    readStream()
+    
+  } catch (error) {
+    console.error('初始化 SSE 连接失败:', error)
+    isStreamConnected.value = false
+    streamError.value = error.message
+    // 尝试重连
+    retryConnect()
+  }
+}
+
+// 处理 SSE 消息块
+const processSSEMessages = (chunk) => {
+  const lines = chunk.split('\n')
+  
+  lines.forEach(line => {
+    if (line.startsWith('data: ')) {
+      try {
+        const data = line.substring(6) // 移除 "data: " 前缀
+        if (data.trim()) {
+          const notification = JSON.parse(data)
+          console.log('收到实时通知:', notification)
+          handleNewNotification(notification)
+        }
+      } catch (error) {
+        console.error('解析 SSE 数据失败:', error, line)
+      }
+    }
+  })
+}
+
+// 处理新通知
+const handleNewNotification = (notification) => {
+  // 检查重复消息
+  const isDuplicate = activities.value.some(
+    activity => activity.rawNotification?.id === notification.id
+  )
+  
+  if (isDuplicate) {
+    console.log('忽略重复通知:', notification.id)
+    return
+  }
+  
+  // 根据是否已读确定颜色
+  const color = notification.readFlag ? '#5AD8A6' : '#F87474'
+  
+  // 格式化时间
+  let timeStr = notification.createdAt
+  if (timeStr && timeStr.includes(' ')) {
+    timeStr = timeStr.split(' ')[1].substring(0, 5) // 提取 "HH:mm"
+  }
+  
+  // 构建显示文本
+  const userIdText = notification.userId ? `用户${notification.userId}` : '系统'
+  const text = `${userIdText}的${notification.content}`
+  
+  // 创建新活动项
+  const newActivity = {
+    text,
+    time: timeStr,
+    color,
+    rawNotification: notification,
+    isNew: true
+  }
+  
+  // 添加到活动列表顶部（最新消息显示在最上面）
+  activities.value.unshift(newActivity)
+  
+  // 如果开启了显示全部，更新显示
+  if (!showAllActivities.value && activities.value.length > 5) {
+    // 保持只显示最新5条
+    activities.value = activities.value.slice(0, 5)
+  }
+  
+  // 显示桌面通知（需要用户授权）
+  showDesktopNotification(notification)
+}
+
+// 显示桌面通知
+const showDesktopNotification = (notification) => {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    try {
+      new Notification('风控系统新通知', {
+        body: notification.content,
+        icon: '/favicon.ico',
+        tag: `notification-${notification.id}`
+      })
+    } catch (error) {
+      console.error('显示桌面通知失败:', error)
+    }
+  }
+}
+
+// 请求桌面通知权限
+const requestNotificationPermission = () => {
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission().then(permission => {
+      console.log('桌面通知权限状态:', permission)
+    })
+  }
+}
+
+// 重连机制
+const retryConnect = () => {
+  if (reconnectAttempts.value < MAX_RECONNECT_ATTEMPTS) {
+    reconnectAttempts.value++
+    const delay = Math.min(1000 * Math.pow(2, reconnectAttempts.value), 30000)
+    console.log(`将在 ${delay/1000} 秒后尝试重连 (第 ${reconnectAttempts.value}/${MAX_RECONNECT_ATTEMPTS} 次)`)
+    
+    setTimeout(() => {
+      if (!isStreamConnected.value) {
+        initNotificationStreamWithFetch()
+      }
+    }, delay)
+  } else {
+    console.error('已达到最大重连次数，停止重连')
+  }
+}
+
+// 关闭 SSE 连接
+const closeNotificationStream = () => {
+  if (sseReader) {
+    sseReader.cancel()
+    sseReader = null
+  }
+  isStreamConnected.value = false
+  console.log('SSE 连接已关闭')
+}
+
+// 手动重新连接
+// const reconnectStream = () => {
+//   reconnectAttempts.value = 0
+//   initNotificationStreamWithFetch()
+// }
+
 // 后备模拟数据函数
 const useFallbackActivities = () => {
   activities.value = [
-    { text: '用户 张伟 的贷款申请 A20240001 已批准', time: '10 分钟前', color: '#5AD8A6' },
-    { text: '新用户 周婷 注册，提交信用极速贷申请', time: '25 分钟前', color: '#5B8FF9' },
-    { text: '用户 赵丽 账户已被冻结 (风控触发)', time: '1 小时前', color: '#F6BD16' },
-    { text: '用户 吴磊 的申请 A20240008 已批准放款', time: '2 小时前', color: '#5AD8A6' },
-    { text: '系统检测到 5 条可疑申请，已转人工复核', time: '3 小时前', color: '#F87474' }
+    { text: '用户 张伟 的贷款申请 A20240001 已批准', time: '10 分钟前', color: '#5AD8A6', rawNotification: null, isNew: false },
+    { text: '新用户 周婷 注册，提交信用极速贷申请', time: '25 分钟前', color: '#5B8FF9', rawNotification: null, isNew: false },
+    { text: '用户 赵丽 账户已被冻结 (风控触发)', time: '1 小时前', color: '#F6BD16', rawNotification: null, isNew: false },
+    { text: '用户 吴磊 的申请 A20240008 已批准放款', time: '2 小时前', color: '#5AD8A6', rawNotification: null, isNew: false },
+    { text: '系统检测到 5 条可疑申请，已转人工复核', time: '3 小时前', color: '#F87474', rawNotification: null, isNew: false }
   ]
 }
 
 // 组件挂载时加载数据
 onMounted(async () => {
+  // 加载初始数据
   await fetchUserData()
   await fetchLoanApplicationData()
   await fetchRiskLevelData()
   await fetchPurposeDistribution()
-  await fetchActivities()
+  await fetchActivities() // 加载历史通知数据
+  
+  // 请求桌面通知权限
+  requestNotificationPermission()
+  
+  // 建立 SSE 实时通知流连接
+  initNotificationStreamWithFetch()
   
   window.addEventListener('resize', handleResize)
 })
@@ -1226,13 +1427,13 @@ onMounted(async () => {
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
   
+  // 关闭 SSE 实时通知流连接
+  closeNotificationStream()
+  
   const charts = [
     userChart,
     loanApplicationChart,
-    userRegistrationTrendChart,
-    loanApplicationTrendChart,
     creditScoreDistributionChart,
-    approvalRateChart,
     riskLevelChart,
     applicationTrendChart,
     riskDistributionChart,
@@ -1248,594 +1449,5 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.risk-dashboard {
-  padding: 24px;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ed 100%);
-  min-height: 100vh;
-}
-
-/* 欢迎区域 */
-.welcome-section {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-}
-
-.welcome-title {
-  font-size: 24px;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin: 0 0 8px 0;
-}
-
-.date-info {
-  font-size: 14px;
-  color: #8c8c8c;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.divider {
-  color: #d9d9d9;
-}
-
-.pending-badge {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.pending-badge:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
-/* 统计卡片 */
-.stats-cards {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  margin-bottom: 24px;
-}
-
-@media (max-width: 1400px) {
-  .stats-cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 768px) {
-  .stats-cards {
-    grid-template-columns: 1fr;
-  }
-}
-
-.stat-card {
-  padding: 24px;
-  min-height: 166px;
-  height: auto;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.stat-card:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
-}
-
-.stat-main{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.text-container {
-  display: flex;
-  flex-direction: column;
-}
-
-.stat-title {
-  font-size: 14px;
-  color: #8c8c8c;
-  font-weight: 500;
-}
-
-.stat-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  color: white;
-}
-
-.user-icon {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.application-icon {
-  background: linear-gradient(135deg, #5AD8A6 0%, #38b28a 100%);
-}
-
-.loan-icon {
-  background: linear-gradient(135deg, #f6bd16 0%, #d9a012 100%);
-}
-
-.overdue-icon {
-  background: linear-gradient(135deg, #f87474 0%, #e04a4a 100%);
-}
-
-.stat-value {
-  font-size: 32px;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin-bottom: 8px;
-}
-
-.stat-subtitle {
-  font-size: 13px;
-  color: #8c8c8c;
-  margin-bottom: 12px;
-}
-
-.stat-trend {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.stat-trend.up {
-  color: #5AD8A6;
-}
-
-.stat-trend.down {
-  color: #f87474;
-}
-
-/* 中间图表区域 */
-.charts-section {
-  display: flex;
-  justify-content: space-between;
-
-  gap: 2%;
-  margin-bottom: 24px;
-}
-@media (max-width: 1200px) {
-  .charts-section {
-    grid-template-columns: 1fr;
-  }
-}
-.trend-chart {
-  flex: 0 0 60%; 
-}
-
-.right-charts {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-
-  flex: 0 0 38%; 
-}
-
-.chart-card {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.chart-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 20px;
-}
-
-.chart-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin: 0 0 4px 0;
-}
-
-.chart-subtitle {
-  font-size: 13px;
-  color: #8c8c8c;
-  margin: 0;
-}
-
-.chart-legend {
-  display: flex;
-  gap: 16px;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: #595959;
-}
-
-.legend-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-
-.legend-dot.blue {
-  background-color: #5B8FF9;
-}
-
-.legend-dot.green {
-  background-color: #5AD8A6;
-}
-
-.chart-body {
-  height: 320px;
-}
-
-/* 风险分布 */
-.risk-distribution {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.risk-chart {
-  width: 100%;
-  height: 220px;
-}
-
-.risk-legend {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  width: 100%;
-}
-
-.legend-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: #595959;
-}
-
-.legend-dot.green {
-  background-color: #5AD8A6;
-}
-
-.legend-dot.orange {
-  background-color: #F6BD16;
-}
-
-.legend-dot.red {
-  background-color: #F87474;
-}
-
-.legend-value {
-  margin-left: auto;
-  font-weight: 600;
-  color: #1a1a1a;
-}
-
-/* 贷款用途分布 */
-.purpose-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.purpose-item {
-  display: grid;
-  grid-template-columns: 50px 1fr 50px;
-  align-items: center;
-  gap: 12px;
-}
-
-.purpose-name {
-  font-size: 14px;
-  color: #595959;
-}
-
-.purpose-bar {
-  height: 8px;
-  background: #f0f0f0;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.purpose-fill {
-  height: 100%;
-  border-radius: 4px;
-  transition: width 0.3s ease;
-}
-
-.purpose-percentage {
-  font-size: 14px;
-  font-weight: 600;
-  color: #1a1a1a;
-  text-align: right;
-}
-
-/* 底部区域 */
-.bottom-section {
-  display: grid;
-  grid-template-columns: 1fr 400px;
-  gap: 20px;
-  margin-bottom: 24px;
-}
-
-.view-all {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: #667eea;
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.view-all:hover {
-  text-decoration: underline;
-}
-
-.activity-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.activity-item {
-  display: flex;
-  gap: 12px;
-}
-
-.activity-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  margin-top: 6px;
-}
-
-.activity-content {
-  flex: 1;
-}
-
-.activity-text {
-  font-size: 14px;
-  color: #262626;
-  margin-bottom: 4px;
-}
-
-.activity-time {
-  font-size: 12px;
-  color: #8c8c8c;
-}
-
-/* 月度审批统计 */
-.monthly-chart {
-  height: 200px;
-  margin-bottom: 16px;
-}
-
-.approval-stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.approval-stat {
-  padding: 16px;
-  border-radius: 8px;
-  text-align: center;
-}
-
-.approval-stat.approved {
-  background: linear-gradient(135deg, #f0f9f5 0%, #d4edda 100%);
-}
-
-.approval-stat.rejected {
-  background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
-}
-
-.approval-stat .el-icon {
-  font-size: 20px;
-  margin-bottom: 8px;
-}
-
-.approval-stat.approved .el-icon {
-  color: #5AD8A6;
-}
-
-.approval-stat.rejected .el-icon {
-  color: #F87474;
-}
-
-.stat-label {
-  font-size: 13px;
-  color: #595959;
-  margin-bottom: 4px;
-}
-
-.approval-stat .stat-value {
-  font-size: 24px;
-  color: #1a1a1a;
-  margin: 0;
-}
-
-.approval-stat.approved .stat-value {
-  color: #5AD8A6;
-}
-
-.approval-stat.rejected .stat-value {
-  color: #F87474;
-}
-
-/* 原有图表区域 */
-.original-charts-section {
-  margin-top: 24px;
-}
-
-.section-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin: 0 0 20px 0;
-}
-
-.chart-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 20px;
-}
-
-.chart-item {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.chart-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin: 0 0 16px 0;
-}
-
-.chart-container {
-  height: 280px;
-}
-
-/* 响应式设计 */
-@media (max-width: 1400px) {
-  .stats-cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .charts-section {
-    grid-template-columns: 1fr;
-  }
-  
-  .bottom-section {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  .stats-cards {
-    grid-template-columns: 1fr;
-  }
-  
-  .welcome-section {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-  }
-  
-  .chart-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* 深色模式 */
-html.dark .risk-dashboard {
-  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
-}
-
-html.dark .welcome-title {
-  color: #e0e0e0;
-}
-
-html.dark .date-info {
-  color: #b0b0b0;
-}
-
-html.dark .divider {
-  color: #444;
-}
-
-html.dark .stat-card {
-  background: var(--card-bg);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-html.dark .stat-title {
-  color: var(--text-secondary);
-}
-
-html.dark .stat-value {
-  color: var(--text-color);
-}
-
-html.dark .stat-subtitle {
-  color: var(--text-secondary);
-}
-
-html.dark .chart-card {
-  background: var(--card-bg);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-html.dark .chart-header h4 {
-  color: var(--text-color);
-}
-
-html.dark .chart-title {
-  color: var(--text-color);
-}
-
-html.dark .section-title {
-  color: var(--text-color);
-}
-
-html.dark .chart-item {
-  background: var(--card-bg);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-html.dark .legend-row {
-  color: var(--text-secondary);
-}
-
-html.dark .legend-value {
-  color: var(--text-color);
-}
-
-html.dark .purpose-name {
-  color: var(--text-secondary);
-}
-
-html.dark .purpose-value {
-  color: var(--text-color);
-}
-
-html.dark .approval-stat .stat-label {
-  color: var(--text-secondary);
-}
-
-html.dark .approval-stat .stat-value {
-  color: var(--text-color);
-}
+  @import '@/assets/css/risk/riskManageView.css';
 </style>
