@@ -7,10 +7,11 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from fastapi import APIRouter, HTTPException
 from typing import List
-from api.models import KnowledgeItemCreate, KnowledgeItemResponse
+from api.models import KnowledgeItemCreate, KnowledgeItemResponse, KnowledgeItemUpdate
 from knowledge.vector_store import VectorStore
 from knowledge.models import KnowledgeItem
 from api.utils import ResultUtil
+
 
 router = APIRouter(prefix="/knowledge", tags=["knowledge"])
 vector_store = VectorStore()
@@ -43,3 +44,34 @@ def create_knowledge(item: KnowledgeItemCreate):
 def delete_knowledge(item_id: str):
     vector_store.delete(item_id)
     return ResultUtil.success(message="删除成功")
+
+# 修改知识库项
+@router.put("/{item_id}")
+def update_knowledge(item_id: str, item_update: KnowledgeItemUpdate):
+    # 获取所有知识项
+    all_items = vector_store.get_all()
+    # 查找要更新的项
+    existing_item = None
+    for item in all_items:
+        if item["id"] == item_id:
+            existing_item = item
+            break
+    
+    if not existing_item:
+        raise HTTPException(status_code=404, detail="知识库项不存在")
+    
+    # 更新字段
+    updated_item = KnowledgeItem(
+        id=item_id,
+        question=item_update.question or existing_item["question"],
+        answer=item_update.answer or existing_item["answer"],
+        category=item_update.category or existing_item.get("category", "通用")
+    )
+    
+    # 存入向量库
+    vector_store.update(updated_item)
+    
+    # 转换为响应模型
+    response_model = KnowledgeItemResponse.model_validate(updated_item)
+    return ResultUtil.success(data=response_model, message="更新成功")
+

@@ -2,9 +2,6 @@
 import sys
 import os
 
-# 添加项目根目录到 Python 搜索路径
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from fastapi import FastAPI, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -16,9 +13,13 @@ from typing import Dict
 from api.models import ChatRequest
 import uuid
 import logging
+import asyncio
+import json
+from utils.context import set_token
 
 from api.knowledge_routes import router as knowledge_router
-from agent.chat_agent import ChatAgent
+from api.tool_routes import router as tool_router
+from agent.chat_agent import get_chat_agent
 
 # 定义 Bearer Token 认证
 security = HTTPBearer()
@@ -34,8 +35,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 挂载路由api.knowledge_routes
-app.include_router(knowledge_router,dependencies=[Depends(security)])
+# 挂载路由
+app.include_router(knowledge_router, dependencies=[Depends(security)])
+app.include_router(tool_router, dependencies=[Depends(security)])
 
 # 会话存储（生产环境用 Redis）
 sessions: Dict[str, list] = {}
@@ -55,7 +57,9 @@ logger = logging.getLogger(__name__)
 @app.post("/api/chat/stream")
 async def chat_stream(body: ChatRequest, credentials: HTTPAuthorizationCredentials = Depends(security)):
     # 获取 token
-    token = credentials.credentials 
+    token = credentials.credentials
+    # 设置 token 到 contextvars
+    set_token(token)
 
     # 从请求体中获取 message 和 session_id
     message = body.message
@@ -65,28 +69,74 @@ async def chat_stream(body: ChatRequest, credentials: HTTPAuthorizationCredentia
     if session_id not in sessions:
         sessions[session_id] = []
 
-    # 实例化 ChatAgent
-    agent = ChatAgent()
+    # 获取 ChatAgent 单例实例
+    agent = get_chat_agent()
 
     # 异步生成事件流
     async def event_generator():
         # 获取会话历史
         chat_history = sessions[session_id]
         full_response = ""
+        # 第一个数据块：发送session_id
+        yield {"event": "session_init", "data": json.dumps({"session_id": session_id})}
 
-        # 流式接收与分发
-        async for chunk in agent.chat(message, token, chat_history):
-            # 处理工具调用
-            if chunk.startswith("[tool_call]"):
-                yield {"event": "tool", "data": chunk}
-            # 处理普通消息
-            else:
-                full_response += chunk
-                yield {"event": "message", "data": chunk}
+        try:
+            # 设置 60 秒超时控制
+            async with asyncio.timeout(60):
+            
+                # 流式接收与分发
+                async for chunk in agent.chat(message, chat_history, token):
+                    # 尝试解析 JSON 格式的事件
+                    try:
+                        event_data = json.loads(chunk)
+                        event_type = event_data.get("type", "")
 
-        # 保存对话历史
-        sessions[session_id].append({"role": "user", "content": message})
-        sessions[session_id].append({"role": "assistant", "content": full_response})
+                        if event_type == "tool_call":
+                            # 处理工具调用事件
+                            yield {
+                                "event": "tool_call",
+                                "data": {
+                                    "tool_name": event_data.get("tool_name", ""),
+                                    "arguments": event_data.get("arguments", {})
+                                }
+                            }
+                        elif event_type == "tool_result":
+                            # 处理工具执行结果事件
+                            yield {
+                                "event": "tool_result",
+                                "data": {
+                                    "tool_name": event_data.get("tool_name", ""),
+                                    "result": event_data.get("result", None)
+                                }
+                            }
+                        elif event_type == "error":
+                            # 处理错误事件
+                            yield {"event": "error", "data": event_data.get("message", "")}
+
+                        elif event_type == "message":
+                            content = event_data.get("content", "")
+                            if content:
+                                full_response += content
+                                yield {"event": "message", "data": content}
+                        # 如果还有 done 事件等，也可以在这里处理
+                        
+                    except json.JSONDecodeError:
+                        # 如果不是 JSON 格式，当作普通文本消息处理
+                        full_response += chunk
+                        yield {"event": "message", "data": chunk}
+        except asyncio.TimeoutError:
+            # 处理超时错误
+            logger.error("请求超时")
+            yield {"event": "error", "data": "请求超时，请稍后重试"}
+        except Exception as e:
+            # 处理其他错误
+            logger.error(f"发生错误：{str(e)}")
+            yield {"event": "error", "data": f"发生错误：{str(e)}"}
+        finally:
+            # 无论成功失败都保存历史
+            if full_response:
+                sessions[session_id].append({"role": "user", "content": message})
+                sessions[session_id].append({"role": "assistant", "content": full_response})
 
     return EventSourceResponse(event_generator())
 
@@ -95,7 +145,7 @@ async def chat_stream(body: ChatRequest, credentials: HTTPAuthorizationCredentia
 async def global_exception_handler(request: Request, exc: Exception):
     # 记录日志
     logger.error(
-        f"500 Internal Server Error: {request.method} {request.url.path}", 
+        f"500 Internal Server Error: {request.method} {request.url.path}",
         # 打印堆栈
         exc_info=True
     )
@@ -109,7 +159,7 @@ async def global_exception_handler(request: Request, exc: Exception):
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     # 记录日志
     logger.error(
-        f"400 Bad Request: {exc.errors()}", 
+        f"400 Bad Request: {exc.errors()}",
         # 打印堆栈
         exc_info=True
     )

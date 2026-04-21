@@ -71,3 +71,21 @@ class VectorStore:
             }
             for i in range(len(results["ids"]))
         ]
+    
+    # 更新知识项
+    def update(self, item: KnowledgeItem) -> None:
+        # 先删除旧的项
+        self.collection.delete(ids=[item.id])
+        # 再添加新的项
+        combined_text = f"问题: {item.question}\n答案: {item.answer}"
+        self.collection.add(
+            documents=[combined_text],
+            metadatas=[
+                {
+                    "question": item.question,
+                    "answer": item.answer,
+                    "category": item.category
+                }
+            ],
+            ids=[item.id]
+        )

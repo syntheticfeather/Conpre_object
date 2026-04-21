@@ -20,7 +20,7 @@ class ResponseModel(BaseModel, Generic[T]):
         # 这里可以配置 json_encoders 等
 
 class ChatRequest(BaseModel):
-    message: str
+    message: str = Field(..., min_length=1, max_length=1000, description="用户消息")
     session_id: Optional[str] = None
 
 class ChatResponse(BaseModel):
@@ -46,3 +46,8 @@ class KnowledgeItemResponse(BaseModel, Generic[T]):
     @field_serializer('created_at', 'updated_at')
     def serialize_datetime(self, value: datetime):
         return value.strftime("%Y-%m-%d %H:%M:%S")
+
+class KnowledgeItemUpdate(BaseModel):
+    question: Optional[str] = None
+    answer: Optional[str] = None
+    category: Optional[str] = None

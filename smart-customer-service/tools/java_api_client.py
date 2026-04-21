@@ -8,8 +8,8 @@ class JavaApiClient:
     def __init__(self, base_url: Optional[str] = None):
         self.base_url = base_url or os.getenv("JAVA_API_BASE_URL", "http://localhost:8080/api")
 
-    async def get_application_status(self, token: str) -> Dict[str, Any]:
-        print(f"实际传递的 token: {token}")  # 添加这行来验证
+    async def get_application_status(self, application_id: int, token: str) -> Dict[str, Any]:
+        print(f"实际传递的 token: {token}, application_id: {application_id}")
         headers = {}
         if token:
             headers["Authorization"] = f"Bearer {token}"
@@ -17,18 +17,18 @@ class JavaApiClient:
         try:
             async with httpx.AsyncClient() as client:
                 response = await client.get(
-                    f"{self.base_url}/loan-applications/my",
+                    f"{self.base_url}/loan-applications/my/{application_id}",
                     headers=headers
                 )
                 response.raise_for_status()
                 data = response.json()
-                applications = data.get("data", [])
-                if applications:
-                    latest_application = applications[0]
-                    return {
-                        "status": latest_application.get("status", "未知")
-                    }
-                return {"status": "无申请记录"}
+                application = data.get("data", {})
+                return {
+                    "status": application.get("status", "未知"),
+                    "amount": application.get("amount", 0),
+                    "term": application.get("term", 0),
+                    "purpose": application.get("purpose", "")
+                }
         except Exception as e:
             print(f"API调用失败: {str(e)}")
             return {"status": "查询失败", "error": str(e)}
