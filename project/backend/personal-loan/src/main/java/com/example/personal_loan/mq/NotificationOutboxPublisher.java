@@ -12,6 +12,8 @@ import com.example.personal_loan.entity.Notification;
 import com.example.personal_loan.entity.OutboxMessage;
 import com.example.personal_loan.entity.User;
 import com.example.personal_loan.enums.ApplicationStatus;
+import com.example.personal_loan.enums.BusinessType;
+import com.example.personal_loan.factory.OutboxMessageFactory;
 import com.example.personal_loan.mapper.ApplicationMapper;
 import com.example.personal_loan.mapper.OutboxMapper;
 import com.example.personal_loan.mapper.UserMapper;
@@ -23,6 +25,9 @@ public class NotificationOutboxPublisher {
 
     @Autowired
     private OutboxMapper outboxMapper;
+
+    @Autowired
+    private OutboxMessageFactory outboxMessageFactory;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -54,22 +59,10 @@ public class NotificationOutboxPublisher {
         );
         
         // 写 outbox 消息
-        String messageId = "notif_" + businessType.toLowerCase() + "_" + businessId + "_" + System.currentTimeMillis();
-        OutboxMessage outbox = new OutboxMessage();
-        outbox.setMessageId(messageId);
-        outbox.setBusinessType("NOTIFICATION");
-        outbox.setBusinessId(businessId);
-        outbox.setTopic(RabbitMQConfig.NOTIFICATION_ROUTING_KEY);
-        try {
-            outbox.setPayload(objectMapper.writeValueAsString(notification));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-        outbox.setStatus("PENDING");
-        outbox.setCreatedAt(LocalDateTime.now());
+        OutboxMessage outbox = outboxMessageFactory.create(BusinessType.NOTIFICATION, notification, businessId);
         outboxMapper.insert(outbox);
     }
-    
+
     /**
      * 发布管理员通知
      * @param businessId 业务ID
@@ -89,24 +82,9 @@ public class NotificationOutboxPublisher {
             LocalDateTime.now(),
             null
         );
-        
+
         // 写 outbox 消息
-        String messageId = "notif_admin_" + businessType.toLowerCase() + "_" + businessId + "_" + System.currentTimeMillis();
-        
-        OutboxMessage outbox = new OutboxMessage();
-        outbox.setMessageId(messageId);
-        outbox.setBusinessType("NOTIFICATION");
-        outbox.setBusinessId(businessId);
-        outbox.setTopic(RabbitMQConfig.NOTIFICATION_ROUTING_KEY);
-        
-        try {
-            outbox.setPayload(objectMapper.writeValueAsString(notification));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-        
-        outbox.setStatus("PENDING");
-        outbox.setCreatedAt(LocalDateTime.now());
+        OutboxMessage outbox = outboxMessageFactory.create(BusinessType.NOTIFICATION, notification, businessId);
         outboxMapper.insert(outbox);
     }
 

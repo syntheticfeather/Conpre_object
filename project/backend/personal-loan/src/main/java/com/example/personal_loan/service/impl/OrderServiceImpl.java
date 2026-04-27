@@ -21,8 +21,10 @@ import com.example.personal_loan.entity.Order;
 import com.example.personal_loan.entity.OutboxMessage;
 import com.example.personal_loan.entity.PostponeRequest;
 import com.example.personal_loan.entity.RepaymentSchedule;
+import com.example.personal_loan.enums.BusinessType;
 import com.example.personal_loan.enums.OrderStatus;
 import com.example.personal_loan.exception.BusinessException;
+import com.example.personal_loan.factory.OutboxMessageFactory;
 import com.example.personal_loan.mapper.LoanProductMapper;
 import com.example.personal_loan.mapper.OrderMapper;
 import com.example.personal_loan.mapper.OutboxMapper;
@@ -47,6 +49,9 @@ public class OrderServiceImpl implements OrderService{
 
     @Autowired
     private OutboxMapper outboxMapper;
+
+    @Autowired
+    private OutboxMessageFactory outboxMessageFactory;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -114,25 +119,15 @@ public class OrderServiceImpl implements OrderService{
                     currentSchedule.getTotalAmount(),
                     LocalDateTime.now()
             );
-            
-            OutboxMessage outboxMessage = new OutboxMessage(
-                    null,
-                    "payment_requested_" + order.getId() + "_" + System.currentTimeMillis(),
-                    "PAYMENT_REQUESTED",
-                    orderId,
-                    RabbitMQConfig.PAYMENT_REQUESTED_ROUTING_KEY,
-                    objectMapper.writeValueAsString(event),
-                    "PENDING",
-                    LocalDateTime.now(),
-                    null
-            );
+
+            OutboxMessage outboxMessage = outboxMessageFactory.create(BusinessType.PAYMENT_REQUESTED, event, orderId);
             outboxMapper.insert(outboxMessage);
 
         } catch (Exception e) {
             log.error("写入outbox表失败", e);
             throw new BusinessException("消息投递失败");
         }
-        
+
         log.info("订单 {} 第 {} 期还款消息已投递", orderId, order.getCurrentTerm() + 1);
     }
 
@@ -198,17 +193,7 @@ public class OrderServiceImpl implements OrderService{
                     totalEarlyAmount,
                     LocalDateTime.now()
             );
-            OutboxMessage outboxMessage = new OutboxMessage(
-                    null,
-                    "payment_requested_" + orderId + "_" + System.currentTimeMillis(),
-                    "PAYMENT_REQUESTED",
-                    orderId,
-                    RabbitMQConfig.PAYMENT_REQUESTED_ROUTING_KEY,
-                    objectMapper.writeValueAsString(event),
-                    "PENDING",
-                    LocalDateTime.now(),
-                    null
-            );
+            OutboxMessage outboxMessage = outboxMessageFactory.create(BusinessType.PAYMENT_REQUESTED, event, orderId);
             outboxMapper.insert(outboxMessage);
         } catch (Exception e) {
             log.error("写入outbox表失败", e);

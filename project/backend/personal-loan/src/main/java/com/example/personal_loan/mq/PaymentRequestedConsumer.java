@@ -14,6 +14,8 @@ import com.example.personal_loan.config.RabbitMQConfig;
 import com.example.personal_loan.dto.PaymentRequestedEvent;
 import com.example.personal_loan.dto.PaymentSuccessEvent;
 import com.example.personal_loan.entity.OutboxMessage;
+import com.example.personal_loan.enums.BusinessType;
+import com.example.personal_loan.factory.OutboxMessageFactory;
 import com.example.personal_loan.mapper.OutboxMapper;
 import com.example.personal_loan.mapper.ProcessMessageMapper;
 import com.example.personal_loan.service.PayService;
@@ -33,6 +35,7 @@ public class PaymentRequestedConsumer {
     private final RabbitUtil rabbitUtil;
     private final PayService payService;
     private final OutboxMapper outboxMapper;
+    private final OutboxMessageFactory outboxMessageFactory;
     private static final int MAX_RETRIES = 3;
 
     @RabbitListener(queues = RabbitMQConfig.PAYMENT_REQUESTED_QUEUE)
@@ -60,14 +63,7 @@ public class PaymentRequestedConsumer {
             PaymentRequestedEvent event = objectMapper.readValue(payload, PaymentRequestedEvent.class);
             PaymentSuccessEvent successEvent = payService.pay(event);
 
-            OutboxMessage outbox = new OutboxMessage();
-            outbox.setMessageId("payment_success_" + event.getOrderId() + "_" + System.currentTimeMillis());
-            outbox.setBusinessType("PAYMENT_SUCCESS");
-            outbox.setBusinessId(event.getOrderId());
-            outbox.setTopic(RabbitMQConfig.PAYMENT_SUCCESS_ROUTING_KEY);
-            outbox.setPayload(objectMapper.writeValueAsString(successEvent));
-            outbox.setStatus("PENDING");
-            outbox.setCreatedAt(LocalDateTime.now());
+            OutboxMessage outbox = outboxMessageFactory.create(BusinessType.PAYMENT_SUCCESS, successEvent, event.getOrderId());
             outboxMapper.insert(outbox);
 
             processedMessageMapper.insertMessage(messageId, "PAYMENT_REQUESTED", event.getOrderId());

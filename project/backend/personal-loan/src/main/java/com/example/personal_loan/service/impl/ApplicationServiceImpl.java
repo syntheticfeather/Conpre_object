@@ -17,7 +17,9 @@ import com.example.personal_loan.entity.LoanProduct;
 import com.example.personal_loan.entity.OutboxMessage;
 import com.example.personal_loan.entity.UserCert;
 import com.example.personal_loan.enums.ApplicationStatus;
+import com.example.personal_loan.enums.BusinessType;
 import com.example.personal_loan.exception.BusinessException;
+import com.example.personal_loan.factory.OutboxMessageFactory;
 import com.example.personal_loan.mapper.ApplicationMapper;
 import com.example.personal_loan.mapper.LoanOptionMapper;
 import com.example.personal_loan.mapper.LoanProductMapper;
@@ -63,6 +65,9 @@ public class ApplicationServiceImpl implements ApplicationService{
 
     @Autowired
     private OutboxMapper outboxMapper;
+
+    @Autowired
+    private OutboxMessageFactory outboxMessageFactory;
 
     @Autowired
     private ObjectMapper mapper;
@@ -118,19 +123,7 @@ public class ApplicationServiceImpl implements ApplicationService{
         applicationMapper.insert(application);
         log.info("插入贷款申请记录");
         // 构建 outbox 消息
-        OutboxMessage outbox = new OutboxMessage();
-        outbox.setMessageId("loan_app_" + application.getId() + "_" + System.currentTimeMillis());
-        outbox.setBusinessType("LOAN_APPLICATION");
-        outbox.setBusinessId(application.getId());
-        outbox.setTopic(RabbitMQConfig.LOAN_APPLICATION_ROUTING_KEY);
-        try {
-            outbox.setPayload(mapper.writeValueAsString(application));
-        } catch (JsonProcessingException e) {
-            log.error("序列化 loan application 失败");
-            throw new RuntimeException(e);
-        }
-        outbox.setStatus("PENDING");
-        outbox.setCreatedAt(LocalDateTime.now());
+        OutboxMessage outbox = outboxMessageFactory.create(BusinessType.LOAN_APPLICATION, application, application.getId());
         log.info("插入 outbox 消息");
         outboxMapper.insert(outbox); // 同一事务中插入
 
