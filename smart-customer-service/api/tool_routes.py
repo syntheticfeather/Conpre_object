@@ -9,17 +9,19 @@ from fastapi import APIRouter, HTTPException
 from api.utils import ResultUtil
 from tools.tool_manager import tool_manager
 
-router = APIRouter(prefix="/tools", tags=["tools"])
+router = APIRouter(prefix="/api/tools", tags=["tools"])
 
 # 获取所有工具列表
 @router.get("/")
 def list_tools():
+    """ 获取所有工具列表 """
     tools = tool_manager.get_all_registered_tools()
     return ResultUtil.success(data=tools, message="获取工具列表成功")
 
 # 按名称搜索工具
 @router.get("/search")
 def search_tool(name: str):
+    """ 按名称搜索工具 """
     tool = tool_manager.get_tool(name)
     if not tool:
         return ResultUtil.error(code=404, message="工具不存在")
@@ -33,6 +35,7 @@ def search_tool(name: str):
 # 设置工具状态
 @router.put("/{tool_name}")
 def set_tool_status(tool_name: str, enabled: bool):
+    """ 设置工具状态（启用/禁用） """
     success = tool_manager.set_tool_status(tool_name, enabled)
     if not success:
         return ResultUtil.error(code=404, message="工具不存在")

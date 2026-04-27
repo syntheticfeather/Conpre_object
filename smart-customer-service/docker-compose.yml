@@ -1,0 +1,62 @@
+# smart-customer-service/docker-compose.yml
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: mongodb-smart-cs
+    restart: unless-stopped
+    ports:
+      - "27017:27017"  # 暴露端口，允许本地连接
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+      MONGO_INITDB_DATABASE: smart_customer_service
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - messaging
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+
+  smart-cs-app:
+    build: .
+    container_name: smart-cs-app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      # 容器内使用服务名连接
+      - MONGODB_URL=mongodb://admin:admin123@mongodb:27017/smart_customer_service?authSource=admin
+      - CHROMADB_MODE=local
+      - CHROMADB_PERSIST_DIRECTORY=/app/chromadb_data
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=INFO
+      # 如果需要连接 personal-loan 服务
+      - JAVA_API_BASE_URL=http://personal-loan-app:8080
+    volumes:
+      # 挂载日志和上传目录
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+      # 开发时可挂载代码目录实现热重载（可选）
+      - .:/app
+    depends_on:
+      - mongodb
+    networks:
+      - messaging
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  mongodb_data:
+    driver: local
+
+networks:
+  messaging:
+    external: true
+    name: personal-loan_messaging  # 根据实际网络名调整

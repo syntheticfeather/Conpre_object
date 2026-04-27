@@ -13,17 +13,19 @@ from knowledge.models import KnowledgeItem
 from api.utils import ResultUtil
 
 
-router = APIRouter(prefix="/knowledge", tags=["knowledge"])
+router = APIRouter(prefix="/api/knowledge", tags=["knowledge"])
 vector_store = VectorStore()
 
 # 获取所有知识库项
 @router.get("/")
 def list_knowledge():
+    """ 获取所有知识库项 """
     return ResultUtil.success(data=vector_store.get_all(), message="获取成功")
 
 # 创建知识库项
 @router.post("/")
 def create_knowledge(item: KnowledgeItemCreate):
+    """ 创建知识库项 """
     # 1. 创建业务模型
     kb_item = KnowledgeItem(
         question=item.question,
@@ -42,12 +44,14 @@ def create_knowledge(item: KnowledgeItemCreate):
 # 删除知识库项
 @router.delete("/{item_id}")
 def delete_knowledge(item_id: str):
+    """ 删除知识库项 """
     vector_store.delete(item_id)
     return ResultUtil.success(message="删除成功")
 
 # 修改知识库项
 @router.put("/{item_id}")
 def update_knowledge(item_id: str, item_update: KnowledgeItemUpdate):
+    """ 修改知识库项 """
     # 获取所有知识项
     all_items = vector_store.get_all()
     # 查找要更新的项

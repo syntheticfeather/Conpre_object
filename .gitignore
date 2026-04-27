@@ -29,6 +29,7 @@ uploads/
 
 # 数据库
 chroma_db/
+chromadb_data/
 test_chroma_db/
 
 __pycache__/

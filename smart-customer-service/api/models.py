@@ -51,3 +51,27 @@ class KnowledgeItemUpdate(BaseModel):
     question: Optional[str] = None
     answer: Optional[str] = None
     category: Optional[str] = None
+
+class PromptContent(BaseModel):
+    role_definition: str = Field(..., min_length=1, description="AI 的身份定义")
+    business_rules: str = Field(..., min_length=1, description="业务逻辑约束")
+    tone_style: str = Field(..., min_length=1, description="回复的语气风格")
+
+class PromptUpdate(BaseModel):
+    name: Optional[str] = None
+    content: Optional[PromptContent] = None
+    is_active: Optional[bool] = None
+
+class PromptResponse(BaseModel):
+    prompt_id: str
+    name: str
+    category: str
+    is_active: bool
+    version: str
+    content: PromptContent
+    created_at: datetime
+    updated_at: datetime
+
+    @field_serializer('created_at', 'updated_at')
+    def serialize_datetime(self, value: datetime):
+        return value.strftime("%Y-%m-%d %H:%M:%S")

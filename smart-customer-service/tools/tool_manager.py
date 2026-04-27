@@ -33,13 +33,13 @@ class ToolManager:
         """根据名称获取工具"""
         return self.tools.get(name)
     
-    def get_tool_descriptions(self) -> str:
-        """获取启用工具的描述，用于注入到提示词中"""
-        descriptions = []
-        for tool in self.tools.values():
-            if self.enabled_tools.get(tool.name, True):
-                descriptions.append(f"- {tool.name}: {tool.description}")
-        return "\n".join(descriptions)
+    # def get_tool_descriptions(self) -> str:
+    #     """获取启用工具的描述，用于注入到提示词中"""
+    #     descriptions = []
+    #     for tool in self.tools.values():
+    #         if self.enabled_tools.get(tool.name, True):
+    #             descriptions.append(f"- {tool.name}: {tool.description}")
+    #     return "\n".join(descriptions)
     
     def set_tool_status(self, name: str, enabled: bool) -> bool:
         """设置工具状态"""

@@ -1,0 +1,52 @@
+# smart-customer-service/.dockerignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.env
+.venv
+*.egg-info/
+dist/
+build/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Database
+*.db
+*.sqlite3
+
+# Uploads & Logs
+uploads/*
+logs/*
+!uploads/.gitkeep
+!logs/.gitkeep
+
+# Git
+.git/
+.gitignore
+
+# Docker
+.dockerignore
+
+# Tests
+test/
+*.test.py
+pytest_cache/
+.coverage
+
+# Documentation
+docs/
+
+# OS
+.DS_Store
+Thumbs.db

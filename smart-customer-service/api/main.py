@@ -16,9 +16,11 @@ import logging
 import asyncio
 import json
 from utils.context import set_token
+from utils.token_utils import extract_user_id_from_token
 
 from api.knowledge_routes import router as knowledge_router
 from api.tool_routes import router as tool_router
+from api.prompt_routes import router as prompt_router
 from agent.chat_agent import get_chat_agent
 
 # 定义 Bearer Token 认证
@@ -38,9 +40,7 @@ app.add_middleware(
 # 挂载路由
 app.include_router(knowledge_router, dependencies=[Depends(security)])
 app.include_router(tool_router, dependencies=[Depends(security)])
-
-# 会话存储（生产环境用 Redis）
-sessions: Dict[str, list] = {}
+app.include_router(prompt_router, dependencies=[Depends(security)])
 
 # --- 配置日志系统 ---
 logging.basicConfig(
@@ -61,21 +61,18 @@ async def chat_stream(body: ChatRequest, credentials: HTTPAuthorizationCredentia
     # 设置 token 到 contextvars
     set_token(token)
 
+    # 从 token 中解析 user_id
+    user_id = extract_user_id_from_token(token)
+
     # 从请求体中获取 message 和 session_id
     message = body.message
     session_id = body.session_id or str(uuid.uuid4())
-
-    # 初始化会话历史
-    if session_id not in sessions:
-        sessions[session_id] = []
 
     # 获取 ChatAgent 单例实例
     agent = get_chat_agent()
 
     # 异步生成事件流
     async def event_generator():
-        # 获取会话历史
-        chat_history = sessions[session_id]
         full_response = ""
         # 第一个数据块：发送session_id
         yield {"event": "session_init", "data": json.dumps({"session_id": session_id})}
@@ -85,7 +82,7 @@ async def chat_stream(body: ChatRequest, credentials: HTTPAuthorizationCredentia
             async with asyncio.timeout(60):
             
                 # 流式接收与分发
-                async for chunk in agent.chat(message, chat_history, token):
+                async for chunk in agent.chat(message, session_id, user_id, token):
                     # 尝试解析 JSON 格式的事件
                     try:
                         event_data = json.loads(chunk)
@@ -132,11 +129,6 @@ async def chat_stream(body: ChatRequest, credentials: HTTPAuthorizationCredentia
             # 处理其他错误
             logger.error(f"发生错误：{str(e)}")
             yield {"event": "error", "data": f"发生错误：{str(e)}"}
-        finally:
-            # 无论成功失败都保存历史
-            if full_response:
-                sessions[session_id].append({"role": "user", "content": message})
-                sessions[session_id].append({"role": "assistant", "content": full_response})
 
     return EventSourceResponse(event_generator())
 

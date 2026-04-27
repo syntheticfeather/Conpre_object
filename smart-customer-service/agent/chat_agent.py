@@ -7,14 +7,12 @@ from typing import List, Dict, Any, AsyncGenerator
 from dotenv import load_dotenv
 import os
 import json
-from tenacity import retry, stop_after_attempt, wait_exponential
 from datetime import datetime
 
 from tools.tool_manager import tool_manager
 from utils.context import set_token
-from agent.prompts import SYSTEM_PROMPT
-from agent.models import ToolCallEvent, ToolResultEvent, ErrorEvent
-
+from utils.mongodb_client import mongodb_client
+from agent.prompts import get_system_prompt
 
 # 加载环境变量
 load_dotenv()
@@ -47,7 +45,9 @@ class ChatAgent:
 
         # 获取当前时间
         current_date = datetime.now().strftime("%Y年%m月%d日 %H:%M:%S")
-        filled_system_prompt = SYSTEM_PROMPT.format(current_date=current_date)
+        # 从数据库获取系统提示词
+        system_prompt_template = get_system_prompt()
+        filled_system_prompt = system_prompt_template.format(current_date=current_date)
 
         # 定义系统提示
         prompt = ChatPromptTemplate.from_messages([
@@ -64,30 +64,29 @@ class ChatAgent:
         agent = create_tool_calling_agent(self.llm, tools, prompt)
         self.agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, return_intermediate_steps=True)
 
-    async def chat(self, message: str, chat_history: List[Dict] = None, token: str = None) -> AsyncGenerator[str, None]:
+    async def chat(self, message: str, session_id: str, user_id: str = None, token: str = None) -> AsyncGenerator[str, None]:
         try:
             # 如果提供了 token，设置到 contextvars
             if token:
                 set_token(token)
 
             processed_history = []
-            if chat_history:
-                for msg in chat_history:
+            
+            if session_id:
+                history_messages = mongodb_client.get_session_history(session_id, limit=10)
+                for msg in history_messages:
                     if msg["role"] == "user":
                         processed_history.append(HumanMessage(content=msg["content"]))
                     elif msg["role"] == "assistant":
                         processed_history.append(AIMessage(content=msg["content"]))
 
             input_data = {
-                "input": message,               # 对应用户输入
-                "chat_history": processed_history # 对应 Prompt 里的 MessagesPlaceholder("chat_history")
-                # 注意：agent_scratchpad 通常由 AgentExecutor 自动注入，
-                # 但如果你手动构建 Chain，有时也需要手动留空或处理。
-                # 在使用 create_tool_calling_agent 时，Executor 会自动处理 scratchpad
+                "input": message,
+                "chat_history": processed_history
             }
 
             current_tool_name = ""
-            # 执行 Agent，直接使用用户问题作为输入
+            full_response = ""
             async for event in self.agent_executor.astream_events(
                 input_data, 
                 version="v1"
@@ -138,11 +137,6 @@ class ChatAgent:
                     }, ensure_ascii=False)
                     current_tool_name = "" 
                 
-                # elif event_type == "chain_stream":
-                #     # 提取"生成的文字片段"
-                #     content = event["data"]["chunk"].content
-                #     yield content
-                
                 elif event_type == "on_chat_model_stream":
                     # 处理模型直接输出的流式内容
                     chunk = event["data"]["chunk"]
@@ -153,14 +147,21 @@ class ChatAgent:
                     elif isinstance(chunk, str) and chunk.strip():
                         content = chunk
                     if content:
+                        full_response += content
                         yield json.dumps({
                             "type": "message",
                             "content": content
                         }, ensure_ascii=False)
 
-                elif event_type == "on_chain_end": # 或者 "on_agent_finish"
-                    # 发送一个结束事件，告诉前端对话结束了
+                elif event_type == "on_chain_end":
                     yield json.dumps({"event": "done", "data": "final"}, ensure_ascii=False)
+
+            if full_response and session_id:
+                new_messages = [
+                    {"role": "user", "content": message},
+                    {"role": "assistant", "content": full_response}
+                ]
+                mongodb_client.save_session_history(session_id, user_id, new_messages)
 
         except Exception as e:
             # 处理网络连接错误
