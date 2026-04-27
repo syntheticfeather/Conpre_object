@@ -1,6 +1,5 @@
 package com.example.personal_loan.mapper;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Insert;
@@ -35,27 +34,6 @@ public interface OrderMapper {
         "FROM orders WHERE id = #{id}"
     )
     Order selectById(Long id);
-    
-    // 根据订单ID和用户ID查询订单
-    @Select(
-        "SELECT " +
-        "  id, " +
-        "  user_id, " +
-        "  product_id, " +
-        "  status, " +
-        "  repaid_amount, " +
-        "  loan_amount, " +
-        "  interest_rate, " +
-        "  repaid_type, " +
-        "  loan_period, " +
-        "  term, " +
-        "  current_term, " +
-        "  contract, " +
-        "  overdue_days, " +
-        "  start_time " +
-        "FROM orders WHERE id = #{orderId} AND user_id = #{userId}"
-    )
-    Order selectByIdAndUserId(@Param("orderId") Long orderId, @Param("userId") Long userId);
     
     // 查询用户的所有订单
     @Select(
@@ -125,36 +103,6 @@ public interface OrderMapper {
         "WHERE id = #{id}"
     )
     int update(Order order);
-    
-    // 还款更新
-    @Update(
-        "UPDATE orders " +
-        "SET " +
-        "  repaid_amount = #{repaidAmount}, " +
-        "  outstanding_amount = #{outstandingAmount}, " +
-        "  current_term = current_term + 1 " +
-        "WHERE id = #{id}"
-    )
-    int updateForRepayment(@Param("id") Long orderId, 
-                          @Param("repaidAmount") BigDecimal repaidAmount, 
-                          @Param("outstandingAmount") BigDecimal outstandingAmount,
-                          Integer currentTerm);
-    
-    // 延期更新（加1期）
-    @Update(
-        "UPDATE orders " +
-        "SET loan_period = loan_period + 1 " +
-        "WHERE id = #{orderId}"
-    )
-    int updateForPostpone(Long orderId);
-    
-    // 更新订单状态
-    @Update(
-        "UPDATE orders " +
-        "SET status = #{status} " +
-        "WHERE id = #{orderId}"
-    )
-    int updateStatus(@Param("orderId") Long orderId, @Param("status") String status);
 
     // 获取订单列表
     List<UserOrderListResponse> selectOrderListByUserId(@Param("userId") Long userId);
@@ -166,4 +114,8 @@ public interface OrderMapper {
     // 批量检查产品是否被订单引用
     @Select("SELECT COUNT(*) FROM orders WHERE product_id IN <foreach collection='productIds' item='id' open='(' separator=',' close=')'>#{id}</foreach>")
     int countByProductIds(@Param("productIds") List<Long> productIds);
+    
+    // 查询未完成的订单
+    @Select("SELECT * FROM orders WHERE status != '已完成'")
+    List<Order> selectUncompletedOrders();
 }

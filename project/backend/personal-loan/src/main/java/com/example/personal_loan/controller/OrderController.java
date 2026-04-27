@@ -13,8 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.personal_loan.dto.ApiResult;
 import com.example.personal_loan.dto.UserGetOrderResponse;
 import com.example.personal_loan.dto.UserOrderListResponse;
+import com.example.personal_loan.entity.RepaymentSchedule;
 import com.example.personal_loan.service.OrderService;
-import com.example.personal_loan.utils.RepaymentPlanItem;
+import com.example.personal_loan.service.RepaymentScheduleService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -31,7 +32,8 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    // ========== 用户端接口 ==========
+    @Autowired
+    private RepaymentScheduleService repaymentScheduleService;
 
     @GetMapping(value = "/{orderId}", produces = "application/json")
     @Operation(summary = "获取订单详情", description = "用户获取指定贷款订单的详细信息")
@@ -61,23 +63,46 @@ public class OrderController {
     public ResponseEntity<ApiResult<String>> repayOrder(
             HttpServletRequest request,
             @Parameter(description = "订单ID") @PathVariable Long orderId) {
-    
-        Long currentUserId = (Long) request.getAttribute("userId"); 
+
+        Long currentUserId = (Long) request.getAttribute("userId");
         orderService.repay(orderId);
         log.info("/api/orders/{}/repay success called for user {} to repay order {}", orderId, currentUserId, orderId);
         return ResponseEntity.ok(ApiResult.success("已发起还款"));
     }
-    
+
     @GetMapping(value = "/{orderId}/repayment-plan", produces = "application/json")
     @Operation(summary = "获取还款计划", description = "用户获取指定贷款订单的还款计划")
-    public ResponseEntity<ApiResult<List<RepaymentPlanItem>>> getRepaymentPlan(
+    public ResponseEntity<ApiResult<List<RepaymentSchedule>>> getRepaymentPlan(
             HttpServletRequest request,
             @Parameter(description = "订单ID") @PathVariable Long orderId) {
-    
+
         Long userId = (Long) request.getAttribute("userId");
         log.info("/api/orders/{}/repayment-plan success called for user {} to get repayment plan for order {}", orderId, userId, orderId);
-        List<RepaymentPlanItem> plan = orderService.getRepaymentPlan(userId, orderId);
+        List<RepaymentSchedule> plan = repaymentScheduleService.getRepaymentSchedule(orderId);
         return ResponseEntity.ok(ApiResult.success(plan));
     }
 
+    @PostMapping(value = "/{orderId}/postpone", produces = "application/json")
+    @Operation(summary = "申请延期还款", description = "用户对指定贷款订单申请延期还款")
+    public ResponseEntity<ApiResult<String>> postponeOrder(
+            HttpServletRequest request,
+            @Parameter(description = "订单ID") @PathVariable Long orderId) {
+
+        Long userId = (Long) request.getAttribute("userId");
+        orderService.postpone(orderId);
+        log.info("/api/orders/{}/postpone success called for user {} to postpone order {}", orderId, userId, orderId);
+        return ResponseEntity.ok(ApiResult.success("已发起延期还款申请"));
+    }
+
+    @PostMapping(value = "/{orderId}/early-repay", produces = "application/json")
+    @Operation(summary = "提前还款", description = "用户对指定贷款订单进行提前还款")
+    public ResponseEntity<ApiResult<String>> earlyRepayOrder(
+            HttpServletRequest request,
+            @Parameter(description = "订单ID") @PathVariable Long orderId) {
+
+        Long userId = (Long) request.getAttribute("userId");
+        orderService.earlyRepay(orderId);
+        log.info("/api/orders/{}/early-repay success called for user {} to early repay order {}", orderId, userId, orderId);
+        return ResponseEntity.ok(ApiResult.success("已发起提前还款"));
+    }
 }

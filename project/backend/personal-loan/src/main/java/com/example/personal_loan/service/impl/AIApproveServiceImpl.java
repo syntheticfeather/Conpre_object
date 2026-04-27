@@ -18,6 +18,7 @@ import com.example.personal_loan.mapper.OrderMapper;
 import com.example.personal_loan.mq.NotificationOutboxPublisher;
 import com.example.personal_loan.service.AIApproveService;
 import com.example.personal_loan.service.AuthService;
+import com.example.personal_loan.service.RepaymentScheduleService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,6 +37,9 @@ public class AIApproveServiceImpl implements AIApproveService {
 
     @Autowired
     private NotificationOutboxPublisher notificationOutboxPublisher;
+    
+    @Autowired
+    private RepaymentScheduleService repaymentScheduleService;
 
     @Override
     @Transactional
@@ -66,6 +70,9 @@ public class AIApproveServiceImpl implements AIApproveService {
                 LocalDateTime.now()
             ); 
             orderMapper.insert(order); // 插入订单表
+            
+            // 生成还款计划
+            repaymentScheduleService.generateRepaymentSchedule(order.getId());
 
             // 写outbox消息发送通知
             notificationOutboxPublisher.enqueueNotification(application.getUserId(), application.getId(), "LOAN_APPLICATION_STATUS");

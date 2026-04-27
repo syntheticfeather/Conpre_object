@@ -2,10 +2,13 @@ package com.example.personal_loan.utils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.example.personal_loan.entity.Order;
+import com.example.personal_loan.entity.RepaymentSchedule;
 import com.example.personal_loan.enums.OrderStatus;
 import com.example.personal_loan.enums.RepaidType;
 
@@ -61,11 +64,12 @@ public final class CalculateUtil {
      * @param repaidType 还款方式
      * @return 每期还款明细列表（含本金、利息、总金额）
      */
-    public static List<RepaymentPlanItem> calculateRepaymentPlan(
+    public static List<RepaymentSchedule> calculateRepaymentPlan(
             BigDecimal loanAmount,
             BigDecimal interestRate,
             Integer term,
-            RepaidType repaidType) {
+            RepaidType repaidType,
+            LocalDate startDate) {
 
         // 1. 参数校验
         if (loanAmount == null || interestRate == null || term == null || repaidType == null) {
@@ -79,27 +83,26 @@ public final class CalculateUtil {
         }
         // 2. 利率处理：如果是0利率，直接简化处理
         if (interestRate.compareTo(ZERO) == 0) {
-             // 0利率时，所有方式本质上都是等额本金（只还本金）
-             return calculateEqualPrincipal(loanAmount, ZERO, term);
+             return calculateEqualPrincipal(loanAmount, ZERO, term, startDate);
         }
 
         // 3. 将年利率转换为月利率 (保留高精度，不在这里四舍五入到2位)
         BigDecimal monthlyRate = interestRate.divide(BigDecimal.valueOf(12), RATE_SCALE, RoundingMode.HALF_UP);
 
-        List<RepaymentPlanItem> plan = new ArrayList<>();
+        List<RepaymentSchedule> plan = new ArrayList<>();
 
         switch (repaidType) {
         case 等额本息:
-            plan.addAll(calculateEqualPrincipalInterest(loanAmount, monthlyRate, term));
+            plan.addAll(calculateEqualPrincipalInterest(loanAmount, monthlyRate, term, startDate));
             break;
         case 等额本金:
-            plan.addAll(calculateEqualPrincipal(loanAmount, monthlyRate, term));
+            plan.addAll(calculateEqualPrincipal(loanAmount, monthlyRate, term, startDate));
             break;
         case 先息后本:
-            plan.addAll(calculateInterestFirst(loanAmount, monthlyRate, term));
+            plan.addAll(calculateInterestFirst(loanAmount, monthlyRate, term, startDate));
             break;
         case 一次性还本付息:
-            plan.addAll(calculateOneTimeRepay(loanAmount, interestRate, term));
+            plan.addAll(calculateOneTimeRepay(loanAmount, interestRate, term, startDate));
             break;
         default:
             throw new IllegalArgumentException("不支持的还款方式：" + repaidType);
@@ -117,31 +120,20 @@ public final class CalculateUtil {
         if (order.getCurrentTerm() >= order.getTerm()) {
             return BigDecimal.ZERO;
         }
-        // 获取还款计划
-        List<RepaymentPlanItem> plan = CalculateUtil.calculateRepaymentPlan(
+        List<RepaymentSchedule> plan = calculateRepaymentPlan(
             order.getLoanAmount(),
             order.getInterestRate(),
             order.getTerm(),
-            order.getRepaidType()
+            order.getRepaidType(),
+            order.getStartTime().toLocalDate()
         );
-        // 返回下一期应还金额
-        return plan.get(order.getCurrentTerm()).getTotal();
+        return plan.get(order.getCurrentTerm()).getTotalAmount();
     }
 
-    // ==================== 具体还款方式实现 ====================
+    private static List<RepaymentSchedule> calculateEqualPrincipalInterest(
+        BigDecimal loanAmount, BigDecimal monthlyRate, Integer term, LocalDate startDate) {
 
-    /**
-     * 计算当期等额本息还款计划
-     *
-     * @param loanAmount 贷款本金
-     * @param monthlyRate 月利率
-     * @param term 贷款期数
-     * @return 每期还款明细列表（含本金、利息、总金额）
-     */
-    private static List<RepaymentPlanItem> calculateEqualPrincipalInterest(
-        BigDecimal loanAmount, BigDecimal monthlyRate, Integer term) {
-
-        List<RepaymentPlanItem> result = new ArrayList<>();
+        List<RepaymentSchedule> result = new ArrayList<>();
         BigDecimal remainingPrincipal = loanAmount;
 
         // 公式：每月还款额 = [贷款本金 × 月利率 × (1+月利率)^还款月数] ÷ [(1+月利率)^还款月数－1]
@@ -149,8 +141,8 @@ public final class CalculateUtil {
         BigDecimal monthlyPayment = loanAmount
                 .multiply(monthlyRate)
                 .multiply(powFactor)
-                .divide(powFactor.subtract(ONE), RATE_SCALE, RoundingMode.HALF_UP) // 计算月供时保留高精度
-                .setScale(MONEY_SCALE, RoundingMode.HALF_UP); // 最后再转为金额精度
+                .divide(powFactor.subtract(ONE), RATE_SCALE, RoundingMode.HALF_UP)
+                .setScale(MONEY_SCALE, RoundingMode.HALF_UP);
 
         // 开始循环生成每一期的数据
         // i 是当前期数
@@ -159,129 +151,160 @@ public final class CalculateUtil {
             BigDecimal interest = remainingPrincipal.multiply(monthlyRate)
                     .setScale(MONEY_SCALE, RoundingMode.HALF_UP);
 
-            // 2. 计算当期本金
             BigDecimal principal;
             if (i == term) {
-                // 【关键修正】最后一期本金 = 剩余所有本金，确保贷款能还清
                 principal = remainingPrincipal.setScale(MONEY_SCALE, RoundingMode.HALF_UP);
             } else {
                 principal = monthlyPayment.subtract(interest).setScale(MONEY_SCALE, RoundingMode.HALF_UP);
             }
 
-            // 3. 计算总额
             BigDecimal total = principal.add(interest).setScale(MONEY_SCALE, RoundingMode.HALF_UP);
-
-            // 4. 更新剩余本金
             remainingPrincipal = remainingPrincipal.subtract(principal);
+            BigDecimal remainingInterest = remainingPrincipal.multiply(monthlyRate)
+                    .multiply(BigDecimal.valueOf(term - i))
+                    .setScale(MONEY_SCALE, RoundingMode.HALF_UP);
 
-            result.add(new RepaymentPlanItem(i, principal, interest, total));
+            LocalDate dueDate = calculateDueDate(startDate, i);
+
+            RepaymentSchedule schedule = new RepaymentSchedule();
+            schedule.setTerm(i);
+            schedule.setPrincipal(principal);
+            schedule.setInterest(interest);
+            schedule.setTotalAmount(total);
+            schedule.setStatus("未还");
+            schedule.setRemainingPrincipal(remainingPrincipal);
+            schedule.setRemainingInterest(remainingInterest);
+            schedule.setDueDate(dueDate);
+            result.add(schedule);
         }
         return result;
     }
 
-    /**
-     * 计算等额本金还款计划
-     *
-     * @param loanAmount 贷款本金
-     * @param monthlyRate 月利率
-     * @param term 贷款期数
-     * @return 每期还款明细列表（含本金、利息、总金额）
-     */
-    private static List<RepaymentPlanItem> calculateEqualPrincipal(
-        BigDecimal loanAmount, BigDecimal monthlyRate, Integer term) {
+    private static List<RepaymentSchedule> calculateEqualPrincipal(
+        BigDecimal loanAmount, BigDecimal monthlyRate, Integer term, LocalDate startDate) {
 
-        // 每期应还本金 = 总本金 / 期数
         BigDecimal perPeriodPrincipal = loanAmount.divide(BigDecimal.valueOf(term), MONEY_SCALE, RoundingMode.HALF_UP);
         BigDecimal remainingPrincipal = loanAmount;
 
-        List<RepaymentPlanItem> result = new ArrayList<>();
+        List<RepaymentSchedule> result = new ArrayList<>();
         for (int i = 1; i <= term; i++) {
-            // 1. 计算当期利息
             BigDecimal interest = remainingPrincipal.multiply(monthlyRate).setScale(MONEY_SCALE, RoundingMode.HALF_UP);
-            // 2. 计算当期本金
             BigDecimal currentPrincipal;
             if (i == term) {
-                // 【关键修正】最后一期还完所有剩余本金
                 currentPrincipal = remainingPrincipal.setScale(MONEY_SCALE, RoundingMode.HALF_UP);
             } else {
                 currentPrincipal = perPeriodPrincipal.setScale(MONEY_SCALE, RoundingMode.HALF_UP);
             }
-            // 3. 计算总额
             BigDecimal total = currentPrincipal.add(interest).setScale(MONEY_SCALE, RoundingMode.HALF_UP);
-            // 4. 更新剩余本金
             remainingPrincipal = remainingPrincipal.subtract(currentPrincipal);
+            int remainingTerms = term - i;
+            BigDecimal remainingInterest = remainingPrincipal.multiply(monthlyRate)
+                    .multiply(BigDecimal.valueOf(remainingTerms + 1))
+                    .divide(BigDecimal.valueOf(2), MONEY_SCALE, RoundingMode.HALF_UP);
 
-            result.add(new RepaymentPlanItem(i, currentPrincipal, interest, total));
+            LocalDate dueDate = calculateDueDate(startDate, i);
+
+            RepaymentSchedule schedule = new RepaymentSchedule();
+            schedule.setTerm(i);
+            schedule.setPrincipal(currentPrincipal);
+            schedule.setInterest(interest);
+            schedule.setTotalAmount(total);
+            schedule.setStatus("未还");
+            schedule.setRemainingPrincipal(remainingPrincipal);
+            schedule.setRemainingInterest(remainingInterest);
+            schedule.setDueDate(dueDate);
+            result.add(schedule);
         }
         return result;
     }
 
-    /**
-     * 计算先息后本还款计划
-     *
-     * @param loanAmount 贷款本金
-     * @param monthlyRate 月利率
-     * @param term 贷款期数
-     * @return 每期还款明细列表（含本金、利息、总金额）
-     */
-    private static List<RepaymentPlanItem> calculateInterestFirst(
-            BigDecimal loanAmount, BigDecimal monthlyRate, Integer term) {
-        
-        List<RepaymentPlanItem> result = new ArrayList<>();
-        // 每期利息 = 本金 * 月利率
+    private static List<RepaymentSchedule> calculateInterestFirst(
+            BigDecimal loanAmount, BigDecimal monthlyRate, Integer term, LocalDate startDate) {
+
+        List<RepaymentSchedule> result = new ArrayList<>();
         BigDecimal perPeriodInterest = loanAmount.multiply(monthlyRate)
                 .setScale(MONEY_SCALE, RoundingMode.HALF_UP);
+        BigDecimal remainingPrincipal = loanAmount;
 
         for (int i = 1; i < term; i++) {
-            // 前 N-1 期只还利息
-            result.add(new RepaymentPlanItem(i, ZERO, perPeriodInterest, perPeriodInterest));
+            BigDecimal currentRemainingPrincipal = remainingPrincipal;
+            int remainingTerms = term - i;
+            BigDecimal remainingInterest = currentRemainingPrincipal.multiply(monthlyRate)
+                    .multiply(BigDecimal.valueOf(remainingTerms))
+                    .setScale(MONEY_SCALE, RoundingMode.HALF_UP);
+
+            LocalDate dueDate = calculateDueDate(startDate, i);
+
+            RepaymentSchedule schedule = new RepaymentSchedule();
+            schedule.setTerm(i);
+            schedule.setPrincipal(ZERO);
+            schedule.setInterest(perPeriodInterest);
+            schedule.setTotalAmount(perPeriodInterest);
+            schedule.setStatus("未还");
+            schedule.setRemainingPrincipal(currentRemainingPrincipal);
+            schedule.setRemainingInterest(remainingInterest);
+            schedule.setDueDate(dueDate);
+            result.add(schedule);
         }
-        
-        // 最后一期：还本金 + 最后一期利息
+
+        remainingPrincipal = BigDecimal.ZERO;
         BigDecimal lastTotal = loanAmount.add(perPeriodInterest).setScale(MONEY_SCALE, RoundingMode.HALF_UP);
-        result.add(new RepaymentPlanItem(term, loanAmount.setScale(MONEY_SCALE, RoundingMode.HALF_UP), perPeriodInterest, lastTotal));
-        
+
+        LocalDate dueDate = calculateDueDate(startDate, term);
+
+        RepaymentSchedule schedule = new RepaymentSchedule();
+        schedule.setTerm(term);
+        schedule.setPrincipal(loanAmount.setScale(MONEY_SCALE, RoundingMode.HALF_UP));
+        schedule.setInterest(perPeriodInterest);
+        schedule.setTotalAmount(lastTotal);
+        schedule.setStatus("未还");
+        schedule.setRemainingPrincipal(remainingPrincipal);
+        schedule.setRemainingInterest(BigDecimal.ZERO);
+        schedule.setDueDate(dueDate);
+        result.add(schedule);
+
         return result;
     }
 
-    /**
-     * 计算一次性还本付息还款计划
-     *
-     * @param loanAmount 贷款本金
-     * @param monthlyRate 月利率
-     * @param term 贷款期数
-     * @return 每期还款明细列表（含本金、利息、总金额）
-     */
-    private static List<RepaymentPlanItem> calculateOneTimeRepay(
-            BigDecimal loanAmount, BigDecimal monthlyRate, Integer term) {
-        
-        // 1. 计算总利息
-        // 公式：总利息 = 本金 × 月利率 × 月数
-        // 因为是一次性还本付息，通常按单利计算
+    private static List<RepaymentSchedule> calculateOneTimeRepay(
+            BigDecimal loanAmount, BigDecimal monthlyRate, Integer term, LocalDate startDate) {
+
         BigDecimal totalInterest = loanAmount.multiply(monthlyRate).multiply(BigDecimal.valueOf(term))
                 .setScale(MONEY_SCALE, RoundingMode.HALF_UP);
-        
-        // 2. 计算到期还款总额
+
         BigDecimal totalPayment = loanAmount.add(totalInterest).setScale(MONEY_SCALE, RoundingMode.HALF_UP);
 
-        // 3. 返回结果
-        // 只有 1 笔交易，发生在第 1 期（即到期那一期的期末）
-        return List.of(new RepaymentPlanItem(1, loanAmount.setScale(MONEY_SCALE, RoundingMode.HALF_UP), totalInterest, totalPayment));
+        LocalDate dueDate = calculateDueDate(startDate, 1);
+
+        RepaymentSchedule schedule = new RepaymentSchedule();
+        schedule.setTerm(1);
+        schedule.setPrincipal(loanAmount.setScale(MONEY_SCALE, RoundingMode.HALF_UP));
+        schedule.setInterest(totalInterest);
+        schedule.setTotalAmount(totalPayment);
+        schedule.setStatus("未还");
+        schedule.setRemainingPrincipal(BigDecimal.ZERO);
+        schedule.setRemainingInterest(BigDecimal.ZERO);
+        schedule.setDueDate(dueDate);
+
+        return List.of(schedule);
     }
 
-    /**
-     * 计算还款期数
-     *
-     * @param term 总期数（还款次数）
-     * @param repaidType 还款方式
-     * @return 还款期数
-     */
-    public static Integer calculateRepaymentTermCount( Integer term, RepaidType repaidType) {
-        // 对于一次性还本付息，还款次数为1
+    private static LocalDate calculateDueDate(LocalDate startDate, int term) {
+        LocalDate targetDate = startDate.plusMonths(term);
+        int dayOfMonth = startDate.getDayOfMonth();
+        int lastDayOfMonth = targetDate.lengthOfMonth();
+
+        if (dayOfMonth > lastDayOfMonth) {
+            return targetDate.with(TemporalAdjusters.lastDayOfMonth());
+        }
+
+        return targetDate.withDayOfMonth(dayOfMonth);
+    }
+
+    public static Integer calculateRepaymentTermCount(Integer term, RepaidType repaidType) {
         if (RepaidType.一次性还本付息.equals(repaidType)) {
             return 1;
         }
-        // 其他还款方式返回传入的term
         return term;
     }
 }

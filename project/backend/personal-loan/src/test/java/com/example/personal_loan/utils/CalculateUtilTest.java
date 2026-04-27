@@ -1,12 +1,14 @@
 package com.example.personal_loan.utils;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import com.example.personal_loan.entity.Order;
+import com.example.personal_loan.entity.RepaymentSchedule;
 import com.example.personal_loan.enums.OrderStatus;
 import com.example.personal_loan.enums.RepaidType;
 
@@ -40,6 +42,7 @@ class CalculateUtilTest {
         order.setTerm(1);
         order.setCurrentTerm(0);
         order.setRepaidType(RepaidType.一次性还本付息);
+        order.setStartTime(java.time.LocalDateTime.now());
 
         BigDecimal payment = CalculateUtil.calculateCurrentTermPayment(order);
 
@@ -48,14 +51,15 @@ class CalculateUtilTest {
 
     @Test
     void calculateEqualPrincipal_shouldKeepPrincipalSumEqualToLoanAmount() {
-        List<RepaymentPlanItem> plan = CalculateUtil.calculateRepaymentPlan(
+        List<RepaymentSchedule> plan = CalculateUtil.calculateRepaymentPlan(
                 new BigDecimal("10000.00"),
                 new BigDecimal("0.12"),
                 3,
-                RepaidType.等额本金);
+                RepaidType.等额本金,
+                LocalDate.of(2024, 1, 15));
 
         BigDecimal principalSum = plan.stream()
-                .map(RepaymentPlanItem::getPrincipal)
+                .map(RepaymentSchedule::getPrincipal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         assertEquals(0, principalSum.compareTo(new BigDecimal("10000.00")));

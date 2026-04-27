@@ -5,14 +5,23 @@ import java.util.List;
 import com.example.personal_loan.dto.ApplicationDetailResponse;
 import com.example.personal_loan.dto.ManualCheckResponse;
 import com.example.personal_loan.dto.PendingApprovalResponse;
+import com.example.personal_loan.entity.PostponeRequest;
 
 public interface ManualApproveService {
-    List<PendingApprovalResponse> getApproves(Long userId); // 获得本审核员所有需审核申请
+    List<PendingApprovalResponse> getApproves(Long userId);
 
-    ApplicationDetailResponse getApprove(Long userId,Long loanApplicationId); // 获得本审核员单个审核申请详情
+    ApplicationDetailResponse getApprove(Long userId,Long loanApplicationId);
 
-    ManualCheckResponse manualCheck(Long loanApplicationId, Boolean approved, String manualRejectReason); // 返回审核结果
+    ManualCheckResponse manualCheck(Long loanApplicationId, Boolean approved, String manualRejectReason);
 
-    List<PendingApprovalResponse> completedApproves(Long userId); // 已办审核列表
+    List<PendingApprovalResponse> completedApproves(Long userId);
+
+    List<PostponeRequest> getPendingPostponeRequests();
+
+    PostponeRequest getPostponeRequest(Long requestId);
+
+    void approvePostpone(Long requestId);
+
+    void rejectPostpone(Long requestId, String reason);
 
 }

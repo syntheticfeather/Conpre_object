@@ -1,4 +1,7 @@
 
+-- 设置字符集
+ALTER DATABASE `person-loan` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 CREATE TABLE users(  
     id int NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT 'Primary Key',
     user_name VARCHAR(16),
@@ -167,6 +170,42 @@ CREATE TABLE processed_message (
    business_id BIGINT NOT NULL,
    processed_at DATETIME DEFAULT CURRENT_TIMESTAMP
 ) COMMENT '幂等性记录表';
+
+CREATE TABLE repayment_schedule (
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
+    order_id INT NOT NULL COMMENT '关联订单ID',
+    term INT NOT NULL COMMENT '期数',
+    principal DECIMAL(12,2) NOT NULL COMMENT '本期本金',
+    interest DECIMAL(12,2) NOT NULL COMMENT '本期利息',
+    total_amount DECIMAL(12,2) NOT NULL COMMENT '本期总金额',
+    status VARCHAR(20) NOT NULL DEFAULT '未还' COMMENT '还款状态：已还、未还、逾期',
+    remaining_principal DECIMAL(12,2) NOT NULL COMMENT '当期还款后剩余本金',
+    remaining_interest DECIMAL(12,2) NOT NULL COMMENT '当期还款后剩余利息',
+    due_date DATE NOT NULL COMMENT '应还日期',
+    actual_pay_date DATE COMMENT '实际还款日期',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    INDEX idx_order_id (order_id),
+    INDEX idx_due_date (due_date),
+    INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='还款计划表';
+
+CREATE TABLE postpone_request (
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
+    order_id INT NOT NULL COMMENT '关联订单ID',
+    user_id INT NOT NULL COMMENT '申请人用户ID',
+    current_term INT NOT NULL COMMENT '申请延期时的当期期数',
+    status VARCHAR(20) NOT NULL DEFAULT '待审核' COMMENT '状态：待审核、已通过、已拒绝',
+    reject_reason VARCHAR(255) COMMENT '拒绝原因',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    reviewed_at DATETIME COMMENT '审核时间',
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    INDEX idx_order_id (order_id),
+    INDEX idx_user_id (user_id),
+    INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='延期申请表';
 
 CREATE TABLE notifications(
     id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '通知ID',

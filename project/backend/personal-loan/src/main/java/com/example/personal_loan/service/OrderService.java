@@ -4,21 +4,17 @@ import java.util.List;
 
 import com.example.personal_loan.dto.UserGetOrderResponse;
 import com.example.personal_loan.dto.UserOrderListResponse;
-import com.example.personal_loan.utils.RepaymentPlanItem;
 
 public interface OrderService {
-    // 用户获取单个订单详情
     UserGetOrderResponse userGetOrder(Long userId, Long orderId);
+    // 用户获取单个订单详情
 
-    // 用户获取所有订单列表
     List<UserOrderListResponse> userGetAllOrders(Long userId);
+    // 用户获取所有订单列表
 
-    // 还款
-    void repay(Long orderId); 
+    void repay(Long orderId);
 
-    // 延期(加1期的时间)(先默认给人工审核)
     Boolean postpone(Long orderId);
-    
-    // 获取还款计划
-    List<RepaymentPlanItem> getRepaymentPlan(Long userId, Long orderId);
+
+    void earlyRepay(Long orderId);
 }

@@ -12,7 +12,7 @@
 
 **请求方式** GET
 
-**返回数据**
+**返回数据**  
 
 ``` json
 {
@@ -57,7 +57,7 @@
 
 **请求方式** GET
 
-**返回数据**
+**返回数据**  
 
 ``` json
 {
@@ -108,7 +108,7 @@
 
 **请求方式** GET
 
-**请求参数**
+**请求参数**  
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
@@ -116,7 +116,7 @@
 
 **请求示例（网址）** /api/approval/detail/7
 
-**返回数据**
+**返回数据**  
 
 ``` json
 {
@@ -174,7 +174,7 @@
 
 **请求方式** POST
 
-**请求参数**
+**请求参数**  
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
@@ -182,7 +182,7 @@
 | approved | string | 是 | true表示通过，false表示不通过 | true |
 | manualRejectReason | String | 否 | 拒绝时需要填写原因 | 认证材料未上传 |
 
-**请求示例（请求体）（通过）**
+**请求示例（请求体）（通过）**  
 
 ``` json
 {
@@ -191,7 +191,7 @@
 }
 ```
 
-**返回数据（通过）**
+**返回数据（通过）**  
 
 ``` json
 {
@@ -206,7 +206,7 @@
 }
 ```
 
-**请求示例（请求体）（拒绝）**
+**请求示例（请求体）（拒绝）**  
 
 ``` json
 {
@@ -216,7 +216,7 @@
 }
 ```
 
-**返回数据（拒绝）**
+**返回数据（拒绝）**  
 
 ``` json
 {
@@ -231,12 +231,122 @@
 }
 ```
 
-**postman测试结果**
+**postman测试结果**  
 
 ![](../ManualApproveImgs/approve.png "通过人工审核")
 ![](../ManualApproveImgs/reject.png "不通过人工审核，拒绝原因示例：认证材料未上传")
 ![](../ManualApproveImgs/rejectWithoutReason.png "拒绝，但未填写人工拒绝的理由")
 
-**日志**
+**日志**  
 
 ![](../ManualApproveImgs/logCheck.png)
+
+## 查看代办延期审核列表
+
+**网址** /api/approval/postpone/pending
+
+**请求方式** GET
+
+**返回数据**  
+
+```json
+{
+    "code": 200,
+    "data": [
+        {
+            "id": 1,
+            "orderId": 5,
+            "userId": 12,
+            "currentTerm": 0,
+            "status": "待审核",
+            "rejectReason": null,
+            "createdAt": "2026-04-27 11:16:00",
+            "reviewedAt": null
+        },
+        {
+            "id": 3,
+            "orderId": 4,
+            "userId": 12,
+            "currentTerm": 0,
+            "status": "待审核",
+            "rejectReason": null,
+            "createdAt": "2026-04-27 11:31:14",
+            "reviewedAt": null
+        },
+        {
+            "id": 4,
+            "orderId": 6,
+            "userId": 12,
+            "currentTerm": 0,
+            "status": "待审核",
+            "rejectReason": null,
+            "createdAt": "2026-04-27 11:32:35",
+            "reviewedAt": null
+        }
+    ],
+    "message": "操作成功"
+}
+```
+
+## 查看代办延期审核详情
+
+**网址** /api/approval/postpone/{requestId}
+
+**请求方式** GET
+
+**请求示例（网址）**  /api/approval/postpone/4
+
+**返回数据**  
+
+```json
+{
+    "code": 200,
+    "data": {
+        "id": 4,
+        "orderId": 6,
+        "userId": 12,
+        "currentTerm": 0,
+        "status": "待审核",
+        "rejectReason": null,
+        "createdAt": "2026-04-27 11:32:35",
+        "reviewedAt": null
+    },
+    "message": "操作成功"
+}
+```
+
+## 通过延期申请
+
+**网址** /api/approval/postpone/{requestId}/approve
+
+**请求方式** POST
+
+**请求示例（网址）**  /api/approval/postpone/4/approve
+
+**返回数据**  
+
+```json
+{
+    "code": 200,
+    "data": "延期申请已通过",
+    "message": "操作成功"
+}
+```
+
+## 拒绝延期申请
+
+**网址** /api/approval/postpone/{requestId}/reject
+
+**请求方式** POST
+
+**请求示例（网址）**  /api/approval/postpone/4/reject
+
+**返回数据**  
+
+```json
+{
+    "code": 200,
+    "data": "延期申请已拒绝",
+    "message": "操作成功"
+}
+```

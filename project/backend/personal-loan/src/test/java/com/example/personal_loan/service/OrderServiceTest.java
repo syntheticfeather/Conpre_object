@@ -3,7 +3,6 @@ package com.example.personal_loan.service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -206,38 +205,5 @@ class OrderServiceTest {
         orderService.repay(1L);
 
         verify(outboxMapper).insert(any(OutboxMessage.class));
-    }
-
-    @Test
-    void testGetRepaymentPlan_Success() {
-        when(orderMapper.selectById(1L)).thenReturn(order);
-
-        var plan = orderService.getRepaymentPlan(1L, 1L);
-
-        assertNotNull(plan);
-        assertTrue(plan.size() > 0);
-    }
-
-    @Test
-    void testGetRepaymentPlan_OrderNotFound() {
-        when(orderMapper.selectById(1L)).thenReturn(null);
-
-        BusinessException exception = assertThrows(BusinessException.class, () -> 
-            orderService.getRepaymentPlan(1L, 1L)
-        );
-        assertEquals(404, exception.getCode());
-        assertTrue(exception.getMessage().contains("订单不存在"));
-    }
-
-    @Test
-    void testGetRepaymentPlan_NotOwner() {
-        order.setUserId(2L);
-        when(orderMapper.selectById(1L)).thenReturn(order);
-
-        BusinessException exception = assertThrows(BusinessException.class, () -> 
-            orderService.getRepaymentPlan(1L, 1L)
-        );
-        assertEquals(403, exception.getCode());
-        assertTrue(exception.getMessage().contains("无权查看他人订单"));
     }
 }

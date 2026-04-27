@@ -24,6 +24,7 @@ import com.example.personal_loan.mapper.OrderMapper;
 import com.example.personal_loan.mapper.OutboxMapper;
 import com.example.personal_loan.mapper.PaymentRecordMapper;
 import com.example.personal_loan.mapper.ProcessMessageMapper;
+import com.example.personal_loan.mapper.RepaymentScheduleMapper;
 import com.example.personal_loan.utils.RabbitUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
@@ -44,6 +45,9 @@ class PaymentSuccessConsumerTest {
 
     @Mock
     private OutboxMapper outboxMapper;
+
+    @Mock
+    private RepaymentScheduleMapper repaymentScheduleMapper;
 
     @Mock
     private PaymentRecordMapper paymentRecordMapper;
@@ -78,6 +82,7 @@ class PaymentSuccessConsumerTest {
                 rabbitUtil,
                 orderMapper,
                 paymentRecordMapper,
+                repaymentScheduleMapper,
                 notificationOutboxPublisher
         );
         consumer.consume(message, channel);
@@ -110,6 +115,7 @@ class PaymentSuccessConsumerTest {
                 rabbitUtil,
                 orderMapper,
                 paymentRecordMapper,
+                repaymentScheduleMapper,
                 notificationOutboxPublisher
         );
         consumer.consume(message, channel);
@@ -133,6 +139,7 @@ class PaymentSuccessConsumerTest {
                 rabbitUtil,
                 orderMapper,
                 paymentRecordMapper,
+                repaymentScheduleMapper,
                 notificationOutboxPublisher
         );
         consumer.consume(message, channel);
