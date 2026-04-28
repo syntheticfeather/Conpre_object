@@ -26,6 +26,9 @@ public class RepaymentScheduleService {
     @Autowired
     private OrderMapper orderMapper;
 
+    @Autowired
+    private CalculateUtil calculateUtil;
+
     /**
      * 生成还款计划
      * @param orderId 订单ID
@@ -35,7 +38,7 @@ public class RepaymentScheduleService {
         Order order = orderMapper.selectById(orderId);
         LocalDate startDate = order.getStartTime().toLocalDate();
 
-        List<RepaymentSchedule> plan = CalculateUtil.calculateRepaymentPlan(
+        List<RepaymentSchedule> plan = calculateUtil.calculateRepaymentPlan(
             order.getLoanAmount(),
             order.getInterestRate(),
             order.getTerm(),

@@ -32,22 +32,22 @@ public class CalculateUtil {
         }
     }
 
-    public static Integer getTotalTransactionCount(List<Order> orders) {
+    public Integer getTotalTransactionCount(List<Order> orders) {
         return (int) orders.stream()
-            .filter(order -> OrderStatus.已完成.equals(order.getStatus()))
-            .count();
+                .filter(order -> OrderStatus.已完成.equals(order.getStatus()))
+                .count();
     }
 
-    public static BigDecimal getTotalLoanAmount(List<Order> orders) {
+    public BigDecimal getTotalLoanAmount(List<Order> orders) {
         return orders.stream()
-            .map(Order::getLoanAmount)
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .map(Order::getLoanAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public static BigDecimal getTotalRepaidAmount(List<Order> orders) {
+    public BigDecimal getTotalRepaidAmount(List<Order> orders) {
         return orders.stream()
-            .map(Order::getRepaidAmount)
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .map(Order::getRepaidAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public List<RepaymentSchedule> calculateRepaymentPlan(
@@ -88,16 +88,16 @@ public class CalculateUtil {
             return BigDecimal.ZERO;
         }
         List<RepaymentSchedule> plan = calculateRepaymentPlan(
-            order.getLoanAmount(),
-            order.getInterestRate(),
-            order.getTerm(),
-            order.getRepaidType(),
-            order.getStartTime().toLocalDate()
+                order.getLoanAmount(),
+                order.getInterestRate(),
+                order.getTerm(),
+                order.getRepaidType(),
+                order.getStartTime().toLocalDate()
         );
         return plan.get(order.getCurrentTerm()).getTotalAmount();
     }
 
-    public static Integer calculateRepaymentTermCount(Integer term, RepaidType repaidType) {
+    public Integer calculateRepaymentTermCount(Integer term, RepaidType repaidType) {
         if (RepaidType.一次性还本付息.equals(repaidType)) {
             return 1;
         }

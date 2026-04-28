@@ -75,6 +75,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private LocalFileStorageService fileStorageService;
 
+    @Autowired
+    private CalculateUtil calculateUtil;
+
     // 文件大小限制：5MB
     private static final long MAX_FILE_SIZE = 5 * 1024 * 1024;
 
@@ -351,8 +354,8 @@ public class UserServiceImpl implements UserService {
             List<Order> orders = orderMapper.selectAllByUserId(user.getId());
             UserCert userCert = userCertMapper.selectByUserId(user.getId());
 
-            Integer transactionCount = CalculateUtil.getTotalTransactionCount(orders);
-            BigDecimal totalLoanAmount = CalculateUtil.getTotalLoanAmount(orders);
+            Integer transactionCount = calculateUtil.getTotalTransactionCount(orders);
+            BigDecimal totalLoanAmount = calculateUtil.getTotalLoanAmount(orders);
 
             // 判断用户有无借贷, 逾期状态
             // 当成字段存储

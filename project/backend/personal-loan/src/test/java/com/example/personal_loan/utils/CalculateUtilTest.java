@@ -6,6 +6,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.example.personal_loan.entity.Order;
 import com.example.personal_loan.entity.RepaymentSchedule;
@@ -14,7 +15,11 @@ import com.example.personal_loan.enums.RepaidType;
 
 class CalculateUtilTest {
 
+    @Autowired
+    private CalculateUtil calculateUtil;
+
     @Test
+
     void getTotalTransactionCount_shouldCountCompletedOrders() {
         Order completed = new Order();
         completed.setStatus(OrderStatus.已完成);
@@ -22,12 +27,12 @@ class CalculateUtilTest {
         Order normal = new Order();
         normal.setStatus(OrderStatus.正常);
 
-        assertEquals(1, CalculateUtil.getTotalTransactionCount(List.of(completed, normal)));
+        assertEquals(1, calculateUtil.getTotalTransactionCount(List.of(completed, normal)));
     }
 
     @Test
     void calculateRepaymentTermCount_shouldReturnOneForOneTimeRepay() {
-        Integer repaymentTerms = CalculateUtil.calculateRepaymentTermCount(
+        Integer repaymentTerms = calculateUtil.calculateRepaymentTermCount(
                 12,
                 RepaidType.一次性还本付息);
 
@@ -44,14 +49,14 @@ class CalculateUtilTest {
         order.setRepaidType(RepaidType.一次性还本付息);
         order.setStartTime(java.time.LocalDateTime.now());
 
-        BigDecimal payment = CalculateUtil.calculateCurrentTermPayment(order);
+        BigDecimal payment = calculateUtil.calculateCurrentTermPayment(order);
 
         assertEquals(0, payment.compareTo(new BigDecimal("12120.00")));
     }
 
     @Test
     void calculateEqualPrincipal_shouldKeepPrincipalSumEqualToLoanAmount() {
-        List<RepaymentSchedule> plan = CalculateUtil.calculateRepaymentPlan(
+        List<RepaymentSchedule> plan = calculateUtil.calculateRepaymentPlan(
                 new BigDecimal("10000.00"),
                 new BigDecimal("0.12"),
                 3,
