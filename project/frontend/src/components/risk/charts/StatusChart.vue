@@ -20,11 +20,11 @@ export default {
       
       // 计算总数
       const data = [
-        { value: 300, name: '还款中' },
-        { value: 150, name: '申请贷款中' },
-        { value: 400, name: '正常' },
-        { value: 80, name: '逾期' },
-        { value: 20, name: '黑名单' }
+        { value: 300, name: '还款中', itemStyle: { color: '#9DC8C8' } },
+        { value: 150, name: '申请贷款中', itemStyle: { color: '#58C9B9' } },
+        { value: 350, name: '正常', itemStyle: { color: '#8EC0E4' } },
+        { value: 80, name: '逾期', itemStyle: { color: '#D1B6E1' } },
+        { value: 20, name: '黑名单', itemStyle: { color: '#F17F42' } }
       ]
       const total = data.reduce((sum, item) => sum + item.value, 0)
       
@@ -51,7 +51,7 @@ export default {
           avoidLabelOverlap: false,
           itemStyle: {
             borderRadius: 5,
-            borderColor: '#000',
+            borderColor: '#fff',
             borderWidth: 2
           },
           label: {

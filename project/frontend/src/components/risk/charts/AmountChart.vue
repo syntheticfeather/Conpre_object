@@ -76,7 +76,7 @@ export default {
             },
             position: 'right',
             axisLabel: {
-              color: '#0096ff',
+              color: '#fff',
               formatter: (value) => (value / 10000).toFixed(0) + '万'
             },
             axisLine: {

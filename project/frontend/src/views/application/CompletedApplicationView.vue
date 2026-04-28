@@ -1,19 +1,53 @@
 <template>
   <div class="header">
     已办审核
+    <div class="header-right">
+      <div class="toggle-group">
+        <button
+          :class="{ active: reviewMode === 'loan' }"
+          @click="switchMode('loan')"
+        >
+          贷款申请
+        </button>
+        <button
+          :class="{ active: reviewMode === 'postpone' }"
+          disabled
+          style="cursor: not-allowed; opacity: 0.5;"
+        >
+          延期申请
+        </button>
+      </div>
+    </div>
   </div>
 
   <div class="apply-dashboard">
-    <component 
-      :is="currentComponent" 
-      :applications="currentApplications"
-      @show-detail="showApplicationDetail"
-      @refresh="loadApplications"
-    />
+    <div v-if="loading" class="loading">
+      加载中...
+    </div>
 
-    <ApplicationDetailModal 
+    <template v-if="reviewMode === 'loan'">
+      <component
+        :is="CompletedApplications"
+        :applications="currentLoanApplications"
+        @show-detail="showDetail"
+        @refresh="loadLoanApplications"
+      />
+    </template>
+
+    <template v-if="reviewMode === 'postpone'">
+      <component
+        :is="PostponeCompletedList"
+        :postpone-requests="currentPostponeRequests"
+        @show-detail="showDetail"
+        @refresh="loadPostponeRequests"
+      />
+    </template>
+
+    <ApplicationDetailModal
       v-model="showDetailModal"
-      :application-id="selectedApplicationId"
+      :application-id="selectedRequestId"
+      :review-type="reviewMode"
+      modal
       @close="closeDetailModal"
     />
   </div>
@@ -22,46 +56,56 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useApplicationStore } from '@/stores/application'
-import PendingApplications from '@/components/application-review/PendingApplications.vue'
 import CompletedApplications from '@/components/application-review/CompletedApplications.vue'
+import PostponeCompletedList from '@/components/application-review/PostponeCompletedList.vue'
 import ApplicationDetailModal from '@/components/application-review/ApplicationDetailModal.vue'
 
 const applicationStore = useApplicationStore()
-const activeTab = ref('completed')
+const reviewMode = ref('loan')
 const showDetailModal = ref(false)
-const selectedApplicationId = ref(null)
+const selectedRequestId = ref(null)
+const loading = ref(false)
 
-const currentComponent = computed(() => {
-  return activeTab.value === 'pending' ? PendingApplications : CompletedApplications
-})
+const currentLoanApplications = computed(() => applicationStore.completedApplications)
+const currentPostponeRequests = computed(() => applicationStore.completedPostponeRequests)
 
-const currentApplications = computed(() => {
-  return activeTab.value === 'pending' 
-    ? applicationStore.pendingApplications 
-    : applicationStore.completedApplications
-})
+const switchMode = (mode) => {
+  reviewMode.value = mode
+  loadData()
+}
 
-const loadApplications = async () => {
-  if (activeTab.value === 'pending') {
-    await applicationStore.fetchPendingApplications()
+const loadLoanApplications = async () => {
+  loading.value = true
+  await applicationStore.fetchCompletedApplications()
+  loading.value = false
+}
+
+const loadPostponeRequests = async () => {
+  loading.value = true
+  await applicationStore.fetchCompletedPostponeRequests()
+  loading.value = false
+}
+
+const loadData = async () => {
+  if (reviewMode.value === 'loan') {
+    await loadLoanApplications()
   } else {
-    await applicationStore.fetchCompletedApplications()
+    await loadPostponeRequests()
   }
 }
 
-const showApplicationDetail = (applicationId) => {
-  selectedApplicationId.value = applicationId
+const showDetail = (id) => {
+  selectedRequestId.value = id
   showDetailModal.value = true
 }
 
 const closeDetailModal = () => {
   showDetailModal.value = false
-  selectedApplicationId.value = null
-  applicationStore.clearCurrentApplication()
+  selectedRequestId.value = null
 }
 
 onMounted(() => {
-  loadApplications()
+  loadData()
 })
 </script>
 
@@ -70,24 +114,52 @@ onMounted(() => {
   padding: 20px;
 }
 
-.tabs button {
-  padding: 8px 16px;
-  margin-left: 10px;
-  background: var(--);
-  border: 1px solid #ddd;
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin:20px 20px 0 20px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.toggle-group {
+  display: flex;
+  border: 1px solid #dcdfe6;
   border-radius: 4px;
+  overflow: hidden;
+}
+
+.toggle-group button {
+  padding: 6px 16px;
+  border: none;
+  background: #fff;
+  color: #606266;
   cursor: pointer;
+  font-size: 14px;
   transition: all 0.2s;
 }
 
-.tabs button:hover {
-  background: #e6f7ff;
-  background: var(--hover-bg);
+.toggle-group button:not(:last-child) {
+  border-right: 1px solid #dcdfe6;
 }
 
-.tabs button.active {
+.toggle-group button.active {
   background: #409eff;
-  color: white;
-  border-color: #409eff;
+  color: #fff;
+}
+
+.toggle-group button:hover:not(.active) {
+  background: #ecf5ff;
+  color: #409eff;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #666;
 }
 </style>

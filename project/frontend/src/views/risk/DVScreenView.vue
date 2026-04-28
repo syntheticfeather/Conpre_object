@@ -45,11 +45,11 @@
           <!-- 资金用途分类-南丁格尔玫瑰图 -->
           <PurposeChart ref="purpose" />
 
-          <!-- 用户状态分布-待定 -->
-          <StatusChart ref="status" />
-
           <!-- 资金流入流出-三线波浪图 -->
           <AmountChart ref="amount" />
+
+          <!-- 用户状态分布-待定环图 -->
+          <StatusChart ref="status" />
 
           <!-- 还款方式偏好-正负对比柱状图 -->
           <RepayChart ref="repay" />
@@ -630,11 +630,11 @@ export default {
   min-height: 700px;
 }
 .chart-panel.right {
-  transform: perspective(1000px) rotateY(-10deg);
+  transform: perspective(1000px) rotateY(-15deg);
   transform-origin: right center;
 }
 .chart-panel.left {
-  transform: perspective(1000px) rotateY(10deg);
+  transform: perspective(1000px) rotateY(15deg);
   transform-origin: left center;
 }
 

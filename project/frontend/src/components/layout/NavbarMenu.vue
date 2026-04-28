@@ -1,15 +1,17 @@
 <template>
   <div class="nav-bar">
-    <div class="logo-container">
-      <img src="@/assets/images/logo.jpg" alt="logo">
-      <!-- 面包屑导航 -->
-      <div class="breadcrumb-container">
-        <el-breadcrumb separator="/">
-          <el-breadcrumb-item>管理平台</el-breadcrumb-item>
-          <el-breadcrumb-item>{{ currentRouteName }}</el-breadcrumb-item>
-        </el-breadcrumb>
+      <div class="search-container">
+        <el-input
+          v-model="searchText"
+          placeholder="搜索..."
+          class="search-input"
+          clearable
+        >
+          <template #prefix>
+            <el-icon><SearchIcon /></el-icon>
+          </template>
+        </el-input>
       </div>
-    </div>
 
     <div class="right-info">
       <!-- 主题切换图标 -->
@@ -43,7 +45,10 @@
         <!-- 通知下拉面板 -->
         <div v-show="showNotificationPanel" class="notification-panel" @mouseenter="keepNotificationVisible" @mouseleave="hideNotificationPanel">
           <div class="panel-header">
-            <span>通知中心</span>
+            <div class="header-left">
+              <span>通知中心</span>
+              <span class="connection-dot" :class="{ connected: isStreamConnected, disconnected: !isStreamConnected }" :title="isStreamConnected ? '实时连接中' : '连接断开'"></span>
+            </div>
             <div class="header-actions">
               <el-button size="small" type="primary" @click="markAllRead" :disabled="unreadCount === 0">
                 全部已读
@@ -142,40 +147,58 @@
 <script>
 import { useAuthStore } from '@/stores/auth'
 import { useAppStore } from '@/stores/app'
-import { Moon, Sunny } from '@element-plus/icons-vue'
+import { Moon, Sunny, Search as SearchIcon } from '@element-plus/icons-vue'
 import { BellOutlined } from '@ant-design/icons-vue'
-import { useRoute, useRouter } from 'vue-router'
-import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { getCurrentInstance } from 'vue'
 import notificationAPI from '@/api/modules/notification'
+import { useNotificationStream } from '@/composables/useNotificationStream'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 export default {
   name: 'NavbarMenu',
   components: {
-    BellOutlined, Moon, Sunny
+    BellOutlined, Moon, Sunny, SearchIcon
   },
   setup() {
-    const route = useRoute()
     const router = useRouter()
-    
-    // 当前路由名称
-    const currentRouteName = computed(() => {
-      const nameMap = {
-        'Applications': '待审核申请',
-        'CompletedApplications': '已完成申请',
-        'Products': '产品管理',
-        'AddProduct': '添加产品',
-        'Users': '用户管理',
-        'BlackUsers': '黑名单管理',
-        'Risk': '风险管理',
-        'CollectManagement': '催收管理'
-      }
-      return nameMap[route.name] || route.name || ''
+    const instance = getCurrentInstance()
+
+    const {
+      isStreamConnected,
+      initNotificationStreamWithFetch,
+      closeNotificationStream,
+      reconnectStream,
+      requestNotificationPermission
+    } = useNotificationStream({
+      onNotification: (notification) => {
+        const vm = instance?.proxy
+        if (!vm) return
+        const exists = vm.notifications.some(n => n.id === notification.id)
+        if (exists) return
+        vm.notifications.unshift(notification)
+        if ('Notification' in window && Notification.permission === 'granted') {
+          try {
+            new Notification('系统新通知', {
+              body: notification.content || notification.title,
+              icon: '/favicon.ico',
+              tag: `notification-${notification.id}`
+            })
+          } catch (error) {
+            console.error('显示桌面通知失败:', error)
+          }
+        }
+      },
+      notificationTitle: '系统新通知'
     })
-    
+
     return {
-      currentRouteName,
-      router
+      router,
+      isStreamConnected,
+      initNotificationStreamWithFetch,
+      closeNotificationStream,
+      reconnectStream,
+      requestNotificationPermission
     }
   },
   data() {
@@ -192,20 +215,29 @@ export default {
       
       // 通知相关
       notifications: [],
-      unreadCount: 0,
       showNotificationPanel: false,
       loading: false,
       notificationPanelTimer: null
     }
   },
+  computed: {
+    unreadCount() {
+      return this.notifications.filter(n => !n.readFlag).length
+    }
+  },
   mounted() {
-    // 从本地存储加载头像
     const savedAvatar = localStorage.getItem('adminAvatar')
     if (savedAvatar) {
       this.avatarUrl = savedAvatar
     }
-    // 加载通知列表
     this.fetchNotifications()
+    this.requestNotificationPermission()
+    this.initNotificationStreamWithFetch()
+  },
+
+  beforeUnmount() {
+    // 关闭 SSE 实时通知流连接
+    this.closeNotificationStream()
   },
   methods: {
     handleLogout() {
@@ -281,9 +313,6 @@ export default {
     // 切换通知面板
     toggleNotificationPanel() {
       this.showNotificationPanel = !this.showNotificationPanel
-      if (this.showNotificationPanel) {
-        this.fetchNotifications()
-      }
     },
     
     // 保持通知面板可见
@@ -302,14 +331,26 @@ export default {
       }, 300)
     },
     
-    // 获取通知列表
+    // 获取通知列表（与已有通知合并，保留 SSE 实时推送的数据）
     async fetchNotifications() {
       this.loading = true
       try {
         const res = await notificationAPI.getAdminNotifications()
         if (res.code === 200) {
-          this.notifications = res.data || []
-          this.unreadCount = this.notifications.filter(n => !n.readFlag).length
+          const apiNotifications = res.data || []
+          // 合并：API 数据覆盖已有，新增的追加到尾部
+          const merged = [...this.notifications]
+          apiNotifications.forEach(apiNotif => {
+            const index = merged.findIndex(n => n.id === apiNotif.id)
+            if (index !== -1) {
+              merged[index] = apiNotif
+            } else {
+              merged.push(apiNotif)
+            }
+          })
+          // 按 createdAt 降序排列
+          merged.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          this.notifications = merged
         }
       } catch (error) {
         console.error('获取通知失败:', error)
@@ -327,7 +368,6 @@ export default {
         if (notification) {
           notification.readFlag = true
         }
-        this.unreadCount = Math.max(0, this.unreadCount - 1)
         ElMessage.success('已标记为已读')
       } catch (error) {
         ElMessage.error('操作失败'+error)
@@ -344,7 +384,6 @@ export default {
         
         // 更新本地状态
         this.notifications.forEach(n => n.readFlag = true)
-        this.unreadCount = 0
         ElMessage.success('全部标记为已读')
       } catch (error) {
         ElMessage.error('操作失败'+error)
@@ -361,9 +400,7 @@ export default {
         })
         
         await notificationAPI.deleteNotification(id)
-        // 更新本地列表
         this.notifications = this.notifications.filter(n => n.id !== id)
-        this.unreadCount = this.notifications.filter(n => !n.readFlag).length
         ElMessage.success('删除成功')
       } catch (error) {
         if (error !== 'cancel') {
@@ -385,7 +422,6 @@ export default {
         await notificationAPI.batchDelete(allIds)
         
         this.notifications = []
-        this.unreadCount = 0
         ElMessage.success('清空成功')
       } catch (error) {
         if (error !== 'cancel') {
@@ -394,9 +430,10 @@ export default {
       }
     },
     
-    // 加载更多（暂时只刷新）
+    // 加载更多：跳转到风险管理页面并定位到消息列表
     loadMore() {
-      this.fetchNotifications()
+      this.showNotificationPanel = false
+      this.router.push({ path: '/dashboard/risk', query: { scrollTo: 'activities' } })
     },
     
     // 点击通知处理
@@ -457,56 +494,84 @@ export default {
       }
       // 其他显示日期
       return date.toLocaleDateString('zh-CN')
-    }
+    },
+
   }
 }
 </script>
 
 <style scoped>
 .nav-bar {
-  position: fixed;
   display: flex;
   justify-content: space-between;
   width: 100%;
   height: 75px;
-  background-color: var(--nabar-color);
+  background-image: linear-gradient(-225deg, #330c69 0%, #3584A7 51%, #30D2BE 100%);
   color: white;
   align-items: center;
   box-shadow: var(--nabar-shadow-color);
-  z-index: 9990;
 }
 
-.logo-container {
+.search-container {
   display: flex;
   align-items: center;
-  margin-left: 17px;
-  flex: 1;
+  margin-left: 24px;
+}
+.search-input {
+  width: 320px;
+}
+.search-input :deep(.el-input__wrapper) {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  box-shadow: none;
+  border-radius: 20px;
+}
+.search-input :deep(.el-input__inner) {
+  color: #fff;
+}
+.search-input :deep(.el-input__inner::placeholder) {
+  color: rgba(255, 255, 255, 0.6);
+}
+.search-input :deep(.el-input__prefix) {
+  color: rgba(255, 255, 255, 0.6);
+}
+.search-input :deep(.el-input__clear) {
+  color: rgba(255, 255, 255, 0.6);
+}
+.search-input :deep(.el-input__clear:hover) {
+  color: #fff;
 }
 
+
+/* 右侧信息区域样式 */
+.right-info {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-right: 40px;
+  width: 220px;
+}
+
+/* 通知铃铛样式 */
 .BellOutlined {
   font-size: 20px;
   margin-right: 5px;
 }
-
-/* 通知铃铛样式 */
 .notification-wrapper {
   position: relative;
   margin-right: 10px;
   cursor: pointer;
 }
-
 .notification-badge {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
 .bell-icon {
   font-size: 22px;
   color: rgba(255, 255, 255, 0.8);
   transition: all 0.3s ease;
 }
-
 .bell-icon:hover {
   color: #ffffff;
   transform: scale(1.1);
@@ -528,7 +593,6 @@ export default {
   flex-direction: column;
   overflow: hidden;
 }
-
 .panel-header {
   display: flex;
   justify-content: space-between;
@@ -537,29 +601,49 @@ export default {
   border-bottom: 1px solid #f0f0f0;
   background-color: #fafafa;
 }
-
 .panel-header span {
   font-size: 16px;
   font-weight: 600;
   color: #303133;
 }
-
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.connection-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+.connection-dot.connected {
+  background-color: #67C23A;
+  box-shadow: 0 0 6px rgba(103, 194, 58, 0.6);
+}
+.connection-dot.disconnected {
+  background-color: #F56C6C;
+  box-shadow: 0 0 6px rgba(245, 108, 108, 0.6);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
 .header-actions {
   display: flex;
   gap: 8px;
 }
-
 .notification-list {
   flex: 1;
   overflow-y: auto;
   max-height: 400px;
 }
-
 .empty-notice {
   padding: 40px 20px;
   text-align: center;
 }
-
 .notification-item {
   display: flex;
   justify-content: space-between;
@@ -568,21 +652,17 @@ export default {
   cursor: pointer;
   transition: all 0.3s ease;
 }
-
 .notification-item:hover {
   background-color: #f5f7fa;
 }
-
 .notification-item.unread {
   background-color: #ecf5ff;
   border-left: 3px solid #409EFF;
 }
-
 .notif-left {
   flex: 1;
   margin-right: 15px;
 }
-
 .notif-title {
   font-size: 14px;
   font-weight: 600;
@@ -592,12 +672,10 @@ export default {
   align-items: center;
   gap: 8px;
 }
-
 .unread-tag {
   font-size: 10px;
   padding: 1px 6px;
 }
-
 .notif-content {
   font-size: 13px;
   color: #606266;
@@ -608,23 +686,19 @@ export default {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-
 .notif-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-
 .notif-time {
   font-size: 12px;
   color: #909399;
 }
-
 .type-tag {
   font-size: 10px;
   padding: 1px 6px;
 }
-
 .notif-actions {
   display: flex;
   flex-direction: column;
@@ -632,11 +706,9 @@ export default {
   opacity: 0;
   transition: opacity 0.3s ease;
 }
-
 .notification-item:hover .notif-actions {
   opacity: 1;
 }
-
 .panel-footer {
   padding: 12px 20px;
   border-top: 1px solid #f0f0f0;
@@ -694,31 +766,10 @@ export default {
   box-shadow: 0 0 12px rgba(198, 208, 223, 0.5);
 }
 
-img[alt="logo"] {
-  margin-left: 17px;
-  height: 55px;
-}
-
 .breadcrumb-container {
   margin-left: 30px;
   display: flex;
   align-items: center;
-}
-
-/* 面包屑导航文字颜色 */
-.breadcrumb-container :deep(.el-breadcrumb__inner) {
-  color: white !important;
-}
-.breadcrumb-container :deep(.el-breadcrumb__separator) {
-  color: white !important;
-}
-
-.right-info {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  margin-right: 40px;
-  width: 220px;
 }
 
 .admin-info {

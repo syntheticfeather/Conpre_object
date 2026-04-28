@@ -10,7 +10,7 @@
           <el-input v-model="form.question" placeholder="请输入问题" />
         </el-form-item>
         <el-form-item label="答案">
-          <el-input v-model="form.answer" type="textarea" rows="3" placeholder="请输入答案" />
+          <el-input v-model="form.answer" type="textarea" :rows="3" placeholder="请输入答案" />
         </el-form-item>
         <el-form-item label="分类">
           <el-select v-model="form.category" placeholder="选择分类">
@@ -59,9 +59,10 @@
     <el-card class="knowledge-list">
       <div class="list-header">
         <h3>知识库列表（共 {{ total }} 条）</h3>
-        <el-button type="success" @click="exportKnowledge">导出 Excel</el-button>
+        <el-button type="primary" @click="fetchKnowledge">刷新</el-button>
       </div>
       <el-table :data="paginatedList" stripe v-loading="loading">
+        <el-table-column prop="id" label="ID" width="200" />
         <el-table-column prop="question" label="问题" show-overflow-tooltip />
         <el-table-column prop="answer" label="答案" show-overflow-tooltip />
         <el-table-column prop="category" label="分类" width="100">
@@ -69,8 +70,9 @@
             <el-tag :type="getCategoryTagType(row.category)">{{ row.category }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="usage_count" label="使用次数" width="90" sortable />
-        <el-table-column label="操作" width="180" fixed="right">
+        <el-table-column prop="created_at" label="创建时间" width="170" />
+        <el-table-column prop="updated_at" label="更新时间" width="170" />
+        <el-table-column label="操作" width="150" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="editKnowledge(row)">编辑</el-button>
             <el-button type="danger" size="small" @click="deleteKnowledge(row.id)">删除</el-button>
@@ -99,7 +101,7 @@
           <el-input v-model="editForm.question" placeholder="请输入问题" />
         </el-form-item>
         <el-form-item label="答案">
-          <el-input v-model="editForm.answer" type="textarea" rows="4" placeholder="请输入答案" />
+          <el-input v-model="editForm.answer" type="textarea" :rows="4" placeholder="请输入答案" />
         </el-form-item>
         <el-form-item label="分类">
           <el-select v-model="editForm.category" placeholder="选择分类">
@@ -116,18 +118,24 @@
       </template>
     </el-dialog>
   </div>
+
+  <button class="chat-fab" @click="chatVisible = true" title="智能对话调试">💬</button>
+  <ChatDialog v-if="chatVisible" @close="chatVisible = false" />
 </template>
 
 <script setup>
-import { ref, computed} from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import axios from 'axios'
+import request from '@/utils/request'
+import ChatDialog from '@/components/chat/ChatDialog.vue'
 
-const API_BASE = 'http://localhost:8000/knowledge'
+const API_BASE = '/knowledge'
+const buildUrl = (path = '') => `${API_BASE}/${path}`.replace(/\/+/g, '/')
 
 const loading = ref(false)
 const isEdit = ref(false)
 const editDialogVisible = ref(false)
+const chatVisible = ref(false)
 
 const form = ref({
   question: '',
@@ -159,20 +167,19 @@ const paginatedList = computed(() => {
   return filteredList.value.slice(start, end)
 })
 
-// const fetchKnowledge = async () => {
-//   loading.value = true
-//   try {
-//     const res = await axios.get(API_BASE)
-//     knowledgeList.value = res.data || []
-//     filteredList.value = knowledgeList.value
-//     total.value = filteredList.value.length
-//   } catch (error) {
-//     ElMessage.error('获取知识库失败')
-//     console.error('Error fetching knowledge:', error)
-//   } finally {
-//     loading.value = false
-//   }
-// }
+const fetchKnowledge = async () => {
+  loading.value = true
+  try {
+    const res = await request.get(buildUrl())
+    knowledgeList.value = res.data || []
+    filteredList.value = knowledgeList.value
+    total.value = filteredList.value.length
+  } catch {
+    ElMessage.error('获取知识库失败')
+  } finally {
+    loading.value = false
+  }
+}
 
 const searchKnowledge = () => {
   const { keyword, category } = searchForm.value
@@ -204,18 +211,17 @@ const saveKnowledge = async () => {
   
   try {
     if (isEdit.value) {
-      await axios.put(`${API_BASE}/${editForm.value.id}`, editForm.value)
+      await request.put(buildUrl(editForm.value.id), editForm.value)
       ElMessage.success('更新成功')
     } else {
-      await axios.post(API_BASE, form.value)
+      await request.post(buildUrl(), form.value)
       ElMessage.success('添加成功')
     }
     form.value = { question: '', answer: '', category: '通用' }
     isEdit.value = false
-    // fetchKnowledge()
-  } catch (error) {
+    fetchKnowledge()
+  } catch {
     ElMessage.error(isEdit.value ? '更新失败' : '添加失败')
-    console.error('Error saving knowledge:', error)
   }
 }
 
@@ -227,12 +233,12 @@ const editKnowledge = (row) => {
 
 const confirmEdit = async () => {
   try {
-    await axios.put(`${API_BASE}/${editForm.value.id}`, editForm.value)
+    await request.put(buildUrl(editForm.value.id), editForm.value)
     ElMessage.success('更新成功')
     editDialogVisible.value = false
-    // fetchKnowledge()
-  } catch (error) {
-    ElMessage.error('更新失败'+error)
+    fetchKnowledge()
+  } catch {
+    ElMessage.error('更新失败')
   }
 }
 
@@ -249,13 +255,12 @@ const deleteKnowledge = async (id) => {
       type: 'warning'
     })
     
-    await axios.delete(`${API_BASE}/${id}`)
+    await request.delete(buildUrl(id))
     ElMessage.success('删除成功')
-    // fetchKnowledge()
+    fetchKnowledge()
   } catch (error) {
     if (error !== 'cancel') {
       ElMessage.error('删除失败')
-      console.error('Error deleting knowledge:', error)
     }
   }
 }
@@ -278,11 +283,7 @@ const getCategoryTagType = (category) => {
   return types[category] || 'info'
 }
 
-const exportKnowledge = () => {
-  ElMessage.info('导出功能开发中...')
-}
-
-// onMounted(fetchKnowledge) 
+onMounted(fetchKnowledge) 
 </script>
 
 <style scoped>
@@ -311,5 +312,27 @@ const exportKnowledge = () => {
   margin-top: 20px;
   display: flex;
   justify-content: flex-end;
+}
+
+.chat-fab {
+  position: fixed;
+  right: 32px;
+  bottom: 32px;
+  width: 52px;
+  height: 52px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1a73e8, #1557b0);
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(26, 115, 232, 0.4);
+  z-index: 9998;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.chat-fab:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 24px rgba(26, 115, 232, 0.5);
 }
 </style>

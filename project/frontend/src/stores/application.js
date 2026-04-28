@@ -6,6 +6,8 @@ export const useApplicationStore = defineStore('application', {
     pendingApplications: [],
     completedApplications: [],
     currentApplication: null,
+    pendingPostponeRequests: [],
+    completedPostponeRequests: [],
     loading: false,
     error: null
   }),
@@ -47,6 +49,36 @@ export const useApplicationStore = defineStore('application', {
       }
     },
 
+    async fetchPendingPostponeRequests() {
+      this.loading = true
+      try {
+        const response = await applicationAPI.getPendingPostponeRequests()
+        if (response.code === 200) {
+          this.pendingPostponeRequests = response.data || []
+        }
+      } catch (error) {
+        this.error = error.message
+        console.error('获取待审核延期申请出错:', error)
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async fetchCompletedPostponeRequests() {
+      this.loading = true
+      try {
+        const response = await applicationAPI.getCompletedPostponeRequests()
+        if (response.code === 200) {
+          this.completedPostponeRequests = response.data || []
+        }
+      } catch (error) {
+        this.error = error.message
+        console.error('获取已审核延期申请出错:', error)
+      } finally {
+        this.loading = false
+      }
+    },
+
     async fetchApplicationDetail(applicationId) {
       this.loading = true
       try {
@@ -75,6 +107,42 @@ export const useApplicationStore = defineStore('application', {
       } catch (error) {
         this.error = error.message
         return { success: false, message: error.response?.data?.message || '提交失败' }
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async approvePostpone(requestId) {
+      this.loading = true
+      try {
+        const response = await applicationAPI.approvePostpone(requestId)
+        if (response.code === 200) {
+          await this.fetchPendingPostponeRequests()
+          await this.fetchCompletedPostponeRequests()
+          return { success: true }
+        }
+        return { success: false, message: response.message }
+      } catch (error) {
+        this.error = error.message
+        return { success: false, message: error.response?.data?.message || '审核失败' }
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async rejectPostpone(requestId, reason) {
+      this.loading = true
+      try {
+        const response = await applicationAPI.rejectPostpone(requestId, reason)
+        if (response.code === 200) {
+          await this.fetchPendingPostponeRequests()
+          await this.fetchCompletedPostponeRequests()
+          return { success: true }
+        }
+        return { success: false, message: response.message }
+      } catch (error) {
+        this.error = error.message
+        return { success: false, message: error.response?.data?.message || '审核失败' }
       } finally {
         this.loading = false
       }

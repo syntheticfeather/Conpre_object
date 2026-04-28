@@ -202,8 +202,10 @@
 
 /* ==================== 4. 底部区域 ==================== */
 
-/* 底部区域网格布局 */
-.bottom-section {
+/* 中间区域网格布局 */
+.center-section {
+  scroll-margin-top: 200px;
+
   display: grid;
   grid-template-columns: 40% 60%;
   gap: 20px;
@@ -247,6 +249,14 @@
 
 .activity-item:hover {
   background-color: #f9f9f9;
+}
+
+.activity-item.clickable {
+  cursor: pointer;
+}
+
+.activity-item.clickable:hover {
+  background-color: #f0f5ff;
 }
 
 /* 新活动项高亮效果 */
@@ -593,7 +603,7 @@
     grid-template-columns: 1fr;
   }
   
-  .bottom-section {
+  .center-section {
     grid-template-columns: 1fr;
   }
 }

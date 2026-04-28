@@ -2,9 +2,9 @@
   <div class="agent-config">
     <h2>Agent 配置管理</h2>
 
-    <el-row :gutter="20">
+    <!-- <el-row :gutter="20"> -->
       <!-- 基础配置 -->
-      <el-col :span="12">
+      <!-- <el-col :span="12">
         <el-card class="config-card">
           <template #header>
             <div class="card-header">
@@ -57,10 +57,10 @@
             </el-form-item>
           </el-form>
         </el-card>
-      </el-col>
+      </el-col> -->
 
       <!-- 知识库检索配置 -->
-      <el-col :span="12">
+      <!-- <el-col :span="12">
         <el-card class="config-card">
           <template #header>
             <div class="card-header">
@@ -95,8 +95,8 @@
             </el-form-item>
           </el-form>
         </el-card>
-      </el-col>
-    </el-row>
+      </el-col> -->
+    <!-- </el-row> -->
 
     <!-- System Prompt 配置 -->
     <el-card class="config-card">
@@ -120,31 +120,6 @@
           </div>
         </el-form-item>
       </el-form>
-    </el-card>
-
-    <!-- 工具调用配置 -->
-    <el-card class="config-card">
-      <template #header>
-        <div class="card-header">
-          <span>MCP 工具调用配置</span>
-        </div>
-      </template>
-      
-      <el-table :data="config.tools" stripe>
-        <el-table-column prop="name" label="工具名称" width="250" />
-        <el-table-column prop="description" label="描述" show-overflow-tooltip />
-        <el-table-column label="启用状态" width="120">
-          <template #default="{ row }">
-            <el-switch v-model="row.enabled" />
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="150">
-          <template #default="{ row }">
-            <el-button type="primary" size="small" @click="editToolConfig(row)">配置</el-button>
-            <el-button type="info" size="small" @click="testTool(row)">测试</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
     </el-card>
 
     <!-- 会话配置 -->
@@ -196,12 +171,16 @@
       </el-table>
     </el-card>
   </div>
+
+  <button class="chat-fab" @click="chatVisible = true" title="智能对话调试">💬</button>
+  <ChatDialog v-if="chatVisible" @close="chatVisible = false" />
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import axios from 'axios'
+import ChatDialog from '@/components/chat/ChatDialog.vue'
 
 const API_BASE = 'http://localhost:8000/config'
 
@@ -251,6 +230,7 @@ const config = ref({
 })
 
 const configHistory = ref([])
+const chatVisible = ref(false)
 
 const fetchConfig = async () => {
   try {
@@ -269,7 +249,7 @@ const saveConfig = async () => {
     ElMessage.success('配置保存成功')
     fetchHistory()
   } catch (error) {
-    ElMessage.error('配置保存失败')
+    ElMessage.error('配置保存失败'+error)
   }
 }
 
@@ -296,8 +276,8 @@ const editToolConfig = (tool) => {
     try {
       tool.config = JSON.parse(value)
       ElMessage.success('配置更新成功')
-    } catch (e) {
-      ElMessage.error('JSON 格式错误')
+    } catch (error) {
+      ElMessage.error('JSON 格式错误'+error)
     }
   })
 }
@@ -359,5 +339,27 @@ onMounted(() => {
   font-size: 12px;
   color: #909399;
   margin-top: 5px;
+}
+
+.chat-fab {
+  position: fixed;
+  right: 32px;
+  bottom: 32px;
+  width: 52px;
+  height: 52px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1a73e8, #1557b0);
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(26, 115, 232, 0.4);
+  z-index: 9998;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.chat-fab:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 24px rgba(26, 115, 232, 0.5);
 }
 </style>

@@ -3,7 +3,7 @@
     <!-- 顶部欢迎区域 -->
     <div class="welcome-section">
       <div class="welcome-info">
-        <h1 class="welcome-title">欢迎回来，管理员 👋</h1>
+        <h1 class="welcome-title">欢迎回来，管理员</h1>
         <div class="date-info">
           <span>今日日期：{{ currentDate }}</span>
           <span class="divider">|</span>
@@ -97,21 +97,21 @@
       </div>
     </div>
 
-    <!-- 区域：最新动态 + 月度审批统计 -->
-    <div class="bottom-section">
+    <!-- 中间区域：最新动态 + 月度审批统计 -->
+    <div class="center-section">
       <!-- 最新动态 -->
       <div class="chart-card">
         <div class="chart-header">
           <div class="title-section">
             <h3 class="chart-title">最新动态</h3>
-            <!-- <div class="connection-status" :class="{ connected: isStreamConnected, disconnected: !isStreamConnected }">
+            <div class="connection-status" :class="{ connected: isStreamConnected, disconnected: !isStreamConnected }">
               <el-icon v-if="isStreamConnected"><CircleCheck /></el-icon>
               <el-icon v-else><Warning /></el-icon>
               <span>{{ isStreamConnected ? '实时连接中' : '连接断开' }}</span>
               <el-button v-if="!isStreamConnected" size="small" @click="reconnectStream" type="primary" plain>
                 重新连接
               </el-button>
-            </div> -->
+            </div>
           </div>
           <a href="javascript:void(0)" class="view-all" @click="toggleViewAll">
             {{ showAllActivities ? '收起' : '查看详细信息' }}
@@ -119,7 +119,7 @@
           </a>
         </div>
         <div class="activity-list">
-          <div v-for="(activity, index) in displayActivities" :key="index" class="activity-item" :class="{ 'new-item': activity.isNew }" @mouseenter="activity.isNew = false">
+          <div v-for="(activity, index) in displayActivities" :key="index" class="activity-item" :class="{ 'new-item': activity.isNew, 'clickable': hasBusinessRoute(activity) }" @mouseenter="activity.isNew = false" @click="handleActivityClick(activity)">
             <span class="activity-dot" :style="{ backgroundColor: activity.color }"></span>
             <div class="activity-content">
               <div class="activity-text">{{ activity.text }}</div>
@@ -153,7 +153,7 @@
       </div>
     </div>
 
-    <!-- 中间图表区域 -->
+    <!-- 图表区域 -->
     <div class="charts-section">
       <!-- 左侧：申请趋势图 -->
       <div class="chart-card trend-chart left-chart">
@@ -237,8 +237,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, reactive, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, onUnmounted, reactive, computed, nextTick } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { userAPI, loanApplicationAPI, notificationAPI } from '@/api'
 import * as echarts from 'echarts'
 import { 
@@ -253,11 +253,10 @@ import {
   CircleCheck,
   Monitor
 } from '@element-plus/icons-vue'
-import { createPieTooltipConfig } from '@/utils/pieTooltipHelper'
-import { useAuthStore } from '@/stores/auth'
+import { useNotificationStream } from '@/composables/useNotificationStream'
 
 const router = useRouter()
-const authStore = useAuthStore()
+const route = useRoute()
 
 // 当前日期 - 使用真实日期
 const getCurrentDate = () => {
@@ -312,12 +311,89 @@ const purposeDistribution = ref([])
 const activities = ref([])
 const showAllActivities = ref(false)
 
-// SSE 实时消息流相关变量
-const isStreamConnected = ref(false)
-const streamError = ref(null)
-const reconnectAttempts = ref(0)
-const MAX_RECONNECT_ATTEMPTS = 10
-let sseReader = null
+const {
+  isStreamConnected,
+  reconnectStream,
+  initNotificationStreamWithFetch,
+  closeNotificationStream,
+  requestNotificationPermission
+} = useNotificationStream({
+  onNotification: (notification) => {
+    // 检查重复消息
+    const isDuplicate = activities.value.some(
+      activity => activity.rawNotification?.id === notification.id
+    )
+    if (isDuplicate) return
+
+    // 根据是否已读确定颜色
+    const color = notification.readFlag ? '#5AD8A6' : '#F87474'
+
+    // 格式化时间
+    let timeStr = notification.createdAt
+    if (timeStr && timeStr.includes(' ')) {
+      timeStr = timeStr.split(' ')[1].substring(0, 5)
+    }
+
+    // 构建显示文本
+    const userIdText = notification.userId ? `用户${notification.userId}` : '系统'
+    const text = `${userIdText}的${notification.content}`
+
+    // 创建新活动项
+    const newActivity = {
+      text,
+      time: timeStr,
+      color,
+      rawNotification: notification,
+      isNew: true
+    }
+
+    activities.value.unshift(newActivity)
+
+    // 如果开启了显示全部，限制显示数量
+    if (!showAllActivities.value && activities.value.length > 5) {
+      activities.value = activities.value.slice(0, 5)
+    }
+
+    // 显示桌面通知
+    if ('Notification' in window && Notification.permission === 'granted') {
+      try {
+        new Notification('风控系统新通知', {
+          body: notification.content,
+          icon: '/favicon.ico',
+          tag: `notification-${notification.id}`
+        })
+      } catch (error) {
+        console.error('显示桌面通知失败:', error)
+      }
+    }
+  },
+  notificationTitle: '风控系统新通知'
+})
+
+// 加载历史通知作为初始活动数据
+const fetchInitialActivities = async () => {
+  try {
+    const res = await notificationAPI.getAdminNotifications()
+    if (res.code === 200 && res.data?.length) {
+      activities.value = res.data.map(notification => {
+        const color = notification.readFlag ? '#5AD8A6' : '#F87474'
+        let timeStr = notification.createdAt
+        if (timeStr && timeStr.includes(' ')) {
+          timeStr = timeStr.split(' ')[1].substring(0, 5)
+        }
+        return {
+          text: `用户${notification.userId}的${notification.content}`,
+          time: timeStr,
+          color,
+          rawNotification: notification,
+          isNew: false
+        }
+      })
+    }
+  } catch (error) {
+    console.error('加载历史通知失败:', error)
+  }
+}
 
 // 显示的活动列表（默认只显示最新 5 条）
 const displayActivities = computed(() => {
@@ -330,6 +406,27 @@ const displayActivities = computed(() => {
 // 切换显示详细信息/收起
 const toggleViewAll = () => {
   showAllActivities.value = !showAllActivities.value
+}
+
+// 判断活动项是否有可跳转的业务路由
+const hasBusinessRoute = (activity) => {
+  const notif = activity.rawNotification
+  if (!notif) return false
+  // 这些业务类型支持跳转到待办审核页
+  return ['LOAN_APPLICATION_APPROVE', 'LOAN_APPLICATION_REJECT'].includes(notif.businessType)
+}
+
+// 活动项点击跳转
+const handleActivityClick = (activity) => {
+  const notif = activity.rawNotification
+  if (!notif) return
+
+  switch (notif.businessType) {
+    case 'LOAN_APPLICATION_APPROVE':
+    case 'LOAN_APPLICATION_REJECT':
+      router.push({ path: '/dashboard/pending-applications', query: { applicationId: notif.businessId } })
+      break
+  }
 }
 
 // 审批统计
@@ -347,35 +444,18 @@ const monthlyApprovalData = ref({
 })
 
 // 图表引用
-const userChartRef = ref(null)
-const loanApplicationChartRef = ref(null)
-const creditScoreDistributionRef = ref(null)
-const riskLevelRef = ref(null)
 const applicationTrendRef = ref(null)
 const riskDistributionRef = ref(null)
 const monthlyApprovalRef = ref(null)
 
 // 图表实例
-let userChart = null
-let loanApplicationChart = null
-let creditScoreDistributionChart = null
-let riskLevelChart = null
 let applicationTrendChart = null
 let riskDistributionChart = null
 let monthlyApprovalChart = null
 
 // 窗口大小变化处理
 const handleResize = () => {
-  const charts = [
-    userChart,
-    loanApplicationChart,
-    creditScoreDistributionChart,
-    riskLevelChart,
-    applicationTrendChart,
-    riskDistributionChart,
-    monthlyApprovalChart
-  ]
-  charts.forEach(chart => {
+  ;[applicationTrendChart, riskDistributionChart, monthlyApprovalChart].forEach(chart => {
     if (chart) {
       chart.resize()
     }
@@ -408,7 +488,6 @@ const fetchUserData = async () => {
         '逾期': 0
       }
       
-      const creditScores = []
       let totalLoanAmount = 0
       let monthlyLoanAmount = 0
       const overdueCount = users.filter(u => u.loanStatus === '逾期').length
@@ -419,9 +498,6 @@ const fetchUserData = async () => {
       users.forEach(user => {
         if (user.loanStatus) {
           loanStatusCount[user.loanStatus] = (loanStatusCount[user.loanStatus] || 0) + 1
-        }
-        if (user.creditScore) {
-          creditScores.push(user.creditScore)
         }
         
         // 统计贷款金额（模拟数据，因为 API 可能不返回）
@@ -460,113 +536,6 @@ const fetchUserData = async () => {
       if (users.length > 0) {
         stats.overdueRate = ((overdueCount / users.length) * 100).toFixed(1)
         stats.overdueChange = -0.4 // TODO: 计算与上月的变化
-      }
-      
-      // 用户统计图表
-      if (userChartRef.value) {
-        const totalUsers = Object.values(loanStatusCount).reduce((sum, value) => sum + value, 0);
-        // 使用 totalUsers 计算百分比或显示总数
-        userChart = echarts.init(userChartRef.value)
-        userChart.setOption({
-          tooltip: createPieTooltipConfig(totalUsers),
-          legend: {
-            top: '5%',
-            left: 'center'
-          },
-          series: [
-            {
-              name: '贷款状态',
-              type: 'pie',
-              radius: ['40%', '70%'],
-              avoidLabelOverlap: false,
-              itemStyle: {
-                borderRadius: 10,
-                borderColor: '#fff',
-                borderWidth: 2
-              },
-              label: {
-                show: false,
-                position: 'center'
-              },
-              emphasis: {
-                label: {
-                  show: true,
-                  fontSize: 20,
-                  fontWeight: 'bold'
-                }
-              },
-              labelLine: {
-                show: false
-              },
-              data: Object.entries(loanStatusCount).map(([name, value]) => ({
-                value,
-                name
-              }))
-            }
-          ]
-        })
-      }
-      
-      // 用户信用分分布图表
-      const creditScoreRanges = {
-        '0-300': 0,
-        '301-600': 0,
-        '601-700': 0,
-        '701-800': 0,
-        '801-900': 0,
-        '901-1000': 0
-      }
-      
-      creditScores.forEach(score => {
-        if (score <= 300) creditScoreRanges['0-300']++
-        else if (score <= 600) creditScoreRanges['301-600']++
-        else if (score <= 700) creditScoreRanges['601-700']++
-        else if (score <= 800) creditScoreRanges['701-800']++
-        else if (score <= 900) creditScoreRanges['801-900']++
-        else creditScoreRanges['901-1000']++
-      })
-      
-      if (creditScoreDistributionRef.value) {
-        creditScoreDistributionChart = echarts.init(creditScoreDistributionRef.value)
-        creditScoreDistributionChart.setOption({
-          tooltip: {
-            trigger: 'axis',
-            axisPointer: {
-              type: 'shadow'
-            }
-          },
-          grid: {
-            left: '3%',
-            right: '4%',
-            bottom: '3%',
-            containLabel: true
-          },
-          xAxis: {
-            type: 'category',
-            data: Object.keys(creditScoreRanges)
-          },
-          yAxis: {
-            type: 'value'
-          },
-          series: [
-            {
-              name: '用户数',
-              type: 'bar',
-              data: Object.values(creditScoreRanges),
-              label: {
-                show: true,
-                position: 'top',
-                formatter: '{c}'
-              },
-              itemStyle: {
-                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                  { offset: 0, color: '#5B8FF9' },
-                  { offset: 1, color: '#C6E5FF' }
-                ])
-              }
-            }
-          ]
-        })
       }
     }
   } catch (error) {
@@ -706,51 +675,7 @@ const fetchLoanApplicationData = async () => {
     
     // 更新月度审批统计数据
     monthlyApprovalData.value = monthlyStats
-    
-    // 贷款申请统计图表
-    if (loanApplicationChartRef.value) {
-      const totalApplications = Object.values(statusCount).reduce((sum, value) => sum + value, 0)
-      loanApplicationChart = echarts.init(loanApplicationChartRef.value)
-      loanApplicationChart.setOption({
-        tooltip: createPieTooltipConfig(totalApplications),
-        legend: {
-          top: '5%',
-          left: 'center'
-        },
-        series: [
-          {
-            name: '申请状态',
-            type: 'pie',
-            radius: ['40%', '70%'],
-            avoidLabelOverlap: false,
-            itemStyle: {
-              borderRadius: 10,
-              borderColor: '#fff',
-              borderWidth: 2
-            },
-            label: {
-              show: false,
-              position: 'center'
-            },
-            emphasis: {
-              label: {
-                show: true,
-                fontSize: 20,
-                fontWeight: 'bold'
-              }
-            },
-            labelLine: {
-              show: false
-            },
-            data: Object.entries(statusCount).map(([name, value]) => ({
-              value,
-              name
-            }))
-          }
-        ]
-      })
-    }
-    
+
     // 申请趋势图表
     const monthlyData = {}
     Object.entries(applyTimeData).forEach(([date, count]) => {
@@ -981,54 +906,6 @@ const fetchRiskLevelData = async () => {
       riskStats.lowRisk = riskLevelCount['1']
       riskStats.mediumRisk = riskLevelCount['2']
       riskStats.highRisk = riskLevelCount['3']
-      
-      if (riskLevelRef.value) {
-        riskLevelChart = echarts.init(riskLevelRef.value)
-        riskLevelChart.setOption({
-          tooltip: {
-            trigger: 'axis',
-            axisPointer: {
-              type: 'shadow'
-            }
-          },
-          grid: {
-            left: '3%',
-            right: '4%',
-            bottom: '3%',
-            containLabel: true
-          },
-          xAxis: {
-            type: 'category',
-            data: ['无风险', '低风险', '中风险', '高风险']
-          },
-          yAxis: {
-            type: 'value'
-          },
-          series: [
-            {
-              name: '用户数',
-              type: 'bar',
-              data: [riskLevelCount['0'], riskLevelCount['1'], riskLevelCount['2'], riskLevelCount['3']],
-              label: {
-                show: true,
-                position: 'top',
-                formatter: '{c}'
-              },
-              itemStyle: {
-                color: function(params) {
-                  const colors = ['#5AD8A6', '#5B8FF9', '#F6BD16', '#F87474']
-                  return colors[params.dataIndex]
-                }
-              }
-            }
-          ]
-        })
-      }
-      
-      // 更新风险统计数据
-      riskStats.lowRisk = riskLevelCount['1']
-      riskStats.mediumRisk = riskLevelCount['2']
-      riskStats.highRisk = riskLevelCount['3']
       riskStats.totalUsers = totalUsers
       
       // 风险分布环形图
@@ -1124,323 +1001,37 @@ const fetchPurposeDistribution = async () => {
   }
 }
 
-// 获取最新动态数据
-const fetchActivities = async () => {
-  try {
-    // 调用通知 API 获取管理员通知
-    const response = await notificationAPI.getAdminNotifications()
-    if (response.code === 200) {
-      // 将通知数据映射为活动数据
-      activities.value = response.data.map(notification => {
-        // 根据是否已读确定颜色
-        const color = notification.readFlag ? '#5AD8A6' : '#F87474'
-        // 格式化时间：显示创建时间的小时和分钟
-        let timeStr = notification.createdAt
-        if (timeStr && timeStr.includes(' ')) {
-          timeStr = timeStr.split(' ')[1].substring(0, 5) // 提取 "HH:mm"
-        }
-        // 添加用户 ID 前缀
-        const text = `用户${notification.userId}的${notification.content}`
-        
-        return {
-          text,
-          time: timeStr,
-          color,
-          rawNotification: notification,
-          isNew: false // 历史数据不标记为新消息
-        }
-      })
-    } else {
-      console.error('获取通知数据失败:', response.message)
-      // 如果 API 失败，使用模拟数据作为后备
-      useFallbackActivities()
-    }
-  } catch (error) {
-    console.error('获取最新动态数据失败:', error)
-    // 出错时使用模拟数据作为后备
-    useFallbackActivities()
-  }
-}
-
-// ==================== SSE 实时消息流实现 ====================
-
-// 使用 Fetch API 建立 SSE 连接
-const initNotificationStreamWithFetch = async () => {
-  try {
-    console.log('正在建立 SSE 实时通知流连接...')
-    
-    // 检查用户是否已登录
-    if (!authStore.isAuthenticated) {
-      console.log('用户未登录，跳过 SSE 连接')
-      isStreamConnected.value = false
-      streamError.value = '用户未登录'
-      return
-    }
-    
-    // 关闭现有连接
-    closeNotificationStream()
-    
-    // 重置连接状态
-    isStreamConnected.value = false
-    streamError.value = null
-    
-    // 构建 SSE 连接 URL
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || window.location.origin
-    const streamUrl = `${baseUrl}/api/notifications/admin/stream`
-    
-    console.log('SSE 连接 URL:', streamUrl)
-    
-    // 使用 Fetch API 建立 SSE 连接
-    const headers = {
-      'Accept': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive'
-    }
-    
-    // 添加认证头（使用 auth-store 中的 token）
-    const getToken = () => {
-      const stored = localStorage.getItem('auth-store')
-      if (!stored) return null
-      try {
-        const data = JSON.parse(stored)
-        return data.token || null
-      } catch {
-        return null
-      }
-    }
-    
-    const token = getToken() || authStore.token
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`
-      console.log('已添加认证头，token 长度:', token.length)
-    } else {
-      console.warn('未找到有效的 token，SSE 连接可能因认证失败')
-    }
-    
-    const response = await fetch(streamUrl, { headers })
-    
-    if (!response.ok) {
-      throw new Error(`SSE 连接失败: ${response.status} ${response.statusText}`)
-    }
-    
-    // 获取可读流
-    const reader = response.body.getReader()
-    sseReader = reader
-    isStreamConnected.value = true
-    reconnectAttempts.value = 0
-    console.log('SSE 连接已建立')
-    
-    // 持续读取流数据
-    const decoder = new TextDecoder()
-    
-    const readStream = async () => {
-      try {
-        while (true) {
-          const { done, value } = await reader.read()
-          
-          if (done) {
-            console.log('SSE 流已结束')
-            isStreamConnected.value = false
-            // 尝试重连
-            retryConnect()
-            break
-          }
-          
-          // 解码并处理数据块
-          const chunk = decoder.decode(value, { stream: true })
-          processSSEMessages(chunk)
-        }
-      } catch (error) {
-        console.error('读取 SSE 流失败:', error)
-        isStreamConnected.value = false
-        streamError.value = error.message
-        // 尝试重连
-        retryConnect()
-      }
-    }
-    
-    readStream()
-    
-  } catch (error) {
-    console.error('初始化 SSE 连接失败:', error)
-    isStreamConnected.value = false
-    streamError.value = error.message
-    // 尝试重连
-    retryConnect()
-  }
-}
-
-// 处理 SSE 消息块
-const processSSEMessages = (chunk) => {
-  const lines = chunk.split('\n')
-  
-  lines.forEach(line => {
-    if (line.startsWith('data: ')) {
-      try {
-        const data = line.substring(6) // 移除 "data: " 前缀
-        if (data.trim()) {
-          const notification = JSON.parse(data)
-          console.log('收到实时通知:', notification)
-          handleNewNotification(notification)
-        }
-      } catch (error) {
-        console.error('解析 SSE 数据失败:', error, line)
-      }
-    }
-  })
-}
-
-// 处理新通知
-const handleNewNotification = (notification) => {
-  // 检查重复消息
-  const isDuplicate = activities.value.some(
-    activity => activity.rawNotification?.id === notification.id
-  )
-  
-  if (isDuplicate) {
-    console.log('忽略重复通知:', notification.id)
-    return
-  }
-  
-  // 根据是否已读确定颜色
-  const color = notification.readFlag ? '#5AD8A6' : '#F87474'
-  
-  // 格式化时间
-  let timeStr = notification.createdAt
-  if (timeStr && timeStr.includes(' ')) {
-    timeStr = timeStr.split(' ')[1].substring(0, 5) // 提取 "HH:mm"
-  }
-  
-  // 构建显示文本
-  const userIdText = notification.userId ? `用户${notification.userId}` : '系统'
-  const text = `${userIdText}的${notification.content}`
-  
-  // 创建新活动项
-  const newActivity = {
-    text,
-    time: timeStr,
-    color,
-    rawNotification: notification,
-    isNew: true
-  }
-  
-  // 添加到活动列表顶部（最新消息显示在最上面）
-  activities.value.unshift(newActivity)
-  
-  // 如果开启了显示全部，更新显示
-  if (!showAllActivities.value && activities.value.length > 5) {
-    // 保持只显示最新5条
-    activities.value = activities.value.slice(0, 5)
-  }
-  
-  // 显示桌面通知（需要用户授权）
-  showDesktopNotification(notification)
-}
-
-// 显示桌面通知
-const showDesktopNotification = (notification) => {
-  if ('Notification' in window && Notification.permission === 'granted') {
-    try {
-      new Notification('风控系统新通知', {
-        body: notification.content,
-        icon: '/favicon.ico',
-        tag: `notification-${notification.id}`
-      })
-    } catch (error) {
-      console.error('显示桌面通知失败:', error)
-    }
-  }
-}
-
-// 请求桌面通知权限
-const requestNotificationPermission = () => {
-  if ('Notification' in window && Notification.permission === 'default') {
-    Notification.requestPermission().then(permission => {
-      console.log('桌面通知权限状态:', permission)
-    })
-  }
-}
-
-// 重连机制
-const retryConnect = () => {
-  if (reconnectAttempts.value < MAX_RECONNECT_ATTEMPTS) {
-    reconnectAttempts.value++
-    const delay = Math.min(1000 * Math.pow(2, reconnectAttempts.value), 30000)
-    console.log(`将在 ${delay/1000} 秒后尝试重连 (第 ${reconnectAttempts.value}/${MAX_RECONNECT_ATTEMPTS} 次)`)
-    
-    setTimeout(() => {
-      if (!isStreamConnected.value) {
-        initNotificationStreamWithFetch()
-      }
-    }, delay)
-  } else {
-    console.error('已达到最大重连次数，停止重连')
-  }
-}
-
-// 关闭 SSE 连接
-const closeNotificationStream = () => {
-  if (sseReader) {
-    sseReader.cancel()
-    sseReader = null
-  }
-  isStreamConnected.value = false
-  console.log('SSE 连接已关闭')
-}
-
-// 手动重新连接
-// const reconnectStream = () => {
-//   reconnectAttempts.value = 0
-//   initNotificationStreamWithFetch()
-// }
-
-// 后备模拟数据函数
-const useFallbackActivities = () => {
-  activities.value = [
-    { text: '用户 张伟 的贷款申请 A20240001 已批准', time: '10 分钟前', color: '#5AD8A6', rawNotification: null, isNew: false },
-    { text: '新用户 周婷 注册，提交信用极速贷申请', time: '25 分钟前', color: '#5B8FF9', rawNotification: null, isNew: false },
-    { text: '用户 赵丽 账户已被冻结 (风控触发)', time: '1 小时前', color: '#F6BD16', rawNotification: null, isNew: false },
-    { text: '用户 吴磊 的申请 A20240008 已批准放款', time: '2 小时前', color: '#5AD8A6', rawNotification: null, isNew: false },
-    { text: '系统检测到 5 条可疑申请，已转人工复核', time: '3 小时前', color: '#F87474', rawNotification: null, isNew: false }
-  ]
-}
-
 // 组件挂载时加载数据
 onMounted(async () => {
-  // 加载初始数据
   await fetchUserData()
   await fetchLoanApplicationData()
   await fetchRiskLevelData()
   await fetchPurposeDistribution()
-  await fetchActivities() // 加载历史通知数据
-  
-  // 请求桌面通知权限
+
+  await fetchInitialActivities()
   requestNotificationPermission()
-  
-  // 建立 SSE 实时通知流连接
   initNotificationStreamWithFetch()
-  
+
   window.addEventListener('resize', handleResize)
+
+  // 检查是否需要滚动到最新动态区域
+  if (route.query.scrollTo === 'activities') {
+    await nextTick()
+    setTimeout(() => {
+      const el = document.querySelector('.center-section')
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }, 500)
+  }
 })
 
 // 组件卸载时清理
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
-  
-  // 关闭 SSE 实时通知流连接
   closeNotificationStream()
-  
-  const charts = [
-    userChart,
-    loanApplicationChart,
-    creditScoreDistributionChart,
-    riskLevelChart,
-    applicationTrendChart,
-    riskDistributionChart,
-    monthlyApprovalChart
-  ]
-  
-  charts.forEach(chart => {
+
+  ;[applicationTrendChart, riskDistributionChart, monthlyApprovalChart].forEach(chart => {
     if (chart) {
       chart.dispose()
     }

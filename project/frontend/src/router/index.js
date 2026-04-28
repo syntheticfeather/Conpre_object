@@ -22,7 +22,6 @@ const KnowledgeManagementView = () => import('@/views/system/KnowledgeManagement
 const ConversationLogsView = () => import('@/views/system/ConversationLogsView.vue')
 const AgentConfigView = () => import('@/views/system/AgentConfigView.vue')
 const MCPToolsView = () => import('@/views/system/MCPToolsView.vue')
-const DashboardStatsView = () => import('@/views/system/DashboardStatsView.vue')
 
 const routes = [
   {
@@ -62,7 +61,7 @@ const routes = [
       { path: 'conversation-logs', name: 'ConversationLogs', component: ConversationLogsView },
       { path: 'agent-config', name: 'AgentConfig', component: AgentConfigView },
       { path: 'mcp-tools', name: 'MCPTools', component: MCPToolsView },
-      { path: 'dashboard-stats', name: 'DashboardStats', component: DashboardStatsView }
+      { path: 'dashboard-stats', redirect: { name: 'ConversationLogs' } },
     ]
   },
 

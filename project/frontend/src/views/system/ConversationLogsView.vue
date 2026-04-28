@@ -1,16 +1,179 @@
 <template>
-  <div class="conversation-logs">
-    <h2>对话日志管理</h2>
+  <div class="cs-manage-page">
+    <h2>对话统计</h2>
 
-    <!-- 搜索和过滤 -->
+    <!-- ==================== 数据统计 ==================== -->
+
+    <el-card class="filter-card">
+      <el-form :inline="true">
+        <el-form-item label="时间范围">
+          <el-date-picker
+            v-model="dateRange"
+            type="daterange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            value-format="YYYY-MM-DD"
+            @change="fetchStatsData"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="fetchStatsData">查询</el-button>
+          <el-button @click="exportReport">导出报表</el-button>
+        </el-form-item>
+      </el-form>
+    </el-card>
+
+    <el-row :gutter="20" class="metrics-row">
+      <el-col :span="6">
+        <el-card class="metric-card">
+          <div class="metric-header">
+            <span class="metric-title">对话总数</span>
+            <el-tag type="primary">今日 {{ stats.todayConversations }}</el-tag>
+          </div>
+          <div class="metric-value">{{ stats.totalConversations }}</div>
+          <div class="metric-footer">
+            <span :class="stats.conversationTrend >= 0 ? 'up' : 'down'">
+              {{ stats.conversationTrend >= 0 ? '↑' : '↓' }} {{ Math.abs(stats.conversationTrend) }}%
+            </span>
+            <span class="metric-label">较昨日</span>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card class="metric-card">
+          <div class="metric-header">
+            <span class="metric-title">活跃用户</span>
+            <el-tag type="success">今日 {{ stats.todayActiveUsers }}</el-tag>
+          </div>
+          <div class="metric-value">{{ stats.totalActiveUsers }}</div>
+          <div class="metric-footer">
+            <span :class="stats.userTrend >= 0 ? 'up' : 'down'">
+              {{ stats.userTrend >= 0 ? '↑' : '↓' }} {{ Math.abs(stats.userTrend) }}%
+            </span>
+            <span class="metric-label">较昨日</span>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card class="metric-card">
+          <div class="metric-header">
+            <span class="metric-title">知识库问答对</span>
+            <el-tag type="warning">{{ stats.knowledgeItems }}</el-tag>
+          </div>
+          <div class="metric-value">{{ stats.knowledgeItems }}</div>
+          <div class="metric-footer">
+            <span class="metric-label">总计</span>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card class="metric-card">
+          <div class="metric-header">
+            <span class="metric-title">平均响应时间</span>
+            <el-tag :type="stats.avgResponseTime < 1000 ? 'success' : 'warning'">
+              {{ stats.avgResponseTime }}ms
+            </el-tag>
+          </div>
+          <div class="metric-value">{{ stats.avgResponseTime }}ms</div>
+          <div class="metric-footer">
+            <span :class="stats.responseTimeTrend <= 0 ? 'up' : 'down'">
+              {{ stats.responseTimeTrend >= 0 ? '↑' : '↓' }} {{ Math.abs(stats.responseTimeTrend) }}%
+            </span>
+            <span class="metric-label">较昨日</span>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+
+    <el-row :gutter="20" class="metrics-row">
+      <el-col :span="8">
+        <el-card class="chart-card">
+          <template #header><span>工具调用次数</span></template>
+          <div class="chart-container"><div ref="toolCallChartRef" class="chart"></div></div>
+        </el-card>
+      </el-col>
+      <el-col :span="8">
+        <el-card class="chart-card">
+          <template #header><span>问题分类分布</span></template>
+          <div class="chart-container"><div ref="categoryChartRef" class="chart"></div></div>
+        </el-card>
+      </el-col>
+      <el-col :span="8">
+        <el-card class="chart-card">
+          <template #header><span>对话趋势（7 天）</span></template>
+          <div class="chart-container"><div ref="trendChartRef" class="chart"></div></div>
+        </el-card>
+      </el-col>
+    </el-row>
+
+    <el-row :gutter="20" class="metrics-row">
+      <el-col :span="12">
+        <el-card class="list-card">
+          <template #header><span>热门问题 TOP 10</span></template>
+          <el-table :data="topQuestions" stripe :show-header="false">
+            <el-table-column prop="rank" label="排名" width="60" />
+            <el-table-column prop="question" label="问题" show-overflow-tooltip />
+            <el-table-column prop="count" label="次数" width="80" sortable>
+              <template #default="{ row }"><el-tag type="success">{{ row.count }}</el-tag></template>
+            </el-table-column>
+          </el-table>
+        </el-card>
+      </el-col>
+      <el-col :span="12">
+        <el-card class="list-card">
+          <template #header><span>未解决问题 TOP 10</span></template>
+          <el-table :data="unresolvedQuestions" stripe :show-header="false">
+            <el-table-column prop="rank" label="排名" width="60" />
+            <el-table-column prop="question" label="问题" show-overflow-tooltip />
+            <el-table-column prop="count" label="次数" width="80" sortable>
+              <template #default="{ row }"><el-tag type="danger">{{ row.count }}</el-tag></template>
+            </el-table-column>
+            <el-table-column label="操作" width="100">
+              <template #default="{ row }">
+                <el-button type="primary" size="small" @click="addToKnowledge(row)">添加</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-card>
+      </el-col>
+    </el-row>
+
+    <el-row :gutter="20" class="metrics-row">
+      <el-col :span="12">
+        <el-card class="chart-card">
+          <template #header><span>用户满意度</span></template>
+          <div class="satisfaction-container">
+            <el-progress
+              type="dashboard"
+              :percentage="stats.satisfactionRate"
+              :color="getSatisfactionColor(stats.satisfactionRate)"
+            />
+            <div class="satisfaction-detail">
+              <div><span class="label">好评</span><span class="value">{{ stats.positiveFeedback }}</span></div>
+              <div><span class="label">差评</span><span class="value">{{ stats.negativeFeedback }}</span></div>
+            </div>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="12">
+        <el-card class="chart-card">
+          <template #header><span>响应时间分布</span></template>
+          <div class="chart-container"><div ref="responseTimeChartRef" class="chart"></div></div>
+        </el-card>
+      </el-col>
+    </el-row>
+
+    <el-divider />
+
+    <!-- ==================== 对话日志 ==================== -->
+
+    <h3>对话日志</h3>
+
     <el-card class="search-form">
       <el-form :inline="true" :model="searchForm">
         <el-form-item label="会话 ID">
-          <el-input 
-            v-model="searchForm.sessionId" 
-            placeholder="输入会话 ID" 
-            clearable
-          />
+          <el-input v-model="searchForm.sessionId" placeholder="输入会话 ID" clearable />
         </el-form-item>
         <el-form-item label="时间范围">
           <el-date-picker
@@ -36,21 +199,14 @@
       </el-form>
     </el-card>
 
-    <!-- 会话列表 -->
     <el-card class="logs-list">
       <div class="list-header">
-        <h3>会话列表（共 {{ total }} 条）</h3>
+        <span>会话列表（共 {{ total }} 条）</span>
         <el-button type="danger" :disabled="selectedSessions.length === 0" @click="batchDelete">
           批量删除 ({{ selectedSessions.length }})
         </el-button>
       </div>
-      
-      <el-table 
-        :data="paginatedSessions" 
-        stripe 
-        v-loading="loading"
-        @selection-change="handleSelectionChange"
-      >
+      <el-table :data="paginatedSessions" stripe v-loading="loading" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" />
         <el-table-column prop="session_id" label="会话 ID" width="280" show-overflow-tooltip />
         <el-table-column prop="message_count" label="消息数" width="90" sortable />
@@ -58,26 +214,18 @@
         <el-table-column prop="last_message" label="最后一条消息" show-overflow-tooltip />
         <el-table-column label="标记" width="100">
           <template #default="{ row }">
-            <el-tag :type="row.is_flagged ? 'danger' : 'success'">
-              {{ row.is_flagged ? '问题对话' : '正常' }}
-            </el-tag>
+            <el-tag :type="row.is_flagged ? 'danger' : 'success'">{{ row.is_flagged ? '问题对话' : '正常' }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="180" fixed="right">
+        <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="viewDetail(row.session_id)">查看详情</el-button>
-            <el-button 
-              :type="row.is_flagged ? 'warning' : 'danger'" 
-              size="small" 
-              @click="toggleFlag(row)"
-            >
+            <el-button :type="row.is_flagged ? 'warning' : 'danger'" size="small" @click="toggleFlag(row)">
               {{ row.is_flagged ? '取消标记' : '标记问题' }}
             </el-button>
           </template>
         </el-table-column>
       </el-table>
-
-      <!-- 分页 -->
       <div class="pagination-container">
         <el-pagination
           v-model:current-page="currentPage"
@@ -85,13 +233,11 @@
           :page-sizes="[10, 20, 50, 100]"
           layout="total, sizes, prev, pager, next, jumper"
           :total="total"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
+          @size-change="currentPage = 1"
         />
       </div>
     </el-card>
 
-    <!-- 会话详情对话框 -->
     <el-dialog v-model="detailVisible" title="会话详情" width="900px">
       <div class="chat-detail">
         <div v-for="(msg, index) in currentMessages" :key="index" class="message-item">
@@ -101,27 +247,171 @@
             </el-tag>
             <span class="message-time">{{ formatTime(msg.timestamp) }}</span>
           </div>
-          <div class="message-content">
-            {{ msg.content }}
-          </div>
+          <div class="message-content">{{ msg.content }}</div>
           <div v-if="msg.is_tool_call" class="tool-call-tag">
             <el-tag type="warning" size="small">工具调用</el-tag>
           </div>
         </div>
       </div>
-      <template #footer>
-        <el-button @click="detailVisible = false">关闭</el-button>
-      </template>
+      <template #footer><el-button @click="detailVisible = false">关闭</el-button></template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import * as echarts from 'echarts'
 import axios from 'axios'
 
-const API_BASE = 'http://localhost:8000/logs'
+const LOGS_API = 'http://localhost:8000/logs'
+const STATS_API = 'http://localhost:8000/stats'
+
+// ==================== 数据统计 ====================
+
+const dateRange = ref([])
+
+const stats = ref({
+  totalConversations: 0,
+  todayConversations: 0,
+  conversationTrend: 0,
+  totalActiveUsers: 0,
+  todayActiveUsers: 0,
+  userTrend: 0,
+  knowledgeItems: 0,
+  avgResponseTime: 0,
+  responseTimeTrend: 0,
+  satisfactionRate: 0,
+  positiveFeedback: 0,
+  negativeFeedback: 0
+})
+const topQuestions = ref([])
+const unresolvedQuestions = ref([])
+
+const toolCallChartRef = ref(null)
+const categoryChartRef = ref(null)
+const trendChartRef = ref(null)
+const responseTimeChartRef = ref(null)
+
+let toolCallChart = null
+let categoryChart = null
+let trendChart = null
+let responseTimeChart = null
+
+const getSatisfactionColor = (percentage) => {
+  if (percentage >= 80) return '#67c23a'
+  if (percentage >= 60) return '#e6a23c'
+  return '#f56c6c'
+}
+
+const renderToolCallChart = (data) => {
+  if (!toolCallChartRef.value) return
+  if (!toolCallChart) toolCallChart = echarts.init(toolCallChartRef.value)
+  toolCallChart.setOption({
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+    xAxis: { type: 'category', data: data.map(d => d.name), axisLabel: { rotate: 30 } },
+    yAxis: { type: 'value' },
+    series: [{ type: 'bar', data: data.map(d => d.value), itemStyle: { color: '#409EFF' } }]
+  })
+}
+
+const renderCategoryChart = (data) => {
+  if (!categoryChartRef.value) return
+  if (!categoryChart) categoryChart = echarts.init(categoryChartRef.value)
+  categoryChart.setOption({
+    tooltip: { trigger: 'item' },
+    series: [{
+      type: 'pie', radius: ['40%', '70%'],
+      data: data.map(d => ({ name: d.name, value: d.value })),
+      emphasis: { itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)' } }
+    }]
+  })
+}
+
+const renderTrendChart = (data) => {
+  if (!trendChartRef.value) return
+  if (!trendChart) trendChart = echarts.init(trendChartRef.value)
+  trendChart.setOption({
+    tooltip: { trigger: 'axis' },
+    grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+    xAxis: { type: 'category', data: data.map(d => d.date), boundaryGap: false },
+    yAxis: { type: 'value' },
+    series: [{
+      type: 'line', smooth: true, data: data.map(d => d.count),
+      areaStyle: { color: 'rgba(64, 158, 255, 0.15)' },
+      lineStyle: { color: '#409EFF' }, itemStyle: { color: '#409EFF' }
+    }]
+  })
+}
+
+const renderResponseTimeChart = (data) => {
+  if (!responseTimeChartRef.value) return
+  if (!responseTimeChart) responseTimeChart = echarts.init(responseTimeChartRef.value)
+  responseTimeChart.setOption({
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+    xAxis: { type: 'category', data: data.map(d => d.range) },
+    yAxis: { type: 'value' },
+    series: [{ type: 'bar', data: data.map(d => d.count), itemStyle: { color: '#67c23a' } }]
+  })
+}
+
+const fetchStatsData = async () => {
+  try {
+    const params = new URLSearchParams()
+    if (dateRange.value && dateRange.value.length === 2) {
+      params.append('start_date', dateRange.value[0])
+      params.append('end_date', dateRange.value[1])
+    }
+    const res = await axios.get(`${STATS_API}/overview?${params}`)
+    if (res.data) {
+      stats.value = { ...stats.value, ...res.data.stats }
+      topQuestions.value = res.data.topQuestions || []
+      unresolvedQuestions.value = res.data.unresolvedQuestions || []
+      const c = res.data.charts || {}
+      renderToolCallChart(c.toolCalls || defaultToolCallData)
+      renderCategoryChart(c.categories || defaultCategoryData)
+      renderTrendChart(c.trend || defaultTrendData)
+      renderResponseTimeChart(c.responseTime || defaultResponseTimeData)
+    }
+  } catch {
+    renderToolCallChart(defaultToolCallData)
+    renderCategoryChart(defaultCategoryData)
+    renderTrendChart(defaultTrendData)
+    renderResponseTimeChart(defaultResponseTimeData)
+  }
+}
+
+const defaultToolCallData = [
+  { name: 'query_application_status', value: 156 },
+  { name: 'calculate_repayment', value: 89 },
+  { name: 'check_approval_progress', value: 67 },
+  { name: 'modify_application', value: 34 }
+]
+const defaultCategoryData = [
+  { name: '申请流程', value: 45 }, { name: '产品咨询', value: 30 },
+  { name: '还款问题', value: 15 }, { name: '通用', value: 10 }
+]
+const defaultTrendData = [
+  { date: '04-18', count: 50 }, { date: '04-19', count: 65 }, { date: '04-20', count: 78 },
+  { date: '04-21', count: 92 }, { date: '04-22', count: 85 }, { date: '04-23', count: 95 },
+  { date: '04-24', count: 102 }
+]
+const defaultResponseTimeData = [
+  { range: '0-500ms', count: 120 }, { range: '500-1000ms', count: 85 },
+  { range: '1000-2000ms', count: 45 }, { range: '2000ms+', count: 12 }
+]
+
+const addToKnowledge = (row) => {
+  ElMessage.info(`将 "${row.question}" 添加到知识库功能开发中…`)
+}
+
+const exportReport = () => {
+  ElMessage.info('导出报表功能开发中…')
+}
+
+// ==================== 对话日志 ====================
 
 const loading = ref(false)
 const detailVisible = ref(false)
@@ -140,81 +430,66 @@ const total = ref(0)
 const selectedSessions = ref([])
 
 const currentMessages = ref([])
-const currentSessionId = ref('')
 
 const paginatedSessions = computed(() => {
   const start = (currentPage.value - 1) * pageSize.value
-  const end = start + pageSize.value
-  return filteredSessions.value.slice(start, end)
+  return filteredSessions.value.slice(start, start + pageSize.value)
 })
 
 const fetchLogs = async () => {
   loading.value = true
   try {
-    const res = await axios.get(API_BASE)
+    const res = await axios.get(LOGS_API)
     sessionsList.value = res.data || []
     filteredSessions.value = sessionsList.value
     total.value = filteredSessions.value.length
-  } catch (error) {
+  } catch {
     ElMessage.error('获取日志失败')
-    console.error('Error fetching logs:', error)
   } finally {
     loading.value = false
   }
 }
 
 const searchLogs = () => {
-  const { sessionId, dateRange, flagged } = searchForm.value
-  
+  const { sessionId, dateRange: dr, flagged } = searchForm.value
   filteredSessions.value = sessionsList.value.filter(session => {
-    const matchSessionId = !sessionId || session.session_id.includes(sessionId)
-    const matchFlagged = flagged === null || session.is_flagged === flagged
-    
-    let matchDate = true
-    if (dateRange && dateRange.length === 2) {
+    if (sessionId && !session.session_id.includes(sessionId)) return false
+    if (flagged !== null && flagged !== undefined && session.is_flagged !== flagged) return false
+    if (dr && dr.length === 2) {
       const sessionDate = new Date(session.start_time)
-      const startDate = new Date(dateRange[0])
-      const endDate = new Date(dateRange[1])
+      const startDate = new Date(dr[0])
+      const endDate = new Date(dr[1])
       endDate.setHours(23, 59, 59, 999)
-      matchDate = sessionDate >= startDate && sessionDate <= endDate
+      if (sessionDate < startDate || sessionDate > endDate) return false
     }
-    
-    return matchSessionId && matchFlagged && matchDate
+    return true
   })
-  
   total.value = filteredSessions.value.length
   currentPage.value = 1
 }
 
 const resetSearch = () => {
-  searchForm.value = {
-    sessionId: '',
-    dateRange: [],
-    flagged: null
-  }
+  searchForm.value = { sessionId: '', dateRange: [], flagged: null }
   searchLogs()
 }
 
 const viewDetail = async (sessionId) => {
   try {
-    const res = await axios.get(`${API_BASE}/${sessionId}`)
+    const res = await axios.get(`${LOGS_API}/${sessionId}`)
     currentMessages.value = res.data.messages || []
-    currentSessionId.value = sessionId
     detailVisible.value = true
-  } catch (error) {
-    ElMessage.error('获取会话详情失败'+error)
+  } catch {
+    ElMessage.error('获取会话详情失败')
   }
 }
 
 const toggleFlag = async (row) => {
   try {
-    await axios.post(`${API_BASE}/${row.session_id}/flag`, {
-      is_flagged: !row.is_flagged
-    })
+    await axios.post(`${LOGS_API}/${row.session_id}/flag`, { is_flagged: !row.is_flagged })
     ElMessage.success(row.is_flagged ? '已取消标记' : '已标记为问题对话')
     fetchLogs()
-  } catch (error) {
-    ElMessage.error('操作失败'+error)
+  } catch {
+    ElMessage.error('操作失败')
   }
 }
 
@@ -225,97 +500,94 @@ const handleSelectionChange = (selection) => {
 const batchDelete = async () => {
   try {
     await ElMessageBox.confirm(`确定要删除选中的 ${selectedSessions.value.length} 条会话吗？`, '警告', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
+      confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
     })
-    
-    await axios.post(`${API_BASE}/batch-delete`, {
-      session_ids: selectedSessions.value
-    })
-    
+    await axios.post(`${LOGS_API}/batch-delete`, { session_ids: selectedSessions.value })
     ElMessage.success('批量删除成功')
     selectedSessions.value = []
     fetchLogs()
   } catch (error) {
-    if (error !== 'cancel') {
-      ElMessage.error('批量删除失败')
-    }
+    if (error !== 'cancel') ElMessage.error('批量删除失败')
   }
-}
-
-const handleSizeChange = () => {
-  currentPage.value = 1
-}
-
-const handleCurrentChange = () => {
-  // 分页变化
 }
 
 const formatTime = (timestamp) => {
   if (!timestamp) return ''
-  const date = new Date(timestamp)
-  return date.toLocaleString('zh-CN')
+  return new Date(timestamp).toLocaleString('zh-CN')
 }
 
 const exportLogs = () => {
-  ElMessage.info('导出功能开发中...')
+  ElMessage.info('导出日志功能开发中…')
 }
 
-onMounted(fetchLogs)
+const handleResize = () => {
+  ;[toolCallChart, categoryChart, trendChart, responseTimeChart].forEach(c => c?.resize())
+}
+
+onMounted(async () => {
+  await fetchStatsData()
+  await fetchLogs()
+  window.addEventListener('resize', handleResize)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
+  ;[toolCallChart, categoryChart, trendChart, responseTimeChart].forEach(c => c?.dispose())
+})
 </script>
 
 <style scoped>
-.conversation-logs {
+.cs-manage-page {
   padding: 20px;
 }
-.search-form {
+.filter-card {
   margin-bottom: 20px;
 }
-.logs-list {
-  margin-top: 10px;
+.metrics-row {
+  margin-bottom: 20px;
 }
-.list-header {
+.metric-card {
+  text-align: center;
+}
+.metric-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
 }
-.list-header h3 {
-  margin: 0;
+.metric-title {
+  font-size: 14px;
+  color: #909399;
 }
-.pagination-container {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
-}
-.chat-detail {
-  max-height: 600px;
-  overflow-y: auto;
-}
-.message-item {
-  padding: 15px;
-  margin-bottom: 15px;
-  background: #f5f7fa;
-  border-radius: 8px;
-}
-.message-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.metric-value {
+  font-size: 32px;
+  font-weight: bold;
+  color: #303133;
   margin-bottom: 10px;
 }
-.message-time {
+.metric-footer {
   font-size: 12px;
   color: #909399;
 }
-.message-content {
-  font-size: 14px;
-  line-height: 1.6;
-  color: #303133;
-  white-space: pre-wrap;
-}
-.tool-call-tag {
-  margin-top: 8px;
-}
+.metric-footer .up { color: #67c23a; }
+.metric-footer .down { color: #f56c6c; }
+.metric-label { margin-left: 5px; }
+.chart-card { min-height: 350px; }
+.chart-container { height: 280px; }
+.chart { width: 100%; height: 100%; }
+.list-card { min-height: 350px; }
+.satisfaction-container { text-align: center; padding: 20px; }
+.satisfaction-detail { display: flex; justify-content: space-around; margin-top: 20px; }
+.satisfaction-detail .label { display: block; font-size: 12px; color: #909399; }
+.satisfaction-detail .value { display: block; font-size: 20px; font-weight: bold; margin-top: 5px; }
+.search-form { margin-bottom: 20px; }
+.logs-list { margin-top: 10px; }
+.list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.pagination-container { margin-top: 20px; display: flex; justify-content: flex-end; }
+.chat-detail { max-height: 600px; overflow-y: auto; }
+.message-item { padding: 15px; margin-bottom: 15px; background: #f5f7fa; border-radius: 8px; }
+.message-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.message-time { font-size: 12px; color: #909399; }
+.message-content { font-size: 14px; line-height: 1.6; color: #303133; white-space: pre-wrap; }
+.tool-call-tag { margin-top: 8px; }
 </style>

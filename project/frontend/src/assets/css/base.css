@@ -32,7 +32,8 @@ a {
     --nabar-shadow-color:  5px 5px 6px rgba(0, 0, 0, 0.3);
     
     /* 侧栏颜色 */
-    --sidebar-color: #26528f;
+    --sidebar-color: #3378c1;
+    --sidebar-image: linear-gradient(to top, #30cfd0 0%, #330867 100%);/*侧栏渐变背景*/
     --sidebar-bg-color: #26528f;
     --sidebar-shadow-color:  2px 0 8px rgb(104, 131, 173);
 

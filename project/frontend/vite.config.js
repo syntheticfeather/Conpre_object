@@ -13,11 +13,22 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
+      '/api/knowledge': {
+        target: 'http://localhost:8000',
+        changeOrigin: true
+      },
+      '/api/tools': {
+        target: 'http://localhost:8000',
+        changeOrigin: true
+      },
+      '/api/chat': {
+        target: 'http://localhost:8000',
+        changeOrigin: true
+      },
       '/api': {
         target: 'http://localhost:8080',
         changeOrigin: true,
         configure: (proxy) => {
-          // 伪造 Origin 头，避免后端 CORS 拦截
           proxy.on('proxyReq', (proxyReq) => {
             proxyReq.setHeader('Origin', 'http://localhost:8080')
           })

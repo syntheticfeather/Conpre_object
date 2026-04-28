@@ -1,28 +1,51 @@
 <template>
-  <!-- 标题 -->
   <div class="header">
     待办审核
+    <div class="header-right">
+      <div class="toggle-group">
+        <button
+          :class="{ active: reviewMode === 'loan' }"
+          @click="switchMode('loan')"
+        >
+          贷款申请
+        </button>
+        <button
+          :class="{ active: reviewMode === 'postpone' }"
+          @click="switchMode('postpone')"
+        >
+          延期申请
+        </button>
+      </div>
+    </div>
   </div>
-  
-  <!-- 主要内容区域 -->
+
   <div class="apply-dashboard">
     <div v-if="loading" class="loading">
       加载中...
     </div>
 
-    <!-- 应用审核列表 -->
-    <component 
-      :is="currentComponent"
-      v-else 
-      :applications="currentApplications"
-      @show-detail="showApplicationDetail"
-      @refresh="loadApplications"
-    />
+    <template v-if="reviewMode === 'loan'">
+      <component
+        :is="currentLoanComponent"
+        :applications="currentLoanApplications"
+        @show-detail="showDetail"
+        @refresh="loadLoanApplications"
+      />
+    </template>
 
-    <!-- 应用审核详情弹窗 -->
-    <ApplicationDetailModal 
+    <template v-if="reviewMode === 'postpone'">
+      <component
+        :is="currentPostponeComponent"
+        :postpone-requests="currentPostponeRequests"
+        @show-detail="showDetail"
+        @refresh="loadPostponeRequests"
+      />
+    </template>
+
+    <ApplicationDetailModal
       v-model="showDetailModal"
-      :application-id="selectedApplicationId"
+      :application-id="selectedRequestId"
+      :review-type="reviewMode"
       :is-pending="activeTab === 'pending'"
       modal
       @close="closeDetailModal"
@@ -33,28 +56,48 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { ElMessageBox, ElMessage } from 'element-plus'
 import { useApplicationStore } from '@/stores/application'
 import PendingApplications from '@/components/application-review/PendingApplications.vue'
 import CompletedApplications from '@/components/application-review/CompletedApplications.vue'
+import PostponePendingList from '@/components/application-review/PostponePendingList.vue'
+import PostponeCompletedList from '@/components/application-review/PostponeCompletedList.vue'
 import ApplicationDetailModal from '@/components/application-review/ApplicationDetailModal.vue'
 
 const applicationStore = useApplicationStore()
 const activeTab = ref('pending')
+const reviewMode = ref('loan')
 const showDetailModal = ref(false)
-const selectedApplicationId = ref(null)
+const selectedRequestId = ref(null)
 const loading = ref(false)
 
-const currentComponent = computed(() => {
+const currentLoanComponent = computed(() => {
   return activeTab.value === 'pending' ? PendingApplications : CompletedApplications
 })
 
-const currentApplications = computed(() => {
-  return activeTab.value === 'pending' 
-    ? applicationStore.pendingApplications 
+const currentPostponeComponent = computed(() => {
+  return activeTab.value === 'pending' ? PostponePendingList : PostponeCompletedList
+})
+
+const currentLoanApplications = computed(() => {
+  return activeTab.value === 'pending'
+    ? applicationStore.pendingApplications
     : applicationStore.completedApplications
 })
 
-const loadApplications = async () => {
+const currentPostponeRequests = computed(() => {
+  return activeTab.value === 'pending'
+    ? applicationStore.pendingPostponeRequests
+    : applicationStore.completedPostponeRequests
+})
+
+const switchMode = (mode) => {
+  reviewMode.value = mode
+  activeTab.value = 'pending'
+  loadData()
+}
+
+const loadLoanApplications = async () => {
   loading.value = true
   if (activeTab.value === 'pending') {
     await applicationStore.fetchPendingApplications()
@@ -64,44 +107,87 @@ const loadApplications = async () => {
   loading.value = false
 }
 
-const showApplicationDetail = (applicationId) => {
-  selectedApplicationId.value = applicationId
+const loadPostponeRequests = async () => {
+  loading.value = true
+  if (activeTab.value === 'pending') {
+    await applicationStore.fetchPendingPostponeRequests()
+  } else {
+    await applicationStore.fetchCompletedPostponeRequests()
+  }
+  loading.value = false
+}
+
+const loadData = async () => {
+  if (reviewMode.value === 'loan') {
+    await loadLoanApplications()
+  } else {
+    await loadPostponeRequests()
+  }
+}
+
+const showDetail = (id) => {
+  selectedRequestId.value = id
   showDetailModal.value = true
 }
 
 const closeDetailModal = () => {
   showDetailModal.value = false
-  selectedApplicationId.value = null
+  selectedRequestId.value = null
 }
 
-const handleReviewSubmit = async (applicationId, approved) => {
-  try {
-    const reviewData = {
-      loanApplicationId: parseInt(applicationId),
-      approved: approved ? "true" : "false"
-    }
-    
-    const result = await applicationStore.submitReview(reviewData)
-    
-    if (result.success) {
-      // 关闭详情弹窗
-      closeDetailModal()
-      
-      // 如果当前在待办审核页面，刷新列表
-      if (activeTab.value === 'pending') {
-        await applicationStore.fetchPendingApplications()
+const handleReviewSubmit = async (id, approved) => {
+  if (reviewMode.value === 'postpone') {
+    if (approved) {
+      const result = await applicationStore.approvePostpone(id)
+      if (result.success) {
+        ElMessage.success('延期申请已通过')
+        closeDetailModal()
+      } else {
+        ElMessage.error(result.message || '审核失败')
       }
     } else {
-      alert('审核提交失败，请重试')
+      try {
+        const { value } = await ElMessageBox.prompt('请输入拒绝原因', '拒绝延期申请', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          inputPattern: /.+/,
+          inputErrorMessage: '拒绝原因不能为空'
+        })
+        const result = await applicationStore.rejectPostpone(id, { rejectReason: value })
+        if (result.success) {
+          ElMessage.success('已拒绝延期申请')
+          closeDetailModal()
+        } else {
+          ElMessage.error(result.message || '审核失败')
+        }
+      } catch {
+        // 用户取消
+      }
     }
-  } catch (error) {
-    console.error('审核提交出错:', error)
-    alert('审核提交出错，请重试')
+  } else {
+    try {
+      const reviewData = {
+        loanApplicationId: parseInt(id),
+        approved: approved ? 'true' : 'false'
+      }
+      const result = await applicationStore.submitReview(reviewData)
+      if (result.success) {
+        closeDetailModal()
+        if (activeTab.value === 'pending') {
+          await applicationStore.fetchPendingApplications()
+        }
+      } else {
+        ElMessage.error('审核提交失败，请重试')
+      }
+    } catch (error) {
+      console.error('审核提交出错:', error)
+      ElMessage.error('审核提交出错，请重试')
+    }
   }
 }
 
 onMounted(async () => {
-  await loadApplications()
+  await loadData()
 })
 </script>
 
@@ -110,24 +196,47 @@ onMounted(async () => {
   padding: 20px;
 }
 
-.tabs button {
-  padding: 8px 16px;
-  margin-left: 10px;
-  background: #f5f7fa;
-  border: 1px solid #ddd;
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin:20px 20px 0 20px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.toggle-group {
+  display: flex;
+  border: 1px solid #dcdfe6;
   border-radius: 4px;
+  overflow: hidden;
+}
+
+.toggle-group button {
+  padding: 6px 16px;
+  border: none;
+  background: #fff;
+  color: #606266;
   cursor: pointer;
+  font-size: 14px;
   transition: all 0.2s;
 }
 
-.tabs button:hover {
-  background: #e6f7ff;
+.toggle-group button:not(:last-child) {
+  border-right: 1px solid #dcdfe6;
 }
 
-.tabs button.active {
+.toggle-group button.active {
   background: #409eff;
-  color: white;
-  border-color: #409eff;
+  color: #fff;
+}
+
+.toggle-group button:hover:not(.active) {
+  background: #ecf5ff;
+  color: #409eff;
 }
 
 .loading {
