@@ -29,9 +29,8 @@ COPY requirements.txt .
 
 # 安装 Python 依赖
 RUN pip install --no-cache-dir -r requirements.txt \
-    -i https://mirrors.aliyun.com/pypi/simple \
-    --trusted-host mirrors.aliyun.com \
-    --extra-index-url https://download.pytorch.org/whl/cpu
+    -i https://pypi.tuna.tsinghua.edu.cn/simple \
+    --trusted-host pypi.tuna.tsinghua.edu.cn
 
 # 复制项目文件 复制到 /app
 COPY . .
