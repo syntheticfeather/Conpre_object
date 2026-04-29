@@ -1,6 +1,4 @@
 # smart-customer-service/docker-compose.yml
-version: '3.8'
-
 services:
   mongodb:
     image: mongo:7.0
@@ -44,6 +42,7 @@ services:
       # 挂载日志和上传目录
       - ./logs:/app/logs
       - ./uploads:/app/uploads
+      - ./chromadb_data:/app/chromadb_data
       # 开发时可挂载代码目录实现热重载（可选）
       - .:/app
     depends_on:

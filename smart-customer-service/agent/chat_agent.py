@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 import os
 import json
 from datetime import datetime
+import uuid
 
 from tools.tool_manager import tool_manager
 from utils.context import set_token
@@ -158,8 +159,16 @@ class ChatAgent:
 
             if full_response and session_id:
                 new_messages = [
-                    {"role": "user", "content": message},
-                    {"role": "assistant", "content": full_response}
+                    {"message_id": str(uuid.uuid4()), # 生成唯一ID
+                     "role": "user", 
+                     "content": message,
+                     "timestamp": datetime.now(),      # 时间戳
+                    },
+                    {"message_id": str(uuid.uuid4()),
+                     "role": "assistant", 
+                     "content": full_response,
+                     "timestamp": datetime.now(),
+                    }
                 ]
                 mongodb_client.save_session_history(session_id, user_id, new_messages)
 

@@ -77,10 +77,15 @@ class ChromaDBClient:
     
     def _initialize(self):
         try:
+            # 禁用 ChromaDB telemetry
+            os.environ['CHROMA_TELEMETRY_ENABLED'] = 'false'
+            
             chromadb_mode = os.getenv('CHROMADB_MODE', 'local')
             chromadb_host = os.getenv('CHROMADB_HOST', 'chromadb')
             chromadb_port = int(os.getenv('CHROMADB_PORT', '8000'))
             persist_directory = os.getenv('CHROMADB_PERSIST_DIRECTORY', './chromadb_data')
+            
+            print(f"[ChromaDB] 初始化 - 模式: {chromadb_mode}, 持久化目录: {persist_directory}")
             
             # 配置嵌入函数（符合ChromaDB接口）
             embedding_function = OpenAICompatibleEmbeddingFunction()
@@ -90,7 +95,8 @@ class ChromaDBClient:
                     host=chromadb_host,
                     port=chromadb_port,
                     settings=Settings(
-                        anonymized_telemetry=False
+                        anonymized_telemetry=False,
+                        allow_reset=True
                     ),
                     tenant='default_tenant',
                     database='default_database'
@@ -99,18 +105,23 @@ class ChromaDBClient:
                 self.client = chromadb.PersistentClient(
                     path=persist_directory,
                     settings=Settings(
-                        anonymized_telemetry=False
+                        anonymized_telemetry=False,
+                        allow_reset=True
                     )
                 )
             
             self.collection = self.client.get_or_create_collection(
-                name="knowledge_base",
+                name="smart_cs_knowledge_base",
                 metadata={"description": "智能客服知识库"},
                 embedding_function=embedding_function
             )
-            print("ChromaDB客户端初始化成功")
+            
+            # 检查当前集合状态
+            count = self.collection.count()
+            print(f"[ChromaDB] 初始化成功 - 当前集合条目数: {count}")
+            
         except Exception as e:
-            print(f"Warning: ChromaDB客户端初始化失败: {e}")
+            print(f"[ChromaDB] 初始化失败: {e}")
             self.client = None
             self.collection = None
     
@@ -119,14 +130,27 @@ class ChromaDBClient:
             if not self.collection:
                 print("Error: ChromaDB未初始化")
                 return False
+            
+            print(f"[ChromaDB] 添加数据 - ID: {item_id}")
+            
+            # 添加数据
             self.collection.add(
                 documents=[document],
                 metadatas=[metadata],
                 ids=[item_id]
             )
+            
+            # 检查是否添加成功
+            count = self.collection.count()
+            print(f"[ChromaDB] 添加后集合总条目数: {count}")
+
+            # 再次确认数据
+            count_after = self.collection.count()
+            print(f"[ChromaDB] 持久化后集合总条目数: {count_after}")
+            
             return True
         except Exception as e:
-            print(f"Error adding item: {e}")
+            print(f"[ChromaDB] Error adding item: {e}")
             return False
     
     def search(self, query: str, top_k: int = 3) -> List[Dict[str, Any]]:
@@ -173,10 +197,20 @@ class ChromaDBClient:
                 print("Error: ChromaDB未初始化")
                 return []
             
+            # 调试信息
+            count = self.collection.count()
+            print(f"get_all - 当前集合总条目数: {count}")
+            
             results = self.collection.get()
             
+            # 打印原始结果
+            print(f"get_all 原始结果: {results}")
+            
             if not results["ids"]:
+                print("get_all - 集合为空")
                 return []
+            
+            print(f"get_all - 成功获取 {len(results['ids'])} 条数据")
             
             return [
                 {

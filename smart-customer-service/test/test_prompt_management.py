@@ -25,15 +25,6 @@ def test_get_active_prompt():
         import traceback
         traceback.print_exc()
 
-
-def test_get_prompt_config():
-    """测试获取提示词配置"""
-    print("\n=== 测试获取提示词配置 ===")
-    config = get_prompt_config()
-    print(f"保护的工具: {[tool['name'] for tool in config['protected_tools']]}")
-    print(f"变量: {config['variables']}")
-
-
 def test_get_system_prompt():
     """测试获取系统提示词"""
     print("\n=== 测试获取系统提示词 ===")
@@ -100,7 +91,6 @@ def test_deactivate_prompt():
 if __name__ == "__main__":
     print("开始测试提示词管理功能\n")
     test_get_active_prompt()
-    test_get_prompt_config()
     test_get_system_prompt()
     test_create_prompt()
     test_update_prompt()

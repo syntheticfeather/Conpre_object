@@ -32,8 +32,10 @@ def create_knowledge(item: KnowledgeItemCreate):
         answer=item.answer,
         category=item.category
     )
-    # 2. 存入向量库
-    vector_store.add_item(kb_item)
+    # 2. 存入向量库（检查返回值）
+    success = vector_store.add_item(kb_item)
+    if not success:
+        raise HTTPException(status_code=500, detail="添加知识库项失败")
     # 3. 将业务模型转换为 API 模型
     # 这里利用了 Pydantic 的特性：传入一个对象，它会自动提取同名字段
     response_model = KnowledgeItemResponse.model_validate(kb_item)

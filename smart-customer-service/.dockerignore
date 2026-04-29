@@ -24,6 +24,9 @@ build/
 # Database
 *.db
 *.sqlite3
+chroma_db/
+chromadb_data/
+test_chroma_db/
 
 # Uploads & Logs
 uploads/*

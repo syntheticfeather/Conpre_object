@@ -5,7 +5,7 @@ from utils.chromadb_client import chromadb_client
 
 class VectorStore:
     # 初始化方法
-    def __init__(self, persist_directory: str = "./chroma_db"):
+    def __init__(self, persist_directory: str = "./chroma_db_data"):
         # 使用全局的 chromadb 客户端
         self.client = chromadb_client
 
