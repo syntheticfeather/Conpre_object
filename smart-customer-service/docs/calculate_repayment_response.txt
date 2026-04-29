@@ -1,0 +1,669 @@
+event: session_init
+data: {"session_id": "24c2f2d5-6499-4f1c-8e66-df46e986abf7"}
+
+event: message
+data: 我来
+
+event: message
+data: 帮
+
+event: message
+data: 您
+
+event: message
+data: 计算
+
+event: message
+data: 这笔
+
+event: message
+data: 贷款的
+
+event: message
+data: 还款
+
+event: message
+data: 计划
+
+event: message
+data: 。
+
+event: tool_call
+data: {'tool_name': 'calculate_repayment', 'arguments': {'repaid_type': '先息后本', 'loan_amount': 10000, 'loan_period': 12, 'interest_rate': 0.065}}
+
+event: tool_result
+data: {'tool_name': 'calculate_repayment', 'result': '还款计划详情：\n还款方式：先息后本\n贷款金额：10000.0元\n贷款期限：12期\n年利率：0.065\n月还款额：54.17元\n总还款额：10650.04元\n总利息：650.04元\n\n每期还款明细：\n第 1 期：本金 0 元，利息 54.17 元，总计 54.17 元\n第 2 期：本金 0 元，利息 54.17 元，总计 54.17 元\n第 3 期：本金 0 元，利息 54.17 元，总计 54.17 元\n第 4 期：本金 0 元，利息 54.17 元，总计 54.17 元\n第 5 期：本金 0 元，利息 54.17 元，总计 54.17 元\n第 6 期：本金 0 元，利息 54.17 元，总计 54.17 元\n第 7 期：本金 0 元，利息 54.17 元，总计 54.17 元\n第 8 期：本金 0 元，利息 54.17 元，总计 54.17 元\n第 9 期：本金 0 元，利息 54.17 元，总计 54.17 元\n第 10 期：本金 0 元，利息 54.17 元，总计 54.17 元\n第 11 期：本金 0 元，利息 54.17 元，总计 54.17 元\n第 12 期：本金 10000.0 元，利息 54.17 元，总计 10054.17 元\n'}
+
+event: message
+data: 根据
+
+event: message
+data: 您的
+
+event: message
+data: 贷款
+
+event: message
+data: 信息
+
+event: message
+data: ，
+
+event: message
+data: 我
+
+event: message
+data: 为您
+
+event: message
+data: 计算
+
+event: message
+data: 了
+
+event: message
+data: 详细的
+
+event: message
+data: 还款
+
+event: message
+data: 计划
+
+event: message
+data: ：
+data: 
+data: 
+
+event: message
+data: **
+
+event: message
+data: 贷款
+
+event: message
+data: 基本信息
+
+event: message
+data: ：
+
+event: message
+data: **
+data: 
+
+event: message
+data: -
+
+event: message
+data:  
+
+event: message
+data: 贷款
+
+event: message
+data: 金额
+
+event: message
+data: ：
+
+event: message
+data: 10
+
+event: message
+data: ,
+
+event: message
+data: 000
+
+event: message
+data: 元
+
+event: message
+data: 
+data: 
+
+event: message
+data: -
+
+event: message
+data:  
+
+event: message
+data: 贷款
+
+event: message
+data: 期限
+
+event: message
+data: ：
+
+event: message
+data: 12
+
+event: message
+data: 个月
+
+event: message
+data: 
+data: 
+
+event: message
+data: -
+
+event: message
+data:  
+
+event: message
+data: 年
+
+event: message
+data: 利率
+
+event: message
+data: ：
+
+event: message
+data: 6
+
+event: message
+data: .
+
+event: message
+data: 5
+
+event: message
+data: %
+data: 
+
+event: message
+data: -
+
+event: message
+data:  
+
+event: message
+data: 还款
+
+event: message
+data: 方式
+
+event: message
+data: ：
+
+event: message
+data: 先
+
+event: message
+data: 息
+
+event: message
+data: 后
+
+event: message
+data: 本
+
+event: message
+data: 
+data: 
+data: 
+
+event: message
+data: **
+
+event: message
+data: 还款
+
+event: message
+data: 计划
+
+event: message
+data: 详情
+
+event: message
+data: ：
+
+event: message
+data: **
+data: 
+
+event: message
+data: -
+
+event: message
+data:  **
+
+event: message
+data: 每月
+
+event: message
+data: 利息
+
+event: message
+data: 还款
+
+event: message
+data: **
+
+event: message
+data: ：
+
+event: message
+data: 54
+
+event: message
+data: .
+
+event: message
+data: 17
+
+event: message
+data: 元
+
+event: message
+data: （
+
+event: message
+data: 前
+
+event: message
+data: 11
+
+event: message
+data: 个月
+
+event: message
+data: ）
+data: 
+
+event: message
+data: -
+
+event: message
+data:  **
+
+event: message
+data: 最后
+
+event: message
+data: 一个月
+
+event: message
+data: 还款
+
+event: message
+data: **
+
+event: message
+data: ：
+
+event: message
+data: 10
+
+event: message
+data: ,
+
+event: message
+data: 054
+
+event: message
+data: .
+
+event: message
+data: 17
+
+event: message
+data: 元
+
+event: message
+data: （
+
+event: message
+data: 本金
+
+event: message
+data: 10
+
+event: message
+data: ,
+
+event: message
+data: 000
+
+event: message
+data: 元
+
+event: message
+data:  +
+
+event: message
+data:  
+
+event: message
+data: 利息
+
+event: message
+data: 54
+
+event: message
+data: .
+
+event: message
+data: 17
+
+event: message
+data: 元
+
+event: message
+data: ）
+data: 
+
+event: message
+data: -
+
+event: message
+data:  **
+
+event: message
+data: 总
+
+event: message
+data: 还款
+
+event: message
+data: 金额
+
+event: message
+data: **
+
+event: message
+data: ：
+
+event: message
+data: 10
+
+event: message
+data: ,
+
+event: message
+data: 650
+
+event: message
+data: .
+
+event: message
+data: 04
+
+event: message
+data: 元
+
+event: message
+data: 
+data: 
+
+event: message
+data: -
+
+event: message
+data:  **
+
+event: message
+data: 总
+
+event: message
+data: 利息
+
+event: message
+data: 支出
+
+event: message
+data: **
+
+event: message
+data: ：
+
+event: message
+data: 650
+
+event: message
+data: .
+
+event: message
+data: 04
+
+event: message
+data: 元
+
+event: message
+data: 
+data: 
+data: 
+
+event: message
+data: **
+
+event: message
+data: 还款
+
+event: message
+data: 明细
+
+event: message
+data: ：
+
+event: message
+data: **
+data: 
+
+event: message
+data: -
+
+event: message
+data:  
+
+event: message
+data: 第
+
+event: message
+data: 1
+
+event: message
+data: -
+
+event: message
+data: 11
+
+event: message
+data: 个月
+
+event: message
+data: ：
+
+event: message
+data: 每月
+
+event: message
+data: 只需
+
+event: message
+data: 还
+
+event: message
+data: 利息
+
+event: message
+data: 54
+
+event: message
+data: .
+
+event: message
+data: 17
+
+event: message
+data: 元
+
+event: message
+data: 
+data: 
+
+event: message
+data: -
+
+event: message
+data:  
+
+event: message
+data: 第
+
+event: message
+data: 12
+
+event: message
+data: 个月
+
+event: message
+data: ：
+
+event: message
+data: 一次性
+
+event: message
+data: 还
+
+event: message
+data: 清
+
+event: message
+data: 本金
+
+event: message
+data: 10
+
+event: message
+data: ,
+
+event: message
+data: 000
+
+event: message
+data: 元
+
+event: message
+data: 加上
+
+event: message
+data: 最后
+
+event: message
+data: 一个月
+
+event: message
+data: 利息
+
+event: message
+data: 54
+
+event: message
+data: .
+
+event: message
+data: 17
+
+event: message
+data: 元
+
+event: message
+data: ，
+
+event: message
+data: 共计
+
+event: message
+data: 10
+
+event: message
+data: ,
+
+event: message
+data: 054
+
+event: message
+data: .
+
+event: message
+data: 17
+
+event: message
+data: 元
+
+event: message
+data: 
+data: 
+data: 
+
+event: message
+data: 这种
+
+event: message
+data: 还款
+
+event: message
+data: 方式
+
+event: message
+data: 前期
+
+event: message
+data: 还款
+
+event: message
+data: 压力
+
+event: message
+data: 较小
+
+event: message
+data: ，
+
+event: message
+data: 适合
+
+event: message
+data: 短期
+
+event: message
+data: 资金
+
+event: message
+data: 周转
+
+event: message
+data: 需求
+
+event: message
+data: 。
+
+event: message
+data: 如果您
+
+event: message
+data: 有其他
+
+event: message
+data: 问题
+
+event: message
+data: ，
+
+event: message
+data: 随时
+
+event: message
+data: 可以
+
+event: message
+data: 咨询
+
+event: message
+data: ！
+

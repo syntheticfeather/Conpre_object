@@ -1,0 +1,146 @@
+event: session_init
+data: {"session_id": "24c2f2d5-6499-4f1c-8e66-df46e986abf7"}
+
+event: tool_call
+data: {'tool_name': 'query_application_status', 'arguments': {'application_id': 36}}
+
+event: tool_result
+data: {'tool_name': 'query_application_status', 'result': '您的贷款申请状态：AI拒绝'}
+
+event: message
+data: 根据
+
+event: message
+data: 查询
+
+event: message
+data: 结果
+
+event: message
+data: ，
+
+event: message
+data: 您的
+
+event: message
+data: 36
+
+event: message
+data: 号
+
+event: message
+data: 贷款
+
+event: message
+data: 申请
+
+event: message
+data: 状态
+
+event: message
+data: 为
+
+event: message
+data: ：
+
+event: message
+data: **
+
+event: message
+data: AI
+
+event: message
+data: 拒绝
+
+event: message
+data: **
+
+event: message
+data: 。
+data: 
+data: 
+
+event: message
+data: 这意味着
+
+event: message
+data: 您的
+
+event: message
+data: 贷款
+
+event: message
+data: 申请
+
+event: message
+data: 目前
+
+event: message
+data: 没有被
+
+event: message
+data: 批准
+
+event: message
+data: 。
+
+event: message
+data: 如果您
+
+event: message
+data: 需要
+
+event: message
+data: 了解
+
+event: message
+data: 具体的
+
+event: message
+data: 拒绝
+
+event: message
+data: 原因
+
+event: message
+data: 或有
+
+event: message
+data: 其他
+
+event: message
+data: 疑问
+
+event: message
+data: ，
+
+event: message
+data: 建议
+
+event: message
+data: 您
+
+event: message
+data: 联系
+
+event: message
+data: 我们的
+
+event: message
+data: 客服
+
+event: message
+data: 专员
+
+event: message
+data: 进行
+
+event: message
+data: 详细
+
+event: message
+data: 咨询
+
+event: message
+data: 。
+
