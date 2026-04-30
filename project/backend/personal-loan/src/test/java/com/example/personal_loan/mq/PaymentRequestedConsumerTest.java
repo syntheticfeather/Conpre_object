@@ -21,6 +21,7 @@ import com.example.personal_loan.config.RabbitMQConfig;
 import com.example.personal_loan.dto.PaymentRequestedEvent;
 import com.example.personal_loan.dto.PaymentSuccessEvent;
 import com.example.personal_loan.entity.OutboxMessage;
+import com.example.personal_loan.factory.OutboxMessageFactory;
 import com.example.personal_loan.mapper.OutboxMapper;
 import com.example.personal_loan.mapper.ProcessMessageMapper;
 import com.example.personal_loan.service.PayService;
@@ -46,9 +47,12 @@ class PaymentRequestedConsumerTest {
     private OutboxMapper outboxMapper;
 
     @Mock
+    private OutboxMessageFactory outboxMessageFactory;
+
+    @Mock
     private Channel channel;
 
-    // 验证当收到一条“新的”支付请求时，系统是否正确调用支付服务、保存 Outbox 消息（以便后续发送支付成功事件），并正确 ACK。
+    // 验证当收到一条"新的"支付请求时，系统是否正确调用支付服务、保存 Outbox 消息（以便后续发送支付成功事件），并正确 ACK。
     @Test
     void consume_success_shouldCreateOutboxAndAck() throws Exception {
         when(rabbitUtil.getTag(any())).thenReturn(7L);
@@ -58,6 +62,13 @@ class PaymentRequestedConsumerTest {
         PaymentSuccessEvent success = new PaymentSuccessEvent(11L, req.getAmount(), "tx", LocalDateTime.now());
         when(payService.pay(any())).thenReturn(success);
 
+        OutboxMessage outboxMessage = new OutboxMessage();
+        outboxMessage.setTopic(RabbitMQConfig.PAYMENT_SUCCESS_ROUTING_KEY);
+        outboxMessage.setStatus("PENDING");
+        outboxMessage.setBusinessType("PAYMENT_SUCCESS");
+        outboxMessage.setBusinessId(11L);
+        when(outboxMessageFactory.create(any(), any(), any())).thenReturn(outboxMessage);
+
         Message message = buildMessage(objectMapper.writeValueAsBytes(req), "mid", 7L);
 
         PaymentRequestedConsumer consumer = new PaymentRequestedConsumer(
@@ -65,7 +76,8 @@ class PaymentRequestedConsumerTest {
                 objectMapper,
                 rabbitUtil,
                 payService,
-                outboxMapper
+                outboxMapper,
+                outboxMessageFactory
         );
         consumer.consume(message, channel);
 
@@ -95,7 +107,8 @@ class PaymentRequestedConsumerTest {
                 objectMapper,
                 rabbitUtil,
                 payService,
-                outboxMapper
+                outboxMapper,
+                outboxMessageFactory
         );
         consumer.consume(message, channel);
 
@@ -104,7 +117,7 @@ class PaymentRequestedConsumerTest {
         verify(outboxMapper, never()).insert(any());
     }
 
-    // 验证当收到一条“已经处理过”的消息时，系统是否直接忽略业务逻辑，仅发送 ACK。防止重复扣款
+    // 验证当收到一条"已经处理过"的消息时，系统是否直接忽略业务逻辑，仅发送 ACK。防止重复扣款
     @Test
     void consume_idempotent_shouldAck() throws Exception {
         when(rabbitUtil.getTag(any())).thenReturn(9L);
@@ -118,7 +131,8 @@ class PaymentRequestedConsumerTest {
                 objectMapper,
                 rabbitUtil,
                 payService,
-                outboxMapper
+                outboxMapper,
+                outboxMessageFactory
         );
         consumer.consume(message, channel);
 
