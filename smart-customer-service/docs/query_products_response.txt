@@ -1,0 +1,945 @@
+event: session_init
+data: {"session_id": "41948804-c3be-4719-91ae-9711e53b1195"}
+
+event: message
+data: 好的
+
+event: message
+data: ，
+
+event: message
+data: 我来
+
+event: message
+data: 帮
+
+event: message
+data: 您
+
+event: message
+data: 查询
+
+event: message
+data: 目前
+
+event: message
+data: 可
+
+event: message
+data: 用的
+
+event: message
+data: 贷款
+
+event: message
+data: 产品
+
+event: message
+data: ！
+
+event: tool_call
+data: {'tool_name': 'query_loan_products', 'arguments': {}}
+
+event: tool_result
+data: {'tool_name': 'query_loan_products', 'result': '当前可用的贷款产品列表：\n\n1. 设备升级贷\n   额度范围：50000.0 - 1000000.0 元\n   可选期限：20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60 个月\n   产品描述：专项用于购置或更新生产设备，支持制造业转型\n   贷款用途：购买数控机床、自动化设备等\n   优惠详情：合作厂商可享利率优惠0.5%\n   可选方案：\n      - 期限5个月，利率5.80%，等额本息\n      - 期限10个月，利率6.20%，等额本息\n      - 期限5个月，利率6.50%，等额本金\n\n2. 灵活周转贷\n   额度范围：5000.0 - 30000.0 元\n   可选期限：1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 个月\n   产品描述：随借随还，按日计息，满足短期流动性需求\n   贷款用途：应付账款垫付、临时补货\n   优惠详情：首次借款7天免息\n   可选方案：\n      - 期限1个月，利率8.00%，先息后本\n\n3. 创业启航贷\n   额度范围：20000.0 - 100000.0 元\n   可选期限：12, 18, 24, 30, 36 个月\n   产品描述：专为初创企业设计，低门槛准入，快速放款\n   贷款用途：办公租赁、人员工资、品牌推广\n   优惠详情：首月免息，赠财务咨询\n   可选方案：\n      - 期限1个月，利率7.20%，等额本息\n      - 期限2个月，利率7.80%，等额本息\n\n4. 小微经营贷\n   额度范围：10000.0 - 500000.0 元\n   可选期限：12, 18, 24, 30, 36 个月\n   产品描述：助力小微企业发展，快速审批，灵活还款\n   贷款用途：进货周转、设备采购、门店扩张\n   优惠详情：前2期只还利息\n   可选方案：\n      - 期限1个月，利率6.50%，先息后本\n      - 期限2个月，利率7.20%，等额本息'}
+
+event: message
+data: 以下是
+
+event: message
+data: 目前
+
+event: message
+data: 可
+
+event: message
+data: 用的
+
+event: message
+data:  **
+
+event: message
+data: 4
+
+event: message
+data: 款
+
+event: message
+data: 贷款
+
+event: message
+data: 产品
+
+event: message
+data: **
+
+event: message
+data: ，
+
+event: message
+data: 您
+
+event: message
+data: 可以根据
+
+event: message
+data: 需求
+
+event: message
+data: 选择
+
+event: message
+data: ：
+data: 
+data: 
+
+event: message
+data: ---
+data: 
+data: 
+
+event: message
+data: ###
+
+event: message
+data:  🏭
+
+event: message
+data:  
+
+event: message
+data: 1
+
+event: message
+data: .
+
+event: message
+data:  
+
+event: message
+data: 设备
+
+event: message
+data: 升级
+
+event: message
+data: 贷
+
+event: message
+data: 
+data: 
+
+event: message
+data: -
+
+event: message
+data:  **
+
+event: message
+data: 额度
+
+event: message
+data: **
+
+event: message
+data: ：
+
+event: message
+data: 5
+
+event: message
+data: 万
+
+event: message
+data:  ~
+
+event: message
+data:  
+
+event: message
+data: 100
+
+event: message
+data: 万元
+
+event: message
+data: 
+data: 
+
+event: message
+data: -
+
+event: message
+data:  **
+
+event: message
+data: 期限
+
+event: message
+data: **
+
+event: message
+data: ：
+
+event: message
+data: 20
+
+event: message
+data: ~
+
+event: message
+data: 60
+
+event: message
+data: 个月
+
+event: message
+data: 
+data: 
+
+event: message
+data: -
+
+event: message
+data:  **
+
+event: message
+data: 特点
+
+event: message
+data: **
+
+event: message
+data: ：
+
+event: message
+data: 专
+
+event: message
+data: 用于
+
+event: message
+data: 购置
+
+event: message
+data: 或
+
+event: message
+data: 更新
+
+event: message
+data: 生产
+
+event: message
+data: 设备
+
+event: message
+data: ，
+
+event: message
+data: 合作
+
+event: message
+data: 厂商
+
+event: message
+data: 可
+
+event: message
+data: 享
+
+event: message
+data: 利率
+
+event: message
+data: 优惠
+
+event: message
+data: 0
+
+event: message
+data: .
+
+event: message
+data: 5
+
+event: message
+data: %
+data: 
+
+event: message
+data: -
+
+event: message
+data:  **
+
+event: message
+data: 适合
+
+event: message
+data: **
+
+event: message
+data: ：
+
+event: message
+data: 有
+
+event: message
+data: 设备
+
+event: message
+data: 采购
+
+event: message
+data: 需求
+
+event: message
+data: 的企业
+
+event: message
+data: 
+data: 
+data: 
+
+event: message
+data: ###
+
+event: message
+data:  💰
+
+event: message
+data:  
+
+event: message
+data: 2
+
+event: message
+data: .
+
+event: message
+data:  
+
+event: message
+data: 灵活
+
+event: message
+data: 周转
+
+event: message
+data: 贷
+
+event: message
+data: 
+data: 
+
+event: message
+data: -
+
+event: message
+data:  **
+
+event: message
+data: 额度
+
+event: message
+data: **
+
+event: message
+data: ：
+
+event: message
+data: 5
+
+event: message
+data: ,
+
+event: message
+data: 000
+
+event: message
+data:  ~
+
+event: message
+data:  
+
+event: message
+data: 3
+
+event: message
+data: 万元
+
+event: message
+data: 
+data: 
+
+event: message
+data: -
+
+event: message
+data:  **
+
+event: message
+data: 期限
+
+event: message
+data: **
+
+event: message
+data: ：
+
+event: message
+data: 1
+
+event: message
+data: ~
+
+event: message
+data: 12
+
+event: message
+data: 个月
+
+event: message
+data: 
+data: 
+
+event: message
+data: -
+
+event: message
+data:  **
+
+event: message
+data: 特点
+
+event: message
+data: **
+
+event: message
+data: ：
+
+event: message
+data: 随
+
+event: message
+data: 借
+
+event: message
+data: 随
+
+event: message
+data: 还
+
+event: message
+data: 、
+
+event: message
+data: 按
+
+event: message
+data: 日
+
+event: message
+data: 计
+
+event: message
+data: 息
+
+event: message
+data: ，
+
+event: message
+data: 首次
+
+event: message
+data: 借款
+
+event: message
+data: 7
+
+event: message
+data: 天
+
+event: message
+data: 免
+
+event: message
+data: 息
+
+event: message
+data: 
+data: 
+
+event: message
+data: -
+
+event: message
+data:  **
+
+event: message
+data: 适合
+
+event: message
+data: **
+
+event: message
+data: ：
+
+event: message
+data: 短期
+
+event: message
+data: 资金
+
+event: message
+data: 周转
+
+event: message
+data: 需求
+
+event: message
+data: 
+data: 
+data: 
+
+event: message
+data: ###
+
+event: message
+data:  🚀
+
+event: message
+data:  
+
+event: message
+data: 3
+
+event: message
+data: .
+
+event: message
+data:  
+
+event: message
+data: 创业
+
+event: message
+data: 启
+
+event: message
+data: 航
+
+event: message
+data: 贷
+
+event: message
+data: 
+data: 
+
+event: message
+data: -
+
+event: message
+data:  **
+
+event: message
+data: 额度
+
+event: message
+data: **
+
+event: message
+data: ：
+
+event: message
+data: 2
+
+event: message
+data: 万
+
+event: message
+data:  ~
+
+event: message
+data:  
+
+event: message
+data: 10
+
+event: message
+data: 万元
+
+event: message
+data: 
+data: 
+
+event: message
+data: -
+
+event: message
+data:  **
+
+event: message
+data: 期限
+
+event: message
+data: **
+
+event: message
+data: ：
+
+event: message
+data: 12
+
+event: message
+data: ~
+
+event: message
+data: 36
+
+event: message
+data: 个月
+
+event: message
+data: 
+data: 
+
+event: message
+data: -
+
+event: message
+data:  **
+
+event: message
+data: 特点
+
+event: message
+data: **
+
+event: message
+data: ：
+
+event: message
+data: 低
+
+event: message
+data: 门槛
+
+event: message
+data: 、
+
+event: message
+data: 快速
+
+event: message
+data: 放
+
+event: message
+data: 款
+
+event: message
+data: ，
+
+event: message
+data: 首
+
+event: message
+data: 月
+
+event: message
+data: 免
+
+event: message
+data: 息
+
+event: message
+data: ，
+
+event: message
+data: 赠
+
+event: message
+data: 财务
+
+event: message
+data: 咨询
+
+event: message
+data: 
+data: 
+
+event: message
+data: -
+
+event: message
+data:  **
+
+event: message
+data: 适合
+
+event: message
+data: **
+
+event: message
+data: ：
+
+event: message
+data: 初创
+
+event: message
+data: 企业
+
+event: message
+data: 
+data: 
+data: 
+
+event: message
+data: ###
+
+event: message
+data:  🏪
+
+event: message
+data:  
+
+event: message
+data: 4
+
+event: message
+data: .
+
+event: message
+data:  
+
+event: message
+data: 小微
+
+event: message
+data: 经营
+
+event: message
+data: 贷
+
+event: message
+data: 
+data: 
+
+event: message
+data: -
+
+event: message
+data:  **
+
+event: message
+data: 额度
+
+event: message
+data: **
+
+event: message
+data: ：
+
+event: message
+data: 1
+
+event: message
+data: 万
+
+event: message
+data:  ~
+
+event: message
+data:  
+
+event: message
+data: 50
+
+event: message
+data: 万元
+
+event: message
+data: 
+data: 
+
+event: message
+data: -
+
+event: message
+data:  **
+
+event: message
+data: 期限
+
+event: message
+data: **
+
+event: message
+data: ：
+
+event: message
+data: 12
+
+event: message
+data: ~
+
+event: message
+data: 36
+
+event: message
+data: 个月
+
+event: message
+data: 
+data: 
+
+event: message
+data: -
+
+event: message
+data:  **
+
+event: message
+data: 特点
+
+event: message
+data: **
+
+event: message
+data: ：
+
+event: message
+data: 快速
+
+event: message
+data: 审批
+
+event: message
+data: ，
+
+event: message
+data: 前
+
+event: message
+data: 2
+
+event: message
+data: 期
+
+event: message
+data: 只
+
+event: message
+data: 还
+
+event: message
+data: 利息
+
+event: message
+data: 
+data: 
+
+event: message
+data: -
+
+event: message
+data:  **
+
+event: message
+data: 适合
+
+event: message
+data: **
+
+event: message
+data: ：
+
+event: message
+data: 小微
+
+event: message
+data: 企业经营
+
+event: message
+data: 周转
+
+event: message
+data: 
+data: 
+data: 
+
+event: message
+data: ---
+data: 
+data: 
+
+event: message
+data: 请问
+
+event: message
+data: 您
+
+event: message
+data: 对
+
+event: message
+data: 哪
+
+event: message
+data: 款
+
+event: message
+data: 产品
+
+event: message
+data: 感兴趣
+
+event: message
+data: ？
+
+event: message
+data: 需要
+
+event: message
+data: 我
+
+event: message
+data: 帮
+
+event: message
+data: 您
+
+event: message
+data: 计算
+
+event: message
+data: 还款
+
+event: message
+data: 计划
+
+event: message
+data: ，
+
+event: message
+data: 或者
+
+event: message
+data: 查询
+
+event: message
+data: 申请
+
+event: message
+data: 进度
+
+event: message
+data: 吗
+
+event: message
+data: ？
+
+event: message
+data: 😊
+
