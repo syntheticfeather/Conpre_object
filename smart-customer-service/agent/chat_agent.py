@@ -43,27 +43,36 @@ class ChatAgent:
 
         # 从工具管理器获取所有启用的工具
         tools = tool_manager.get_all_tools()
-
-        # 获取当前时间
-        current_date = datetime.now().strftime("%Y年%m月%d日 %H:%M:%S")
+        
         # 从数据库获取系统提示词
         system_prompt_template = get_system_prompt()
-        filled_system_prompt = system_prompt_template.format(current_date=current_date)
+
+        # filled_system_prompt = system_prompt_template.format(
+        #     current_date=current_date,
+        #     tools_description=tools_description
+        # )
 
         # 定义系统提示
         prompt = ChatPromptTemplate.from_messages([
-            # 系统提示
-            SystemMessage(content=filled_system_prompt),
-            # 对话历史
+            ("system", "{system_prompt}"),  # 占位符，会在运行时填充
             MessagesPlaceholder(variable_name="chat_history", optional=True),
-            # 用户问题
-            HumanMessage(content="{input}"),
-            # 思考过程
+            ("human", "{input}"),           # 占位符
             MessagesPlaceholder(variable_name="agent_scratchpad")
+            # # 系统提示
+            # SystemMessage(content=filled_system_prompt),
+            # # 对话历史
+            # MessagesPlaceholder(variable_name="chat_history", optional=True),
+            # # 用户问题
+            # HumanMessage(content="{input}"),
+            # # 思考过程
+            # MessagesPlaceholder(variable_name="agent_scratchpad")
         ])
         # 创建 Agent
         agent = create_tool_calling_agent(self.llm, tools, prompt)
         self.agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, return_intermediate_steps=True)
+
+        # 保存模板以便后续使用
+        self.system_prompt_template = system_prompt_template
 
     async def chat(self, message: str, session_id: str, user_id: str = None, token: str = None) -> AsyncGenerator[str, None]:
         try:
@@ -81,8 +90,19 @@ class ChatAgent:
                     elif msg["role"] == "assistant":
                         processed_history.append(AIMessage(content=msg["content"]))
 
+            # 在这里填充系统提示词中的占位符
+            current_date = datetime.now().strftime("%Y年%m月%d日 %H:%M:%S")
+            tools = tool_manager.get_all_tools()
+            tools_description = "\n".join([f"- `{tool.name}`: {tool.description}" for tool in tools])
+            
+            filled_system_prompt = self.system_prompt_template.format(
+                current_date=current_date,
+                tools_description=tools_description
+            )
+
             input_data = {
                 "input": message,
+                "system_prompt": filled_system_prompt, # 填充后的系统提示词
                 "chat_history": processed_history
             }
 
@@ -90,8 +110,11 @@ class ChatAgent:
             full_response = ""
             async for event in self.agent_executor.astream_events(
                 input_data, 
-                version="v1"
+                version="v2"
             ):
+                # print(f"【Event type】: {event['event']}")  # 打印所有事件类型
+                # print(f"Event data keys: {event['data'].keys()}")  # 查看数据结构
+
                 event_type = event["event"]
                 
                 if event_type == "on_tool_start":
@@ -137,6 +160,22 @@ class ChatAgent:
                         "result": result
                     }, ensure_ascii=False)
                     current_tool_name = "" 
+
+                # elif event_type == "on_prompt_end":
+                #     # 查看发送给模型的完整 prompt
+                #     prompt_data = event["data"]["output"]
+                    
+                #     if hasattr(prompt_data, 'messages'):
+                #         print("\n" + "="*50)
+                #         print("发送给模型的完整消息:")
+                #         for i, msg in enumerate(prompt_data.messages):
+                #             print(f"\n消息 {i+1}:")
+                #             print(f"类型: {type(msg).__name__}")
+                #             print(f"角色: {getattr(msg, 'type', 'unknown')}")
+                #             # 只打印内容的前500字符
+                #             content = str(getattr(msg, 'content', ''))[:500]
+                #             print(f"内容: {content}")
+                #         print("="*50 + "\n")
                 
                 elif event_type == "on_chat_model_stream":
                     # 处理模型直接输出的流式内容
@@ -153,6 +192,24 @@ class ChatAgent:
                             "type": "message",
                             "content": content
                         }, ensure_ascii=False)
+                    pass
+
+                # elif event_type == "on_chain_stream":
+                #     # 处理 Agent 最终输出流 - 这是用户真正看到的内容
+                #     chunk = event["data"].get("chunk", {})
+                    
+                #     output = None
+                #     if hasattr(chunk, 'content') and chunk.content:
+                #         output = chunk.content
+                #     elif isinstance(chunk, dict) and 'output' in chunk:
+                #         output = chunk['output']
+                    
+                #     if output and isinstance(output, str) and output.strip():
+                #         full_response += output
+                #         yield json.dumps({
+                #             "type": "message",
+                #             "content": output
+                #         }, ensure_ascii=False)
 
                 elif event_type == "on_chain_end":
                     yield json.dumps({"event": "done", "data": "final"}, ensure_ascii=False)

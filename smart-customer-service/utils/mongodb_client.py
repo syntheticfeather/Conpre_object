@@ -15,6 +15,7 @@ class MongoDBClient:
     _db: Database = None
     _chat_collection: Collection = None
     _prompts_collection: Collection = None
+    _mcp_servers_collection: Collection = None
 
     # 创建实例
     def __new__(cls):
@@ -29,14 +30,16 @@ class MongoDBClient:
         db_name = os.getenv("MONGODB_DB_NAME", "smart_customer_service")
         chat_collection_name = os.getenv("MONGODB_CHAT_COLLECTION", "chat_history")
         prompts_collection_name = os.getenv("MONGODB_PROMPTS_COLLECTION", "prompts")
+        mcp_servers_collection_name = os.getenv("MONGODB_MCP_COLLECTION", "mcp_servers")
 
         self._client = MongoClient(mongodb_url)
         self._db = self._client[db_name]
         self._chat_collection = self._db[chat_collection_name]
         self._prompts_collection = self._db[prompts_collection_name]
+        self._mcp_servers_collection = self._db[mcp_servers_collection_name]
 
-    def get_chat_collection(self) -> Collection:
-        return self._chat_collection
+    # def get_chat_collection(self) -> Collection:
+    #     return self._chat_collection
 
     def get_prompts_collection(self) -> Collection:
         return self._prompts_collection
@@ -178,6 +181,61 @@ class MongoDBClient:
             return result.modified_count > 0
         except Exception as e:
             print(f"Error deactivating prompt: {e}")
+            return False
+
+    # MCP服务器配置管理
+
+    def save_mcp_server(self, server_id: str, config: dict) -> bool:
+        """保存或更新MCP服务器配置"""
+        try:
+            now = datetime.now()
+            update_data = {
+                "$set": {
+                    "config": config,
+                    "updated_at": now
+                },
+                "$setOnInsert": {
+                    "server_id": server_id,
+                    "created_at": now
+                }
+            }
+            self._mcp_servers_collection.update_one(
+                {"server_id": server_id},
+                update_data,
+                upsert=True
+            )
+            return True
+        except Exception as e:
+            print(f"Error saving MCP server: {e}")
+            return False
+
+    def get_mcp_server(self, server_id: str) -> Optional[Dict]:
+        """获取MCP服务器配置"""
+        try:
+            return self._mcp_servers_collection.find_one({"server_id": server_id})
+        except Exception as e:
+            print(f"Error getting MCP server: {e}")
+            return None
+
+    def get_all_mcp_servers(self) -> List[Dict]:
+        """获取所有MCP服务器配置"""
+        try:
+            servers = []
+            for doc in self._mcp_servers_collection.find():
+                doc["_id"] = str(doc["_id"])
+                servers.append(doc)
+            return servers
+        except Exception as e:
+            print(f"Error getting all MCP servers: {e}")
+            return []
+
+    def delete_mcp_server(self, server_id: str) -> bool:
+        """删除MCP服务器配置"""
+        try:
+            result = self._mcp_servers_collection.delete_one({"server_id": server_id})
+            return result.deleted_count > 0
+        except Exception as e:
+            print(f"Error deleting MCP server: {e}")
             return False
 
     def close(self):

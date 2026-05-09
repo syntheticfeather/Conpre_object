@@ -49,6 +49,7 @@ pytest_cache/
 
 # Documentation
 docs/
+knowledge-upload/
 
 # OS
 .DS_Store

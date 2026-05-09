@@ -5,11 +5,11 @@ import java.time.LocalDateTime;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.example.personal_loan.mapper.OutboxMapper;
 
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -19,7 +19,8 @@ public class OutboxCleanService {
     private OutboxMapper outboxMapper;
 
     // 启动服务时执行清理任务
-    @PostConstruct
+    // @PostConstruct
+    @Scheduled(fixedDelay = 300000) // 每5分钟执行一次
     @Transactional
     public void cleanExpiredMessages() {
         LocalDateTime thresholdTime = LocalDateTime.now().minusDays(1); // 清理1天前的成功投递的消息

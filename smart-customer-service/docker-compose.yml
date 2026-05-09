@@ -21,8 +21,29 @@ services:
       timeout: 5s
       retries: 5
 
-
-
+  chromadb:
+      image: chromadb/chroma:0.5.23  # 使用稳定版本
+      container_name: chromadb
+      restart: unless-stopped
+      ports:
+        - "8001:8000"  # 映射到不同端口，避免和app冲突
+      environment:
+        - IS_PERSISTENT=TRUE
+        - PERSIST_DIRECTORY=/chroma/chroma
+        - ANONYMIZED_TELEMETRY=FALSE
+        - ALLOW_RESET=TRUE  # 根据需要设置为True
+        # - CHROMA_SERVER_AUTHN_CREDENTIALS=admin:admin123  # 可选：添加认证
+        # - CHROMA_SERVER_AUTHN_PROVIDER=chromadb.auth.token_authn.TokenAuthServerProvider
+      volumes:
+        - chromadb_data:/chroma/chroma  # 数据持久化
+      networks:
+        - messaging
+      healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:8000/api/v2/heartbeat"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
+  
   smart-cs-app:
     build: .
     container_name: smart-cs-app
@@ -30,29 +51,34 @@ services:
     ports:
       - "8000:8000"
     environment:
-      # 容器内使用服务名连接
       - MONGODB_URL=mongodb://admin:admin123@mongodb:27017/smart_customer_service?authSource=admin
-      - CHROMADB_MODE=local
-      - CHROMADB_PERSIST_DIRECTORY=/app/chromadb_data
+      - CHROMADB_MODE=remote  # 改为远程模式
+      - CHROMADB_HOST=chromadb  # 服务名
+      - CHROMADB_PORT=8000  # 容器内端口
       - PYTHONUNBUFFERED=1
       - LOG_LEVEL=INFO
-      # 如果需要连接 personal-loan 服务
-      - JAVA_API_BASE_URL=http://personal-loan-app:8080
+      - JAVA_API_BASE_URL=http://localhost:8080/api  # 使用本地地址访问
+      - LOAN_SERVICE_URL=http://host.docker.internal:8080/api
+      - KNOWLEDGE_INIT_FILE=/app/knowledge-init/initial_data.json  # 知识初始化文件路径
+      - KNOWLEDGE_INIT_DIRECTORY=/app/knowledge-init  # 知识初始化目录路径
     volumes:
-      # 挂载日志和上传目录
       - ./logs:/app/logs
       - ./uploads:/app/uploads
-      - ./chromadb_data:/app/chromadb_data
-      # 开发时可挂载代码目录实现热重载（可选）
+      # 不再需要挂载 chromadb_data
       - .:/app
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy  # 等待健康检查通过
+      chromadb:
+        condition: service_healthy  # 等待健康检查通过
     networks:
       - messaging
     command: uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
 
 volumes:
   mongodb_data:
+    driver: local
+  chromadb_data:  # 新增 volume
     driver: local
 
 networks:

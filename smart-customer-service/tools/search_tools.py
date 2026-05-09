@@ -45,9 +45,23 @@ async def search_knowledge(query: str, top_k: int = 2) -> str:
             return "知识库中未找到相关信息"
         
         response = f"知识库搜索结果（{len(results)}条）：\n\n"
+
         for i, item in enumerate(results, 1):
-            response += f"{i}. 问题：{item.get('question', '')}\n"
-            response += f"   回答：{item.get('answer', '')}\n\n"
+            if item.get("type") == "faq":
+                # FAQ 格式
+                response += f"{i}. 问题：{item.get('question', '')}\n"
+                response += f"回答：{item.get('answer', '')}\n"
+                response += f"分类：{item.get('category', '通用')}\n\n"
+            
+            elif item.get("type") == "document":
+                # 文档格式
+                response += f"{i}.文档：{item.get('document_name', '')}\n"
+                response += f"章节：{item.get('section_path', '')}\n"
+                response += f"内容：{item.get('content', '')[:200]}...\n\n"
+            
+            else:
+                # 其他格式
+                response += f"{i}. 内容：{item.get('document', '')[:200]}...\n\n"
         
         return response
     except Exception as e:

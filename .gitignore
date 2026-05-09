@@ -21,8 +21,9 @@ JavaStudy/
 # Misc
 *.drawio.bkp
 
-# 上传的文件
+# 上传的文件(知识库文件和认证材料)
 uploads/
+knowledge-upload/
 
 # 环境变量
 .env

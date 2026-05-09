@@ -75,3 +75,39 @@ class PromptResponse(BaseModel):
     @field_serializer('created_at', 'updated_at')
     def serialize_datetime(self, value: datetime):
         return value.strftime("%Y-%m-%d %H:%M:%S")
+
+# MCP服务器配置模型
+class MCPServerCreate(BaseModel):
+    server_id: str
+    transport: str = "sse"  # sse, websocket, stdio
+    url: Optional[str] = None  # SSE/WebSocket 时需要
+    api_key: Optional[str] = None  # SSE/WebSocket 时需要
+    command: Optional[str] = None  # stdio 时需要
+    args: Optional[List[str]] = []  # stdio 时需要
+    timeout: Optional[int] = 30
+
+class MCPServerResponse(BaseModel):
+    server_id: str
+    transport: str
+    url: str
+    timeout: int
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+    @field_serializer('created_at', 'updated_at')
+    def serialize_datetime(self, value: datetime):
+        if value:
+            return value.strftime("%Y-%m-%d %H:%M:%S")
+        return None
+
+class MCPServerListResponse(BaseModel):
+    server_id: str
+    transport: str
+    url: str
+    timeout: int
+    created_at: datetime
+    updated_at: datetime
+
+    @field_serializer('created_at', 'updated_at')
+    def serialize_datetime(self, value: datetime):
+        return value.strftime("%Y-%m-%d %H:%M:%S")

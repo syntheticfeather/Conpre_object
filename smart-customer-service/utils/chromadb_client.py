@@ -4,10 +4,14 @@ from chromadb.config import Settings
 from typing import List, Optional, Dict, Any
 import os
 import hashlib
+import logging
 from dotenv import load_dotenv
 
 # 加载环境变量
 load_dotenv()
+
+# 创建日志记录器
+logger = logging.getLogger(__name__)
 
 class SimpleEmbeddingFunction:
     """简单的嵌入函数作为fallback，符合ChromaDB接口"""
@@ -43,12 +47,12 @@ class OpenAICompatibleEmbeddingFunction:
                     base_url=self.api_base
                 )
                 self.available = True
-                print(f"使用硅基流动嵌入API，模型: {self.model_name}")
+                logger.info(f"使用硅基流动嵌入API，模型: {self.model_name}")
             except ImportError:
-                print("Warning: openai 库未安装，使用简单嵌入函数")
+                logger.warning("openai 库未安装，使用简单嵌入函数")
                 self.available = False
         else:
-            print("Warning: SILICONFLOW_API_KEY 未设置，使用简单嵌入函数")
+            logger.warning("SILICONFLOW_API_KEY 未设置，使用简单嵌入函数")
             self.available = False
     
     def __call__(self, input: List[str]) -> List[List[float]]:
@@ -63,7 +67,7 @@ class OpenAICompatibleEmbeddingFunction:
             )
             return [item.embedding for item in response.data]
         except Exception as e:
-            print(f"Warning: 调用嵌入API失败: {e}")
+            logger.error(f"调用嵌入API失败: {e}")
             return SimpleEmbeddingFunction()(input)
 
 class ChromaDBClient:
@@ -85,8 +89,6 @@ class ChromaDBClient:
             chromadb_port = int(os.getenv('CHROMADB_PORT', '8000'))
             persist_directory = os.getenv('CHROMADB_PERSIST_DIRECTORY', './chromadb_data')
             
-            print(f"[ChromaDB] 初始化 - 模式: {chromadb_mode}, 持久化目录: {persist_directory}")
-            
             # 配置嵌入函数（符合ChromaDB接口）
             embedding_function = OpenAICompatibleEmbeddingFunction()
             
@@ -95,18 +97,18 @@ class ChromaDBClient:
                     host=chromadb_host,
                     port=chromadb_port,
                     settings=Settings(
-                        anonymized_telemetry=False,
-                        allow_reset=True
+                        anonymized_telemetry=False,  # 禁用 telemetry
+                        allow_reset=True             # 允许重置数据库，清空数据（默认是False）
                     ),
-                    tenant='default_tenant',
-                    database='default_database'
+                    tenant='default_tenant',       # 租户
+                    database='default_database'    # 数据库
                 )
             else:
                 self.client = chromadb.PersistentClient(
                     path=persist_directory,
                     settings=Settings(
-                        anonymized_telemetry=False,
-                        allow_reset=True
+                        anonymized_telemetry=False,  # 禁用 telemetry
+                        allow_reset=True             # 允许重置数据库，清空数据（默认是False）
                     )
                 )
             
@@ -118,20 +120,20 @@ class ChromaDBClient:
             
             # 检查当前集合状态
             count = self.collection.count()
-            print(f"[ChromaDB] 初始化成功 - 当前集合条目数: {count}")
+            logger.info(f"[ChromaDB] 初始化成功 - 当前集合条目数: {count}")
             
         except Exception as e:
-            print(f"[ChromaDB] 初始化失败: {e}")
+            logger.error(f"[ChromaDB] 初始化失败: {e}")
             self.client = None
             self.collection = None
     
     def add_item(self, item_id: str, document: str, metadata: Dict[str, Any]) -> bool:
         try:
             if not self.collection:
-                print("Error: ChromaDB未初始化")
+                logger.error("ChromaDB未初始化")
                 return False
             
-            print(f"[ChromaDB] 添加数据 - ID: {item_id}")
+            logger.debug(f"[ChromaDB] 添加数据 - ID: {item_id}")
             
             # 添加数据
             self.collection.add(
@@ -142,26 +144,28 @@ class ChromaDBClient:
             
             # 检查是否添加成功
             count = self.collection.count()
-            print(f"[ChromaDB] 添加后集合总条目数: {count}")
+            logger.debug(f"[ChromaDB] 添加后集合总条目数: {count}")
 
             # 再次确认数据
             count_after = self.collection.count()
-            print(f"[ChromaDB] 持久化后集合总条目数: {count_after}")
+            logger.debug(f"[ChromaDB] 持久化后集合总条目数: {count_after}")
             
             return True
         except Exception as e:
-            print(f"[ChromaDB] Error adding item: {e}")
+            logger.error(f"[ChromaDB] 添加数据失败: {e}")
             return False
     
     def search(self, query: str, top_k: int = 3) -> List[Dict[str, Any]]:
         try:
             if not self.collection:
-                print("Error: ChromaDB未初始化")
+                logger.error("ChromaDB未初始化")
                 return []
             
             results = self.collection.query(
                 query_texts=[query],
-                n_results=top_k
+                n_results=top_k,
+                where={"source_type": {"$in": ["document", "faq"]}},
+                where_document={"$contains": " "}  # 匹配所有文档
             )
             
             if not results or not results.get("ids") or not results["ids"][0]:
@@ -177,40 +181,76 @@ class ChromaDBClient:
                 for i in range(len(results["ids"][0]))
             ]
         except Exception as e:
-            print(f"Error searching: {e}")
+            logger.error(f"[ChromaDB] 搜索失败: {e}")
             return []
     
     def delete(self, item_id: str) -> bool:
         try:
             if not self.collection:
-                print("Error: ChromaDB未初始化")
+                logger.error("ChromaDB未初始化")
                 return False
             self.collection.delete(ids=[item_id])
             return True
         except Exception as e:
-            print(f"Error deleting item: {e}")
+            logger.error(f"[ChromaDB] 删除数据失败: {e}")
             return False
+    
+    def delete_by_metadata(self, where: Dict[str, Any]) -> int:
+        """按元数据条件删除数据
+        
+        Args:
+            where: 元数据条件字典，如 {"document_name": "法律条例与合规声明"}
+            
+        Returns:
+            成功删除的数量
+        """
+        try:
+            # 转换为 ChromaDB 支持的 where 语法
+            chromadb_where = {}
+            for key, value in where.items():
+                # 使用 $eq 操作符进行精确匹配
+                chromadb_where[key] = {"$eq": value}
+            logger.debug(f"[ChromaDB] 按元数据删除 - 查询条件: {chromadb_where}")
+            
+            # 获取符合条件的所有数据
+            results = self.collection.get(where=chromadb_where)
+            if not results or not results["ids"]:
+                logger.debug(f"[ChromaDB] 按元数据删除 - 未找到匹配数据")
+                return 0
+            
+            ids_to_delete = results["ids"]
+            logger.debug(f"[ChromaDB] 按元数据删除 - 找到 {len(ids_to_delete)} 条匹配数据")
+            
+            # 删除数据
+            self.collection.delete(ids=ids_to_delete)
+            count = self.collection.count()
+            logger.info(f"[ChromaDB] 按元数据删除完成 - 删除 {len(ids_to_delete)} 条，当前集合总条目数: {count}")
+            
+            return len(ids_to_delete)
+        except Exception as e:
+            logger.error(f"[ChromaDB] 按元数据删除失败: {e}")
+            return 0
     
     def get_all(self) -> List[Dict[str, Any]]:
         try:
             if not self.collection:
-                print("Error: ChromaDB未初始化")
+                logger.error("ChromaDB未初始化")
                 return []
             
             # 调试信息
             count = self.collection.count()
-            print(f"get_all - 当前集合总条目数: {count}")
+            logger.debug(f"[ChromaDB] get_all - 当前集合总条目数: {count}")
             
             results = self.collection.get()
             
             # 打印原始结果
-            print(f"get_all 原始结果: {results}")
+            logger.debug(f"[ChromaDB] get_all 原始结果: {results}")
             
             if not results["ids"]:
-                print("get_all - 集合为空")
+                logger.debug("[ChromaDB] get_all - 集合为空")
                 return []
             
-            print(f"get_all - 成功获取 {len(results['ids'])} 条数据")
+            logger.debug(f"[ChromaDB] get_all - 成功获取 {len(results['ids'])} 条数据")
             
             return [
                 {
@@ -221,13 +261,13 @@ class ChromaDBClient:
                 for i in range(len(results["ids"]))
             ]
         except Exception as e:
-            print(f"Error getting all items: {e}")
+            logger.error(f"[ChromaDB] 获取所有数据失败: {e}")
             return []
     
     def update(self, item_id: str, document: str, metadata: Dict[str, Any]) -> bool:
         try:
             if not self.collection:
-                print("Error: ChromaDB未初始化")
+                logger.error("ChromaDB未初始化")
                 return False
             self.collection.update(
                 documents=[document],
@@ -236,21 +276,49 @@ class ChromaDBClient:
             )
             return True
         except Exception as e:
-            print(f"Error updating item: {e}")
+            logger.error(f"[ChromaDB] 更新数据失败: {e}")
             return False
     
-    def get_collection(self, collection_name: str = "knowledge_base"):
+    def batch_add(self, items: List[Dict[str, Any]]) -> int:
+        """批量添加数据到向量库
+        
+        Args:
+            items: 数据列表，每个元素包含 id, document, metadata
+            
+        Returns:
+            成功添加的数量
+        """
         try:
-            if not self.client:
-                print("Error: ChromaDB未初始化")
-                return None
-            return self.client.get_or_create_collection(
-                name=collection_name,
-                metadata={"description": f"{collection_name}集合"}
+            if not self.collection:
+                logger.error("ChromaDB未初始化")
+                return 0
+            
+            if not items:
+                logger.debug("[ChromaDB] 批量添加 - 空数据列表")
+                return 0
+            
+            # 分离数据
+            ids = [item["id"] for item in items]
+            documents = [item["document"] for item in items]
+            metadatas = [item["metadata"] for item in items]
+            
+            logger.info(f"[ChromaDB] 批量添加数据 - 数量: {len(items)}")
+            
+            # 批量添加
+            self.collection.add(
+                documents=documents,
+                metadatas=metadatas,
+                ids=ids
             )
+            
+            # 检查添加后数量
+            count = self.collection.count()
+            logger.info(f"[ChromaDB] 批量添加完成 - 当前集合总条目数: {count}")
+            
+            return len(items)
         except Exception as e:
-            print(f"Error getting collection: {e}")
-            return None
+            logger.error(f"[ChromaDB] 批量添加失败: {e}")
+            return 0
 
 # 创建全局实例
 chromadb_client = ChromaDBClient()

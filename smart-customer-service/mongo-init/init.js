@@ -18,6 +18,7 @@ db.createUser({
 // 创建集合
 db.createCollection('chat_history')
 db.createCollection('prompts');
+db.createCollection('mcp_servers');  // 新增MCP服务器配置集合
 
 // 创建索引
 db.chat_history.createIndex({ "session_id": 1 }, { unique: true });
@@ -29,6 +30,10 @@ db.prompts.createIndex({ "name": 1 });
 db.prompts.createIndex({ "category": 1 });
 db.prompts.createIndex({ "is_active": 1 });
 
+// mcp_servers 集合索引
+db.mcp_servers.createIndex({ "server_id": 1 }, { unique: true });
+db.mcp_servers.createIndex({ "created_at": -1 });
+
 // 插入测试数据（可选）
 db.chat_history.insertOne({
     session_id: "test_session_001",
@@ -39,14 +44,12 @@ db.chat_history.insertOne({
             "role": "user",
             "content": "你好，我想咨询一下贷款",
             "timestamp": new Date("2024-01-15T10:00:00Z"),
-            "tokens": 10
         },
         {
             "message_id": "msg_test_003",
             "role": "user",
             "content": "我想了解一下个人消费贷",
             "timestamp": new Date("2024-01-15T10:01:00Z"),
-            "tokens": 8
         }
     ],
     created_at: new Date(),
@@ -61,18 +64,23 @@ db.prompts.insertOne({
     is_active: true,
     version: "1.0",
     content: {
-        role_definition: "你是一个友好的贷款智能客服。",
-        business_rules: "1. **贷款申请状态**：如果用户询问进度或状态"+
-                        "必须使用 `query_application_status` 工具。\n"+
-                        "2. **还款计算**：如果用户询问月供、利息或计划，必须使用 `calculate_repayment` 工具。\n"+
-                        "3. **通用知识问答**：对于所有其他问题（包括产品规则、政策、常见问题等），必须先使用 `search_knowledge` 工具在知识库中检索相关信息，基于检索结果回答。\n   "+
+        role_definition: "你是一个友好的贷款智能客服，能回答用户关于贷款的问题。",
+        business_rules: "1. 当用户提出具体问题时，你的首要任务是直接回答该问题。\n"+
+                        "2. 只有在用户首次打招呼（如单独的'你好'）且没有提出具体问题时，才使用欢迎语\n"+
+                        "3. 如果用户的消息包含具体问题，回答该问题而不是使用欢迎语。\n"+
+                        "4. **贷款申请状态**：如果用户让你帮忙查询进度或状态，"+
+                        "使用 `query_application_status` 工具。\n"+
+                        "5. **还款计算**：如果用户让你帮忙计算月供、利息或计划，使用 `calculate_repayment` 工具。\n"+
+                        "6. **通用知识问答**：对于所有其他问题（包括产品规则、政策、常见问题、如何操作等），必须先使用 `search_knowledge` 工具在知识库中检索相关信息，基于检索结果回答。\n   "+
                         "- *注意：不要假设知识库内容，必须显式调用此工具获取最新信息。*\n"+
-                        "4. **未知问题处理**：如果 `search_knowledge` 返回无结果，友好地回答暂无相关信息，不能编造信息。\n"+
-                        "5. **获取实时信息**：如果用户询问当前或现在最新的外部信息，使用 `search_web` 工具搜索网络。\n6. **拒绝行为**：严禁编造数据，严禁提及Token等技术术语。",
+                        "7. **未知问题处理**：如果 `search_knowledge` 返回无结果，友好地回答用户暂无相关信息，引导用户转向人工客服，不能编造信息。\n"+
+                        "8. **获取实时信息**：如果用户询问当前或现在最新的外部信息，使用 `search_web` 工具搜索网络。\n"+
+                        "9. **拒绝行为**：严禁编造数据，严禁提及Token等技术术语，严禁提及个人隐私信息如手机号、身份证号、银行卡号等。",
         tone_style: "语气友好、专业，简洁明了。调用工具时，直接调用，不要询问用户是否需要调用。"
     },
     config: {
-        protected_tools: [
+        // ui_tools 仅用于前端展示可用工具列表，工具实际调用由后端动态注入
+        ui_tools: [
             {
                 name: "query_application_status",
                 description: "查询贷款申请状态"
@@ -90,14 +98,31 @@ db.prompts.insertOne({
                 description: "搜索网络获取实时信息"
             }
         ],
-        variables: ["current_date"]
+        variables: ["current_date", "tools_description"]
     },
     created_at: new Date(),
     updated_at: new Date()
 });
 
-print('========================================');
-print('Smart Customer Service DB initialized!');
-print('Database: smart_customer_service');
-print('Collections: chat_history, prompts');
-print('========================================');
+// 插入示例MCP服务器配置
+// db.mcp_servers.insertOne({
+//     server_id: "brave_search",
+//     config: {
+//         url: "https://brave-search-mcp.example.com/sse",  // 实际部署地址
+//         api_key: "YOUR_BRAVE_SEARCH_API_KEY_HERE",  // 申请后替换
+//         transport: "sse",
+//         timeout: 30000
+//     },
+//     created_at: new Date(),
+//     updated_at: new Date()
+// });
+
+// {
+//     "server_id": "fetch-tool",
+//     "config": {
+//         "transport": "stdio",
+//         "command": "npx",
+//         "args": ["-y", "@modelcontextprotocol/server-fetch"],
+//         "timeout": 60
+//     }
+// }

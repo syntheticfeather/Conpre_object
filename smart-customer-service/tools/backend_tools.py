@@ -10,7 +10,7 @@ client = JavaApiClient()
 
 @tool
 async def query_application_status(application_id: int) -> str:
-    """查询用户的贷款申请状态。当用户询问申请进度、申请状态时使用。"""
+    """帮助用户查询贷款申请状态。当用户主动要求帮忙查询申请进度、申请状态时使用。"""
     try:
         token = get_token()
 
@@ -74,5 +74,64 @@ async def calculate_repayment(repaid_type: str, loan_amount: float, loan_period:
     except Exception as e:
         return f"抱歉，无法计算还款计划：{str(e)}"
 
+@tool
+async def query_loan_products() -> str:
+    """获取所有贷款产品列表。当用户询问有哪些贷款产品、贷款产品详情、可申请的贷款产品时使用。"""
+    try:
+        print("【开始调用查询贷款产品接口】")
+        token = get_token()
+
+        if not token:
+            return "抱歉，未提供认证信息"
+
+        result = await client.get_loan_products(token)
+        if not result.get("success"):
+            return f"抱歉，查询贷款产品失败：{result.get('error', '未知错误')}"
+        
+        products = result.get("products", [])
+        if not products:
+            return "暂无可用的贷款产品"
+
+        response = "当前可用的贷款产品列表：\n\n"
+        for idx, product in enumerate(products, 1):
+            product_name = product.get("productName", "未命名产品")
+            min_amount = product.get("minAmount", 0)
+            max_amount = product.get("maxAmount", 0)
+            description = product.get("description", "")
+            loan_usage = product.get("loanUsage", "")
+            promotion_details = product.get("promotionDetails", "")
+            terms = product.get("terms", [])
+            options = product.get("options", [])
+            
+            response += f"{idx}. {product_name}\n"
+            response += f"   额度范围：{min_amount} - {max_amount} 元\n"
+            
+            if terms:
+                response += f"   可选期限：{', '.join(str(t) for t in terms)} 个月\n"
+            
+            if description:
+                response += f"   产品描述：{description}\n"
+            
+            if loan_usage:
+                response += f"   贷款用途：{loan_usage}\n"
+            
+            if promotion_details:
+                response += f"   优惠详情：{promotion_details}\n"
+            
+            if options:
+                response += "   可选方案：\n"
+                for opt in options:
+                    interest_rate = opt.get("interestRate", 0)
+                    loan_period = opt.get("loanPeriod", 0)
+                    repaid_type = opt.get("repaidType", "")
+                    response += f"      - 期限{loan_period}个月，利率{interest_rate*100:.2f}%，{repaid_type}\n"
+            
+            response += "\n"
+
+        return response.strip()
+    except Exception as e:
+        return f"抱歉，无法查询贷款产品：{str(e)}"
+
 tool_manager.register_tool(query_application_status)
 tool_manager.register_tool(calculate_repayment)
+tool_manager.register_tool(query_loan_products)

@@ -1,6 +1,14 @@
 # smart-customer-service/Dockerfile
 FROM python:3.11-slim
 
+# # 安装 Node.js 18.x (LTS)
+# RUN apt-get update && apt-get install -y curl \
+#     && curl -fsSL https://mirrors.aliyun.com/nodesource/setup_18.x | bash - \
+#     && apt-get install -y nodejs \
+#     && apt-get clean \
+#     && rm -rf /var/lib/apt/lists/*
+
+
 # 设置工作目录
 WORKDIR /app
 

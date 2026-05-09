@@ -9,6 +9,8 @@ class KnowledgeItem(BaseModel):
     question: str
     answer: str
     category: str = "通用"
+    source_type: str = "faq"
+
     created_at: datetime = datetime.now()
     updated_at: datetime = datetime.now()
 

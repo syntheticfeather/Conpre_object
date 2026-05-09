@@ -21,13 +21,35 @@ from utils.token_utils import extract_user_id_from_token
 from api.knowledge_routes import router as knowledge_router
 from api.tool_routes import router as tool_router
 from api.prompt_routes import router as prompt_router
+from api.init_data import init_knowledge_base
 from agent.chat_agent import get_chat_agent
+from tools.tool_manager import tool_manager
 
 # 定义 Bearer Token 认证
 security = HTTPBearer()
 
 # 创建 FastAPI 应用实例
 app = FastAPI(title="智能客服 API")
+
+# 启动时加载MCP服务器配置和初始化知识库
+@app.on_event("startup")
+async def startup_event():
+    # 加载MCP服务器配置（正确等待异步方法）
+    await tool_manager.load_mcp_servers_from_db()
+    logger.info("MCP服务器配置加载完成")
+    
+    # 初始化知识库
+    result = init_knowledge_base()
+    logger.info(f"知识库初始化完成，结果：{result}")
+
+# @app.on_event("shutdown")
+# async def shutdown_event():
+#     """应用关闭时的清理"""
+#     try:
+#         await tool_manager.close()
+#         logger.info("MCP客户端已关闭")
+#     except Exception as e:
+#         logger.error(f"关闭MCP客户端失败: {e}")
 
 app.add_middleware(
     CORSMiddleware,
@@ -70,6 +92,8 @@ async def chat_stream(body: ChatRequest, credentials: HTTPAuthorizationCredentia
 
     # 获取 ChatAgent 单例实例
     agent = get_chat_agent()
+
+    logger.info(f"开始处理用户请求，session_id: {session_id}, message: {message}")
 
     # 异步生成事件流
     async def event_generator():
