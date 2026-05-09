@@ -44,10 +44,10 @@ const goToAddProduct = () => {
 
 .add-product-btn {
   padding: 10px 20px;
-  background-color: #409EFF;
-  color: white;
+  background-color: var(--product-btn-primary);
+  color: var(--color-white);
   border: none;
-  border-radius: 4px;
+  border-radius: 12px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
@@ -55,6 +55,7 @@ const goToAddProduct = () => {
 }
 
 .add-product-btn:hover {
-  background-color: #66b1ff;
+  background-color: var(--product-btn-hover);
 }
+
 </style>

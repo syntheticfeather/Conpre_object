@@ -336,11 +336,14 @@ const getCreditScoreColor = (score) => {
 }
 
 .blacklist-btn {
+  padding: 0px 12px;
+
   background-color: #ec6062;
+
+  font-size: 14px;
   color: white;
+  border-radius: 12px;
   border: none;
-  border-radius: 6px;
-  padding: 2px 5px;
 }
 
 .blacklist-btn:hover {

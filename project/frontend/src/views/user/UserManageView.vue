@@ -222,9 +222,9 @@ onMounted(() => {
   height: 60px;
 
   text-align: left;
-  background-color: #fff;
-  border-radius: 10px;
-  border: 1px solid #e2e6f0;
+  background-color: var(--user-card-bg);
+  border-radius: 12px;
+  border: 1px solid var(--user-card-border);
   
   cursor: pointer;
   transition: all 0.3s;
@@ -232,23 +232,23 @@ onMounted(() => {
 
 .card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px var(--user-card-shadow);
 }
 
 .card.active {
-  background-color: #1890ff;
-  border-color: #1890ff;
+  background-color: var(--user-btn-bg);
+  border-color: var(--user-btn-border);
 }
 
 .card.active h3,
 .card.active p {
-  color: #fff;
+  color: var(--user-btn-text);
 }
 
 .card h3 {
   margin: 0;
   width: auto;
-  color: #4A5A6B;
+  color: var(--user-stat-text);
 
   font-size: 25px;
   line-height: 25px;
@@ -263,7 +263,7 @@ onMounted(() => {
 }
 
 #btn-search {
-  background-color: #1890ff;
-  color: #fff;
+  background-color: var(--user-btn-bg);
+  color: var(--user-btn-text);
 }
 </style>

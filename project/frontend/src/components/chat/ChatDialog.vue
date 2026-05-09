@@ -1,68 +1,87 @@
 <template>
   <Teleport to="body">
-    <div class="chat-overlay" @click.self="$emit('close')">
-      <div class="chat-dialog" @click.stop>
-        <div class="chat-header">
-          <span class="chat-title">💬 智能对话</span>
-          <button class="close-btn" @click="$emit('close')" :disabled="isThinking">✕</button>
-        </div>
+    <Transition name="chat-slide">
+      <div v-if="visible" class="chat-overlay" @click.self="close">
+        <div class="chat-panel">
+          <div class="chat-header">
+            <span class="chat-title">💬 智能对话</span>
+            <button class="close-btn" @click="close" :disabled="isThinking">✕</button>
+          </div>
 
-        <div class="chat-messages" ref="messagesRef">
-          <div
-            v-for="msg in messages"
-            :key="msg.id"
-            :class="['message-item', msg.role]"
-          >
-            <div v-if="msg.role === 'user'" class="message-bubble user-bubble">
-              {{ msg.content }}
+          <div class="chat-messages" ref="messagesRef">
+            <div
+              v-for="msg in messages"
+              :key="msg.id"
+              :class="['message-item', msg.role]"
+            >
+              <div v-if="msg.role === 'user'" class="message-bubble user-bubble">
+                {{ msg.content }}
+              </div>
+              <div v-else-if="msg.role === 'system'" class="message-tool">
+                {{ msg.content }}
+              </div>
+              <div v-else class="message-bubble assistant-bubble">
+                <div v-if="msg.content" class="assistant-content">{{ msg.content }}</div>
+              </div>
             </div>
-            <div v-else-if="msg.role === 'system'" class="message-tool">
-              {{ msg.content }}
-            </div>
-            <div v-else class="message-bubble assistant-bubble">
-              <div v-if="msg.content" class="assistant-content">{{ msg.content }}</div>
+
+            <div v-if="isThinking && !streamingContent" class="thinking-indicator">
+              思考中......
             </div>
           </div>
 
-          <div v-if="isThinking && !streamingContent" class="thinking-indicator">
-            思考中......
+          <div class="chat-input-area">
+            <input
+              ref="inputRef"
+              v-model="inputText"
+              type="text"
+              class="chat-input"
+              placeholder="输入消息..."
+              :disabled="isThinking"
+              @keydown.enter="doSend"
+            />
+            <button
+              class="send-btn"
+              :disabled="isThinking || !inputText.trim()"
+              @click="doSend"
+            >
+              发送
+            </button>
           </div>
-        </div>
-
-        <div class="chat-input-area">
-          <input
-            ref="inputRef"
-            v-model="inputText"
-            type="text"
-            class="chat-input"
-            placeholder="输入消息..."
-            :disabled="isThinking"
-            @keydown.enter="doSend"
-          />
-          <button
-            class="send-btn"
-            :disabled="isThinking || !inputText.trim()"
-            @click="doSend"
-          >
-            发送
-          </button>
         </div>
       </div>
-    </div>
+    </Transition>
   </Teleport>
 </template>
 
 <script setup>
-import { ref, nextTick, watch, onMounted } from 'vue'
+import { ref, computed, nextTick, watch } from 'vue'
 
-defineEmits(['close'])
+const props = defineProps({
+  modelValue: {
+    type: Boolean,
+    default: false
+  }
+})
+
+const emit = defineEmits(['update:modelValue'])
+
 import { useChatSSE } from '@/composables/useChatSSE'
 
 const { messages, isThinking, streamingContent, sendMessage } = useChatSSE()
 
+const visible = computed({
+  get: () => props.modelValue,
+  set: (val) => emit('update:modelValue', val)
+})
+
 const inputText = ref('')
 const inputRef = ref(null)
 const messagesRef = ref(null)
+
+const close = () => {
+  visible.value = false
+}
 
 const scrollToBottom = async () => {
   await nextTick()
@@ -74,8 +93,10 @@ const scrollToBottom = async () => {
 
 watch([messages, isThinking, streamingContent], scrollToBottom, { deep: true })
 
-onMounted(() => {
-  inputRef.value?.focus()
+watch(visible, (val) => {
+  if (val) {
+    nextTick(() => inputRef.value?.focus())
+  }
 })
 
 const doSend = async () => {
@@ -89,24 +110,29 @@ const doSend = async () => {
 <style scoped>
 .chat-overlay {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
   z-index: 9999;
-  background: rgba(0, 0, 0, 0.2);
   display: flex;
-  justify-content: flex-end;    
-  padding-top: 11vh;
-  padding-right: 27px;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 40px;
+  box-sizing: border-box;
 }
 
-.chat-dialog {
-  width: 340px;
-  height: 590px;
+.chat-panel {
+  width: 350px;
+  height: calc(100% - 60px);
+  max-height: 680px;
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
+  border-radius: 16px;
   overflow: hidden;
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.12);
 }
 
 .chat-header {
@@ -173,7 +199,7 @@ const doSend = async () => {
 .message-bubble {
   max-width: 85%;
   padding: 10px 14px;
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 14px;
   line-height: 1.6;
   word-break: break-word;
@@ -183,13 +209,13 @@ const doSend = async () => {
 .user-bubble {
   background: #1a73e8;
   color: #fff;
-  border-bottom-right-radius: 4px;
+  border-bottom-right-radius: 12px;
 }
 
 .assistant-bubble {
   background: #fff;
   color: #333;
-  border-bottom-left-radius: 4px;
+  border-bottom-left-radius: 12px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
@@ -232,7 +258,7 @@ const doSend = async () => {
   flex: 1;
   height: 38px;
   border: 1px solid #dcdfe6;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 0 12px;
   font-size: 14px;
   outline: none;
@@ -249,7 +275,7 @@ const doSend = async () => {
   border: none;
   background: #1a73e8;
   color: #fff;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 14px;
   cursor: pointer;
   transition: background 0.2s;
@@ -264,5 +290,29 @@ const doSend = async () => {
 .chat-input:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.chat-slide-enter-active {
+  transition: opacity 0.3s ease;
+}
+.chat-slide-leave-active {
+  transition: opacity 0.25s ease;
+}
+.chat-slide-enter-active .chat-panel {
+  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.chat-slide-leave-active .chat-panel {
+  transition: transform 0.25s cubic-bezier(0.55, 0.06, 0.68, 0.53);
+}
+
+.chat-slide-enter-from,
+.chat-slide-leave-to {
+  opacity: 0;
+}
+.chat-slide-enter-from .chat-panel {
+  transform: translateX(120%);
+}
+.chat-slide-leave-to .chat-panel {
+  transform: translateX(100%);
 }
 </style>

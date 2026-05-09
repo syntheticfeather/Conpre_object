@@ -1,6 +1,6 @@
 <template>
   <div class="mcp-tools">
-    <h2>MCP 工具管理</h2>
+    <div class="header">MCP 工具管理</div>
 
     <!-- 工具列表 -->
     <el-card class="tools-card">
@@ -15,7 +15,17 @@
               style="width: 260px; margin-right: 10px"
               @clear="fetchTools"
               @keyup.enter="searchTool"
-            />
+            >
+              <template #suffix>
+                <el-icon
+                  class="search-icon"
+                  @click="searchTool"
+                  title="点击执行搜索"
+                >
+                  <Search />
+                </el-icon>
+              </template>
+            </el-input>
             <el-button type="primary" @click="fetchTools">刷新</el-button>
           </div>
         </div>
@@ -27,7 +37,13 @@
             <el-tag type="primary">{{ row.name }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="description" label="描述" show-overflow-tooltip />
+        <el-table-column prop="description" label="描述">
+          <template #default="{ row }">
+            <ContentTooltip :content="row.description">
+              <span class="cell-text">{{ row.description }}</span>
+            </ContentTooltip>
+          </template>
+        </el-table-column>
         <el-table-column label="状态" width="100">
           <template #default="{ row }">
             <el-tag :type="row.isEnabled ? 'success' : 'info'">
@@ -54,6 +70,7 @@
           <el-form :inline="true" style="margin-bottom: 0">
             <el-form-item label="工具名称">
               <el-select v-model="logFilter.toolName" placeholder="全部" clearable @change="fetchToolLogs">
+                <template #loading><LoadingDots /></template>
                 <el-option 
                   v-for="tool in toolsList" 
                   :key="tool.name" 
@@ -64,6 +81,7 @@
             </el-form-item>
             <el-form-item label="结果">
               <el-select v-model="logFilter.result" placeholder="全部" clearable @change="fetchToolLogs">
+                <template #loading><LoadingDots /></template>
                 <el-option label="成功" value="success" />
                 <el-option label="失败" value="error" />
               </el-select>
@@ -85,7 +103,13 @@
             {{ JSON.stringify(row.input_params) }}
           </template>
         </el-table-column>
-        <el-table-column prop="output" label="输出结果" show-overflow-tooltip />
+        <el-table-column prop="output" label="输出结果">
+          <template #default="{ row }">
+            <ContentTooltip :content="row.output">
+              <span class="cell-text">{{ row.output }}</span>
+            </ContentTooltip>
+          </template>
+        </el-table-column>
         <el-table-column prop="duration" label="耗时" width="80">
           <template #default="{ row }">
             {{ row.duration }}ms
@@ -103,16 +127,20 @@
   </div>
 
   <button class="chat-fab" @click="chatVisible = true" title="智能对话调试">💬</button>
-  <ChatDialog v-if="chatVisible" @close="chatVisible = false" />
+  <ChatDialog v-model="chatVisible" />
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import { Search } from '@element-plus/icons-vue'
 import request from '@/utils/request'
 import ChatDialog from '@/components/chat/ChatDialog.vue'
+import ContentTooltip from '@/components/shared/ContentTooltip.vue'
+import LoadingDots from '@/components/shared/LoadingDots.vue'
 
-const API_BASE = '/tools/'
+const API_BASE = '/tools'
+const buildUrl = (path = '') => `${API_BASE}/${path}`.replace(/\/+/g, '/')
 
 const loading = ref(false)
 const logsLoading = ref(false)
@@ -128,7 +156,7 @@ const logFilter = ref({
 const fetchTools = async () => {
   loading.value = true
   try {
-    const res = await request.get(API_BASE)
+    const res = await request.get(buildUrl())
     toolsList.value = (res.data || []).map(tool => ({
       ...tool,
       isEnabled: tool.enabled
@@ -147,11 +175,13 @@ const searchTool = async () => {
   }
   loading.value = true
   try {
-    const res = await request.get(`${API_BASE}/search`, { params: { name: searchKeyword.value.trim() } })
-    if (res.code === 200 && res.data) {
-      toolsList.value = [{ ...res.data, isEnabled: res.data.enabled }]
-    } else {
-      toolsList.value = []
+    const res = await request.get(buildUrl('search'), { params: { name: searchKeyword.value.trim() } })
+    const data = res.data || []
+    toolsList.value = (Array.isArray(data) ? data : [data]).map(tool => ({
+      ...tool,
+      isEnabled: tool.enabled
+    }))
+    if (toolsList.value.length === 0) {
       ElMessage.warning('未找到匹配的工具')
     }
   } catch {
@@ -163,7 +193,7 @@ const searchTool = async () => {
 
 const toggleTool = async (tool) => {
   try {
-    await request.put(`${API_BASE}/${tool.name}`, null, { params: { enabled: tool.isEnabled } })
+    await request.put(buildUrl(tool.name), null, { params: { enabled: tool.isEnabled } })
     ElMessage.success(tool.isEnabled ? '工具已启用' : '工具已禁用')
   } catch {
     tool.isEnabled = !tool.isEnabled
@@ -193,6 +223,7 @@ onMounted(fetchTools)
 <style scoped>
 .mcp-tools {
   padding: 20px;
+  padding-top: 0;
 }
 .tools-card,
 .logs-card {
@@ -216,17 +247,37 @@ onMounted(fetchTools)
   height: 52px;
   border: none;
   border-radius: 50%;
-  background: linear-gradient(135deg, #1a73e8, #1557b0);
-  color: #fff;
+  background: var(--fab-gradient);
+  color: var(--fab-text);
   font-size: 22px;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(26, 115, 232, 0.4);
+  box-shadow: 0 4px 16px var(--fab-shadow);
   z-index: 9998;
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .chat-fab:hover {
   transform: scale(1.08);
-  box-shadow: 0 6px 24px rgba(26, 115, 232, 0.5);
+  box-shadow: 0 6px 24px var(--fab-shadow-hover);
+}
+
+.search-icon {
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--color-info);
+  transition: color 0.2s;
+}
+
+.search-icon:hover {
+  color: var(--color-primary);
+}
+
+.cell-text {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
 }
 </style>

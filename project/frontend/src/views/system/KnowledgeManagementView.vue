@@ -1,16 +1,53 @@
 <template>
   <div class="knowledge-management">
-    <h2>知识库管理</h2>
+    <div class="header">知识库管理</div>
 
-    <!-- 添加表单 -->
     <el-card class="add-form">
-      <h3>{{ isEdit ? '编辑知识条目' : '添加知识条目' }}</h3>
+      <h3>添加知识条目</h3>
       <el-form :model="form" label-width="80px">
         <el-form-item label="问题">
           <el-input v-model="form.question" placeholder="请输入问题" />
         </el-form-item>
         <el-form-item label="答案">
           <el-input v-model="form.answer" type="textarea" :rows="3" placeholder="请输入答案" />
+        </el-form-item>
+        <el-form-item label="附件">
+          <el-upload
+            ref="addUploadRef"
+            class="upload-demo"
+            drag
+            :disabled="uploadDisabled"
+            :action="uploadUrl"
+            :headers="uploadHeaders"
+            :on-success="handleAddUploadSuccess"
+            :on-error="handleUploadError"
+            :on-remove="handleAddUploadRemove"
+            :file-list="addFileList"
+            :limit="5"
+            :multiple="true"
+            name="file"
+          >
+            <el-icon class="el-icon--upload"><UploadFilled /></el-icon>
+            <div class="el-upload__text">
+              将文件拖拽到此处或<em>点击上传</em>
+            </div>
+            <template #tip>
+              <div class="el-upload__tip">
+                支持上传图片或文档文件
+              </div>
+            </template>
+            <template #file="{ file }">
+              <div class="upload-file-item">
+                <img v-if="isImageFile(file)" :src="file.url" class="upload-preview-img" />
+                <div v-else class="file-type-icon">
+                  <el-icon :size="32"><Document /></el-icon>
+                </div>
+                <div class="upload-file-actions">
+                  <el-icon @click="removeAddFile(file)"><Delete /></el-icon>
+                </div>
+              </div>
+            </template>
+          </el-upload>
         </el-form-item>
         <el-form-item label="分类">
           <el-select v-model="form.category" placeholder="选择分类">
@@ -21,15 +58,11 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="saveKnowledge">
-            {{ isEdit ? '更新' : '添加' }}
-          </el-button>
-          <el-button v-if="isEdit" @click="cancelEdit">取消编辑</el-button>
+          <el-button type="primary" @click="saveKnowledge">添加</el-button>
         </el-form-item>
       </el-form>
     </el-card>
 
-    <!-- 搜索和过滤 -->
     <el-card class="search-form">
       <el-form :inline="true" :model="searchForm">
         <el-form-item label="关键词">
@@ -55,7 +88,6 @@
       </el-form>
     </el-card>
 
-    <!-- 知识列表 -->
     <el-card class="knowledge-list">
       <div class="list-header">
         <h3>知识库列表（共 {{ total }} 条）</h3>
@@ -70,6 +102,26 @@
             <el-tag :type="getCategoryTagType(row.category)">{{ row.category }}</el-tag>
           </template>
         </el-table-column>
+        <el-table-column label="附件" width="120">
+          <template #default="{ row }">
+            <div v-if="row.attachments && row.attachments.length > 0" class="attachment-cell">
+              <el-tooltip placement="top">
+                <template #content>
+                  <div v-for="(att, idx) in row.attachments" :key="idx" class="attachment-tip-item">
+                    <el-link :href="getFileUrl(att)" target="_blank" :underline="false">
+                      <el-icon><Link /></el-icon> {{ getFileName(att) }}
+                    </el-link>
+                  </div>
+                </template>
+                <el-tag size="small" type="warning">
+                  <el-icon style="vertical-align: middle"><Paperclip /></el-icon>
+                  {{ row.attachments.length }} 个文件
+                </el-tag>
+              </el-tooltip>
+            </div>
+            <span v-else class="no-attachment">-</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="created_at" label="创建时间" width="170" />
         <el-table-column prop="updated_at" label="更新时间" width="170" />
         <el-table-column label="操作" width="150" fixed="right">
@@ -80,7 +132,6 @@
         </el-table-column>
       </el-table>
 
-      <!-- 分页 -->
       <div class="pagination-container">
         <el-pagination
           v-model:current-page="currentPage"
@@ -94,7 +145,6 @@
       </div>
     </el-card>
 
-    <!-- 编辑对话框 -->
     <el-dialog v-model="editDialogVisible" title="编辑知识条目" width="600px">
       <el-form :model="editForm" label-width="80px">
         <el-form-item label="问题">
@@ -102,6 +152,44 @@
         </el-form-item>
         <el-form-item label="答案">
           <el-input v-model="editForm.answer" type="textarea" :rows="4" placeholder="请输入答案" />
+        </el-form-item>
+        <el-form-item label="附件">
+          <el-upload
+            ref="editUploadRef"
+            class="upload-demo"
+            drag
+            :disabled="uploadDisabled"
+            :action="uploadUrl"
+            :headers="uploadHeaders"
+            :on-success="handleEditUploadSuccess"
+            :on-error="handleUploadError"
+            :on-remove="handleEditUploadRemove"
+            :file-list="editFileList"
+            :limit="5"
+            :multiple="true"
+            name="file"
+          >
+            <el-icon class="el-icon--upload"><UploadFilled /></el-icon>
+            <div class="el-upload__text">
+              将文件拖拽到此处或<em>点击上传</em>
+            </div>
+            <template #tip>
+              <div class="el-upload__tip">
+                支持上传图片或文档文件
+              </div>
+            </template>
+            <template #file="{ file }">
+              <div class="upload-file-item">
+                <img v-if="isImageFile(file)" :src="file.url" class="upload-preview-img" />
+                <div v-else class="file-type-icon">
+                  <el-icon :size="32"><Document /></el-icon>
+                </div>
+                <div class="upload-file-actions">
+                  <el-icon @click="removeEditFile(file)"><Delete /></el-icon>
+                </div>
+              </div>
+            </template>
+          </el-upload>
         </el-form-item>
         <el-form-item label="分类">
           <el-select v-model="editForm.category" placeholder="选择分类">
@@ -120,12 +208,13 @@
   </div>
 
   <button class="chat-fab" @click="chatVisible = true" title="智能对话调试">💬</button>
-  <ChatDialog v-if="chatVisible" @close="chatVisible = false" />
+  <ChatDialog v-model="chatVisible" />
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { UploadFilled, Document, Delete, Paperclip, Link } from '@element-plus/icons-vue'
 import request from '@/utils/request'
 import ChatDialog from '@/components/chat/ChatDialog.vue'
 
@@ -133,9 +222,18 @@ const API_BASE = '/knowledge'
 const buildUrl = (path = '') => `${API_BASE}/${path}`.replace(/\/+/g, '/')
 
 const loading = ref(false)
-const isEdit = ref(false)
 const editDialogVisible = ref(false)
 const chatVisible = ref(false)
+const uploadDisabled = ref(true)
+
+const addUploadRef = ref(null)
+const editUploadRef = ref(null)
+const addFileList = ref([])
+const editFileList = ref([])
+
+const uploadUrl = '/api/upload/knowledge'
+const token = localStorage.getItem('auth-store') ? JSON.parse(localStorage.getItem('auth-store'))?.token || '' : ''
+const uploadHeaders = { Authorization: `Bearer ${token}` }
 
 const form = ref({
   question: '',
@@ -147,7 +245,8 @@ const editForm = ref({
   id: '',
   question: '',
   answer: '',
-  category: '通用'
+  category: '通用',
+  attachments: []
 })
 
 const searchForm = ref({
@@ -166,6 +265,24 @@ const paginatedList = computed(() => {
   const end = start + pageSize.value
   return filteredList.value.slice(start, end)
 })
+
+const isImageFile = (file) => {
+  const imgExts = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp']
+  const name = file.name || file.url || ''
+  const ext = name.substring(name.lastIndexOf('.')).toLowerCase()
+  return imgExts.includes(ext)
+}
+
+const getFileName = (filepath) => {
+  if (!filepath) return ''
+  const parts = filepath.split('/')
+  return parts[parts.length - 1]
+}
+
+const getFileUrl = (filepath) => {
+  if (!filepath) return ''
+  return `/uploads/${filepath}`
+}
 
 const fetchKnowledge = async () => {
   loading.value = true
@@ -203,48 +320,105 @@ const resetSearch = () => {
   searchKnowledge()
 }
 
+const handleAddUploadSuccess = (response) => {
+  if (response.code === 200) {
+    const { filepath, filename } = response.data
+    addFileList.value.push({ name: filename, url: getFileUrl(filepath), filepath })
+    ElMessage.success(`${filename} 上传成功`)
+  } else {
+    ElMessage.error(response.message || '上传失败')
+  }
+}
+
+const handleEditUploadSuccess = (response) => {
+  if (response.code === 200) {
+    const { filepath, filename } = response.data
+    editFileList.value.push({ name: filename, url: getFileUrl(filepath), filepath })
+    ElMessage.success(`${filename} 上传成功`)
+  } else {
+    ElMessage.error(response.message || '上传失败')
+  }
+}
+
+const handleUploadError = () => {
+  ElMessage.error('文件上传失败')
+}
+
+const removeAddFile = (file) => {
+  const idx = addFileList.value.findIndex(f => f.uid === file.uid)
+  if (idx > -1) addFileList.value.splice(idx, 1)
+}
+
+const handleAddUploadRemove = (file) => {
+  removeAddFile(file)
+}
+
+const removeEditFile = (file) => {
+  const idx = editFileList.value.findIndex(f => f.uid === file.uid)
+  if (idx > -1) editFileList.value.splice(idx, 1)
+}
+
+const handleEditUploadRemove = (file) => {
+  removeEditFile(file)
+}
+
 const saveKnowledge = async () => {
   if (!form.value.question.trim() || !form.value.answer.trim()) {
     ElMessage.warning('请填写完整信息')
     return
   }
-  
+
+  const attachments = addFileList.value.map(f => f.filepath).filter(Boolean)
+
   try {
-    if (isEdit.value) {
-      await request.put(buildUrl(editForm.value.id), editForm.value)
-      ElMessage.success('更新成功')
-    } else {
-      await request.post(buildUrl(), form.value)
-      ElMessage.success('添加成功')
-    }
+    await request.post(buildUrl(), { ...form.value, attachments })
+    ElMessage.success('添加成功')
     form.value = { question: '', answer: '', category: '通用' }
-    isEdit.value = false
+    addFileList.value = []
     fetchKnowledge()
   } catch {
-    ElMessage.error(isEdit.value ? '更新失败' : '添加失败')
+    ElMessage.error('添加失败')
   }
 }
 
 const editKnowledge = (row) => {
-  isEdit.value = true
-  editForm.value = { ...row }
+  editForm.value = {
+    id: row.id,
+    question: row.question,
+    answer: row.answer,
+    category: row.category || '通用',
+    attachments: row.attachments || []
+  }
+  editFileList.value = (row.attachments || []).map((fp, idx) => ({
+    name: getFileName(fp),
+    url: getFileUrl(fp),
+    filepath: fp,
+    uid: Date.now() + idx
+  }))
   editDialogVisible.value = true
 }
 
 const confirmEdit = async () => {
+  if (!editForm.value.question.trim() || !editForm.value.answer.trim()) {
+    ElMessage.warning('请填写完整信息')
+    return
+  }
+
+  const attachments = editFileList.value.map(f => f.filepath).filter(Boolean)
+
   try {
-    await request.put(buildUrl(editForm.value.id), editForm.value)
+    await request.put(buildUrl(editForm.value.id), {
+      question: editForm.value.question,
+      answer: editForm.value.answer,
+      category: editForm.value.category,
+      attachments
+    })
     ElMessage.success('更新成功')
     editDialogVisible.value = false
     fetchKnowledge()
   } catch {
     ElMessage.error('更新失败')
   }
-}
-
-const cancelEdit = () => {
-  isEdit.value = false
-  form.value = { question: '', answer: '', category: '通用' }
 }
 
 const deleteKnowledge = async (id) => {
@@ -270,7 +444,6 @@ const handleSizeChange = () => {
 }
 
 const handleCurrentChange = () => {
-  // 分页变化时自动更新显示
 }
 
 const getCategoryTagType = (category) => {
@@ -289,6 +462,7 @@ onMounted(fetchKnowledge)
 <style scoped>
 .knowledge-management {
   padding: 20px;
+  padding-top: 0;
 }
 .add-form {
   margin-bottom: 20px;
@@ -314,6 +488,64 @@ onMounted(fetchKnowledge)
   justify-content: flex-end;
 }
 
+.upload-file-item {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.upload-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.file-type-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: var(--hover-bg);
+  color: var(--color-info);
+}
+.upload-file-actions {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  cursor: pointer;
+  color: var(--color-danger);
+  background: var(--knowledge-delete-icon-bg);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-demo {
+  display: block;
+}
+.upload-demo :deep(.el-upload--drag) {
+  width: 100%;
+}
+.upload-demo :deep(.el-upload-dragger) {
+  width: 100%;
+}
+
+.attachment-cell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.no-attachment {
+  color: var(--text-color-disabled);
+}
+.attachment-tip-item {
+  padding: 4px 0;
+}
 .chat-fab {
   position: fixed;
   right: 32px;
@@ -322,17 +554,16 @@ onMounted(fetchKnowledge)
   height: 52px;
   border: none;
   border-radius: 50%;
-  background: linear-gradient(135deg, #1a73e8, #1557b0);
-  color: #fff;
+  background: var(--fab-gradient);
+  color: var(--fab-text);
   font-size: 22px;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(26, 115, 232, 0.4);
+  box-shadow: 0 4px 16px var(--fab-shadow);
   z-index: 9998;
   transition: transform 0.2s, box-shadow 0.2s;
 }
-
 .chat-fab:hover {
   transform: scale(1.08);
-  box-shadow: 0 6px 24px rgba(26, 115, 232, 0.5);
+  box-shadow: 0 6px 24px var(--fab-shadow-hover);
 }
 </style>

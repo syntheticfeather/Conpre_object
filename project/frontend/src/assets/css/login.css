@@ -25,7 +25,7 @@ h1 {
     font-size: 32px;
     line-height: 30px;
     font-weight: 400;
-    color: #fff;
+    color: var(--login-text);
     text-align: center;
 }
 
@@ -40,8 +40,8 @@ h1 {
 
     width: 450px;
     height: 505px;
-    background: #11131d;
-    border: 2px solid rgba(255, 255, 255, 0.5);
+    background: var(--login-bg);
+    border: 2px solid var(--login-border);
     border-radius: 20px;
     opacity: 0.8;
 }
@@ -53,7 +53,7 @@ h1 {
     font-size: 24px;
     line-height: 28px;
     font-weight: 600;
-    color: #fff;
+    color: var(--login-text);
     text-align: center;
 }
 
@@ -84,10 +84,10 @@ h1 {
     margin: 0;
     margin-bottom: 20px;
 
-    background-color: rgba(255, 255, 255, 0);
+    background-color: var(--login-input-bg);
     font-size: 20px;
     line-height: 14px;
-    color: #fff;
+    color: var(--login-text);
     border: none;
     cursor: pointer;
 }
@@ -106,21 +106,21 @@ h1 {
 
     font-size: 22px;
     line-height: 24px;
-    color: #000;
+    color: var(--login-input-text);
     font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
     border: none;
     border-radius: 5px;
     outline: none;
     border: 1px solid transparent; /* 替代 none，避免尺寸跳动 */
-    background-color: #fff; /* 显式设置背景！ */
+    background-color: var(--login-input-filled-bg);
     transition: border-color 0.2s, background-color 0.2s;
 }
 
 input[type="text"]:focus,
 input[type="password"]:focus {
-  background-color: #d0d0d0;
-  border: 1px solid #ccc;
-  box-shadow: 0 0 5px rgba(0,0,0,0.2);
+  background-color: var(--login-disabled-bg);
+  border: 1px solid var(--login-disabled-border);
+  box-shadow: 0 0 5px var(--login-disabled-shadow);
 }
 /* 密码填写框与显示按钮 */
 .password-input {
@@ -135,9 +135,9 @@ input[type="password"]:focus {
 
   width: 30px;
   height: 20px;
-  background-color: rgba(255, 255, 255, 0);
+  background-color: var(--login-input-bg);
   
-  color: #fff;
+  color: var(--login-text);
   border: none;
   cursor: pointer;
 }
@@ -152,21 +152,21 @@ input[type="password"]:focus {
 
     width: 260px;
     height: 40px;
-    background-color: #fff;
+    background-color: var(--login-input-filled-bg);
 
     font-size: 28px;
     line-height: 30px;
     font-weight: 500;
-    color: #000;
+    color: var(--login-input-text);
     border: none;
     border-radius: 6px;
     cursor: pointer;
 }
 #passwordLogin-submit-btn:hover,
 #smsLogin-submit-btn:hover {
-    background-color: #dcdcdd;
+    background-color: var(--login-disabled-bg);
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(27, 83, 241, 0.3);
+    box-shadow: 0 5px 15px var(--login-disabled-shadow);
 }
 .main button:active {
     transform: translateY(0);
@@ -182,15 +182,15 @@ input[type="password"]:focus {
 span {
     font-size: 15px;
     line-height: 17px;
-    color: #fff;
+    color: var(--login-text);
 }
 span a {
-    color: #3edca7;
+    color: var(--login-accent);
 }
 .forget-password {
     font-size: 15px;
     line-height: 17px;
-    color: #3edca7;
+    color: var(--login-accent);
 }
 
 /* 勾选条款 */
@@ -202,11 +202,11 @@ label {
 
     font-size: 15px;
     line-height: 17px;
-    color: #fff;
+    color: var(--login-text);
 }
 
 label a {
-    color: #3edca7;
+    color: var(--login-accent);
 }
 
 /* 短信验证码容器 */
@@ -225,7 +225,7 @@ label a {
 #get-sms-btn {
     margin-left: 10px;
     padding: 10px;
-    background-color: #165eff;
+    background-color: var(--login-btn-bg);
     color: white;
     border: none;
     border-radius: 5px;
@@ -234,12 +234,12 @@ label a {
 }
 
 .get-sms-btn:disabled {
-    background-color: #cccccc;
+    background-color: var(--login-btn-disabled-bg);
     cursor: not-allowed;
 }
 
 .get-sms-btn:hover:not(:disabled) {
-    background-color: #1b53f1;
+    background-color: var(--login-btn-hover-bg);
 }
 
 /* 错误消息显示 */
@@ -264,14 +264,14 @@ label a {
 /* 加载动画样式 */
 .loading {
     text-align: center;
-    color: #165eff;
+    color: var(--login-btn-bg);
     font-weight: bold;
 
     opacity: 0;
 }
 /* 成功消息样式 */
 .success-message {
-    color: #2ecc71;
+    color: var(--login-register-accent);
     text-align: center;
     font-size: 16px;
     font-weight: 500;

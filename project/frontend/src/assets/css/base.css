@@ -12,19 +12,19 @@ li {
 
 body {
   font: 14px/1.5 "Microsoft Yahei", "Hiragino Sans GB", "Heiti SC", "WenQuanYi Micro Hei", sans-serif;
-  color: #333;
+  color: var(--text-color);
   background-color: var(--html-bg);
 }
 
 a {
-  color: #333;
+  color: var(--text-color);
   text-decoration: none;
 }
 
 /* 通用属性值预设 - 亮色模式 */
 :root {
     /* 基础颜色 */
-    --html-bg:#eceef2;
+    --html-bg:#fff;
     --text-color: #303133;
 
     /* 导航栏颜色 */
@@ -36,6 +36,7 @@ a {
     --sidebar-image: linear-gradient(to top, #30cfd0 0%, #330867 100%);/*侧栏渐变背景*/
     --sidebar-bg-color: #26528f;
     --sidebar-shadow-color:  2px 0 8px rgb(104, 131, 173);
+    --sidebar-active-color: rgba(0,0,0,0.1);
 
     /*标题颜色*/
     --title-color: #4A5A6B;
@@ -45,7 +46,7 @@ a {
     --table-content-shadow:3px 3px 6px rgba(0, 0, 0, 0.3);
     --table-color: #525457;
     --table-bg: #fff;
-    --table-head-bg: #eaebecf2;
+    --table-head-bg: #335b623b;
     --table-th-td-border: #e0e0e0;
     --table-tr-hover:  #e2e2e2;
     /*批量处理框*/
@@ -53,6 +54,7 @@ a {
     --batch-actions-border: #b7eb8f;
     --selected-info-color: #52c41a;
     /*详情框*/
+    --auth-item-bg: #cae4f8;
     --detail-color: #525457;
     --detail-bg: #fff;
     --detail-border: #ebe6e6;
@@ -86,8 +88,402 @@ a {
     --success-color: #27ae60;
     --warning-color: #e67e22;
     --danger-color: #e74c3c;
-    --border-radius: 6px;
     --box-shadow: 0 2px 10px rgba(31, 31, 31, 0.1);
+
+    /* Element 风格通用颜色 */
+    --color-white: #ffffff;                     /* 通用白色 */
+    --color-black: #000000;                     /* 通用黑色 */
+    --color-primary: #409eff;                   /* Element 主题色 */
+    --color-primary-hover: #66b1ff;             /* Element 主题色悬停 */
+    --color-primary-active: #2a88e6;            /* Element 主题色点击 */
+    --color-primary-light: #ecf5ff;             /* Element 主题色浅背景 */
+    --color-success: #67c23a;                   /* Element 成功色 */
+    --color-warning: #e6a23c;                   /* Element 警告色 */
+    --color-danger: #f56c6c;                    /* Element 危险色 */
+    --color-info: #909399;                      /* Element 信息/辅助色 */
+    --color-danger-hover: #f78989;              /* 危险色悬停 */
+    --color-success-hover: #85ce61;             /* 成功色悬停 */
+
+    /* 文字颜色扩展 */
+    --text-color-placeholder: #909399;          /* 占位/辅助文字颜色 */
+    --text-color-disabled: #c0c4cc;             /* 禁用文字颜色 */
+    --text-color-caption: #666;                 /* 标注文字颜色 */
+
+    /* 边框颜色扩展 */
+    --border-color-base: #dcdfe6;               /* 基础边框颜色 */
+    --border-color-light: #e4e7ed;              /* 浅边框颜色（卡片/分割线） */
+    --border-color-lighter: #ebeef5;            /* 更浅边框颜色（表格边框等） */
+    --border-color-extra-light: #f0f0f0;        /* 极浅边框颜色 */
+    --border-color-table: #e0e0e0;              /* 表格边框颜色 */
+    --border-color-detail: #dee2e6;             /* 详情页分割线颜色 */
+
+    /* 填充色扩展 */
+    --fill-color-base: #f0f0f0;                 /* 基础填充色 */
+    --fill-color-light: #f5f5f5;                /* 浅填充色 */
+    --fill-color-warning-bg: #f8d7da;           /* 警告信息背景色 */
+    --fill-color-warning-text: #721c24;         /* 警告信息文字色 */
+    --fill-color-danger-bg: #fff3f3;            /* 危险状态背景色 */
+    --fill-color-danger-border: #ffd6d6;        /* 危险状态边框色 */
+    --fill-color-success-bg: #e8f5e8;           /* 成功状态背景色 */
+    --fill-color-success-border: #27ae60;       /* 成功状态边框色 */
+    --fill-color-success-tag-bg: #f6ffed;       /* 成功标签背景色 */
+    --fill-color-success-tag-border: #b7eb8f;   /* 成功标签边框色 */
+    --fill-color-success-tag-text: #52c41a;     /* 成功标签文字色 */
+    --fill-color-warning-tag-bg: #fffbe6;       /* 警告标签背景色 */
+    --fill-color-warning-tag-border: #ffe58f;   /* 警告标签边框色 */
+    --fill-color-warning-tag-text: #faad14;     /* 警告标签文字色 */
+    --fill-color-info-tag-bg: #f5f5f5;          /* 信息标签背景色 */
+    --fill-color-info-tag-border: #d9d9d9;      /* 信息标签边框色 */
+    --fill-color-info-tag-text: #999;           /* 信息标签文字色 */
+
+    /* Dashboard/面板颜色 */
+    --dashboard-bg: #331a6f;                    /* Dashboard 背景色 */
+    --dashboard-shadow: rgb(92 175 146 / 34%);  /* Dashboard 主体阴影色 */
+
+    /* 导航栏颜色(Navbar) */
+    --navbar-bg-gradient: linear-gradient(-225deg, #330c69 0%, #3584A7 51%, #30D2BE 100%); /* 导航栏渐变背景 */
+    --navbar-text-color: #ffffff;               /* 导航栏文字颜色 */
+    --navbar-text-secondary: rgba(255, 255, 255, 0.6);  /* 导航栏次要文字(占位符)颜色 */
+    --navbar-text-tertiary: rgba(255, 255, 255, 0.8);   /* 导航栏第三级文字(铃铛)颜色 */
+    --navbar-bell-text: rgba(255, 255, 255, 0.7);       /* 导航栏铃铛图标颜色 */
+    --navbar-bell-hover-text: rgba(255, 255, 255, 1);   /* 导航栏铃铛图标悬停色 */
+    --navbar-search-bg: rgba(255, 255, 255, 0.15);      /* 导航栏搜索框背景色 */
+    --navbar-admin-bg: #1757d347;                 /* 导航栏管理员标签背景色 */
+    --navbar-admin-text: #3498db;               /* 导航栏管理员文字色 */
+    --navbar-admin-hover-bg: #3498db;           /* 导航栏管理员按钮悬停背景色 */
+    --navbar-icon-hover-bg: rgba(255, 255, 255, 0.15);  /* 导航栏图标悬停背景色 */
+    --navbar-icon-hover-shadow: rgba(255, 255, 255, 0.3); /* 导航栏图标悬停阴影色 */
+    --navbar-icon-hover-bg-strong: rgba(255, 255, 255, 0.3); /* 导航栏图标悬停强背景色 */
+    --navbar-sunny-hover-bg: rgba(131, 179, 198, 0.2);  /* 导航栏太阳图标悬停背景色 */
+    --navbar-sunny-hover-shadow: rgba(201, 203, 204, 0.5); /* 导航栏太阳图标悬停阴影色 */
+    --navbar-moon-hover-text: #a0c4ff;                   /* 导航栏月亮图标悬停文字色 */
+    --navbar-moon-hover-bg: rgba(160, 196, 255, 0.2);   /* 导航栏月亮图标悬停背景色 */
+    --navbar-moon-hover-shadow: rgba(198, 208, 223, 0.5); /* 导航栏月亮图标悬停阴影色 */
+    --navbar-dropdown-shadow: rgba(0, 0, 0, 0.3);        /* 导航栏下拉菜单阴影色 */
+
+    /* 通知面板颜色(Notification Panel) */
+    --notif-panel-bg: #fff;                     /* 通知面板背景色 */
+    --notif-panel-shadow: rgba(0, 0, 0, 0.15);  /* 通知面板阴影色 */
+    --notif-header-bg: #fafafa;                 /* 通知面板头部背景色 */
+    --notif-header-border: #f0f0f0;             /* 通知面板头部边框色 */
+    --notif-header-text: #303133;               /* 通知面板头部文字色 */
+    --notif-item-border: #f5f5f5;               /* 通知项边框色 */
+    --notif-item-hover-bg: #f5f7fa;             /* 通知项悬停背景色 */
+    --notif-unread-bg: #ecf5ff;                 /* 未读通知背景色 */
+    --notif-unread-border: #409EFF;             /* 未读通知左边框高亮色 */
+    --notif-title-color: #303133;               /* 通知标题颜色 */
+    --notif-content-color: #606266;             /* 通知内容颜色 */
+    --notif-time-color: #909399;                /* 通知时间颜色 */
+    --notif-footer-bg: #fafafa;                 /* 通知底部背景色 */
+    --notif-footer-border: #f0f0f0;             /* 通知底部边框色 */
+    --notif-dot-connected: #67C23A;             /* 连接状态圆点(在线) */
+    --notif-dot-connected-shadow: rgba(103, 194, 58, 0.6);  /* 连接状态圆点阴影 */
+    --notif-dot-disconnected: #F56C6C;          /* 连接状态圆点(离线) */
+    --notif-dot-disconnected-shadow: rgba(245, 108, 108, 0.6); /* 连接状态圆点阴影 */
+
+    /* 侧栏菜单颜色(Sidebar) */
+    --sidebar-menu-text: #fff;                  /* 侧栏菜单文字色 */
+    --sidebar-menu-active-text: #25e0bf;        /* 侧栏菜单激活文字色 */
+    --sidebar-menu-active-border: #25e0bf;      /* 侧栏菜单激活左边框色 */
+    --sidebar-menu-active-bg: rgba(0, 0, 0, 0.1); /* 侧栏菜单激活背景色 */
+    --sidebar-menu-hover-bg: #2d9d88c5;         /* 侧栏菜单悬停背景色 */
+    --sidebar-menu-hover-bg-right: rgb(72, 118, 203);  /* 右侧子菜单悬停背景色 */
+    --sidebar-submenu-bg: #003461;              /* 侧栏子菜单背景色 */
+
+    /* 聊天对话框颜色(ChatDialog) */
+    --chat-overlay-bg: rgba(0, 0, 0, 0.2);      /* 聊天遮罩背景色 */
+    --chat-dialog-bg: #fff;                     /* 聊天对话框背景色 */
+    --chat-dialog-shadow: rgba(0, 0, 0, 0.2);   /* 聊天对话框阴影色 */
+    --chat-header-gradient: linear-gradient(135deg, #1a73e8, #1557b0); /* 聊头顶部渐变背景 */
+    --chat-header-text: #fff;                   /* 聊头顶部文字色 */
+    --chat-thinking-bg: rgba(255, 255, 255, 0.2);   /* 思考指示器背景色 */
+    --chat-thinking-text: #fff;                 /* 思考指示器文字色 */
+    --chat-user-bubble-bg: #1a73e8;             /* 用户气泡背景色 */
+    --chat-user-bubble-text: #fff;              /* 用户气泡文字色 */
+    --chat-assistant-bubble-bg: #fff;           /* 助手气泡背景色 */
+    --chat-assistant-bubble-text: #333;         /* 助手气泡文字色 */
+    --chat-assistant-bubble-shadow: rgba(0, 0, 0, 0.08); /* 助手气泡阴影色 */
+    --chat-tool-bg: #f5f7fa;                    /* 工具消息背景色 */
+    --chat-tool-text: #909399;                  /* 工具消息文字色 */
+    --chat-system-bg: #e8eaed;                  /* 系统消息背景色 */
+    --chat-system-text: #909399;                /* 系统消息文字色 */
+    --chat-divider: #e4e7ed;                    /* 聊天区域分割线色 */
+    --chat-input-bg: #fff;                      /* 聊天输入框背景色 */
+    --chat-input-border: #dcdfe6;               /* 聊天输入框边框色 */
+    --chat-input-focus-border: #1a73e8;         /* 聊天输入框聚焦边框色 */
+    --chat-send-btn-bg: #1a73e8;                /* 聊天发送按钮背景色 */
+    --chat-send-btn-text: #fff;                 /* 聊天发送按钮文字色 */
+    --chat-send-btn-hover: #1557b0;             /* 聊天发送按钮悬停背景色 */
+
+    /* 知识库/聊天浮动按钮颜色 */
+    --fab-gradient: linear-gradient(135deg, #1a73e8, #1557b0); /* 浮动按钮渐变背景 */
+    --fab-text: #fff;                           /* 浮动按钮文字色 */
+    --fab-shadow: rgba(26, 115, 232, 0.4);     /* 浮动按钮阴影色 */
+    --fab-shadow-hover: rgba(26, 115, 232, 0.5); /* 浮动按钮悬停阴影色 */
+
+    /* 申请审批卡片颜色(Application) */
+    --app-card-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* 申请卡片紫色渐变背景 */
+    --app-card-shadow: rgba(102, 126, 234, 0.3);  /* 申请卡片阴影色 */
+    --app-card-progress-gradient: linear-gradient(135deg, #00e0ff 0%, #0096ff 100%); /* 卡片进度渐变背景 */
+    --app-card-progress-shadow: rgba(0, 224, 255, 0.4); /* 卡片进度阴影色 */
+    --app-stat-number: #fff;                    /* 统计数字颜色 */
+    --app-stat-label: rgba(255, 255, 255, 0.85); /* 统计标签颜色 */
+    --app-stat-icon: rgba(255, 255, 255, 0.5);  /* 统计图标颜色 */
+    --app-tab-border: #dcdfe6;                  /* 选项卡边框色 */
+    --app-tab-bg: #fff;                         /* 选项卡背景色 */
+    --app-tab-text: #606266;                    /* 选项卡文字色 */
+    --app-tab-divider: #dcdfe6;                 /* 选项卡分割线色 */
+    --app-tab-active-bg: #409eff;               /* 选项卡激活背景色 */
+    --app-tab-active-text: #fff;                /* 选项卡激活文字色 */
+    --app-tab-hover-bg: #ecf5ff;                /* 选项卡悬停背景色 */
+    --app-tab-hover-text: #409eff;              /* 选项卡悬停文字色 */
+    --app-tab-info-text: #666;                  /* 选项卡信息文字色 */
+
+    /* 申请欢迎区颜色(Pending Application Welcome) */
+    --app-welcome-gradient: linear-gradient(-223deg, #330c69e3 0%, #3584a7a1 51%, #30d2be87 100%); /* 申请欢迎区渐变背景 */
+    --app-welcome-shadow: rgba(64, 158, 255, 0.3); /* 申请欢迎区阴影色 */
+    --app-welcome-text: #fff;                   /* 申请欢迎区标题文字色 */
+    --app-welcome-text-secondary: rgba(255, 255, 255, 0.85); /* 申请欢迎区次要文字色 */
+    --app-welcome-text-tertiary: rgba(255, 255, 255, 0.5); /* 申请欢迎区分隔线色 */
+    --app-screen-btn-gradient: linear-gradient(135deg, #1a73e8, #1557b0); /* 数据大屏按钮渐变背景 */
+    --app-screen-btn-shadow: rgba(26, 115, 232, 0.4); /* 数据大屏按钮阴影色 */
+    --app-screen-btn-shadow-hover: rgba(26, 115, 232, 0.5); /* 数据大屏按钮悬停阴影色 */
+
+    /* 风控页面颜色(Risk Management) */
+    --risk-card-bg: linear-gradient(135deg, #f5f7fa 0%, #e4e8ed 100%); /* 风控卡片背景渐变 */
+    --risk-card-shadow: rgba(0, 0, 0, 0.05);    /* 风控卡片阴影色 */
+    --risk-card-shadow-hover: rgba(0, 0, 0, 0.1); /* 风控卡片悬停阴影色 */
+    --risk-text-primary: #1a1a1a;               /* 风控主要文字色 */
+    --risk-text-secondary: #595959;             /* 风控次要文字色 */
+    --risk-text-tertiary: #8c8c8c;              /* 风控第三级文字色 */
+    --risk-text-light: #262626;                 /* 风控标题文字色 */
+    --risk-bg-purple: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* 风控紫色卡片渐变 */
+    --risk-bg-green: linear-gradient(135deg, #5AD8A6 0%, #38b28a 100%); /* 风控绿色卡片渐变 */
+    --risk-bg-yellow: linear-gradient(135deg, #f6bd16 0%, #d9a012 100%); /* 风控黄色卡片渐变 */
+    --risk-bg-red: linear-gradient(135deg, #f87474 0%, #e04a4a 100%); /* 风控红色卡片渐变 */
+    --risk-color-green: #5AD8A6;                /* 风控绿色标识 */
+    --risk-color-red: #F87474;                  /* 风控红色标识 */
+    --risk-color-purple: #667eea;               /* 风控紫色标识 */
+    --risk-color-blue: #5B8FF9;                 /* 风控蓝色标识 */
+    --risk-color-yellow: #F6BD16;               /* 风控黄色标识 */
+    --risk-detail-bg: #f9f9f9;                  /* 风控详情背景色 */
+    --risk-info-bg: #f0f5ff;                    /* 风控信息提示背景色 */
+    --risk-tip-bg: #f0f9ff;                     /* 风控提示背景色 */
+    --risk-tip-border: #1890ff;                 /* 风控提示左边框色 */
+    --risk-warning-tag-bg: #fff2e8;             /* 风控警告标签背景色 */
+    --risk-warning-tag-border: #ffbb96;         /* 风控警告标签边框色 */
+    --risk-warning-tag-text: #fa541c;           /* 风控警告标签文字色 */
+    --risk-success-bg: linear-gradient(135deg, #f0f9f5 0%, #d4edda 100%); /* 风控成功区块背景 */
+    --risk-danger-bg: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%); /* 风控危险区块背景 */
+    --risk-chart-bg: rgba(123, 166, 194, 0.5);  /* 风控图表卡片背景色 */
+    --risk-chart-border: rgba(255, 255, 255, 0.1); /* 风控图表卡片边框色 */
+
+    /* 用户管理颜色(User Management) */
+    --user-card-bg: #fff;                       /* 用户卡片背景色 */
+    --user-card-border: #e2e6f0;                /* 用户卡片边框色 */
+    --user-card-shadow: rgba(0, 0, 0, 0.1);     /* 用户卡片阴影色 */
+    --user-card-shadow-light: rgba(0, 0, 0, 0.08); /* 用户卡片浅阴影色 */
+    --user-btn-bg: #1890ff;                     /* 用户管理按钮背景色 */
+    --user-btn-border: #1890ff;                 /* 用户管理按钮边框色 */
+    --user-btn-text: #fff;                      /* 用户管理按钮文字色 */
+    --user-stat-text: #4A5A6B;                  /* 用户管理统计文字色 */
+    --user-status-enabled: #52c41a;             /* 启用状态颜色 */
+    --user-status-disabled: #999;               /* 禁用状态颜色 */
+    --user-status-processing: #1890ff;          /* 处理中状态颜色 */
+    --user-status-pending: #faad14;             /* 待审核状态颜色 */
+    --user-status-rejected: #ff4d4f;            /* 驳回状态颜色 */
+    --user-delete-btn-bg: #ec6062;              /* 删除按钮背景色 */
+    --user-delete-btn-hover-bg: #c64441;        /* 删除按钮悬停背景色 */
+    --user-disabled-bg: #d9d9d9;               /* 禁用按钮背景色 */
+    --user-disabled-text: rgba(0, 0, 0, 0.25); /* 禁用按钮文字色 */
+
+    /* 产品管理颜色(Product) */
+    --product-btn-primary: #409EFF;             /* 产品按钮主色 */
+    --product-btn-hover: #66b1ff;               /* 产品按钮悬停色 */
+    --product-btn-danger: #F56C6C;              /* 产品按钮危险色 */
+    --product-btn-danger-hover: #f78989;        /* 产品按钮危险悬停色 */
+    --product-btn-success: #67C23A;             /* 产品按钮成功色 */
+    --product-btn-success-hover: #85ce61;       /* 产品按钮成功悬停色 */
+    --product-btn-disabled: #909399;            /* 产品按钮禁用色 */
+    --product-btn-disabled-hover: #a6a9ad;      /* 产品按钮禁用悬停色 */
+    --product-detail-label: #666;               /* 产品详情标签色 */
+    --product-detail-value: #333;               /* 产品详情数值色 */
+    --product-detail-bg: #e9ecef;              /* 产品详情背景色 */
+
+    /* 黑名单管理颜色 */
+    --blacklist-border: #e0e0e0;                /* 黑名单边框色 */
+    --blacklist-text: #333;                     /* 黑名单文字色 */
+    --blacklist-shadow: rgba(0, 0, 0, 0.08);    /* 黑名单阴影色 */
+
+    /* 日期选择器颜色(DateRangePicker) */
+    --datepicker-border: #ccc;                  /* 日期选择器边框色 */
+    --datepicker-inner-border: #ddd;            /* 日期选择器内部边框色 */
+    --datepicker-shadow: rgba(0,0,0,0.1);       /* 日期选择器阴影色 */
+    --datepicker-header-border: #eee;           /* 日期选择器头部边框色 */
+    --datepicker-cell-border: #eee;             /* 日期选择器单元格边框色 */
+    --datepicker-text: #666;                    /* 日期选择器文字色 */
+    --datepicker-text-hover: #f0f8ff;           /* 日期选择器悬停背景色 */
+    --datepicker-text-active: #007bff;          /* 日期选择器选中文字色 */
+    --datepicker-bg-active: #007bff;            /* 日期选择器选中背景色 */
+    --datepicker-bg-selected: #e6f7ff;          /* 日期选择器选中范围背景色 */
+
+    /* 添加产品页面颜色(AddProduct) */
+    --addproduct-step-bg: #e0e0e0;              /* 步骤条背景色 */
+    --addproduct-step-text: #999;               /* 步骤条文字色 */
+    --addproduct-label-text: #303133;           /* 表单标签文字色 */
+    --addproduct-tip-bg: #f0f9ff;               /* 提示信息背景色 */
+    --addproduct-tip-border: #409EFF;           /* 提示信息左边框色 */
+    --addproduct-hint-text: #606266;            /* 提示说明文字色 */
+    --addproduct-section-bg: #fafafa;           /* 区域背景色 */
+    --addproduct-section-border: #ebeef5;       /* 区域边框色 */
+    --addproduct-highlight-bg: #e5eff7;         /* 高亮区域背景色 */
+
+    /* 登录页颜色(Login) */
+    --login-text: #fff;                         /* 登录页文字颜色 */
+    --login-bg: #11131d;                        /* 登录页背景色 */
+    --login-border: rgba(255, 255, 255, 0.5);   /* 登录页边框色 */
+    --login-input-bg: rgba(255, 255, 255, 0);   /* 登录页输入框背景色 */
+    --login-input-text: #000;                   /* 登录页输入框文字色 */
+    --login-input-filled-bg: #fff;              /* 登录页输入框填充背景色 */
+    --login-disabled-bg: #d0d0d0;              /* 登录页禁用背景色 */
+    --login-disabled-border: #ccc;              /* 登录页禁用边框色 */
+    --login-disabled-shadow: rgba(0,0,0,0.2);   /* 登录页禁用阴影色 */
+    --login-btn-bg: #165eff;                    /* 登录页按钮背景色 */
+    --login-btn-disabled-bg: #cccccc;           /* 登录页按钮禁用背景色 */
+    --login-btn-hover-bg: #1b53f1;             /* 登录页按钮悬停背景色 */
+    --login-link: #165eff;                      /* 登录页链接颜色 */
+    --login-accent: #3edca7;                    /* 登录页强调色 */
+    --login-register-accent: #2ecc71;           /* 登录页注册强调色 */
+
+    /* 内容提示框颜色(ContentTooltip) */
+    --tooltip-bg: #ffffff;                      /* 内容提示框背景色 */
+    --tooltip-border: #e4e7ed;                  /* 内容提示框边框色 */
+    --tooltip-accent: #409eff;                  /* 内容提示框左侧强调色 */
+    --tooltip-shadow: rgba(0, 0, 0, 0.12);      /* 内容提示框阴影色 */
+    --tooltip-text: #303133;                    /* 内容提示框文字色 */
+
+    /* 图片预览颜色(ImagePreview) */
+    --preview-overlay-bg: rgba(0, 0, 0, 0.85);  /* 图片预览遮罩背景色 */
+
+    /* 分页组件颜色(BasePagination) */
+    --base-pagi-border: #ddd;                   /* 分页边框色 */
+    --base-pagi-active-bg: #409eff;             /* 分页激活背景色 */
+    --base-pagi-active-border: #409eff;         /* 分页激活边框色 */
+
+    /* 大屏监控颜色(DVScreen) */
+    --dvscreen-item-bg: rgba(55, 71, 106, 0.6); /* 大屏监控项背景色 */
+    --dvscreen-accent: #00e0ff;                 /* 大屏监控强调色(青色) */
+    --dvscreen-item-border: rgba(78, 127, 243, 0.3); /* 大屏监控项边框色 */
+    --dvscreen-item-shadow: rgba(106, 129, 132, 0.2); /* 大屏监控项阴影色 */
+    --dvscreen-tag-bg: rgba(0, 224, 255, 0.2);  /* 大屏监控标签背景色 */
+    --dvscreen-tag-border: rgba(0, 224, 255, 0.5); /* 大屏监控标签边框色 */
+    --dvscreen-tag-text: #00e0ff;               /* 大屏监控标签文字色 */
+    --dvscreen-hover-bg: rgba(0, 224, 255, 0.3); /* 大屏监控悬停背景色 */
+    --dvscreen-hover-border: #00e0ff;           /* 大屏监控悬停边框色 */
+    --dvscreen-hover-shadow: rgba(0, 224, 255, 0.5); /* 大屏监控悬停阴影色 */
+    --dvscreen-overlay-bg: rgba(0, 0, 0, 0.7);  /* 大屏监控遮罩背景色 */
+
+    /* ECharts 图表通用色系 */
+    --chart-color-1: #0096ff;                   /* 图表色系1(蓝色) */
+    --chart-color-2: #4caf50;                   /* 图表色系2(绿色) */
+    --chart-color-3: #f44336;                   /* 图表色系3(红色) */
+    --chart-color-4: #ff9800;                   /* 图表色系4(橙色) */
+    --chart-tooltip-bg: rgba(0, 0, 0, 0.7);     /* 图表提示框背景色 */
+    --chart-tooltip-border: rgba(255, 255, 255, 0.2); /* 图表提示框边框色 */
+    --chart-tooltip-text: #fff;                 /* 图表提示框文字色 */
+    --chart-title-text: #fff;                   /* 图表标题文字色 */
+    --chart-axis-label: #fff;                   /* 图表坐标轴标签色 */
+    --chart-axis-tick-label: rgba(255, 255, 255, 0.3); /* 图表坐标轴刻度标签色 */
+    --chart-series-label: #fff;                 /* 图表系列标签色 */
+    --chart-series-label-secondary: rgba(255, 255, 255, 0.3); /* 图表系列标签次要色 */
+    --chart-series-label-tertiary: rgba(255, 255, 255, 0.1); /* 图表系列标签第三级色 */
+
+    /* AmountChart 金额流入流出图表色系 */
+    --chart-inflow-start: #4caf50;              /* 流入渐变起始色(绿色) */
+    --chart-inflow-end: #4caf50;                /* 流入渐变结束色(绿色) */
+    --chart-inflow-area-start: rgba(76, 175, 80, 0.5); /* 流入面积渐变起始 */
+    --chart-inflow-area-end: rgba(76, 175, 80, 0.05); /* 流入面积渐变结束 */
+    --chart-outflow-start: #f44336;             /* 流出渐变起始色(红色) */
+    --chart-outflow-end: #f44336;               /* 流出渐变结束色(红色) */
+    --chart-outflow-area-start: rgba(244, 67, 54, 0.5); /* 流出面积渐变起始 */
+    --chart-outflow-area-end: rgba(244, 67, 54, 0.05); /* 流出面积渐变结束 */
+    --chart-net-start: #ff9800;                 /* 净额渐变起始色(橙色) */
+    --chart-net-end: #ff9800;                   /* 净额渐变结束色(橙色) */
+    --chart-net-area-start: rgba(255, 152, 0, 0.3); /* 净额面积渐变起始 */
+    --chart-net-area-end: rgba(255, 152, 0, 0.02); /* 净额面积渐变结束 */
+
+    /* LoanChart 贷款审核图表色系 */
+    --chart-loan-ai-pass: #f4f7f7;             /* 贷款AI通过色 */
+    --chart-loan-manual-pass: #aacfd0;          /* 贷款人工通过色 */
+    --chart-loan-pending: #79a8a9;              /* 贷款待审核色 */
+    --chart-loan-manual-reject: #1f4e5f;        /* 贷款人工拒绝色 */
+    --chart-loan-label-text: #fff;              /* 贷款标签文字色 */
+    --chart-loan-label-secondary: rgba(255, 255, 255, 0.6); /* 贷款标签次要色 */
+    --chart-loan-label-tertiary: rgba(255, 255, 255, 0.8); /* 贷款标签第三级色 */
+
+    /* StatusChart 状态图表色系 */
+    --chart-status-repaying: #9DC8C8;           /* 还款中色 */
+    --chart-status-applying: #58C9B9;           /* 申请贷款中色 */
+    --chart-status-normal: #8EC0E4;             /* 正常色 */
+    --chart-status-overdue: #D1B6E1;            /* 逾期色 */
+    --chart-status-blacklist: #F17F42;          /* 黑名单色 */
+
+    /* PurposeChart 用途图表色系 */
+    --chart-purpose-consumption: #ff6b6b;       /* 消费贷款色 */
+    --chart-purpose-business: #4ecdc4;          /* 企业经营色 */
+    --chart-purpose-housing: #45b7d1;           /* 购房装修色 */
+    --chart-purpose-education: #ffa07a;         /* 教育培训色 */
+    --chart-purpose-medical: #98d8c8;           /* 医疗健康色 */
+    --chart-purpose-other: #f7d794;             /* 其他用途色 */
+
+    /* AuditChart 审核趋势图表色系 */
+    --chart-audit-area-start: rgba(255, 154, 158, 0.8); /* 审核面积渐变起始 */
+    --chart-audit-area-end: rgba(250, 208, 196, 0.8); /* 审核面积渐变结束 */
+
+    /* OnlineChart 在线人数图表色系 */
+    --chart-online-area1-start: rgba(173, 216, 230, 0.9); /* 在线面积渐变1起始 */
+    --chart-online-area1-end: rgba(135, 206, 250, 0.7); /* 在线面积渐变1结束 */
+    --chart-online-area2-start: rgba(100, 149, 237, 0.9); /* 在线面积渐变2起始 */
+    --chart-online-area2-end: rgba(70, 130, 180, 0.7); /* 在线面积渐变2结束 */
+    --chart-online-area3-start: rgba(25, 25, 112, 0.9); /* 在线面积渐变3起始 */
+    --chart-online-area3-end: rgba(0, 0, 128, 0.7); /* 在线面积渐变3结束 */
+
+    /* RegisterChart 注册趋势图表色系 */
+    --chart-register-area-start: rgba(131, 191, 246, 0.8); /* 注册面积渐变起始 */
+    --chart-register-area-end: rgba(24, 141, 240, 0.6); /* 注册面积渐变结束 */
+    --chart-register-area2-start: rgba(186, 144, 255, 0.9); /* 注册面积渐变2起始(紫色) */
+    --chart-register-area2-end: rgba(147, 112, 219, 0.7); /* 注册面积渐变2结束(紫色) */
+
+    /* RepayChart 还款趋势图表色系 */
+    --chart-repay-area-start: #667eea;           /* 还款面积渐变起始(紫色) */
+    --chart-repay-area-end: #764ba2;             /* 还款面积渐变结束(紫色) */
+
+    /* 完成审批状态标签 */
+    --tag-approved-text: #389e0d;               /* 已通过标签文字色 */
+    --tag-approved-bg: #f6ffed;                 /* 已通过标签背景色 */
+    --tag-approved-border: #b7eb8f;             /* 已通过标签边框色 */
+    --tag-rejected-bg: #fff3f3;                 /* 已驳回标签背景色 */
+    --tag-rejected-border: #ffd6d6;             /* 已驳回标签边框色 */
+    --tag-pending-text: #faad14;                /* 待审核标签文字色 */
+    --tag-pending-bg: #fffbe6;                  /* 待审核标签背景色 */
+    --tag-pending-border: #ffe58f;              /* 待审核标签边框色 */
+    --tag-info-text: #999;                      /* 信息标签文字色 */
+    --tag-info-bg: #f5f5f5;                    /* 信息标签背景色 */
+    --tag-info-border: #d9d9d9;                /* 信息标签边框色 */
+
+    /* 仪表盘颜色(Dashboard View) */
+    --dashboard-card-title: #311c70;             /* 仪表盘卡片标题色 */
+    --dashboard-stats-shadow: rgb(92 175 146 / 34%); /* 仪表盘统计卡片阴影色 */
+
+    /* 知识库管理颜色(Knowledge Management) */
+    --knowledge-delete-icon-bg: rgba(255, 255, 255, 0.8); /* 知识库删除图标背景色 */
+
+    /* 会话日志颜色(Conversation Logs) */
+    --conversation-up-color: #67c23a;           /* 会话日志上升趋势色 */
+    --conversation-down-color: #f56c6c;         /* 会话日志下降趋势色 */
+    --conversation-bg: #f5f7fa;                 /* 会话日志消息项背景色 */
+
+    --semi-transparent-white: rgba(255, 255, 255, 0.8); /* 通用半透明白色背景 */
 }
 
 /* 深色模式 */
@@ -110,7 +506,7 @@ html.dark {
     --table-content-shadow:3px 3px 6px rgb(186 181 209 / 30%);
     --table-color: #b8bcc2;
     --table-bg: #1a1a2e;
-    --table-head-bg: #4e5057;
+    --table-head-bg: #6262623b;
     --table-th-td-border: #525591;
     --table-tr-hover: #1f2a40;
     /*批量处理框*/
@@ -118,6 +514,7 @@ html.dark {
     --batch-actions-border: #b7eb8f;
     --selected-info-color: #52c41a;
     /*详情框*/
+    --auth-item-bg: #8EC0E4;
     --detail-color: #ced3dc;
     --detail-bg:#5c5c71;
     --detail-head-bg:#1a1a2e;
@@ -157,6 +554,392 @@ html.dark {
     /* 管理员信息区域 */
     --admin-info-bg: #1f2937;
     --admin-info-text: #e5e7eb;
+
+    /* Element 风格通用颜色(暗色) */
+    --color-white: #ffffff;
+    --color-black: #000000;
+    --color-primary: #409eff;
+    --color-primary-hover: #66b1ff;
+    --color-primary-active: #2a88e6;
+    --color-primary-light: #ecf5ff;
+    --color-success: #67c23a;
+    --color-warning: #e6a23c;
+    --color-danger: #f56c6c;
+    --color-info: #909399;
+    --color-danger-hover: #f78989;
+    --color-success-hover: #85ce61;
+
+    /* 文字颜色扩展(暗色) */
+    --text-color-placeholder: #909399;
+    --text-color-disabled: #c0c4cc;
+    --text-color-caption: #aaa;
+
+    /* 边框颜色扩展(暗色) */
+    --border-color-base: #444;
+    --border-color-light: #555;
+    --border-color-lighter: #4a4a6a;
+    --border-color-extra-light: #3a3a5a;
+    --border-color-table: #525591;
+    --border-color-detail: #4a4a5a;
+
+    /* 填充色扩展(暗色) */
+    --fill-color-base: #3a3a5a;
+    --fill-color-light: #333;
+    --fill-color-warning-bg: #4a2225;
+    --fill-color-warning-text: #f8d7da;
+    --fill-color-danger-bg: #4a2020;
+    --fill-color-danger-border: #6a3030;
+    --fill-color-success-bg: #1a3a2a;
+    --fill-color-success-border: #27ae60;
+    --fill-color-success-tag-bg: #1a3a2a;
+    --fill-color-success-tag-border: #4a7a4a;
+    --fill-color-success-tag-text: #52c41a;
+    --fill-color-warning-tag-bg: #3a3a1a;
+    --fill-color-warning-tag-border: #6a6a2a;
+    --fill-color-warning-tag-text: #faad14;
+    --fill-color-info-tag-bg: #333;
+    --fill-color-info-tag-border: #555;
+    --fill-color-info-tag-text: #aaa;
+
+    /* Dashboard/面板颜色(暗色) */
+    --dashboard-bg: #311c70;
+    --dashboard-shadow: rgb(92 175 146 / 34%);
+
+    /* 导航栏颜色(Navbar)(暗色) */
+    --navbar-bg-gradient: linear-gradient(-225deg, #330c69 0%, #3584A7 51%, #30D2BE 100%);
+    --navbar-text-color: #ffffff;
+    --navbar-text-secondary: rgba(255, 255, 255, 0.6);
+    --navbar-text-tertiary: rgba(255, 255, 255, 0.8);
+    --navbar-bell-text: rgba(255, 255, 255, 0.7);
+    --navbar-bell-hover-text: rgba(255, 255, 255, 1);
+    --navbar-search-bg: rgba(255, 255, 255, 0.15);
+    --navbar-admin-bg: #055986;
+    --navbar-admin-text: #3498db;
+    --navbar-admin-hover-bg: #3498db;
+    --navbar-icon-hover-bg: rgba(255, 255, 255, 0.15);
+    --navbar-icon-hover-shadow: rgba(255, 255, 255, 0.3);
+    --navbar-icon-hover-bg-strong: rgba(255, 255, 255, 0.3);
+    --navbar-sunny-hover-bg: rgba(100, 150, 180, 0.2);
+    --navbar-sunny-hover-shadow: rgba(150, 170, 180, 0.5);
+    --navbar-moon-hover-text: #a0c4ff;
+    --navbar-moon-hover-bg: rgba(160, 196, 255, 0.2);
+    --navbar-moon-hover-shadow: rgba(150, 170, 200, 0.5);
+    --navbar-dropdown-shadow: rgba(0, 0, 0, 0.5);
+
+    /* 通知面板颜色(暗色) */
+    --notif-panel-bg: #2a2a4a;
+    --notif-panel-shadow: rgba(0, 0, 0, 0.4);
+    --notif-header-bg: #33335a;
+    --notif-header-border: #4a4a6a;
+    --notif-header-text: #e0e0e0;
+    --notif-item-border: #3a3a5a;
+    --notif-item-hover-bg: #252542;
+    --notif-unread-bg: #1a2a4a;
+    --notif-unread-border: #409EFF;
+    --notif-title-color: #e0e0e0;
+    --notif-content-color: #b0b0b0;
+    --notif-time-color: #909399;
+    --notif-footer-bg: #33335a;
+    --notif-footer-border: #4a4a6a;
+    --notif-dot-connected: #67C23A;
+    --notif-dot-connected-shadow: rgba(103, 194, 58, 0.6);
+    --notif-dot-disconnected: #F56C6C;
+    --notif-dot-disconnected-shadow: rgba(245, 108, 108, 0.6);
+
+    /* 侧栏菜单颜色(Sidebar)(暗色) */
+    --sidebar-menu-text: rgba(255, 255, 255, 0.85);
+    --sidebar-menu-active-text: #25e0bf;
+    --sidebar-menu-active-border: #25e0bf;
+    --sidebar-menu-active-bg: rgba(0, 0, 0, 0.2);
+    --sidebar-menu-hover-bg: rgba(45, 157, 136, 0.5);
+    --sidebar-menu-hover-bg-right: rgb(40, 80, 160);
+    --sidebar-submenu-bg: #0a1a3a;
+
+    /* 聊天对话框颜色(ChatDialog)(暗色) */
+    --chat-overlay-bg: rgba(0, 0, 0, 0.5);
+    --chat-dialog-bg: #2a2a4a;
+    --chat-dialog-shadow: rgba(0, 0, 0, 0.5);
+    --chat-header-gradient: linear-gradient(135deg, #1a73e8, #1557b0);
+    --chat-header-text: #fff;
+    --chat-thinking-bg: rgba(255, 255, 255, 0.1);
+    --chat-thinking-text: #e0e0e0;
+    --chat-user-bubble-bg: #1a73e8;
+    --chat-user-bubble-text: #fff;
+    --chat-assistant-bubble-bg: #3a3a5a;
+    --chat-assistant-bubble-text: #e0e0e0;
+    --chat-assistant-bubble-shadow: rgba(0, 0, 0, 0.3);
+    --chat-tool-bg: #252542;
+    --chat-tool-text: #b0b0b0;
+    --chat-system-bg: #333;
+    --chat-system-text: #b0b0b0;
+    --chat-divider: #4a4a6a;
+    --chat-input-bg: #3a3a5a;
+    --chat-input-border: #555;
+    --chat-input-focus-border: #1a73e8;
+    --chat-send-btn-bg: #1a73e8;
+    --chat-send-btn-text: #fff;
+    --chat-send-btn-hover: #1557b0;
+
+    /* 知识库/聊天浮动按钮颜色(暗色) */
+    --fab-gradient: linear-gradient(135deg, #1a73e8, #1557b0);
+    --fab-text: #fff;
+    --fab-shadow: rgba(26, 115, 232, 0.4);
+    --fab-shadow-hover: rgba(26, 115, 232, 0.5);
+
+    /* 申请审批卡片颜色(暗色) */
+    --app-card-gradient: linear-gradient(135deg, #4a3a7a 0%, #3a2a5a 100%);
+    --app-card-shadow: rgba(0, 0, 0, 0.4);
+    --app-card-progress-gradient: linear-gradient(135deg, #0070aa 0%, #00558a 100%);
+    --app-card-progress-shadow: rgba(0, 100, 180, 0.4);
+    --app-stat-number: #fff;
+    --app-stat-label: rgba(255, 255, 255, 0.85);
+    --app-stat-icon: rgba(255, 255, 255, 0.5);
+    --app-tab-border: #555;
+    --app-tab-bg: #2a2a4a;
+    --app-tab-text: #b0b0b0;
+    --app-tab-divider: #555;
+    --app-tab-active-bg: #409eff;
+    --app-tab-active-text: #fff;
+    --app-tab-hover-bg: #1a2a4a;
+    --app-tab-hover-text: #409eff;
+    --app-tab-info-text: #aaa;
+
+    /* 申请欢迎区颜色(Pending Application Welcome)(暗色) */
+    --app-welcome-gradient: linear-gradient(135deg, #2a6ac0 0%, #0f4a8a 100%); /* 申请欢迎区渐变背景 */
+    --app-welcome-shadow: rgba(0, 0, 0, 0.3);  /* 申请欢迎区阴影色 */
+    --app-welcome-text: #e0e0e0;                /* 申请欢迎区标题文字色 */
+    --app-welcome-text-secondary: rgba(255, 255, 255, 0.7); /* 申请欢迎区次要文字色 */
+    --app-welcome-text-tertiary: rgba(255, 255, 255, 0.4); /* 申请欢迎区分隔线色 */
+    --app-screen-btn-gradient: linear-gradient(135deg, #1557b0, #0f3a7a); /* 数据大屏按钮渐变背景 */
+    --app-screen-btn-shadow: rgba(0, 0, 0, 0.4); /* 数据大屏按钮阴影色 */
+    --app-screen-btn-shadow-hover: rgba(0, 0, 0, 0.5); /* 数据大屏按钮悬停阴影色 */
+
+    /* 风控页面颜色(Risk Management)(暗色) */
+    --risk-card-bg: linear-gradient(135deg, #1a1a2e 0%, #2a2a4a 100%);
+    --risk-card-shadow: rgba(0, 0, 0, 0.3);
+    --risk-card-shadow-hover: rgba(0, 0, 0, 0.5);
+    --risk-text-primary: #e0e0e0;
+    --risk-text-secondary: #b0b0b0;
+    --risk-text-tertiary: #8c8c8c;
+    --risk-text-light: #d0d0d0;
+    --risk-bg-purple: linear-gradient(135deg, #3a2a6a 0%, #2a1a5a 100%);
+    --risk-bg-green: linear-gradient(135deg, #2a5a3a 0%, #1a4a2a 100%);
+    --risk-bg-yellow: linear-gradient(135deg, #5a4a1a 0%, #4a3a0a 100%);
+    --risk-bg-red: linear-gradient(135deg, #5a2a2a 0%, #4a1a1a 100%);
+    --risk-color-green: #5AD8A6;
+    --risk-color-red: #F87474;
+    --risk-color-purple: #667eea;
+    --risk-color-blue: #5B8FF9;
+    --risk-color-yellow: #F6BD16;
+    --risk-detail-bg: #2a2a4a;
+    --risk-info-bg: #1a2a4a;
+    --risk-tip-bg: #1a2a3a;
+    --risk-tip-border: #1890ff;
+    --risk-warning-tag-bg: #3a2a1a;
+    --risk-warning-tag-border: #6a4a2a;
+    --risk-warning-tag-text: #fa541c;
+    --risk-success-bg: linear-gradient(135deg, #1a3a2a 0%, #0a2a1a 100%);
+    --risk-danger-bg: linear-gradient(135deg, #3a1a1a 0%, #2a0a0a 100%);
+    --risk-chart-bg: rgba(50, 80, 110, 0.5);
+    --risk-chart-border: rgba(255, 255, 255, 0.05);
+
+    /* 用户管理颜色(User Management)(暗色) */
+    --user-card-bg: #2a2a4a;
+    --user-card-border: #4a4a6a;
+    --user-card-shadow: rgba(0, 0, 0, 0.3);
+    --user-card-shadow-light: rgba(0, 0, 0, 0.2);
+    --user-btn-bg: #1890ff;
+    --user-btn-border: #1890ff;
+    --user-btn-text: #fff;
+    --user-stat-text: #d0d2d6;
+    --user-status-enabled: #52c41a;
+    --user-status-disabled: #888;
+    --user-status-processing: #1890ff;
+    --user-status-pending: #faad14;
+    --user-status-rejected: #ff4d4f;
+    --user-delete-btn-bg: #c6443a;
+    --user-delete-btn-hover-bg: #a3302a;
+    --user-disabled-bg: #555;
+    --user-disabled-text: rgba(255, 255, 255, 0.25);
+
+    /* 产品管理颜色(Product)(暗色) */
+    --product-btn-primary: #409EFF;
+    --product-btn-hover: #66b1ff;
+    --product-btn-danger: #F56C6C;
+    --product-btn-danger-hover: #d45a5a;
+    --product-btn-success: #67C23A;
+    --product-btn-success-hover: #5aa830;
+    --product-btn-disabled: #888;
+    --product-btn-disabled-hover: #777;
+    --product-detail-label: #aaa;
+    --product-detail-value: #e0e0e0;
+    --product-detail-bg: #3a3a5a;
+
+    /* 黑名单管理颜色(暗色) */
+    --blacklist-border: #4a4a6a;
+    --blacklist-text: #e0e0e0;
+    --blacklist-shadow: rgba(0, 0, 0, 0.2);
+
+    /* 日期选择器颜色(DateRangePicker)(暗色) */
+    --datepicker-border: #555;
+    --datepicker-inner-border: #4a4a6a;
+    --datepicker-shadow: rgba(0,0,0,0.3);
+    --datepicker-header-border: #4a4a6a;
+    --datepicker-cell-border: #4a4a6a;
+    --datepicker-text: #ccc;
+    --datepicker-text-hover: #2a3a4a;
+    --datepicker-text-active: #007bff;
+    --datepicker-bg-active: #007bff;
+    --datepicker-bg-selected: #1a2a4a;
+
+    /* 添加产品页面颜色(AddProduct)(暗色) */
+    --addproduct-step-bg: #4a4a6a;
+    --addproduct-step-text: #888;
+    --addproduct-label-text: #e0e0e0;
+    --addproduct-tip-bg: #1a2a3a;
+    --addproduct-tip-border: #409EFF;
+    --addproduct-hint-text: #b0b0b0;
+    --addproduct-section-bg: #2a2a4a;
+    --addproduct-section-border: #4a4a6a;
+    --addproduct-highlight-bg: #1a2a4a;
+
+    /* 登录页颜色(Login)(暗色) */
+    --login-text: #fff;
+    --login-bg: #11131d;
+    --login-border: rgba(255, 255, 255, 0.5);
+    --login-input-bg: rgba(255, 255, 255, 0);
+    --login-input-text: #000;
+    --login-input-filled-bg: #fff;
+    --login-disabled-bg: #555;
+    --login-disabled-border: #666;
+    --login-disabled-shadow: rgba(0,0,0,0.3);
+    --login-btn-bg: #165eff;
+    --login-btn-disabled-bg: #555;
+    --login-btn-hover-bg: #1b53f1;
+    --login-link: #4a8eff;
+    --login-accent: #3edca7;
+    --login-register-accent: #2ecc71;
+
+    /* 内容提示框颜色(ContentTooltip)(暗色) */
+    --tooltip-bg: #2a2a4a;
+    --tooltip-border: #4a4a6a;
+    --tooltip-accent: #409eff;
+    --tooltip-shadow: rgba(0, 0, 0, 0.3);
+    --tooltip-text: #e0e0e0;
+
+    /* 图片预览颜色(ImagePreview)(暗色) */
+    --preview-overlay-bg: rgba(0, 0, 0, 0.85);
+
+    /* 分页组件颜色(BasePagination)(暗色) */
+    --base-pagi-border: #555;
+    --base-pagi-active-bg: #409eff;
+    --base-pagi-active-border: #409eff;
+
+    /* 大屏监控颜色(DVScreen)(暗色) */
+    --dvscreen-item-bg: rgba(30, 40, 70, 0.8);
+    --dvscreen-accent: #00e0ff;
+    --dvscreen-item-border: rgba(50, 80, 160, 0.5);
+    --dvscreen-item-shadow: rgba(0, 0, 0, 0.4);
+    --dvscreen-tag-bg: rgba(0, 200, 230, 0.15);
+    --dvscreen-tag-border: rgba(0, 200, 230, 0.4);
+    --dvscreen-tag-text: #00e0ff;
+    --dvscreen-hover-bg: rgba(0, 200, 230, 0.2);
+    --dvscreen-hover-border: #00e0ff;
+    --dvscreen-hover-shadow: rgba(0, 200, 230, 0.4);
+    --dvscreen-overlay-bg: rgba(0, 0, 0, 0.7);
+
+    /* ECharts 图表通用色系(暗色) */
+    --chart-color-1: #0096ff;
+    --chart-color-2: #4caf50;
+    --chart-color-3: #f44336;
+    --chart-color-4: #ff9800;
+    --chart-tooltip-bg: rgba(0, 0, 0, 0.7);
+    --chart-tooltip-border: rgba(255, 255, 255, 0.2);
+    --chart-tooltip-text: #fff;
+    --chart-title-text: #fff;
+    --chart-axis-label: #fff;
+    --chart-axis-tick-label: rgba(255, 255, 255, 0.3);
+    --chart-series-label: #fff;
+    --chart-series-label-secondary: rgba(255, 255, 255, 0.3);
+    --chart-series-label-tertiary: rgba(255, 255, 255, 0.1);
+
+    /* AmountChart 金额流入流出图表色系(暗色) */
+    --chart-inflow-start: #4caf50;
+    --chart-inflow-end: #4caf50;
+    --chart-inflow-area-start: rgba(76, 175, 80, 0.5);
+    --chart-inflow-area-end: rgba(76, 175, 80, 0.05);
+    --chart-outflow-start: #f44336;
+    --chart-outflow-end: #f44336;
+    --chart-outflow-area-start: rgba(244, 67, 54, 0.5);
+    --chart-outflow-area-end: rgba(244, 67, 54, 0.05);
+    --chart-net-start: #ff9800;
+    --chart-net-end: #ff9800;
+    --chart-net-area-start: rgba(255, 152, 0, 0.3);
+    --chart-net-area-end: rgba(255, 152, 0, 0.02);
+
+    /* LoanChart 贷款审核图表色系(暗色) */
+    --chart-loan-ai-pass: #f4f7f7;
+    --chart-loan-manual-pass: #aacfd0;
+    --chart-loan-pending: #79a8a9;
+    --chart-loan-manual-reject: #1f4e5f;
+    --chart-loan-label-text: #fff;
+    --chart-loan-label-secondary: rgba(255, 255, 255, 0.6);
+    --chart-loan-label-tertiary: rgba(255, 255, 255, 0.8);
+
+    /* StatusChart 状态图表色系(暗色) */
+    --chart-status-repaying: #9DC8C8;
+    --chart-status-applying: #58C9B9;
+    --chart-status-normal: #8EC0E4;
+    --chart-status-overdue: #D1B6E1;
+    --chart-status-blacklist: #F17F42;
+
+    /* PurposeChart 用途图表色系(暗色) */
+    --chart-purpose-consumption: #ff6b6b;
+    --chart-purpose-business: #4ecdc4;
+    --chart-purpose-housing: #45b7d1;
+    --chart-purpose-education: #ffa07a;
+    --chart-purpose-medical: #98d8c8;
+    --chart-purpose-other: #f7d794;
+
+    /* AuditChart 审核趋势图表色系(暗色) */
+    --chart-audit-area-start: rgba(255, 154, 158, 0.8);
+    --chart-audit-area-end: rgba(250, 208, 196, 0.8);
+
+    /* OnlineChart 在线人数图表色系(暗色) */
+    --chart-online-area1-start: rgba(173, 216, 230, 0.9);
+    --chart-online-area1-end: rgba(135, 206, 250, 0.7);
+    --chart-online-area2-start: rgba(100, 149, 237, 0.9);
+    --chart-online-area2-end: rgba(70, 130, 180, 0.7);
+    --chart-online-area3-start: rgba(25, 25, 112, 0.9);
+    --chart-online-area3-end: rgba(0, 0, 128, 0.7);
+
+    /* RegisterChart 注册趋势图表色系(暗色) */
+    --chart-register-area-start: rgba(131, 191, 246, 0.8);
+    --chart-register-area-end: rgba(24, 141, 240, 0.6);
+    --chart-register-area2-start: rgba(186, 144, 255, 0.9);
+    --chart-register-area2-end: rgba(147, 112, 219, 0.7);
+
+    /* RepayChart 还款趋势图表色系(暗色) */
+    --chart-repay-area-start: #667eea;
+    --chart-repay-area-end: #764ba2;
+
+    /* 完成审批状态标签(暗色) */
+    --tag-approved-text: #5ad85a;
+    --tag-approved-bg: #1a3a2a;
+    --tag-approved-border: #4a7a4a;
+    --tag-rejected-bg: #3a1a1a;
+    --tag-rejected-border: #6a2a2a;
+    --tag-pending-text: #faad14;
+    --tag-pending-bg: #3a3a1a;
+    --tag-pending-border: #6a6a2a;
+    --tag-info-text: #aaa;
+    --tag-info-bg: #333;
+    --tag-info-border: #555;
+
+    /* 会话日志颜色(Conversation Logs)(暗色) */
+    --conversation-up-color: #67c23a;           /* 会话日志上升趋势色 */
+    --conversation-down-color: #f56c6c;         /* 会话日志下降趋势色 */
+    --conversation-bg: #2a2a4a;                 /* 会话日志消息项背景色 */
 }
 
 /*字体图标-右尖括号*/
@@ -169,19 +952,19 @@ html.dark {
     padding: 5px 10px;
 
     height: 35px;
-    background-color: #409EFF;
+    background-color: var(--color-primary);
 
     font-size: 17px;
     font-weight: 500;
     line-height: 17px;
-    color: #fff;
+    color: var(--color-white);
     border: none;
-    border-radius: 6px;
+    border-radius: 12px;
     cursor: pointer;
     transition: all 0.3s;
 }
 .btn:hover {
-    background-color: #2a88e6;
+    background-color: var(--color-primary-active);
 }
 .btn-primary {
     background-color: var(--secondary-color);
@@ -217,17 +1000,17 @@ html.dark {
     display: flex;
     justify-content: space-between;
 
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--border-color-table);
     padding: 10px 0;
 }
 .side-bar ul li:hover {
-    background-color: #e2e2e2;
+    background-color: var(--table-tr-hover);
     cursor: pointer;
 }
 .side-bar button {
     margin-left: 20px;
 
-    background-color: rgba(0, 0, 0, 0);
+    background-color: transparent;
     font-size: 18px;
     border: none;
     cursor: pointer;
@@ -239,10 +1022,10 @@ html.dark {
 
 .side-bar ul li.active {
     background-image: linear-gradient(to left, #6a92ba, #3d5369);
-    color: #fff;
+    color: var(--color-white);
 }
 .side-bar ul li.active button {
-    color: #fff;
+    color: var(--color-white);
 }
 /*侧栏展开收起*/
 .side-item.expanded .icon-jinru {
@@ -252,7 +1035,7 @@ html.dark {
   list-style: none;
   padding-left: 20px;
   margin: 0;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--border-color-light);
   display: none;
 }
 
@@ -359,8 +1142,8 @@ td {
   padding: 8px 16px;
   margin: 0 10px;
   cursor: pointer;
-  border: 1px solid #ccc;
-  background: #f5f5f5;
+  border: 1px solid var(--border-color-base);
+  background: var(--fill-color-light);
 }
 .pagination button:disabled {
   cursor: not-allowed;
@@ -376,13 +1159,13 @@ td {
     display: none;
     margin-top: 20px;
     padding: 20px 40px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    border: 1px solid var(--border-color-light);
+    border-radius: 12px;
     background: var(--detail-bg);
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 .credit-score {
-    color: #e74c3c; 
+    color: var(--color-danger); 
     font-weight: bold;
 }
 

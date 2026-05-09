@@ -11,8 +11,8 @@ export default class Map3d {
       container: null,
       width: window.innerWidth,
       height: window.innerHeight,
-      background: '/bg4.png',    // 背景图片路径
-      bgColor: 0x3071baff,         // 场景背景色（白色） #3071baff
+      // background: '/bg4.png',    // 背景图片路径
+      bgColor: 0x081e37,         // 场景背景色（白色） #081e37
       backgroundFollowMap: true, // 背景是否跟随地图旋转
       materialColor: 0xff0000,
       controls: {

@@ -196,7 +196,7 @@
                   <tr v-if="form.options.length === 0">
                     <td colspan="4" class="empty-table">
                       <div>
-                        <span style="color: #999; display: block; margin-bottom: 10px;">
+                        <span style="color: var(--text-color-caption); display: block; margin-bottom: 10px;">
                           暂无方案，请点击"增加方案"按钮添加
                         </span>
                         <button type="button" class="btn-add-empty" @click="addOptionRow">

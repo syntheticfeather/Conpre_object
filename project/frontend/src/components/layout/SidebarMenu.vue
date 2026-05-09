@@ -1,8 +1,10 @@
 <template>
   <div class="sidebar-wrapper">
     <div class="logo-container">
-      <img src="@/assets/images/logo.png" alt="logo">
-      <span v-show="showLogoText">XIN FINANCE</span>
+      <a href="http://localhost:3000/dashboard/pending-applications">
+        <img src="@/assets/images/logo.png" alt="logo">
+        <span v-show="showLogoText">XIN FINANCE</span>
+      </a>
     </div>
 
     <div class="sidebar">
@@ -69,7 +71,7 @@
             <el-menu-item index="/dashboard/knowledge">知识库管理</el-menu-item>
             <el-menu-item index="/dashboard/agent-config">Agent 配置</el-menu-item>
             <el-menu-item index="/dashboard/mcp-tools">MCP 工具管理</el-menu-item>
-            <el-menu-item index="/dashboard/conversation-logs">对话统计</el-menu-item>
+            <!-- <el-menu-item index="/dashboard/conversation-logs">对话统计</el-menu-item> -->
           </el-sub-menu>
         </el-menu>
       </div>
@@ -162,7 +164,6 @@ const toggleCollapse = () => {
   justify-content: center;
   height: 75px;
   flex-shrink: 0;
-  border-bottom: 1px solid #fff;
 }
 .logo-container span {
   font-size: 14px;
@@ -227,6 +228,7 @@ img[alt="logo"] {
   color: #25e0bf;
   border-left: 3px solid #25e0bf;
   --el-menu-hover-bg-color: #2d9d88c5;
+  background-color: var(--sidebar-active-color);
 }
 
 :global(.el-menu--popup) {

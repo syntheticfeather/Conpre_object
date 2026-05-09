@@ -262,7 +262,7 @@ defineExpose({
   padding-bottom: 10px;
 
   background-color: var(--table-content-bg);
-  border-radius: 8px;
+  border-radius: 12px;
   box-shadow: var(--table-content-shadow);
   transition: transform 0.3s;
 }
@@ -286,7 +286,7 @@ defineExpose({
   
   background-color: var(--batch-actions-bg);
   border: 1px solid var(--batch-actions-border);
-  border-radius: 4px;
+  border-radius: 12px;
 }
 
 .selected-info {

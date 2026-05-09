@@ -182,11 +182,14 @@ const formatDate = (dateString) => {
 }
 
 .remove-blacklist-btn {
+  padding: 0px 12px;
+
   background-color: #52c41a;
+
+  font-size: 14px;
   color: white;
   border: none;
-  border-radius: 6px;
-  padding: 2px 5px;
+  border-radius: 12px;
 }
 
 .remove-blacklist-btn:hover {

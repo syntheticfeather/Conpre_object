@@ -1,27 +1,5 @@
 <template>
   <div class="risk-dashboard">
-    <!-- 顶部欢迎区域 -->
-    <div class="welcome-section">
-      <div class="welcome-info">
-        <h1 class="welcome-title">欢迎回来，管理员</h1>
-        <div class="date-info">
-          <span>今日日期：{{ currentDate }}</span>
-          <span class="divider">|</span>
-          <span>数据实时更新</span>
-        </div>
-      </div>
-      <div class="action-buttons">
-        <el-button class="screen-btn" @click="goToDVScreen" type="primary" size="default">
-          <el-icon><Monitor /></el-icon>
-          数据大屏
-        </el-button>
-        <div class="pending-badge" @click="goToPendingApplications" style="cursor: pointer;">
-          <el-icon><Clock /></el-icon>
-          待审核申请 ({{ pendingCount }})
-        </div>
-      </div>
-    </div>
-
     <!-- 四个数据卡片 -->
     <div class="stats-cards">
       <!-- 用户数卡片 -->
@@ -245,41 +223,16 @@ import {
   User, 
   Document, 
   Money, 
-  Warning, 
-  Clock, 
+  Warning,
   Top, 
   Bottom, 
   ArrowRight,
-  CircleCheck,
-  Monitor
+  CircleCheck
 } from '@element-plus/icons-vue'
 import { useNotificationStream } from '@/composables/useNotificationStream'
 
 const router = useRouter()
 const route = useRoute()
-
-// 当前日期 - 使用真实日期
-const getCurrentDate = () => {
-  const now = new Date()
-  const year = now.getFullYear()
-  const month = now.getMonth() + 1
-  const day = now.getDate()
-  return `${year}年${month}月${day}日`
-}
-const currentDate = getCurrentDate()
-
-// 待审核数量
-const pendingCount = ref(0)
-
-// 跳转到待办审核页面
-const goToPendingApplications = () => {
-  router.push('/dashboard/pending-applications')
-}
-
-// 跳转到数据大屏页面
-const goToDVScreen = () => {
-  router.push('/dv-screen')
-}
 
 // 统计数据
 const stats = reactive({
@@ -578,7 +531,7 @@ const fetchLoanApplicationData = async () => {
     
     // 待审核列表 = AI 拒绝
     if (pendingResponse.code === 200 && pendingResponse.data) {
-      pendingCount.value = pendingResponse.data.length
+      stats.pendingApplications = pendingResponse.data.length
       
       // 计算本月申请数（待审核的）
       pendingThisMonth = pendingResponse.data.filter(app => {
@@ -611,8 +564,7 @@ const fetchLoanApplicationData = async () => {
         }
       })
       
-      // 更新待处理数量
-      stats.pendingApplications = pendingCount.value
+      // 更新待处理数量 - 已在上面直接赋值
     }
     
     // 已完成审批列表 = 已通过（人工通过）+ 人工拒绝

@@ -506,10 +506,9 @@ export default {
   justify-content: space-between;
   width: 100%;
   height: 75px;
-  background-image: linear-gradient(-225deg, #330c69 0%, #3584A7 51%, #30D2BE 100%);
-  color: white;
+  background-image: var(--navbar-bg-gradient);
+  color: var(--navbar-text-color);
   align-items: center;
-  box-shadow: var(--nabar-shadow-color);
 }
 
 .search-container {
@@ -521,27 +520,26 @@ export default {
   width: 320px;
 }
 .search-input :deep(.el-input__wrapper) {
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--navbar-search-bg);
   border: none;
   box-shadow: none;
   border-radius: 20px;
 }
 .search-input :deep(.el-input__inner) {
-  color: #fff;
+  color: var(--navbar-text-color);
 }
 .search-input :deep(.el-input__inner::placeholder) {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--navbar-text-secondary);
 }
 .search-input :deep(.el-input__prefix) {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--navbar-text-secondary);
 }
 .search-input :deep(.el-input__clear) {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--navbar-text-secondary);
 }
 .search-input :deep(.el-input__clear:hover) {
-  color: #fff;
+  color: var(--navbar-text-color);
 }
-
 
 /* 右侧信息区域样式 */
 .right-info {
@@ -569,11 +567,11 @@ export default {
 }
 .bell-icon {
   font-size: 22px;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--navbar-bell-text);
   transition: all 0.3s ease;
 }
 .bell-icon:hover {
-  color: #ffffff;
+  color: var(--navbar-bell-hover-text);
   transform: scale(1.1);
 }
 
@@ -585,9 +583,9 @@ export default {
   margin-top: 10px;
   width: 400px;
   max-height: 500px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  background-color: var(--notif-panel-bg);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px var(--notif-panel-shadow);
   z-index: 10000;
   display: flex;
   flex-direction: column;
@@ -598,13 +596,13 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 15px 20px;
-  border-bottom: 1px solid #f0f0f0;
-  background-color: #fafafa;
+  border-bottom: 1px solid var(--notif-header-border);
+  background-color: var(--notif-header-bg);
 }
 .panel-header span {
   font-size: 16px;
   font-weight: 600;
-  color: #303133;
+  color: var(--notif-header-text);
 }
 .header-left {
   display: flex;
@@ -619,12 +617,12 @@ export default {
   transition: all 0.3s ease;
 }
 .connection-dot.connected {
-  background-color: #67C23A;
-  box-shadow: 0 0 6px rgba(103, 194, 58, 0.6);
+  background-color: var(--notif-dot-connected);
+  box-shadow: 0 0 6px var(--notif-dot-connected-shadow);
 }
 .connection-dot.disconnected {
-  background-color: #F56C6C;
-  box-shadow: 0 0 6px rgba(245, 108, 108, 0.6);
+  background-color: var(--notif-dot-disconnected);
+  box-shadow: 0 0 6px var(--notif-dot-disconnected-shadow);
   animation: pulse 1.5s ease-in-out infinite;
 }
 @keyframes pulse {
@@ -648,16 +646,16 @@ export default {
   display: flex;
   justify-content: space-between;
   padding: 15px 20px;
-  border-bottom: 1px solid #f5f5f5;
+  border-bottom: 1px solid var(--notif-item-border);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 .notification-item:hover {
-  background-color: #f5f7fa;
+  background-color: var(--notif-item-hover-bg);
 }
 .notification-item.unread {
-  background-color: #ecf5ff;
-  border-left: 3px solid #409EFF;
+  background-color: var(--notif-unread-bg);
+  border-left: 3px solid var(--notif-unread-border);
 }
 .notif-left {
   flex: 1;
@@ -666,7 +664,7 @@ export default {
 .notif-title {
   font-size: 14px;
   font-weight: 600;
-  color: #303133;
+  color: var(--notif-title-color);
   margin-bottom: 8px;
   display: flex;
   align-items: center;
@@ -678,7 +676,7 @@ export default {
 }
 .notif-content {
   font-size: 13px;
-  color: #606266;
+  color: var(--notif-content-color);
   margin-bottom: 8px;
   line-height: 1.5;
   display: -webkit-box;
@@ -693,7 +691,7 @@ export default {
 }
 .notif-time {
   font-size: 12px;
-  color: #909399;
+  color: var(--notif-time-color);
 }
 .type-tag {
   font-size: 10px;
@@ -711,18 +709,18 @@ export default {
 }
 .panel-footer {
   padding: 12px 20px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--notif-footer-border);
   text-align: center;
-  background-color: #fafafa;
+  background-color: var(--notif-footer-bg);
 }
 .theme-toggle {
   margin-right: 10px;
   border: none;
-  background-color: rgba(255, 255, 255, 0.2);
-  color: white;
+  background-color: var(--navbar-icon-hover-bg);
+  color: var(--color-white);
 }
 .theme-toggle:hover {
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: var(--navbar-icon-hover-bg-strong);
 }
 /* 主题切换图标容器 */
 .theme-icons {
@@ -734,36 +732,36 @@ export default {
 .theme-icon {
   font-size: 25px;
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--navbar-bell-text);
   transition: all 0.3s ease;
   padding: 4px;
-  border-radius: 4px;
+  border-radius: 12px;
 }
 .theme-icon:hover {
-  color: rgba(255, 255, 255, 1);
-  background-color: rgba(255, 255, 255, 0.15);
+  color: var(--navbar-bell-hover-text);
+  background-color: var(--navbar-icon-hover-bg);
   transform: scale(1.15);
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 10px var(--navbar-icon-hover-shadow);
 }
 /* 太阳图标特殊样式 */
 .theme-icon.sunny {
   font-size: 30px;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--navbar-text-tertiary);
 }
 .theme-icon.sunny:hover {
-  color: #ffffff;
-  background-color: rgba(131, 179, 198, 0.2);
-  box-shadow: 0 0 12px rgba(201, 203, 204, 0.5);
+  color: var(--navbar-bell-hover-text);
+  background-color: var(--navbar-sunny-hover-bg);
+  box-shadow: 0 0 12px var(--navbar-sunny-hover-shadow);
 }
 /* 月亮图标特殊样式 */
 .theme-icon.moon {
   font-size: 30px;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--navbar-text-tertiary);
 }
 .theme-icon.moon:hover {
-  color: #a0c4ff;
-  background-color: rgba(160, 196, 255, 0.2);
-  box-shadow: 0 0 12px rgba(198, 208, 223, 0.5);
+  color: var(--navbar-moon-hover-text);
+  background-color: var(--navbar-moon-hover-bg);
+  box-shadow: 0 0 12px var(--navbar-moon-hover-shadow);
 }
 
 .breadcrumb-container {
@@ -779,8 +777,8 @@ export default {
   justify-content: space-around;
 
   width: 148px;
-  background-color: #055986;
-  border-radius: 5px;
+  background-color: var(--navbar-admin-bg);
+  border-radius: 12px;
   position: relative;  
 }
 
@@ -816,7 +814,7 @@ img[alt="admin"] {
   height: 150px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #ddd;
+  border: 2px solid var(--border-color-light);
 }
 
 .dialog-footer {
@@ -830,10 +828,10 @@ img[alt="admin"] {
   top: 100%;
   left: 0;
   margin-top: 5px;
-  background-color: #fff;
+  background-color: var(--notif-panel-bg);
   padding: 10px;
-  border-radius: 3px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  box-shadow: 0 0 10px var(--navbar-dropdown-shadow);
   display: none;
   min-width: 150px;
   z-index: 1000;
@@ -850,17 +848,17 @@ img[alt="admin"] {
   margin: 5px 0;
   padding: 2px 11px;
   background-color: transparent;
-  color: #3498db;
+  color: var(--navbar-admin-text);
   font-size: 16px;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .admin-btn:hover, #logout-btn:hover {
-  background-color: #3498db;
-  color: white;
+  background-color: var(--navbar-admin-hover-bg);
+  color: var(--navbar-text-color);
 }
 </style>

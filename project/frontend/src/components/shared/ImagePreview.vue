@@ -211,8 +211,8 @@ onUnmounted(() => {
 
   width: 59vw;
   height: 66vh;
-  background: white;
-  border-radius: 8px;
+  background: var(--color-white);
+  border-radius: 12px;
 }
 
 .preview-header {
@@ -220,14 +220,14 @@ onUnmounted(() => {
   justify-content: space-between;
   align-items: center;
   padding: 9px 20px;
-  background: #f8f9fa;
-  border-bottom: 1px solid #dee2e6;
+  background: var(--preview-header-bg);
+  border-bottom: 1px solid var(--border-color-lighter);
 }
 
 .preview-header h3 {
   margin: 0;
   font-size: 18px;
-  color: #333;
+  color: var(--text-color);
 }
 
 .header-actions {
@@ -239,24 +239,24 @@ onUnmounted(() => {
   width: 36px;
   height: 36px;
   border: none;
-  background: white;
-  border-radius: 4px;
+  background: var(--color-white);
+  border-radius: 12px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
-  color: #666;
+  color: var(--preview-icon-color);
 }
 
 .action-btn:hover {
-  background: #e9ecef;
-  color: #333;
+  background: var(--preview-btn-hover-bg);
+  color: var(--text-color);
 }
 
 .action-btn.close-btn:hover {
-  background: #dc3545;
-  color: white;
+  background: var(--color-danger);
+  color: var(--color-white);
 }
 
 .preview-content {
@@ -264,7 +264,7 @@ onUnmounted(() => {
   display: flex;
   justify-content: center;
   overflow: auto;
-  background: #f5f5f5;
+  background: var(--preview-content-bg);
   position: relative;
 }
 
@@ -286,7 +286,7 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #999;
+  color: var(--preview-empty-color);
   padding: 60px;
 }
 
@@ -305,8 +305,8 @@ onUnmounted(() => {
   justify-content: space-between;
   align-items: center;
   padding: 12px 20px;
-  background: #f8f9fa;
-  border-top: 1px solid #dee2e6;
+  background: var(--preview-header-bg);
+  border-top: 1px solid var(--border-color-lighter);
 }
 
 .zoom-controls {
@@ -318,20 +318,20 @@ onUnmounted(() => {
 .zoom-btn {
   width: 32px;
   height: 32px;
-  border: 1px solid #dee2e6;
-  background: white;
-  border-radius: 4px;
+  border: 1px solid var(--border-color-lighter);
+  background: var(--color-white);
+  border-radius: 12px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
-  color: #666;
+  color: var(--preview-icon-color);
 }
 
 .zoom-btn:hover:not(:disabled) {
-  background: #e9ecef;
-  color: #333;
+  background: var(--preview-btn-hover-bg);
+  color: var(--text-color);
 }
 
 .zoom-btn:disabled {
@@ -341,24 +341,24 @@ onUnmounted(() => {
 
 .zoom-level {
   font-size: 14px;
-  color: #666;
+  color: var(--preview-icon-color);
   min-width: 50px;
   text-align: center;
 }
 
 .reset-btn {
   padding: 6px 16px;
-  border: 1px solid #dee2e6;
-  background: white;
-  border-radius: 4px;
+  border: 1px solid var(--border-color-lighter);
+  background: var(--color-white);
+  border-radius: 12px;
   cursor: pointer;
   font-size: 14px;
   transition: all 0.2s;
-  color: #666;
+  color: var(--preview-icon-color);
 }
 
 .reset-btn:hover {
-  background: #e9ecef;
-  color: #333;
+  background: var(--preview-btn-hover-bg);
+  color: var(--text-color);
 }
 </style>

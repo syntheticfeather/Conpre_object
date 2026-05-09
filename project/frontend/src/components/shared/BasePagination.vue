@@ -1,5 +1,3 @@
-[file name]: BasePagination.vue
-[file content begin]
 <template>
   <div class="pagination">
     <button 
@@ -86,17 +84,16 @@ const changePage = (page) => {
   align-items: center;
   justify-content: center;
   margin-top: 20px;
-  gap: 8px;
 }
 
 .page-btn, .page-number {
   padding: 6px 12px;
 
   color: var(--pag-color);
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color-lighter);
   background: var(--pag-buttom-bg);
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 12px;
   transition: all 0.2s;
 }
 
@@ -105,9 +102,9 @@ const changePage = (page) => {
 }
 
 .page-number.active {
-  background: #409eff;
-  color: white;
-  border-color: #409eff;
+  background: var(--color-primary);
+  color: var(--color-white);
+  border-color: var(--color-primary);
 }
 
 .page-info {

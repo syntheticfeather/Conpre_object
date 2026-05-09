@@ -6,6 +6,11 @@ export function useChatSSE() {
   const streamingContent = ref('')
   let abortController = null
   let sessionId = null
+  let _isExplicitAbort = false
+  let _retryCount = 0
+  let _streamTimeoutId = null
+  const MAX_RETRIES = 3
+  const CONNECT_TIMEOUT = 30000
 
   const getToken = () => {
     const stored = localStorage.getItem('auth-store')
@@ -18,98 +23,17 @@ export function useChatSSE() {
     }
   }
 
-  const sendMessage = async (text) => {
-    if (!text.trim()) return
-
-    abortController = new AbortController()
-    const token = getToken()
-    if (!token) return
-
-    const userMsg = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: text.trim(),
-      type: 'text'
+  const pushErrorMessage = (content) => {
+    const last = messages.value[messages.value.length - 1]
+    if (last && last.role === 'assistant' && !last.content) {
+      messages.value.pop()
     }
-    messages.value.push(userMsg)
-
-    isThinking.value = true
-    streamingContent.value = ''
-
-    const assistantMsg = {
-      id: (Date.now() + 1).toString(),
+    messages.value.push({
+      id: (Date.now() + 2).toString(),
       role: 'assistant',
-      content: '',
-      type: 'text'
-    }
-    messages.value.push(assistantMsg)
-
-    try {
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || ''
-      const response = await fetch(`${baseUrl}/api/chat/stream`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-          'Accept': 'text/event-stream'
-        },
-        body: JSON.stringify({
-          message: text.trim(),
-          session_id: sessionId
-        }),
-        signal: abortController.signal
-      })
-
-      if (!response.ok) {
-        throw new Error(`请求失败: ${response.status}`)
-      }
-
-      const reader = response.body.getReader()
-      const decoder = new TextDecoder()
-      let buffer = ''
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-
-        buffer += decoder.decode(value, { stream: true })
-        const lines = buffer.split('\n')
-        buffer = lines.pop() || ''
-
-        let currentEvent = ''
-        for (const line of lines) {
-          const trimmed = line.trim()
-          if (trimmed.startsWith('event: ')) {
-            currentEvent = trimmed.slice(7)
-          } else if (trimmed.startsWith('data: ')) {
-            const data = trimmed.slice(6)
-            handleEvent(currentEvent, data)
-          }
-        }
-      }
-
-      if (buffer.trim()) {
-        const trimmed = buffer.trim()
-        if (trimmed.startsWith('data: ')) {
-          handleEvent('', trimmed.slice(6))
-        }
-      }
-    } catch (err) {
-      if (err.name === 'AbortError') return
-      const last = messages.value[messages.value.length - 1]
-      if (last && last.role === 'assistant' && !last.content) {
-        messages.value.pop()
-      }
-      messages.value.push({
-        id: (Date.now() + 2).toString(),
-        role: 'assistant',
-        content: err.message || '连接失败',
-        type: 'error'
-      })
-    } finally {
-      isThinking.value = false
-      streamingContent.value = ''
-    }
+      content,
+      type: 'error'
+    })
   }
 
   const handleEvent = (eventType, data) => {
@@ -173,7 +97,125 @@ export function useChatSSE() {
     }
   }
 
+  const doStream = async (text) => {
+    abortController = new AbortController()
+    _isExplicitAbort = false
+
+    const token = getToken()
+    if (!token) {
+      pushErrorMessage('未登录或 token 无效')
+      return
+    }
+
+    _streamTimeoutId = setTimeout(() => {
+      _isExplicitAbort = true
+      abortController?.abort()
+    }, CONNECT_TIMEOUT)
+
+    try {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || ''
+      const response = await fetch(`${baseUrl}/api/chat/stream`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'text/event-stream'
+        },
+        body: JSON.stringify({
+          message: text.trim(),
+          session_id: sessionId
+        }),
+        signal: abortController.signal
+      })
+
+      clearTimeout(_streamTimeoutId)
+      _streamTimeoutId = null
+      _retryCount = 0
+
+      if (!response.ok) {
+        throw new Error(`请求失败: ${response.status}`)
+      }
+
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split('\n')
+        buffer = lines.pop() || ''
+
+        let currentEvent = ''
+        for (const line of lines) {
+          const trimmed = line.trim()
+          if (trimmed.startsWith('event: ')) {
+            currentEvent = trimmed.slice(7)
+          } else if (trimmed.startsWith('data: ')) {
+            const data = trimmed.slice(6)
+            handleEvent(currentEvent, data)
+          }
+        }
+      }
+
+      if (buffer.trim()) {
+        const trimmed = buffer.trim()
+        if (trimmed.startsWith('data: ')) {
+          handleEvent('', trimmed.slice(6))
+        }
+      }
+    } catch (err) {
+      clearTimeout(_streamTimeoutId)
+      _streamTimeoutId = null
+
+      if (_isExplicitAbort) {
+        return
+      }
+
+      if (_retryCount < MAX_RETRIES) {
+        _retryCount++
+        const delay = Math.min(1000 * Math.pow(2, _retryCount), 10000)
+        await new Promise(resolve => setTimeout(resolve, delay))
+        return doStream(text)
+      }
+
+      pushErrorMessage(err.message || '连接失败')
+    }
+  }
+
+  const sendMessage = async (text) => {
+    if (!text.trim()) return
+
+    const userMsg = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: text.trim(),
+      type: 'text'
+    }
+    messages.value.push(userMsg)
+
+    isThinking.value = true
+    streamingContent.value = ''
+
+    const assistantMsg = {
+      id: (Date.now() + 1).toString(),
+      role: 'assistant',
+      content: '',
+      type: 'text'
+    }
+    messages.value.push(assistantMsg)
+
+    _retryCount = 0
+    await doStream(text)
+
+    isThinking.value = false
+    streamingContent.value = ''
+  }
+
   const abort = () => {
+    _isExplicitAbort = true
     abortController?.abort()
     isThinking.value = false
     streamingContent.value = ''

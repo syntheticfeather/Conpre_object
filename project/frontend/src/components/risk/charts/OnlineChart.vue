@@ -177,7 +177,7 @@ export default {
   background: rgba(123, 166, 194, 0.5);
   backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 0px;
   color: white;
   pointer-events: auto;

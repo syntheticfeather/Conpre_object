@@ -37,8 +37,8 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #e0e0e0;
-  color: #999;
+  background-color: var(--addproduct-step-bg);
+  color: var(--addproduct-step-text);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -47,22 +47,22 @@
   transition: all 0.3s;
 }
 .step-item.active .step-number {
-  background-color: #409EFF;
-  color: white;
+  background-color: var(--color-primary);
+  color: var(--color-white);
 }
 .step-label {
   font-size: 14px;
-  color: #999;
+  color: var(--addproduct-step-text);
   transition: all 0.3s;
 }
 .step-item.active .step-label {
-  color: #409EFF;
+  color: var(--color-primary);
   font-weight: 500;
 }
 .step-line {
   width: 80px;
   height: 2px;
-  background-color: #e0e0e0;
+  background-color: var(--addproduct-step-bg);
   margin: 0 8px;
 }
 
@@ -73,7 +73,7 @@
 
   background-color: var(--add-container-bg);
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  border-radius: 12px;
   overflow-y: auto;
 }
 
@@ -85,7 +85,7 @@
 .options-section {
   margin-top: 5px;
   padding-top: 20px;
-  border-top: 1px solid #ebeef5;
+  border-top: 1px solid var(--addproduct-section-border);
 }
 .section-header {
   display: flex;
@@ -98,16 +98,16 @@
 
   font-size: 18px;
   font-weight: 600;
-  color: #303133;
+  color: var(--addproduct-label-text);
 }
 
 /* 添加选项按钮 */
 .btn-add {
   padding: 8px 16px;
-  background-color: #409EFF;
-  color: white;
+  background-color: var(--product-btn-primary);
+  color: var(--color-white);
   border: none;
-  border-radius: 4px;
+  border-radius: 12px;
   cursor: pointer;
   font-size: 14px;
   display: flex;
@@ -115,7 +115,7 @@
   transition: background-color 0.3s;
 }
 .btn-add:hover {
-  background-color: #66b1ff;
+  background-color: var(--product-btn-hover);
 }
 /* 选项表容器 */
 .table-container {
@@ -130,69 +130,69 @@
   margin-bottom: 16px;
 }
 .options-table thead {
-  background-color: #fafafa;
+  background-color: var(--addproduct-section-bg);
 }
 .options-table th {
   padding: 12px 16px;
   text-align: left;
   font-weight: 600;
-  color: #606266;
-  border-bottom: 1px solid #ebeef5;
+  color: var(--addproduct-hint-text);
+  border-bottom: 1px solid var(--addproduct-section-border);
 }
 .options-table td {
   padding: 4px;
-  border-bottom: 1px solid #ebeef5;
+  border-bottom: 1px solid var(--addproduct-section-border);
   vertical-align: middle;
 }
 .options-table tbody tr:hover {
   background-color: var(--table-tr-hover);
-  background-color: #e5eff7;
+  background-color: var(--addproduct-highlight-bg);
 }
 /* 添加选项按钮 */
 .btn-add-empty {
   padding: 10px 20px;
-  background-color: #409EFF;
-  color: white;
+  background-color: var(--product-btn-primary);
+  color: var(--color-white);
   border: none;
-  border-radius: 4px;
+  border-radius: 12px;
   cursor: pointer;
   display: flex;
   align-items: center;
 }
 .btn-add-empty:hover {
-  background-color: #66b1ff;
+  background-color: var(--product-btn-hover);
 }
 
 /* 删除选项按钮 */
 .btn-delete {
   padding: 8px 12px;
-  background-color: #f56c6c;
-  color: white;
+  background-color: var(--product-btn-danger);
+  color: var(--color-white);
   border: none;
-  border-radius: 4px;
+  border-radius: 12px;
   cursor: pointer;
   font-size: 14px;
   transition: background-color 0.3s;
 }
 .btn-delete:hover:not(:disabled) {
-  background-color: #f78989;
+  background-color: var(--product-btn-danger-hover);
 }
 .btn-delete:disabled {
-  background-color: #c0c4cc;
+  background-color: var(--product-btn-disabled);
   cursor: not-allowed;
 }
 
 /* 表单提示 */
 .form-tips {
-  background-color: #f0f9ff;
+  background-color: var(--addproduct-tip-bg);
   padding: 12px 16px;
-  border-radius: 4px;
-  border-left: 4px solid #409EFF;
+  border-radius: 12px;
+  border-left: 4px solid var(--addproduct-tip-border);
   margin-top: 16px;
 }
 .form-tips p {
   margin: 0;
-  color: #606266;
+  color: var(--addproduct-hint-text);
   font-size: 14px;
 }
 
@@ -215,10 +215,10 @@
 
 /* 返回上一步按钮 */
 .btn-prev {
-  background-color: #909399;
+  background-color: var(--product-btn-disabled);
 }
 .btn-prev:hover {
-  background-color: #a6a9ad;
+  background-color: var(--product-btn-disabled-hover);
 }
 
 @media (max-width: 768px) {

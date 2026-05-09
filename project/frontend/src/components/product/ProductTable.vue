@@ -547,7 +547,7 @@ const formatDate = (dateString) => {
   background-color: #409EFF;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 12px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
@@ -581,13 +581,13 @@ const formatDate = (dateString) => {
   margin-left: 10px;
   padding: 5px 10px;
   background: #e8f5e8;
-  border-radius: 4px;
+  border-radius: 12px;
 }
 
 .product-detail-section {
   margin-top: 30px;
   border: 1px solid #e4e7ed;
-  border-radius: 8px;
+  border-radius: 12px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   animation: fadeIn 0.3s ease;
 }

@@ -158,16 +158,16 @@ export default {
             yAxisIndex: 1,
             lineStyle: {
               width: 2,
-              color: '#0096ff',
+              color: '#fcd55f',
               type: 'dashed'
             },
             itemStyle: {
-              color: '#0096ff'
+              color: '#fcd55f'
             },
             areaStyle: {
               color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                { offset: 0, color: 'rgba(0, 150, 255, 0.3)' },
-                { offset: 1, color: 'rgba(0, 150, 255, 0.02)' }
+                { offset: 0, color: 'rgba(98, 78, 18, 0.4)' },
+                { offset: 1, color: 'rgba(98, 78, 18, 0.02)' }
               ])
             }
           }
@@ -202,7 +202,7 @@ export default {
   background: rgba(123, 166, 194, 0.5);
   backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 0px;
   color: white;
   pointer-events: auto;

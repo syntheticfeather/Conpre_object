@@ -36,14 +36,14 @@ export const useAuthStore = defineStore('auth', {
     },
 
     handleLoginSuccess(response) {
-      if (response.data?.code === 200) {
-        const { token, refreshToken, user } = response.data.data
-        this.setAuthInfo({ token, refreshToken, user })
+      if (response.code === 200) {
+        const { token, refreshToken } = response.data
+        this.setAuthInfo({ token, refreshToken })
         return { success: true }
       }
       return {
         success: false,
-        message: response.data?.message || '登录响应异常'
+        message: response.message || '登录响应异常'
       }
     },
 
@@ -78,15 +78,15 @@ export const useAuthStore = defineStore('auth', {
           throw new Error('No refresh token available')
         }
         const response = await authAPI.refreshToken(this.refreshToken)
-        if (response.data?.code === 200) {
-          const { token, refreshToken } = response.data.data
+        if (response.code === 200) {
+          const { token, refreshToken } = response.data
           this.token = token
           this.refreshToken = refreshToken
           return { success: true }
         }
         return {
           success: false,
-          message: response.data?.message || '刷新 token 失败'
+          message: response.message || '刷新 token 失败'
         }
       } catch (error) {
         console.error('Refresh token failed', error)

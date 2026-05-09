@@ -1,6 +1,6 @@
 <template>
   <div class="cs-manage-page">
-    <h2>对话统计</h2>
+    <div class="header">对话统计</div>
 
     <!-- ==================== 数据统计 ==================== -->
 
@@ -187,6 +187,7 @@
         </el-form-item>
         <el-form-item label="标记">
           <el-select v-model="searchForm.flagged" placeholder="全部" clearable>
+            <template #loading><LoadingDots /></template>
             <el-option label="正常" :value="false" />
             <el-option label="问题对话" :value="true" />
           </el-select>
@@ -262,10 +263,8 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import * as echarts from 'echarts'
-import axios from 'axios'
-
-const LOGS_API = 'http://localhost:8000/logs'
-const STATS_API = 'http://localhost:8000/stats'
+import request from '@/utils/request'
+import LoadingDots from '@/components/shared/LoadingDots.vue'
 
 // ==================== 数据统计 ====================
 
@@ -359,12 +358,12 @@ const renderResponseTimeChart = (data) => {
 
 const fetchStatsData = async () => {
   try {
-    const params = new URLSearchParams()
+    const params = {}
     if (dateRange.value && dateRange.value.length === 2) {
-      params.append('start_date', dateRange.value[0])
-      params.append('end_date', dateRange.value[1])
+      params.start_date = dateRange.value[0]
+      params.end_date = dateRange.value[1]
     }
-    const res = await axios.get(`${STATS_API}/overview?${params}`)
+    const res = await request.get('/stats/overview', { params })
     if (res.data) {
       stats.value = { ...stats.value, ...res.data.stats }
       topQuestions.value = res.data.topQuestions || []
@@ -439,7 +438,7 @@ const paginatedSessions = computed(() => {
 const fetchLogs = async () => {
   loading.value = true
   try {
-    const res = await axios.get(LOGS_API)
+    const res = await request.get('/logs')
     sessionsList.value = res.data || []
     filteredSessions.value = sessionsList.value
     total.value = filteredSessions.value.length
@@ -475,7 +474,7 @@ const resetSearch = () => {
 
 const viewDetail = async (sessionId) => {
   try {
-    const res = await axios.get(`${LOGS_API}/${sessionId}`)
+    const res = await request.get(`/logs/${sessionId}`)
     currentMessages.value = res.data.messages || []
     detailVisible.value = true
   } catch {
@@ -485,7 +484,7 @@ const viewDetail = async (sessionId) => {
 
 const toggleFlag = async (row) => {
   try {
-    await axios.post(`${LOGS_API}/${row.session_id}/flag`, { is_flagged: !row.is_flagged })
+    await request.post(`/logs/${row.session_id}/flag`, { is_flagged: !row.is_flagged })
     ElMessage.success(row.is_flagged ? '已取消标记' : '已标记为问题对话')
     fetchLogs()
   } catch {
@@ -502,7 +501,7 @@ const batchDelete = async () => {
     await ElMessageBox.confirm(`确定要删除选中的 ${selectedSessions.value.length} 条会话吗？`, '警告', {
       confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
     })
-    await axios.post(`${LOGS_API}/batch-delete`, { session_ids: selectedSessions.value })
+    await request.post('/logs/batch-delete', { session_ids: selectedSessions.value })
     ElMessage.success('批量删除成功')
     selectedSessions.value = []
     fetchLogs()
@@ -539,6 +538,7 @@ onUnmounted(() => {
 <style scoped>
 .cs-manage-page {
   padding: 20px;
+  padding-top: 0;
 }
 .filter-card {
   margin-bottom: 20px;
@@ -557,20 +557,20 @@ onUnmounted(() => {
 }
 .metric-title {
   font-size: 14px;
-  color: #909399;
+  color: var(--color-info);
 }
 .metric-value {
   font-size: 32px;
   font-weight: bold;
-  color: #303133;
+  color: var(--text-color);
   margin-bottom: 10px;
 }
 .metric-footer {
   font-size: 12px;
-  color: #909399;
+  color: var(--color-info);
 }
-.metric-footer .up { color: #67c23a; }
-.metric-footer .down { color: #f56c6c; }
+.metric-footer .up { color: var(--conversation-up-color); }
+.metric-footer .down { color: var(--conversation-down-color); }
 .metric-label { margin-left: 5px; }
 .chart-card { min-height: 350px; }
 .chart-container { height: 280px; }
@@ -578,16 +578,16 @@ onUnmounted(() => {
 .list-card { min-height: 350px; }
 .satisfaction-container { text-align: center; padding: 20px; }
 .satisfaction-detail { display: flex; justify-content: space-around; margin-top: 20px; }
-.satisfaction-detail .label { display: block; font-size: 12px; color: #909399; }
+.satisfaction-detail .label { display: block; font-size: 12px; color: var(--color-info); }
 .satisfaction-detail .value { display: block; font-size: 20px; font-weight: bold; margin-top: 5px; }
 .search-form { margin-bottom: 20px; }
 .logs-list { margin-top: 10px; }
 .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
 .pagination-container { margin-top: 20px; display: flex; justify-content: flex-end; }
 .chat-detail { max-height: 600px; overflow-y: auto; }
-.message-item { padding: 15px; margin-bottom: 15px; background: #f5f7fa; border-radius: 8px; }
+.message-item { padding: 15px; margin-bottom: 15px; background: var(--conversation-bg); border-radius: 12px; }
 .message-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-.message-time { font-size: 12px; color: #909399; }
-.message-content { font-size: 14px; line-height: 1.6; color: #303133; white-space: pre-wrap; }
+.message-time { font-size: 12px; color: var(--color-info); }
+.message-content { font-size: 14px; line-height: 1.6; color: var(--text-color); white-space: pre-wrap; }
 .tool-call-tag { margin-top: 8px; }
 </style>

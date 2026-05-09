@@ -241,7 +241,7 @@ const handlePasswordLogin = async () => {
     if (res.code === 200) {
       authStore.setAuthInfo({
         token: res.data.token,
-        user: res.data.user
+        refreshToken: res.data.refreshToken,
       })
       
       ElMessage.success('登录成功！正在跳转...')
@@ -269,7 +269,10 @@ const handleSmsLogin = async () => {
   try {
     const res = await authAPI.loginBySms(formData.phone, formData.smsCode)
     if (res.code === 200) {
-      authStore.setToken(res.data.token, formData.phone)
+      authStore.setAuthInfo({
+        token: res.data.token,
+        refreshToken: res.data.refreshToken,
+      })
       ElMessage.success('登录成功！正在跳转...')
       success.value = true
       setTimeout(() => router.push('/dashboard/pending-applications'), 1500)

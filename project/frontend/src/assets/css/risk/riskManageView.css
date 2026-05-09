@@ -243,7 +243,7 @@
   display: flex;
   gap: 12px;
   padding: 8px;
-  border-radius: 6px;
+  border-radius: 12px;
   transition: all 0.3s ease;
 }
 
@@ -317,7 +317,7 @@
 /* 单个审批统计项 */
 .approval-stat {
   padding: 16px;
-  border-radius: 8px;
+  border-radius: 12px;
   text-align: center;
 }
 
@@ -572,14 +572,14 @@
 .purpose-bar {
   height: 8px;
   background: #f0f0f0;
-  border-radius: 4px;
+  border-radius: 12px;
   overflow: hidden;
 }
 
 /* 用途进度条填充 */
 .purpose-fill {
   height: 100%;
-  border-radius: 4px;
+  border-radius: 12px;
   transition: width 0.3s ease;
 }
 

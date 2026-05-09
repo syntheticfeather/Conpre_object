@@ -19,6 +19,23 @@
     </div>
   </div>
 
+  <div class="welcome-section">
+    <div class="welcome-info">
+      <h1 class="welcome-title">欢迎回来，管理员</h1>
+      <div class="date-info">
+        <span>今日日期：{{ currentDate }}</span>
+        <span class="divider">|</span>
+        <span>数据实时更新</span>
+      </div>
+    </div>
+    <div class="action-buttons">
+      <el-button class="screen-btn" @click="goToDVScreen" type="primary" size="default">
+        <el-icon><Monitor /></el-icon>
+        数据大屏
+      </el-button>
+    </div>
+  </div>
+
   <div class="apply-dashboard">
     <div v-if="loading" class="loading">
       加载中...
@@ -56,7 +73,9 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessageBox, ElMessage } from 'element-plus'
+import { Monitor } from '@element-plus/icons-vue'
 import { useApplicationStore } from '@/stores/application'
 import PendingApplications from '@/components/application-review/PendingApplications.vue'
 import CompletedApplications from '@/components/application-review/CompletedApplications.vue'
@@ -65,11 +84,25 @@ import PostponeCompletedList from '@/components/application-review/PostponeCompl
 import ApplicationDetailModal from '@/components/application-review/ApplicationDetailModal.vue'
 
 const applicationStore = useApplicationStore()
+const router = useRouter()
 const activeTab = ref('pending')
 const reviewMode = ref('loan')
 const showDetailModal = ref(false)
 const selectedRequestId = ref(null)
 const loading = ref(false)
+
+const getCurrentDate = () => {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = now.getMonth() + 1
+  const day = now.getDate()
+  return `${year}年${month}月${day}日`
+}
+const currentDate = getCurrentDate()
+
+const goToDVScreen = () => {
+  router.push('/dv-screen')
+}
 
 const currentLoanComponent = computed(() => {
   return activeTab.value === 'pending' ? PendingApplications : CompletedApplications
@@ -192,6 +225,63 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.welcome-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+    margin: 16px 20px 6px;
+  padding: 20px;
+  background: var(--app-welcome-gradient);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px var(--app-welcome-shadow);
+}
+
+.welcome-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.welcome-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--app-welcome-text);
+  margin: 0 0 8px 0;
+}
+
+.date-info {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.date-info span {
+  color: var(--app-welcome-text-secondary);
+}
+
+.divider {
+  color: var(--app-welcome-text-tertiary);
+}
+
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.screen-btn {
+  background: var(--app-screen-btn-gradient) !important;
+  border: none !important;
+  font-weight: 500;
+  box-shadow: 0 2px 8px var(--app-screen-btn-shadow);
+  transition: all 0.3s ease;
+}
+
+.screen-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px var(--app-screen-btn-shadow-hover);
+}
+
 .apply-dashboard {
   padding: 20px;
 }
@@ -211,7 +301,7 @@ onMounted(async () => {
 .toggle-group {
   display: flex;
   border: 1px solid #dcdfe6;
-  border-radius: 4px;
+  border-radius: 12px;
   overflow: hidden;
 }
 
@@ -225,19 +315,12 @@ onMounted(async () => {
   transition: all 0.2s;
 }
 
-.toggle-group button:not(:last-child) {
-  border-right: 1px solid #dcdfe6;
-}
-
 .toggle-group button.active {
   background: #409eff;
   color: #fff;
+  border-radius: 12px;
 }
 
-.toggle-group button:hover:not(.active) {
-  background: #ecf5ff;
-  color: #409eff;
-}
 
 .loading {
   text-align: center;

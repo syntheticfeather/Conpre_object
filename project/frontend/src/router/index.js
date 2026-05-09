@@ -74,6 +74,7 @@ const router = createRouter({
 })
 
 import { isTokenExpired } from '@/utils/jwt'
+import { authAPI } from '@/api'
 
 function checkAuthFromStorage() {
   const stored = localStorage.getItem('auth-store')
@@ -81,24 +82,65 @@ function checkAuthFromStorage() {
   try {
     const data = JSON.parse(stored)
     if (!data.isAuthenticated || !data.token) return false
-    
-    // 检查 token 是否过期
     return !isTokenExpired(data.token)
   } catch {
     return false
   }
 }
 
-router.beforeEach((to) => {
+function getRefreshTokenFromStorage() {
+  const stored = localStorage.getItem('auth-store')
+  if (!stored) return null
+  try {
+    const data = JSON.parse(stored)
+    return data.refreshToken || null
+  } catch {
+    return null
+  }
+}
+
+function updateStoredToken(token, refreshToken) {
+  const stored = localStorage.getItem('auth-store')
+  if (!stored) return
+  try {
+    const data = JSON.parse(stored)
+    data.token = token
+    data.refreshToken = refreshToken
+    localStorage.setItem('auth-store', JSON.stringify(data))
+  } catch {
+    // 忽略解析错误
+  }
+}
+
+router.beforeEach(async (to) => {
   const isAuthenticated = checkAuthFromStorage()
 
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    return '/login'
+  if (isAuthenticated) {
+    if (to.name === 'Login' || to.name === 'Register') {
+      return '/dashboard/pending-applications'
+    }
+    return
   }
 
-  if ((to.name === 'Login' || to.name === 'Register') && isAuthenticated) {
-    return '/dashboard/pending-applications'
+  if (!to.meta.requiresAuth) {
+    return
   }
+
+  const refreshToken = getRefreshTokenFromStorage()
+  if (refreshToken) {
+    try {
+      const res = await authAPI.refreshToken(refreshToken)
+      if (res.code === 200) {
+        const { token, refreshToken: newRefreshToken } = res.data
+        updateStoredToken(token, newRefreshToken)
+        return
+      }
+    } catch {
+      // 刷新失败，继续跳转登录页
+    }
+  }
+
+  return '/login'
 })
 
 export default router

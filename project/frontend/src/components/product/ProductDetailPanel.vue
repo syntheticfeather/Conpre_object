@@ -5,6 +5,7 @@
       <h3>{{ isEditMode ? '编辑产品' : '产品详情' }}</h3>
       <button class="btn-close-panel" @click="handleClose">
         <i class="el-icon-close"></i>
+        
       </button>
     </div>
 
@@ -319,7 +320,7 @@ watch(() => props.productId, (newVal) => {
 
 <style scoped>
 .product-detail-panel {
-  border-radius: 8px;
+  border-radius: 12px;
   background: var(--detail-bg);
   color: var(--detail-color);
 }
@@ -331,7 +332,7 @@ watch(() => props.productId, (newVal) => {
   padding: 16px 20px;
   border-bottom: 1px solid var(--detail-border);
   background-color: var(--detail-head-bg);
-  border-radius: 8px 8px 0 0;
+  border-radius: 12px 12px 0 0;
 }
 
 .panel-header h3 {
@@ -360,7 +361,7 @@ watch(() => props.productId, (newVal) => {
 .btn-close-panel:hover {
   color: #333;
   background-color: #e9ecef;
-  border-radius: 4px;
+  border-radius: 12px;
 }
 
 .panel-content {
@@ -375,7 +376,7 @@ watch(() => props.productId, (newVal) => {
   justify-content: flex-end;
   gap: 10px;
   background-color: var(--detail-bg);
-  border-radius: 0 0 8px 8px;
+  border-radius: 0 0 12px 12px;
 }
 
 .btn-edit,
@@ -383,7 +384,7 @@ watch(() => props.productId, (newVal) => {
 .btn-save {
   padding: 8px 16px;
   border: none;
-  border-radius: 4px;
+  border-radius: 12px;
   cursor: pointer;
   font-size: 14px;
   transition: all 0.2s;

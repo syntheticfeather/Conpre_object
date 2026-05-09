@@ -128,38 +128,32 @@ onMounted(() => {
 
 .toggle-group {
   display: flex;
-  border: 1px solid #dcdfe6;
-  border-radius: 4px;
+  border: 1px solid var(--border-color-base);
+  border-radius: 12px;
   overflow: hidden;
 }
 
 .toggle-group button {
   padding: 6px 16px;
   border: none;
-  background: #fff;
-  color: #606266;
+  background: var(--color-white);
+  color: var(--text-secondary);
   cursor: pointer;
   font-size: 14px;
   transition: all 0.2s;
 }
 
-.toggle-group button:not(:last-child) {
-  border-right: 1px solid #dcdfe6;
-}
 
 .toggle-group button.active {
-  background: #409eff;
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--color-white);
+  border-radius: 12px;
 }
 
-.toggle-group button:hover:not(.active) {
-  background: #ecf5ff;
-  color: #409eff;
-}
 
 .loading {
   text-align: center;
   padding: 40px;
-  color: #666;
+  color: var(--text-color-caption);
 }
 </style>

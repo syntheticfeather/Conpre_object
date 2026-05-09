@@ -6,5 +6,6 @@ import applicationAPI from './modules/application'
 import userAPI from './modules/user'
 import loanApplicationAPI from './modules/loanApplication'
 import notificationAPI from './modules/notification'
+import promptsAPI from './modules/prompts'
 
-export { authAPI, loanAPI, applicationAPI, userAPI, loanApplicationAPI, notificationAPI }
+export { authAPI, loanAPI, applicationAPI, userAPI, loanApplicationAPI, notificationAPI, promptsAPI }

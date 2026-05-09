@@ -3,7 +3,7 @@
 p {
     font-size: 16px;
     line-height: 40px;
-    color: #fff;
+    color: var(--login-text);
 }
 i {
     color: red;
@@ -15,7 +15,7 @@ input {
     height: 32px;
     
     font-size: 20px;
-    color: #aaadad;
+    color: var(--text-color-placeholder);
     border: none;
     border-radius: 5px;
     outline: none;
@@ -25,18 +25,18 @@ input {
     padding: 0 10px;
 
     line-height: 24px;
-    color: #000;
+    color: var(--login-input-text);
     font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
     border: 1px solid transparent; /* 替代 none，避免尺寸跳动 */
-    background-color: #fff; /* 显式设置背景！ */
+    background-color: var(--login-input-filled-bg);
     transition: border-color 0.2s, background-color 0.2s;
 }
 
 input[type="text"]:focus,
 input[type="password"]:focus {
-  background-color: #d0d0d0;
-  border: 1px solid #ccc;
-  box-shadow: 0 0 5px rgba(0,0,0,0.2);
+  background-color: var(--login-disabled-bg);
+  border: 1px solid var(--login-disabled-border);
+  box-shadow: 0 0 5px var(--login-disabled-shadow);
 }
 
 /**************************页面样式**************************/
@@ -60,8 +60,8 @@ input[type="password"]:focus {
 
     width: 565px;
     height: 500px;
-    background: #11131d;
-    border: 2px solid rgba(255, 255, 255, 0.5);
+    background: var(--login-bg);
+    border: 2px solid var(--login-border);
     border-radius: 20px;
     opacity: 0.8;
 }
@@ -70,7 +70,7 @@ input[type="password"]:focus {
     margin-top: 10px;
     font-size: 24px;
     line-height: 34px;
-    color: #ffffff;
+    color: var(--login-text);
 }
 
 /***************** 输入账户信息 ****************/
@@ -93,7 +93,7 @@ input[type="password"]:focus {
     border-radius: 10px;
 }
 .base-information .infor p {
-    color: #fff;
+    color: var(--login-text);
     margin-top: 8px;
 }
 .base-information .infor div {
@@ -115,7 +115,7 @@ input[type="password"]:focus {
     margin-right: 10px;
 
     width: 33px;
-    background-color: rgba(255, 255, 255, 1);
+    background-color: var(--color-white);
 
     border-radius:0 5px 5px 0 ;
 }
@@ -128,9 +128,9 @@ input[type="password"]:focus {
 
   width: 30px;
   height: 20px;
-  background-color: rgba(255, 255, 255, 0);
+  background-color: var(--login-input-bg);
   
-  color: #fff;
+  color: var(--login-text);
   border: none;
   cursor: pointer;
 }
@@ -147,9 +147,9 @@ input[type="password"]:focus {
 
   width: 30px;
   height: 20px;
-  background-color: rgba(255, 255, 255, 0);
+  background-color: var(--login-input-bg);
   
-  color: #fff;
+  color: var(--login-text);
   border: none;
   cursor: pointer;
 }
@@ -167,7 +167,7 @@ input[type="password"]:focus {
     font-size: 24px;
     line-height: 24px;
     font-weight: 600;
-    color: #fff;
+    color: var(--login-text);
     border: none;
 }
 #back-to-login{
@@ -177,7 +177,7 @@ input[type="password"]:focus {
     margin-bottom: 10px;
 
     font-size: 17px;
-    color: #3edca7;
+    color: var(--login-accent);
 }
 /***************** 输入验证信息 ****************/
 /* 绑定手机号 */
@@ -190,7 +190,7 @@ input[type="password"]:focus {
     padding: 10px 20px;
     padding-left: 45px;
     width: 565px;
-    background: #11131d;
+    background: var(--login-bg);
     border-radius: 20px;
 
     flex-direction: column;
@@ -232,7 +232,7 @@ input[type="password"]:focus {
     font-size: 13px;
     line-height: 20px;
     font-weight: 600;
-    color: #fff;
+    color: var(--login-text);
     border: none;
     border-radius: 8px;
 }
@@ -241,7 +241,7 @@ input[type="password"]:focus {
     margin-right: 312px;
     font-size: 17px;
     font-weight: 400;
-    color: #3edca7;
+    color: var(--login-accent);
     cursor: pointer;
 }
 /* 注册按钮 */
@@ -256,13 +256,13 @@ input[type="password"]:focus {
 /* 加载动画 */
 .loading {
     text-align: center;
-    color: #165eff;
+    color: var(--login-btn-bg);
     font-weight: bold;
     margin: 10px 0;
 }
 #successMessage {
     opacity: 0;
-    color: #3edca7;
+    color: var(--login-accent);
     text-align: center;
     font-size: 16px;
     font-weight: 500;

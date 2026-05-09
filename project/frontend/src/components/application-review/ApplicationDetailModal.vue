@@ -1,5 +1,6 @@
 <template>
-  <div v-if="shouldShow" class="inline-detail-panel">
+  <el-collapse-transition>
+  <div v-show="shouldShow" class="inline-detail-panel">
     <div class="detail-header">
       <h3>{{ reviewType === 'postpone' ? '延期申请详情' : '申请详情' }}</h3>
       <button class="close-btn" @click="handleClose">&times;</button>
@@ -146,6 +147,7 @@
       :title="previewTitle"
     />
   </div>
+</el-collapse-transition>
 </template>
 
 <script setup>

@@ -556,7 +556,7 @@ export default {
 
     // 返回风险管理页面
     const goBack = () => {
-      router.push('/dashboard/risk')
+      router.push('/dashboard/pending-applications')
     }
 
     return {
@@ -667,7 +667,7 @@ export default {
   backdrop-filter: blur(5px);
   border: 1px solid rgba(78, 127, 243, 0.3);
   box-shadow: 0 0 20px rgba(106, 129, 132, 0.2);
-  border-radius: 3px;
+  border-radius: 12px;
 
   z-index: 11;    
   pointer-events: auto; 
