@@ -8,7 +8,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from fastapi import APIRouter, HTTPException
 from api.utils import ResultUtil
 from tools.tool_manager import tool_manager
-from api.models import MCPServerCreate, MCPServerResponse, MCPServerListResponse
+from api.models import MCPServerCreate, RemoteMCPServerResponse, LocalMCPServerResponse
 from utils.mongodb_client import mongodb_client
 
 router = APIRouter(prefix="/api/tools", tags=["tools"])
@@ -98,18 +98,33 @@ def list_mcp_servers():
     """ 获取所有已配置的MCP服务器 """
     servers = mongodb_client.get_all_mcp_servers()
     
-    # 过滤敏感信息，不返回api_key
+    # 根据 transport 类型返回不同的响应结构
     result = []
     for server in servers:
         config = server.get("config", {})
-        result.append({
-            "server_id": server.get("server_id"),
-            "transport": config.get("transport", "sse"),
-            "url": config.get("url"),
-            "timeout": config.get("timeout", 30000),
-            "created_at": server.get("created_at"),
-            "updated_at": server.get("updated_at")
-        })
+        transport = config.get("transport", "sse")
+        
+        if transport == "stdio":
+            # 本地服务器
+            response = LocalMCPServerResponse(
+                server_id=server.get("server_id"),
+                transport=transport,
+                command=config.get("command"),
+                args=config.get("args"),
+                created_at=server.get("created_at"),
+                updated_at=server.get("updated_at")
+            )
+        else:
+            # 远程服务器 (sse 或 websocket)
+            response = RemoteMCPServerResponse(
+                server_id=server.get("server_id"),
+                transport=transport,
+                url=config.get("url"),
+                timeout=config.get("timeout", 30),
+                created_at=server.get("created_at"),
+                updated_at=server.get("updated_at")
+            )
+        result.append(response.dict())
     
     return ResultUtil.success(data=result, message="获取MCP服务器列表成功")
 
@@ -122,14 +137,30 @@ def get_mcp_server(server_id: str):
         raise HTTPException(status_code=404, detail=f"MCP服务器 {server_id} 不存在")
     
     config = server.get("config", {})
-    return ResultUtil.success(data={
-        "server_id": server.get("server_id"),
-        "transport": config.get("transport", "sse"),
-        "url": config.get("url"),
-        "timeout": config.get("timeout", 30000),
-        "created_at": server.get("created_at"),
-        "updated_at": server.get("updated_at")
-    }, message="获取MCP服务器配置成功")
+    transport = config.get("transport", "sse")
+    
+    if transport == "stdio":
+        # 本地服务器
+        response = LocalMCPServerResponse(
+            server_id=server.get("server_id"),
+            transport=transport,
+            command=config.get("command"),
+            args=config.get("args"),
+            created_at=server.get("created_at"),
+            updated_at=server.get("updated_at")
+        )
+    else:
+        # 远程服务器 (sse 或 websocket)
+        response = RemoteMCPServerResponse(
+            server_id=server.get("server_id"),
+            transport=transport,
+            url=config.get("url"),
+            timeout=config.get("timeout", 30),
+            created_at=server.get("created_at"),
+            updated_at=server.get("updated_at")
+        )
+    
+    return ResultUtil.success(data=response.dict(), message="获取MCP服务器配置成功")
 
 # 删除MCP服务器
 @router.delete("/mcp/server/{server_id}")

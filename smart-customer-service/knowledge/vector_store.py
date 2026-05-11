@@ -20,7 +20,7 @@ class VectorStore:
         self.client = chromadb_client
     
     # 添加知识项
-    def add_item(self, item: KnowledgeItem) -> None:
+    def add_item(self, item: KnowledgeItem) -> bool:
         combined_text = f"问题: {item.question}\n答案: {item.answer}"
         metadata = {
             "question": item.question, # 原始问题仍保留在元数据中，方便前端展示
@@ -28,7 +28,7 @@ class VectorStore:
             "category": item.category,
             "source_type": "faq"       # 标识为FAQ类型
         }
-        self.client.add_item(item.id, combined_text, metadata)
+        return self.client.add_item(item.id, combined_text, metadata)
 
     # 搜索知识项
     def search(self, query: str, top_k: int = 3) -> List[dict]:

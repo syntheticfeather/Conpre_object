@@ -57,9 +57,16 @@ class PromptContent(BaseModel):
     business_rules: str = Field(..., min_length=1, description="业务逻辑约束")
     tone_style: str = Field(..., min_length=1, description="回复的语气风格")
 
+
+class PromptContentUpdate(BaseModel):
+    role_definition: Optional[str] = None
+    business_rules: Optional[str] = None
+    tone_style: Optional[str] = None
+
+
 class PromptUpdate(BaseModel):
     name: Optional[str] = None
-    content: Optional[PromptContent] = None
+    content: Optional[PromptContentUpdate] = None
     is_active: Optional[bool] = None
 
 class PromptResponse(BaseModel):
@@ -86,11 +93,11 @@ class MCPServerCreate(BaseModel):
     args: Optional[List[str]] = []  # stdio 时需要
     timeout: Optional[int] = 30
 
-class MCPServerResponse(BaseModel):
+class RemoteMCPServerResponse(BaseModel):
     server_id: str
     transport: str
     url: str
-    timeout: int
+    timeout: int = 30
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
@@ -100,14 +107,17 @@ class MCPServerResponse(BaseModel):
             return value.strftime("%Y-%m-%d %H:%M:%S")
         return None
 
-class MCPServerListResponse(BaseModel):
+
+class LocalMCPServerResponse(BaseModel):
     server_id: str
     transport: str
-    url: str
-    timeout: int
-    created_at: datetime
-    updated_at: datetime
+    command: str
+    args: Optional[List[str]] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
     @field_serializer('created_at', 'updated_at')
     def serialize_datetime(self, value: datetime):
-        return value.strftime("%Y-%m-%d %H:%M:%S")
+        if value:
+            return value.strftime("%Y-%m-%d %H:%M:%S")
+        return None

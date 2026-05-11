@@ -78,28 +78,6 @@ db.prompts.insertOne({
                         "9. **拒绝行为**：严禁编造数据，严禁提及Token等技术术语，严禁提及个人隐私信息如手机号、身份证号、银行卡号等。",
         tone_style: "语气友好、专业，简洁明了。调用工具时，直接调用，不要询问用户是否需要调用。"
     },
-    config: {
-        // ui_tools 仅用于前端展示可用工具列表，工具实际调用由后端动态注入
-        ui_tools: [
-            {
-                name: "query_application_status",
-                description: "查询贷款申请状态"
-            },
-            {
-                name: "calculate_repayment",
-                description: "计算贷款还款计划"
-            },
-            {
-                name: "search_knowledge",
-                description: "在知识库中搜索相关信息"
-            },
-            {
-                name: "search_web",
-                description: "搜索网络获取实时信息"
-            }
-        ],
-        variables: ["current_date", "tools_description"]
-    },
     created_at: new Date(),
     updated_at: new Date()
 });

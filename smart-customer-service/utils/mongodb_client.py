@@ -126,20 +126,7 @@ class MongoDBClient:
             if "prompt_id" not in prompt_data:
                 import uuid
                 prompt_data["prompt_id"] = str(uuid.uuid4())
-            
-            # 设置时间戳
-            now = datetime.now()
-            prompt_data["created_at"] = now
-            prompt_data["updated_at"] = now
 
-            category = prompt_data.get("category", "loan_customer_service")
-            
-            # 如果是激活状态，先停用其他同类别提示词
-            if prompt_data.get("is_active", False):
-                self._prompts_collection.update_many(
-                    {"category": category, "is_active": True},
-                    {"$set": {"is_active": False, "updated_at": now}}
-                )
             # 插入新提示词
             self._prompts_collection.insert_one(prompt_data)
             # update_many + insert_one 之间不是原子的，极端并发时可能有短暂的双激活状态
@@ -158,7 +145,7 @@ class MongoDBClient:
                 prompt = self.get_prompt_by_id(prompt_id)
                 if prompt:
                     self._prompts_collection.update_many(
-                        {"category": prompt.get("category", "customer_service"), "is_active": True, "prompt_id": {"$ne": prompt_id}},
+                        {"category": prompt.get("category", "loan_customer_service"), "is_active": True, "prompt_id": {"$ne": prompt_id}},
                         {"$set": {"is_active": False, "updated_at": update_data["updated_at"]}}
                     )
             

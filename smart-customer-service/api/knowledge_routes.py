@@ -7,6 +7,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from fastapi import APIRouter, HTTPException, File, UploadFile, BackgroundTasks
 from typing import List
+from datetime import datetime
 from api.models import KnowledgeItemCreate, KnowledgeItemResponse, KnowledgeItemUpdate
 from knowledge.vector_store import VectorStore
 from knowledge.models import KnowledgeItem

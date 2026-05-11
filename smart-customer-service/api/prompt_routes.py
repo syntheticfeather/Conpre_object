@@ -4,6 +4,7 @@ from api.models import PromptContent, PromptUpdate, PromptResponse, ResponseMode
 from utils.mongodb_client import mongodb_client
 from typing import List
 import datetime
+from datetime import datetime
 
 router = APIRouter(prefix="/api/prompts", tags=["prompts"])
 
@@ -76,30 +77,32 @@ def get_prompt(prompt_id: str):
         raise HTTPException(status_code=500, detail=f"获取提示词失败: {str(e)}")
 
 @router.post("", response_model=ResponseModel[PromptResponse])
-def create_prompt(name: str, content: PromptContent,version: str = "1.0"):
+def create_prompt(name: str, content: PromptContent, version: str = None):
     """创建新的提示词"""
     try:
         import uuid
+        
+        # 如果 version 为 None 或空字符串，查找现有激活的提示词版本号并加1
+        if not version:
+            # 获取激活的提示词
+            active_prompt = mongodb_client.get_active_prompt()
+            if active_prompt:
+                current_version = active_prompt.get("version", "1.0")
+                major, minor = map(int, current_version.split("."))
+                version = f"{major}.{minor + 1}"
+            else:
+                version = "1.0"
         
         # 构造提示词数据
         prompt_data = {
             "prompt_id": str(uuid.uuid4()),
             "name": name,
-            "category": "loan_customer_service",
-            "is_active": False,
+            "category": "customer_service", # 当前默认
+            "is_active": False,  # 默认禁用
             "version": version,
             "content": content.model_dump(),
-            "config": {
-                "protected_tools": [
-                    {"name": "query_application_status", "description": "查询贷款申请状态"},
-                    {"name": "calculate_repayment", "description": "计算贷款还款计划"},
-                    {"name": "search_knowledge", "description": "在知识库中搜索相关信息"},
-                    {"name": "search_web", "description": "搜索网络获取实时信息"}
-                ],
-                "variables": ["current_date"]
-            },
-            "created_at": datetime.datetime.now(),
-            "updated_at": datetime.datetime.now()
+            "created_at": datetime.now(),
+            "updated_at": datetime.now()
         }
         
         # 创建提示词
@@ -125,7 +128,7 @@ def create_prompt(name: str, content: PromptContent,version: str = "1.0"):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"创建提示词失败: {str(e)}")
 
-@router.put("/{prompt_id}", response_model=ResponseModel[PromptResponse])
+@router.put("/{prompt_id}")
 def update_prompt(prompt_id: str, prompt_update: PromptUpdate):
     """更新提示词"""
     try:
@@ -134,14 +137,24 @@ def update_prompt(prompt_id: str, prompt_update: PromptUpdate):
         if not prompt:
             raise HTTPException(status_code=404, detail="提示词不存在")
         
-        # 构造更新数据
+        # 过滤空数据
         update_data = {}
-        if prompt_update.name is not None:
+        if prompt_update.name is not None and prompt_update.name != "":
             update_data["name"] = prompt_update.name
-        if prompt_update.content is not None:
-            update_data["content"] = prompt_update.content.model_dump()
-        if prompt_update.is_active is not None:
+        if prompt_update.is_active is not None and prompt_update.is_active != prompt.get("is_active", False):
             update_data["is_active"] = prompt_update.is_active
+        
+        # 处理 content 的部分更新
+        if prompt_update.content is not None:
+            content_update = prompt_update.content.model_dump(exclude_unset=True)
+            # 过滤掉空字符串的字段，空字符串表示不修改
+            content_update = {k: v for k, v in content_update.items() if v != ""}
+            if content_update:
+                # 获取现有 content
+                current_content = prompt.get("content", {})
+                # 合并更新（只更新传入的非空字段）
+                updated_content = {**current_content, **content_update}
+                update_data["content"] = updated_content
         
         # 如果更新了内容，增加版本号
         if "content" in update_data:
@@ -150,24 +163,16 @@ def update_prompt(prompt_id: str, prompt_update: PromptUpdate):
             new_version = f"{major}.{minor + 1}"
             update_data["version"] = new_version
         
+        # 如果没有任何更新数据，返回错误
+        if not update_data:
+            raise HTTPException(status_code=400, detail="没有提供任何更新数据")
+        
         # 更新提示词
         result = mongodb_client.update_prompt(prompt_id, update_data)
         if not result:
             raise HTTPException(status_code=500, detail="更新提示词失败")
         
-        # 获取更新后的提示词
-        updated_prompt = mongodb_client.get_prompt_by_id(prompt_id)
-        prompt_response = PromptResponse(
-            prompt_id=updated_prompt.get("prompt_id"),
-            name=updated_prompt.get("name"),
-            category=updated_prompt.get("category"),
-            is_active=updated_prompt.get("is_active"),
-            version=updated_prompt.get("version"),
-            content=updated_prompt.get("content"),
-            created_at=updated_prompt.get("created_at"),
-            updated_at=updated_prompt.get("updated_at")
-        )
-        return ResponseModel(code=200, data=prompt_response, message="更新提示词成功")
+        return {"code": 200, "data": None, "message": "更新提示词成功"}
     except HTTPException:
         raise
     except Exception as e:
