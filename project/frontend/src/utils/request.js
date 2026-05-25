@@ -68,6 +68,11 @@ request.interceptors.request.use(
       }
     }
 
+    // 文件上传时删除 Content-Type，让浏览器自动设置 multipart/form-data 和 boundary
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type']
+    }
+
     console.group(`[API Request] ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`)
     console.log('Headers:', config.headers)
     if (config.data) {

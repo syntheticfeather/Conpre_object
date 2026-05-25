@@ -36,7 +36,7 @@
     </div>
   </div>
 
-  <div class="apply-dashboard">
+  <div class="apply-dashboard" ref="dashboardRef">
     <div v-if="loading" class="loading">
       加载中...
     </div>
@@ -60,6 +60,7 @@
     </template>
 
     <ApplicationDetailModal
+      ref="detailModalRef"
       v-model="showDetailModal"
       :application-id="selectedRequestId"
       :review-type="reviewMode"
@@ -67,6 +68,7 @@
       modal
       @close="closeDetailModal"
       @submit="handleReviewSubmit"
+      @transition-complete="scrollToDetail"
     />
   </div>
 </template>
@@ -158,9 +160,23 @@ const loadData = async () => {
   }
 }
 
+const dashboardRef = ref(null)
+const detailModalRef = ref(null)
 const showDetail = (id) => {
   selectedRequestId.value = id
   showDetailModal.value = true
+}
+
+const scrollToDetail = () => {
+  const tryScroll = (attempts = 0) => {
+    const detailPanel = document.querySelector('.inline-detail-panel')
+    if (detailPanel && detailPanel.offsetHeight > 0) {
+      detailPanel.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    } else if (attempts < 10) {
+      requestAnimationFrame(() => tryScroll(attempts + 1))
+    }
+  }
+  requestAnimationFrame(() => tryScroll())
 }
 
 const closeDetailModal = () => {

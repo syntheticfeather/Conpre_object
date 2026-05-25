@@ -126,15 +126,6 @@
         </div>
       </template>
     </BaseTable>
-
-    <!-- 产品详情展示区域 -->
-    <div v-if="selectedProductId" class="product-detail-section">
-      <ProductDetailPanel
-        :product-id="selectedProductId"
-        @close="clearSelection"
-        @saved="handleProductSaved"
-      />
-    </div>
   </div>
 </template>
 
@@ -143,17 +134,16 @@ import { ref, computed, onMounted } from 'vue'
 import { useLoanStore } from '@/stores/loan'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { loanAPI, applicationAPI } from '@/api'
-import ProductDetailPanel from './ProductDetailPanel.vue'
 import BaseTable from '@/components/shared/BaseTable.vue'
 
 const loanStore = useLoanStore()
+const emit = defineEmits(['product-selected'])
 const tableRef = ref(null)
 
 const createDateRange = ref([])
 const updateDateRange = ref([])
 const currentPage = ref(1)
 const pageSize = 5
-const selectedProductId = ref(null)
 const selectedRows = ref([])
 const selectedKeys = ref([])
 
@@ -278,20 +268,7 @@ const resetSearch = async () => {
 }
 
 const selectProduct = (record) => {
-  if (selectedProductId.value === record.productId) {
-    selectedProductId.value = null
-  } else {
-    selectedProductId.value = record.productId
-  }
-}
-
-const clearSelection = () => {
-  selectedProductId.value = null
-}
-
-const handleProductSaved = () => {
-  loanStore.fetchProducts()
-  selectedProductId.value = null
+  emit('product-selected', record.productId)
 }
 
 const toggleProductStatus = async (product, action) => {
@@ -335,10 +312,6 @@ const deleteProduct = async (product) => {
     
     await loanStore.deleteProduct(product.productId)
     ElMessage.success('删除成功')
-    
-    if (selectedProductId.value === product.productId) {
-      selectedProductId.value = null
-    }
   } catch (error) {
     if (error !== 'cancel') {
       ElMessage.error('删除失败')
@@ -421,10 +394,6 @@ const handleBatchDelete = async (keys, rows) => {
     }
 
     tableRef.value?.clearSelection()
-    
-    if (selectedProductId.value && keys.includes(selectedProductId.value)) {
-      selectedProductId.value = null
-    }
   } catch (error) {
     if (error !== 'cancel') {
       console.error('批量删除失败:', error)
@@ -584,26 +553,7 @@ const formatDate = (dateString) => {
   border-radius: 12px;
 }
 
-.product-detail-section {
-  margin-top: 30px;
-  border: 1px solid #e4e7ed;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  animation: fadeIn 0.3s ease;
-}
-
 .data-table {
   min-height: 316px;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 </style>

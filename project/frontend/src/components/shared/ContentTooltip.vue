@@ -2,18 +2,22 @@
   <el-tooltip
     :content="content"
     :placement="placement"
-    :disabled="!content"
+    :disabled="!isOverflow"
     popper-class="content-tooltip-popper"
     :show-after="200"
     :hide-after="100"
     :offset="8"
   >
-    <slot />
+    <span ref="textRef" class="tooltip-trigger">
+      <slot />
+    </span>
   </el-tooltip>
 </template>
 
 <script setup>
-defineProps({
+import { ref, onMounted, onUpdated, watch } from 'vue'
+
+const props = defineProps({
   content: {
     type: String,
     default: ''
@@ -23,7 +27,39 @@ defineProps({
     default: 'top'
   }
 })
+
+const textRef = ref(null)
+const isOverflow = ref(false)
+
+const checkOverflow = () => {
+  if (!textRef.value) return
+  const el = textRef.value
+  isOverflow.value = el.scrollWidth > el.clientWidth
+}
+
+onMounted(() => {
+  checkOverflow()
+})
+
+onUpdated(() => {
+  checkOverflow()
+})
+
+watch(() => props.content, () => {
+  checkOverflow()
+})
 </script>
+
+<style scoped>
+.tooltip-trigger {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+</style>
 
 <style>
 .content-tooltip-popper {

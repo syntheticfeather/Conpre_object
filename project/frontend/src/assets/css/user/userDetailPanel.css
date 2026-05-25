@@ -291,6 +291,20 @@
   border-bottom: none;
 }
 
+.info-row.clickable {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.info-row.clickable:hover {
+  background-color: #f5f7fa;
+  padding-left: 8px;
+  padding-right: 8px;
+  margin-left: -8px;
+  margin-right: -8px;
+  border-radius: 4px;
+}
+
 .info-label {
   font-size: 13px;
   color: #909399;
@@ -300,6 +314,13 @@
   font-size: 14px;
   color: #303133;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.info-row.clickable:hover .reveal-hint {
+  opacity: 1;
 }
 
 .radar-chart {

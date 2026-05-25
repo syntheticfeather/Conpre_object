@@ -17,7 +17,7 @@ const loanAPI = {
   toggleStatus: (id, action) => request.post(`/loan-products/admin/${id}/${action}`),
   // 批量删除产品
   batchDeleteProducts: (productIds) =>
-    request.post('/loan-products/admin/products/batch-delete', { productIds }),
+    request.post('/loan-products/admin/products/batch-delete', { ids: productIds }),
   // 批量创建产品选项
   batchCreateOptions: (options) =>
     request.post('/loan-products/admin/options/batch-create', options),
@@ -25,7 +25,7 @@ const loanAPI = {
   deleteOption: (optionId) => request.delete(`/loan-products/admin/options/${optionId}`),
   // 批量删除产品选项
   batchDeleteOptions: (optionIds) =>
-    request.post('/loan-products/admin/options/batch-delete', { optionIds }),
+    request.post('/loan-products/admin/options/batch-delete', { ids: optionIds }),
   // 根据更新/创建时间查询产品列表
   searchProductsByTime: (params) => request.get('/loan-products', { params }),
 }

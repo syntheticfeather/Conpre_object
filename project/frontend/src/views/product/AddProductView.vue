@@ -16,7 +16,7 @@
       <div class="step-line"></div>
       <div class="step-item" :class="{ active: currentStep === 2 }">
         <div class="step-number">2</div>
-        <div class="step-label">详细设置</div>
+        <div class="step-label">选项设置</div>
       </div>
     </div>
 
@@ -26,70 +26,65 @@
       <el-form ref="formRef" :model="form" :rules="rules">
         <!-- 第一步：基本信息 -->
         <div v-if="currentStep === 1" class="step-1">
-          <el-form-item label="产品名称" prop="productName">
-            <el-input 
-              v-model="form.productName" 
-              placeholder="请输入产品名称" 
-            />
-          </el-form-item>
-          
-          <el-form-item label="产品描述" prop="description">
-            <el-input
-              v-model="form.description"
-              type="textarea"
-              :rows="3"
-              placeholder="请输入产品描述"
-            />
-          </el-form-item>
-          
-          <el-form-item label="贷款用途" prop="loanUsage">
-            <el-input 
-              v-model="form.loanUsage" 
-              placeholder="请输入贷款用途"
-            />
-          </el-form-item>
-          
-          <el-form-item label="促销信息" prop="promotionDetails">
-            <el-input
-              v-model="form.promotionDetails"
-              type="textarea"
-              :rows="2"
-              placeholder="请输入促销描述"
-            />
-          </el-form-item>
-        </div>
-        
-        <!-- 第二步：详细设置 -->
-        <div v-if="currentStep === 2" class="step-2">
-          <el-row :gutter="20">
-            <el-col :span="8">
-              <el-form-item label="最短期限" prop="minTerm">
-                <el-input-number
-                  v-model="form.minTerm"
-                  :min="1"
-                  :max="form.maxTerm"
-                  controls-position="right"
-                  placeholder="最短期限"
-                  @change="updateTermStepOptions"
+          <el-row :gutter="24">
+            <el-col :span="16">
+              <el-form-item label="产品名称" prop="productName">
+                <el-input
+                  v-model="form.productName"
+                  placeholder="请输入产品名称"
+                />
+              </el-form-item>
+              <el-form-item label="产品描述" prop="description">
+                <el-input
+                  v-model="form.description"
+                  type="textarea"
+                  :rows="3"
+                  placeholder="请输入产品描述"
+                />
+              </el-form-item>
+              <el-form-item label="产品用途" prop="loanUsage">
+                <el-input
+                  v-model="form.loanUsage"
+                  placeholder="请输入贷款用途"
+                />
+              </el-form-item>
+              <el-form-item label="促销信息" prop="promotionDetails">
+                <el-input
+                  v-model="form.promotionDetails"
+                  type="textarea"
+                  :rows="2"
+                  placeholder="请输入促销描述"
                 />
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="最长期限" prop="maxTerm">
+              <el-form-item label="最短期限" prop="minTerm" hide-required-asterisk>
+                <el-input-number
+                  v-model="form.minTerm"
+                  :min="1"
+                  controls-position="right"
+                  style="width: 100%"
+                  @change="updateTermStepOptions"
+                >
+                  <template #suffix>个月</template>
+                </el-input-number>
+              </el-form-item>
+              <el-form-item label="最长期限" prop="maxTerm" hide-required-asterisk>
                 <el-input-number
                   v-model="form.maxTerm"
                   :min="form.minTerm"
                   controls-position="right"
-                  placeholder="最长期限"
+                  style="width: 100%"
                   @change="updateTermStepOptions"
-                />
+                >
+                  <template #suffix>个月</template>
+                </el-input-number>
               </el-form-item>
-            </el-col>
-            <el-col :span="8">
-              <el-form-item label="期限步长" prop="termStep">
+              <el-form-item label="期限步长" prop="termStep" hide-required-asterisk>
                 <el-select
                   v-model="form.termStep"
-                  placeholder="请选择步长"
+                  placeholder="请选择期限步长"
+                  style="width: 100%"
                   @change="validateTermStep"
                 >
                   <el-option
@@ -100,33 +95,34 @@
                   />
                 </el-select>
               </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <el-form-item label="最小金额" prop="minAmount">
+              <el-form-item label="最小金额" prop="minAmount" hide-required-asterisk>
                 <el-input-number
                   v-model="form.minAmount"
-                  :min="0"
+                  :min="1"
                   :step="1000"
                   controls-position="right"
-                  placeholder="最小金额"
-                />
+                  style="width: 100%"
+                >
+                  <template #suffix>元</template>
+                </el-input-number>
               </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="最大金额" prop="maxAmount">
+              <el-form-item label="最大金额" prop="maxAmount" hide-required-asterisk>
                 <el-input-number
                   v-model="form.maxAmount"
                   :min="form.minAmount"
                   :step="1000"
                   controls-position="right"
-                  placeholder="最大金额"
-                />
+                  style="width: 100%"
+                >
+                  <template #suffix>元</template>
+                </el-input-number>
               </el-form-item>
             </el-col>
           </el-row>
-          
+        </div>
+        
+        <!-- 第二步：详细设置 -->
+        <div v-if="currentStep === 2" class="step-2">
           <!-- 可选方案表格 -->
           <div class="options-section">
             <div class="section-header">
@@ -135,7 +131,7 @@
                 <span style="font-size: 18px; margin-right: 4px;">+</span> 增加方案
               </button>
             </div>
-            
+
             <div class="table-container">
               <table class="options-table">
                 <thead>
@@ -171,8 +167,8 @@
                       </el-input-number>
                     </td>
                     <td>
-                      <el-select 
-                        v-model="option.repaidType" 
+                      <el-select
+                        v-model="option.repaidType"
                         placeholder="选择还款方式"
                         style="width: 140px;"
                       >
@@ -183,9 +179,9 @@
                       </el-select>
                     </td>
                     <td>
-                      <button 
-                        type="button" 
-                        class="btn-delete" 
+                      <button
+                        type="button"
+                        class="btn-delete"
                         :disabled="form.options.length === 1"
                         @click="removeOption(index)"
                       >
@@ -208,7 +204,7 @@
                 </tbody>
               </table>
             </div>
-            
+
             <div class="form-tips">
               <p>💡 提示：至少需要添加一个完整的贷款方案才能提交</p>
             </div>
@@ -265,10 +261,10 @@ const form = reactive({
   description: '',
   loanUsage: '',
   minTerm: 1,
-  maxTerm: 12,
-  termStep: 1,
-  minAmount: 10000,
-  maxAmount: 50000,
+  maxTerm: 13,
+  termStep: 2,
+  minAmount: 1000,
+  maxAmount: 500000,
   promotionDetails: '',
   options: []
 })
@@ -277,31 +273,27 @@ const form = reactive({
 const updateTermStepOptions = () => {
   const min = form.minTerm || 1
   const max = form.maxTerm || 12
-  
-  // 确保 max >= min
+
   if (max < min) {
     form.maxTerm = min
   }
-  
-  // 计算差值
+
   const diff = form.maxTerm - form.minTerm
-  
-  // 找出所有可能的步长值（能整除差值的数）
+
+  // 步长必须大于最短期限，且能整除差值
   const options = []
-  for (let i = 1; i <= diff; i++) {
+  for (let i = min + 1; i <= diff; i++) {
     if (diff % i === 0) {
       options.push(i)
     }
   }
-  
-  // 如果差值为 0，只提供步长 1
-  if (diff === 0) {
-    termStepOptions.value = [1]
-    form.termStep = 1
+
+  if (diff === 0 || options.length === 0) {
+    termStepOptions.value = [diff > 0 ? Math.min(diff, min + 1) : 1]
+    form.termStep = termStepOptions.value[0]
   } else {
     termStepOptions.value = options
-    
-    // 如果当前步长不在选项中，选择第一个（最小的）
+
     if (!options.includes(form.termStep)) {
       form.termStep = options[0]
     }
@@ -357,7 +349,6 @@ const goToStep1 = () => {
 }
 
 const goToStep2 = () => {
-  // 验证第一步的必填字段
   if (!form.productName.trim()) {
     ElMessage.warning('请输入产品名称')
     return
@@ -368,6 +359,33 @@ const goToStep2 = () => {
   }
   if (!form.loanUsage.trim()) {
     ElMessage.warning('请输入贷款用途')
+    return
+  }
+  if (!form.minTerm || form.minTerm <= 0) {
+    ElMessage.warning('最短期限必须大于 0')
+    return
+  }
+  
+  if (!form.maxTerm || form.maxTerm <= 0) {
+    ElMessage.warning('最长期限必须大于 0')
+    return
+  }
+  
+  if (form.maxTerm < form.minTerm) {
+    ElMessage.warning('最长期限不能小于最短期限')
+    return
+  }
+  
+  if (!form.termStep || form.termStep <= 0) {
+    ElMessage.warning('期限步长必须大于 0')
+    return
+  }
+  if (form.termStep <= form.minTerm) {
+    ElMessage.warning('期限步长必须大于最短期限')
+    return
+  }
+  if ((form.maxTerm - form.minTerm) % form.termStep !== 0) {
+    ElMessage.warning('最长期限与最短期限的差值必须是步长的整数倍')
     return
   }
   currentStep.value = 2
@@ -426,51 +444,21 @@ const removeOption = (index) => {
 
 // 验证表单
 const validateForm = () => {
-  // 验证基础信息
   if (!form.productName.trim()) {
     ElMessage.warning('请输入产品名称')
     return false
   }
-  
+
   if (!form.description.trim()) {
     ElMessage.warning('请输入产品描述')
     return false
   }
-  
+
   if (!form.loanUsage.trim()) {
     ElMessage.warning('请输入贷款用途')
     return false
   }
-  
-  // 验证期限和步长
-  if (!form.minTerm || form.minTerm <= 0) {
-    ElMessage.warning('最短期限必须大于 0')
-    return false
-  }
-  
-  if (!form.maxTerm || form.maxTerm <= 0) {
-    ElMessage.warning('最长期限必须大于 0')
-    return false
-  }
-  
-  if (!form.termStep || form.termStep <= 0) {
-    ElMessage.warning('期限步长必须大于 0')
-    return false
-  }
-  
-  // 验证期限范围
-  if (form.maxTerm < form.minTerm) {
-    ElMessage.warning('最长期限不能小于最短期限')
-    return false
-  }
-  
-  // 验证期数和步长的等差关系
-  if ((form.maxTerm - form.minTerm) % form.termStep !== 0) {
-    ElMessage.warning('最长期限与最短期限的差值必须是步长的整数倍')
-    return false
-  }
-  
-  // 验证至少一个方案
+
   if (form.options.length === 0) {
     ElMessage.warning('至少需要添加一个贷款方案')
     return false
@@ -534,7 +522,7 @@ const handleSubmit = async () => {
     
     if (result.success) {
       ElMessage.success('产品添加成功')
-      router.push('/dashboard/add-pro')
+      router.go(0)
     } else {
       ElMessage.error(result.message || '添加失败')
     }
@@ -546,4 +534,31 @@ const handleSubmit = async () => {
 
 <style scoped>
 @import '@/assets/css/addProduct.css';
+</style>
+
+<style>
+/* 期限步长选择器文本居中 — 非scoped才能覆盖Element Plus内部DOM */
+.el-select .el-select__wrapper {
+  text-align: center;
+  padding-left: 12px;
+}
+.el-select .el-select__wrapper .el-select__selection {
+  justify-content: center;
+  flex: 1;
+}
+.el-select .el-select__wrapper .el-select__selected-item {
+  justify-content: center;
+  flex: none;
+  width: auto;
+}
+.el-select .el-select__wrapper .el-select__single {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+.el-select .el-select__wrapper .el-select__placeholder {
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+}
 </style>

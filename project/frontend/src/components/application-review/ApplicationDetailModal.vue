@@ -1,5 +1,5 @@
 <template>
-  <el-collapse-transition>
+  <el-collapse-transition @after-enter="onTransitionComplete">
   <div v-show="shouldShow" class="inline-detail-panel">
     <div class="detail-header">
       <h3>{{ reviewType === 'postpone' ? '延期申请详情' : '申请详情' }}</h3>
@@ -179,7 +179,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['update:modelValue', 'close', 'submit']);
+const emit = defineEmits(['update:modelValue', 'close', 'submit', 'transition-complete']);
 
 const applicationDetail = ref(null);
 const postponeDetail = ref(null);
@@ -477,6 +477,10 @@ const handleClose = () => {
 
 const handleSubmit = (approved) => {
   emit('submit', props.applicationId, approved)
+}
+
+const onTransitionComplete = () => {
+  emit('transition-complete')
 }
 </script>
 

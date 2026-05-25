@@ -1,5 +1,4 @@
 // JWT 工具类，用于解码和检查 token 过期时间
-
 /**
  * 解码 JWT token
  * @param {string} token - JWT token 字符串

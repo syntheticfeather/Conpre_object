@@ -49,6 +49,7 @@
       :review-type="reviewMode"
       modal
       @close="closeDetailModal"
+      @transition-complete="scrollToDetail"
     />
   </div>
 </template>
@@ -97,6 +98,15 @@ const loadData = async () => {
 const showDetail = (id) => {
   selectedRequestId.value = id
   showDetailModal.value = true
+}
+
+const scrollToDetail = () => {
+  setTimeout(() => {
+    const detailPanel = document.querySelector('.inline-detail-panel')
+    if (detailPanel) {
+      detailPanel.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }, 100)
 }
 
 const closeDetailModal = () => {

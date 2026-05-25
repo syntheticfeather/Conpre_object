@@ -113,7 +113,13 @@
           <template #header><span>热门问题 TOP 10</span></template>
           <el-table :data="topQuestions" stripe :show-header="false">
             <el-table-column prop="rank" label="排名" width="60" />
-            <el-table-column prop="question" label="问题" show-overflow-tooltip />
+            <el-table-column prop="question" label="问题">
+              <template #default="{ row }">
+                <ContentTooltip :content="row.question || ''">
+                  <span class="cell-text">{{ row.question }}</span>
+                </ContentTooltip>
+              </template>
+            </el-table-column>
             <el-table-column prop="count" label="次数" width="80" sortable>
               <template #default="{ row }"><el-tag type="success">{{ row.count }}</el-tag></template>
             </el-table-column>
@@ -125,7 +131,13 @@
           <template #header><span>未解决问题 TOP 10</span></template>
           <el-table :data="unresolvedQuestions" stripe :show-header="false">
             <el-table-column prop="rank" label="排名" width="60" />
-            <el-table-column prop="question" label="问题" show-overflow-tooltip />
+            <el-table-column prop="question" label="问题">
+              <template #default="{ row }">
+                <ContentTooltip :content="row.question || ''">
+                  <span class="cell-text">{{ row.question }}</span>
+                </ContentTooltip>
+              </template>
+            </el-table-column>
             <el-table-column prop="count" label="次数" width="80" sortable>
               <template #default="{ row }"><el-tag type="danger">{{ row.count }}</el-tag></template>
             </el-table-column>
@@ -212,7 +224,13 @@
         <el-table-column prop="session_id" label="会话 ID" width="280" show-overflow-tooltip />
         <el-table-column prop="message_count" label="消息数" width="90" sortable />
         <el-table-column prop="start_time" label="开始时间" width="180" sortable />
-        <el-table-column prop="last_message" label="最后一条消息" show-overflow-tooltip />
+        <el-table-column prop="last_message" label="最后一条消息">
+          <template #default="{ row }">
+            <ContentTooltip :content="row.last_message || ''">
+              <span class="cell-text">{{ row.last_message }}</span>
+            </ContentTooltip>
+          </template>
+        </el-table-column>
         <el-table-column label="标记" width="100">
           <template #default="{ row }">
             <el-tag :type="row.is_flagged ? 'danger' : 'success'">{{ row.is_flagged ? '问题对话' : '正常' }}</el-tag>
@@ -265,6 +283,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import * as echarts from 'echarts'
 import request from '@/utils/request'
 import LoadingDots from '@/components/shared/LoadingDots.vue'
+import ContentTooltip from '@/components/shared/ContentTooltip.vue'
 
 // ==================== 数据统计 ====================
 
@@ -590,4 +609,13 @@ onUnmounted(() => {
 .message-time { font-size: 12px; color: var(--color-info); }
 .message-content { font-size: 14px; line-height: 1.6; color: var(--text-color); white-space: pre-wrap; }
 .tool-call-tag { margin-top: 8px; }
+
+.cell-text {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
 </style>

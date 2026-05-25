@@ -75,11 +75,11 @@
               </span>
               <span class="contact-item">
                 <el-icon><User /></el-icon>
-                {{ calculateAge() }} 岁
+                {{ calculateAge() }} 岁 
               </span>
               <span class="contact-item">
                 <el-icon><Clock /></el-icon>
-                {{ formatDateShort(userDetail.user?.updateTime) }}
+                上次登录时间：{{ formatDateShort(userDetail.user?.updateTime) }}
               </span>
             </div>
           </div>
@@ -143,7 +143,12 @@
                     <span class="info-label">身份证</span>
                     <span class="info-value" :style="{ color: userDetail.userCert?.idCard != null ? '#67c23a' : '#f56c6c' }">
                       <template v-if="userDetail.userCert?.idCard != null">
-                        {{ formatIdCard(userDetail.userCert.idCard) }}
+                        <template v-if="showIdCardFull">
+                          {{ userDetail.userCert.idCard }}
+                        </template>
+                        <template v-else>
+                          {{ formatIdCard(userDetail.userCert.idCard) }}
+                        </template>
                       </template>
                       <template v-else>
                         未上传
@@ -158,7 +163,12 @@
                     <span class="info-label">银行卡</span>
                     <span class="info-value" :style="{ color: userDetail.userCert?.bankCardId != null ? '#67c23a' : '#f56c6c' }">
                       <template v-if="userDetail.userCert?.bankCardId != null">
-                        {{ userDetail.userCert.bankCardId }}
+                        <template v-if="showBankCardFull">
+                          {{ userDetail.userCert.bankCardId }}
+                        </template>
+                        <template v-else>
+                          {{ formatBankCard(userDetail.userCert.bankCardId) }}
+                        </template>
                       </template>
                       <template v-else>
                         未上传
@@ -408,7 +418,9 @@ let radarChart = null
 const showImagePreview = ref(false)
 const previewImageUrl = ref('')
 const previewTitle = ref('')
-// const showCertDetails = ref({})
+
+const showIdCardFull = ref(false)
+const showBankCardFull = ref(false)
 
 const productList = ref([])
 const productMap = computed(() => {
@@ -469,6 +481,13 @@ const formatPhone = (phone) => {
 const formatIdCard = (idCard) => {
   if (!idCard) return '—'
   return idCard.replace(/(\d{6})\d{8}(\d{4})/, '$1********$2')
+}
+
+const formatBankCard = (bankCard) => {
+  if (!bankCard) return '—'
+  const cleaned = bankCard.replace(/\s/g, '')
+  if (cleaned.length <= 8) return cleaned
+  return cleaned.replace(/(\d{4})\d+(\d{4})/, '$1 **** **** $2')
 }
 
 const formatDate = (dateString) => {
@@ -761,7 +780,17 @@ const handleMaterialClick = (key, certId) => {
     ElMessage.warning('该材料未上传')
     return
   }
-  if (key === 'idCard' || key === 'bankCardId') return
+  
+  if (key === 'idCard') {
+    showIdCardFull.value = !showIdCardFull.value
+    return
+  }
+  
+  if (key === 'bankCardId') {
+    showBankCardFull.value = !showBankCardFull.value
+    return
+  }
+  
   const certType = certTypeMap[key]
   if (certType) {
     fetchCertImage(certId, certType)
@@ -864,4 +893,3 @@ onUnmounted(() => {
 <style scoped>
 @import '@/assets/css/user/userDetailPanel.css';
 </style>
-

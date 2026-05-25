@@ -1,5 +1,5 @@
 <template>
-  <div class="loan-management">
+  <div v-show="showProductTable" class="loan-management">
     <div class="header">
       <h2>贷款管理</h2>
       <button class="add-product-btn" @click="goToAddProduct">
@@ -8,15 +8,48 @@
     </div>
 
     <!-- 产品列表 -->
-    <ProductTable />
+    <ProductTable @product-selected="handleProductSelected" />
+  </div>
+
+  <!-- 产品详情 -->
+  <div v-if="showProductDetail && selectedProductId" class="product-detail-section">
+    <ProductDetailPanel 
+      :product-id="selectedProductId"
+      @close="closeProductDetail"
+      @saved="handleProductSaved"
+    />
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import ProductTable from '@/components/product/ProductTable.vue'
+import ProductDetailPanel from '@/components/product/ProductDetailPanel.vue'
 
 const router = useRouter()
+const selectedProductId = ref(null)
+const showProductDetail = ref(false)
+const showProductTable = ref(true)
+
+// 处理产品选择事件
+const handleProductSelected = (productId) => {
+  selectedProductId.value = productId
+  showProductDetail.value = true
+  showProductTable.value = false
+}
+
+// 关闭产品详情
+const closeProductDetail = () => {
+  showProductDetail.value = false
+  selectedProductId.value = null
+  showProductTable.value = true
+}
+
+// 产品保存后刷新
+const handleProductSaved = () => {
+  closeProductDetail()
+}
 
 // 跳转到添加产品页面
 const goToAddProduct = () => {
@@ -57,5 +90,4 @@ const goToAddProduct = () => {
 .add-product-btn:hover {
   background-color: var(--product-btn-hover);
 }
-
 </style>

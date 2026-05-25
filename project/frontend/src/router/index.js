@@ -76,29 +76,6 @@ const router = createRouter({
 import { isTokenExpired } from '@/utils/jwt'
 import { authAPI } from '@/api'
 
-function checkAuthFromStorage() {
-  const stored = localStorage.getItem('auth-store')
-  if (!stored) return false
-  try {
-    const data = JSON.parse(stored)
-    if (!data.isAuthenticated || !data.token) return false
-    return !isTokenExpired(data.token)
-  } catch {
-    return false
-  }
-}
-
-function getRefreshTokenFromStorage() {
-  const stored = localStorage.getItem('auth-store')
-  if (!stored) return null
-  try {
-    const data = JSON.parse(stored)
-    return data.refreshToken || null
-  } catch {
-    return null
-  }
-}
-
 function updateStoredToken(token, refreshToken) {
   const stored = localStorage.getItem('auth-store')
   if (!stored) return
@@ -113,34 +90,67 @@ function updateStoredToken(token, refreshToken) {
 }
 
 router.beforeEach(async (to) => {
-  const isAuthenticated = checkAuthFromStorage()
+  const stored = localStorage.getItem('auth-store')
+  if (!stored) {
+    // 没有存储的认证信息
+    if (to.meta.requiresAuth) {
+      console.log('[Router Guard] 无认证信息，需要登录')
+      return '/login'
+    }
+    return
+  }
 
-  if (isAuthenticated) {
+  let authData
+  try {
+    authData = JSON.parse(stored)
+  } catch (e) {
+    console.error('[Router Guard] 解析认证信息失败:', e)
+    localStorage.removeItem('auth-store')
+    if (to.meta.requiresAuth) return '/login'
+    return
+  }
+
+  // 如果token有效，直接放行
+  if (authData.token && !isTokenExpired(authData.token)) {
+    console.log('[Router Guard] Token有效，放行访问')
     if (to.name === 'Login' || to.name === 'Register') {
       return '/dashboard/pending-applications'
     }
     return
   }
 
+  // token过期或无效，但目标页面不需要认证，直接放行
   if (!to.meta.requiresAuth) {
     return
   }
 
-  const refreshToken = getRefreshTokenFromStorage()
-  if (refreshToken) {
-    try {
-      const res = await authAPI.refreshToken(refreshToken)
-      if (res.code === 200) {
-        const { token, refreshToken: newRefreshToken } = res.data
-        updateStoredToken(token, newRefreshToken)
-        return
-      }
-    } catch {
-      // 刷新失败，继续跳转登录页
-    }
+  // 需要认证但token已过期，尝试使用refreshToken刷新
+  const refreshToken = authData.refreshToken
+  if (!refreshToken) {
+    console.log('[Router Guard] 无refreshToken，跳转登录页')
+    localStorage.removeItem('auth-store')
+    return '/login'
   }
 
-  return '/login'
+  console.log('[Router Guard] Token已过期，尝试刷新...')
+  try {
+    const res = await authAPI.refreshToken(refreshToken)
+    if (res.code === 200) {
+      const { token, refreshToken: newRefreshToken } = res.data
+      updateStoredToken(token, newRefreshToken)
+      console.log('[Router Guard] Token刷新成功')
+      // 刷新成功，放行访问
+      return
+    } else {
+      console.warn('[Router Guard] Token刷新失败:', res.message)
+      localStorage.removeItem('auth-store')
+      return '/login'
+    }
+  } catch (error) {
+    console.error('[Router Guard] Token刷新异常:', error)
+    localStorage.removeItem('auth-store')
+    return '/login'
+  }
 })
 
 export default router
