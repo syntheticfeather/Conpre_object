@@ -106,70 +106,46 @@
 
 请求方式：POST
 
-请求参数说明1(远程服务器)：
+请求参数说明：
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
-|server_id|string|是|服务器名称|tavily_search|
-|transport|string|是|传输方式|sse|
-|url|string|是|服务器URL|your_server_url|
-|api_key|string|是|API密钥|your_api_key|
-|timeout|integer|是|超时时间，单位秒|5|
+|server_id|string|是|服务器名称|tavily-mcp|
+|config|object|是|服务器配置|{"command": "npx", "args": ["-y", "tavily-mcp@latest"], "env": {"TAVILY_API_KEY": "your-api-key"}}|
 
-请求参数说明2(本地服务器)：
+config配置中参数说明：
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
-|server_id|string|是|服务器名称|fetch-web|
-|transport|string|是|传输方式|stdio|
-|command|string|是|服务器命令|npx|
-|args|array|是|服务器命令参数|["-y", "@modelcontextprotocol/server-fetch"]|
+|command|string|是|用于启动MCP服务器的命令|npx|
+|args|array|是|服务器命令参数|["-y", "tavily-mcp@latest"]|
+|env|object|是|服务器环境变量，需要填写自己的 api key|{"TAVILY_API_KEY": "your-api-key"}|
 
-请求示例1:
-
-``` json
-{
-  "server_id": "tavily_search",
-  "transport": "sse",
-  "url": "https://mcp.tavily.com/mcp/?tavilyApiKey=your-api-key",
-  "api_key": "your-api-key",
-  "timeout": 30000
-}
-```
-
-请求示例2:
+请求示例（请求体）:
 
 ``` json
 {
-    "server_id": "fetch-web",
-    "transport": "stdio",
+  "server_id": "tavily-mcp",
+  "config": {
     "command": "npx",
-    "args": ["-y", "@modelcontextprotocol/server-fetch"]
+    "args": [
+      "-y",
+      "tavily-mcp@latest"
+    ],
+    "env": {
+      "TAVILY_API_KEY": "your-api-key"
+    }
+  }
 }
 ```
 
-返回数据
-
-``` json
-{
-      "code": 200,
-      "data": {
-        "server_id": "tavily_search",
-        "transport": "sse",
-        "url": "https://mcp.tavily.com/sse",
-        "timeout": 30000,
-        "tools_count": 0
-      },
-      "message": "MCP服务器添加成功"
-}
-```
+返回数据：
 
 ``` json
 {
   "code": 200,
   "data": {
-    "server_id": "fetch-web",
-    "transport": "stdio"
+    "server_id": "tavily-mcp"
   },
   "message": "MCP服务器添加成功"
 }
@@ -188,23 +164,19 @@
   "code": 200,
   "data": [
     {
-      "server_id": "tavily_search",
-      "transport": "sse",
-      "url": "https://mcp.tavily.com/mcp/?tavilyApiKey=your-api-key",
-      "timeout": 30000,
-      "created_at": "2026-05-09 21:49:05",
-      "updated_at": "2026-05-09 21:49:05"
-    },
-    {
-      "server_id": "fetch-web",
-      "transport": "stdio",
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-fetch"
-      ],
-      "created_at": "2026-05-10 21:52:23",
-      "updated_at": "2026-05-10 21:52:23"
+      "server_id": "tavily-mcp",
+      "config": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "tavily-mcp@latest"
+        ],
+        "env": {
+          "TAVILY_API_KEY": "your-api-key(实际会返回你填写的api key)"
+        }
+      },
+      "created_at": "2026-05-17 21:23:56",
+      "updated_at": "2026-05-17 21:23:56"
     }
   ],
   "message": "获取MCP服务器列表成功"
@@ -221,20 +193,27 @@
 
 |字段名|类型|是否必填|说明|示例值|
 |---|---|---|---|---|
-|server_id|string|是|服务器名称|tavily_search|
+|server_id|string|是|服务器名称|tavily_mcp|
 
-返回数据
+返回数据：
 
 ``` json
 {
   "code": 200,
   "data": {
-    "server_id": "tavily_search",
-    "transport": "sse",
-    "url": "https://mcp.tavily.com/mcp/?tavilyApiKey=your-api-key",
-    "timeout": 30000,
-    "created_at": "2026-05-09 21:49:05",
-    "updated_at": "2026-05-09 21:49:05"
+    "server_id": "tavily-mcp",
+    "config": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "tavily-mcp@latest"
+      ],
+      "env": {
+        "TAVILY_API_KEY": "your-api-key(实际会返回你填写的api key)"
+      }
+    },
+    "created_at": "2026-05-17 21:23:56",
+    "updated_at": "2026-05-17 21:23:56"
   },
   "message": "获取MCP服务器配置成功"
 }
@@ -274,9 +253,40 @@
 {
   "code": 200,
   "data": {
-    "count": 0,
-    "tools": []
+    "count": 5,
+    "tools": [
+      {
+        "name": "tavily_search",
+        "description": "Search the web for current information on any topic. Use for news, facts, or data beyond your knowledge cutoff. Returns snippets and source URLs.",
+        "enabled": true,
+        "source": "mcp"
+      },
+      {
+        "name": "tavily_extract",
+        "description": "Extract content from URLs. Returns raw page content in markdown or text format.",
+        "enabled": true,
+        "source": "mcp"
+      },
+      {
+        "name": "tavily_crawl",
+        "description": "Crawl a website starting from a URL. Extracts content from pages with configurable depth and breadth.",
+        "enabled": true,
+        "source": "mcp"
+      },
+      {
+        "name": "tavily_map",
+        "description": "Map a website's structure. Returns a list of URLs found starting from the base URL.",
+        "enabled": true,
+        "source": "mcp"
+      },
+      {
+        "name": "tavily_research",
+        "description": "Perform comprehensive research on a given topic or question. Use this tool when you need to gather information from multiple sources to answer a question or complete a task. Returns a detailed response based on the research findings. Rate limit: 20 requests per minute.",
+        "enabled": true,
+        "source": "mcp"
+      }
+    ]
   },
-  "message": "刷新成功，当前有 0 个动态工具"
+  "message": "刷新成功，当前有 5 个动态工具"
 }
 ```

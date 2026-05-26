@@ -30,30 +30,32 @@ class ToolManager:
         if self.mcp_server_configs:
             mcp_config = {}
             for server_id, config in self.mcp_server_configs.items():
-                # 基础配置
-                server_cfg = {
-                    "transport": config.get("transport", "sse"),
-                }
-                
-                # 根据传输方式补充必要参数
-                if config.get("transport") == "stdio":
-                    server_cfg["command"] = config.get("command")
-                    server_cfg["args"] = config.get("args", [])
-                    # stdio 不支持 timeout，不要添加
+                # 1. 自动推断 Transport 类型：如果包含 command，视为 Stdio；否则视为 SSE
+                if "command" in config:
+                    # Stdio 模式：直接透传 command, args, env
+                    # 这样无论用户配置里有没有 args 或 env，都能自动支持
+                    server_cfg = {
+                        "transport": "stdio",
+                        "command": config["command"],
+                        # get 方法提供了很好的默认值
+                        "args": config.get("args", []), 
+                        "env": config.get("env", {}) 
+                    }
                 else:
-                    # SSE 或 Streamable HTTP 需要 url
-                    server_cfg["url"] = config.get("url")
-                    
-                    # 认证与超时（仅 SSE）
-                    if config.get("api_key"):
-                        server_cfg["headers"] = {
+                    # SSE 模式：处理 HTTP 相关配置
+                    server_cfg = {
+                        "transport": "sse",
+                        "url": config["url"],
+                        "headers": {
                             "Authorization": f"Bearer {config['api_key']}"
                         }
+                    }
+                    # 可选参数
                     if config.get("timeout"):
                         server_cfg["timeout"] = config["timeout"]
-                        
+
                 mcp_config[server_id] = server_cfg
-            
+
             self.mcp_client = MultiServerMCPClient(mcp_config)
         else:
             self.mcp_client = MultiServerMCPClient({})
@@ -119,39 +121,24 @@ class ToolManager:
     async def add_mcp_server(self, server_id: str, config: dict) -> bool:
         """添加MCP服务器配置并刷新工具列表"""
         try:
-            transport = config.get("transport", "sse")
-            
-            # 根据传输方式验证不同参数
-            if transport == "stdio":
-                if not config.get("command"):
-                    raise ValueError("stdio传输方式必须提供command参数")
-            else:  # sse 或 websocket
-                if not config.get("url"):
-                    raise ValueError("MCP服务器URL不能为空")
-                if not config.get("api_key"):
-                    raise ValueError("MCP服务器API Key不能为空")
-            
-            # 加密API Key（仅当存在时）
+            # 2. 加密 API Key（仅当存在时，通常只在 SSE 中存在）
             if config.get("api_key"):
                 encrypted_api_key = crypto_utils.encrypt(config["api_key"])
                 stored_config = config.copy()
                 stored_config["api_key"] = encrypted_api_key
             else:
                 stored_config = config.copy()
-            
-            # 保存到数据库
+
+            # 3. 保存到数据库
             mongodb_client.save_mcp_server(server_id, stored_config)
-            
-            # 添加到内存（解密后的版本）
-            decrypted_config = config.copy()
-            self.mcp_server_configs[server_id] = decrypted_config
-            
-            # 重新初始化MCP客户端
+
+            # 4. 添加到内存（解密后的版本用于运行时）
+            # 注意：这里存储的是原始 config，_init_mcp_client 会负责解析
+            self.mcp_server_configs[server_id] = config.copy()
+
+            # 5. 重新初始化客户端并刷新工具
             self._init_mcp_client()
-            
-            # 刷新MCP工具列表
             await self.refresh_mcp_tools()
-            
             logger.info(f"MCP服务器 {server_id} 添加成功")
             return True
             

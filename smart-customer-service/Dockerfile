@@ -1,13 +1,12 @@
 # smart-customer-service/Dockerfile
 FROM python:3.11-slim
 
-# # 安装 Node.js 18.x (LTS)
-# RUN apt-get update && apt-get install -y curl \
-#     && curl -fsSL https://mirrors.aliyun.com/nodesource/setup_18.x | bash - \
-#     && apt-get install -y nodejs \
-#     && apt-get clean \
-#     && rm -rf /var/lib/apt/lists/*
-
+# 安装 Node.js 18.x (LTS)
+RUN apt-get update && apt-get install -y curl \
+    && curl -fsSL https://mirrors.aliyun.com/nodesource/setup_18.x | bash - \
+    && apt-get install -y nodejs npm \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # 设置工作目录
 WORKDIR /app
@@ -44,9 +43,9 @@ RUN pip install --no-cache-dir -r requirements.txt \
 COPY . .
 
 # 创建目录并设置权限 (为普通用户做准备)
-RUN mkdir -p /app/logs /app/uploads \
+RUN mkdir -p /home/appuser /app/logs /app/uploads \
     && groupadd -r appuser && useradd -r -g appuser appuser \
-    && chown -R appuser:appuser /app
+    && chown -R appuser:appuser /app /home/appuser
 
 # 切换到非 root 用户
 USER appuser

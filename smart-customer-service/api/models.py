@@ -1,6 +1,6 @@
 # smart-customer-service/api/models.py
 from pydantic import BaseModel, Field, field_serializer, ConfigDict
-from typing import Optional, List, TypeVar, Generic
+from typing import Optional, List, TypeVar, Generic, Dict, Any
 from datetime import datetime
 
 # 定义一个泛型类型变量 T
@@ -85,34 +85,21 @@ class PromptResponse(BaseModel):
 
 # MCP服务器配置模型
 class MCPServerCreate(BaseModel):
-    server_id: str
-    transport: str = "sse"  # sse, websocket, stdio
-    url: Optional[str] = None  # SSE/WebSocket 时需要
-    api_key: Optional[str] = None  # SSE/WebSocket 时需要
-    command: Optional[str] = None  # stdio 时需要
-    args: Optional[List[str]] = []  # stdio 时需要
-    timeout: Optional[int] = 30
+    server_id: str = Field(..., description="服务器的唯一标识，例如 'tavily-mcp'")
+    
+    # 核心改动：使用 Dict 接收任意结构的配置
+    # 这里可以存放 command/args/env (Stdio)，也可以存放 url/headers (SSE)
+    config: Dict[str, Any] = Field(
+        default_factory=dict, 
+        description="服务器的具体配置，结构取决于服务器类型（Stdio 或 SSE）"
+    )
 
-class RemoteMCPServerResponse(BaseModel):
-    server_id: str
-    transport: str
-    url: str
-    timeout: int = 30
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
-
-    @field_serializer('created_at', 'updated_at')
-    def serialize_datetime(self, value: datetime):
-        if value:
-            return value.strftime("%Y-%m-%d %H:%M:%S")
-        return None
-
-
-class LocalMCPServerResponse(BaseModel):
-    server_id: str
-    transport: str
-    command: str
-    args: Optional[List[str]] = None
+# --- 新增：通用的 MCP 服务器响应模型 ---
+class MCPServerResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True) # 允许从 ORM/Dict 读取
+    
+    server_id: str = Field(..., description="服务器唯一ID")
+    config: Dict[str, Any] = Field(..., description="原始配置信息")
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
