@@ -145,7 +145,12 @@ public interface ApplicationMapper {
     int countByProductId(@Param("productId") Long productId);
 
     // 批量检查产品是否被贷款申请引用
-    @Select("SELECT COUNT(*) FROM loan_applications WHERE product_id IN <foreach collection='productIds' item='id' open='(' separator=',' close=')'>#{id}</foreach>")
+    @Select("<script>" +
+        "SELECT COUNT(*) FROM loan_applications WHERE product_id IN " +
+        "<foreach collection='productIds' item='productId' open='(' separator=',' close=')'>" +
+        "#{productId}" +
+        "</foreach>" +
+        "</script>")
     int countByProductIds(@Param("productIds") List<Long> productIds);
 
     // 统计每月申请量

@@ -112,7 +112,12 @@ public interface OrderMapper {
     int countByProductId(@Param("productId") Long productId);
 
     // 批量检查产品是否被订单引用
-    @Select("SELECT COUNT(*) FROM orders WHERE product_id IN <foreach collection='productIds' item='id' open='(' separator=',' close=')'>#{id}</foreach>")
+    @Select("<script>" +
+        "SELECT COUNT(*) FROM orders WHERE product_id IN " +
+        "<foreach collection='productIds' item='productId' open='(' separator=',' close=')'>" +
+        "#{productId}" +
+        "</foreach>" +
+        "</script>")
     int countByProductIds(@Param("productIds") List<Long> productIds);
     
     // 查询未完成的订单

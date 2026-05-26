@@ -17,6 +17,9 @@ import org.springframework.stereotype.Component;
 
 import com.example.personal_loan.exception.BusinessException;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Aspect
 @Component
 @Order(1) // 确保切面优先级，如果有事务切面，锁切面通常要在事务切面之前
@@ -34,6 +37,7 @@ public class RedisLockAspect {
 
     @Around("@annotation(redisLocked)")
     public Object around(ProceedingJoinPoint joinPoint, RedisLocked redisLocked) throws Throwable {
+        log.info("【RedisLockAspect】 拦截到方法: {}", joinPoint.getSignature());
         // 获取方法签名,ProceedingJoinPoint 代表了被拦截的方法本身
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
@@ -42,6 +46,7 @@ public class RedisLockAspect {
         String lockKey = evaluateLockKey(redisLocked.key(), method, joinPoint.getArgs());
         RLock lock = redissonClient.getLock(lockKey);
 
+        log.info("解析出的锁 Key: {}", lockKey);
         // 获取锁
         boolean acquired = tryAcquire(lock, redisLocked);
         // 失败处理

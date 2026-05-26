@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.personal_loan.aop.RedisLocked;
-import com.example.personal_loan.config.RabbitMQConfig;
 import com.example.personal_loan.dto.ApplicationRequest;
 import com.example.personal_loan.dto.UserAppListResponse;
 import com.example.personal_loan.entity.LoanApplication;
@@ -30,7 +29,6 @@ import com.example.personal_loan.service.ApplicationService;
 import com.example.personal_loan.service.AuthService;
 import com.example.personal_loan.service.LoanProductService;
 import com.example.personal_loan.service.UserService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -137,7 +135,7 @@ public class ApplicationServiceImpl implements ApplicationService{
      */
     @Override
     @Transactional
-    @RedisLocked(key = "'lock:loan-application:withdraw:' + #p1")
+    // @RedisLocked(key = "'lock:loan-application:withdraw:' + #p1")
     public void withdrawApplication(Long userId, Long applicationId){
 
         LoanApplication application = applicationMapper.selectById(applicationId);

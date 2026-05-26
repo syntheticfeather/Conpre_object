@@ -339,3 +339,10 @@ INSERT INTO loan_products (
 
 INSERT INTO loan_options (product_id, interest_rate, loan_period, repaid_type) VALUES
 (5, 0.0750, 6, '先息后本');
+
+DELETE FROM loan_applications;
+DELETE FROM outbox_message;
+DELETE FROM processed_message;
+DELETE FROM notifications;
+DELETE FROM repayment_schedule;  
+DELETE FROM orders;

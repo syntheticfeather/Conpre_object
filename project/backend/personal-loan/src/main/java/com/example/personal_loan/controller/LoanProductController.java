@@ -108,7 +108,7 @@ public class LoanProductController {
     }
 
     
-    // 批量删除选项
+    // 批量创建选项
     @PostMapping(value = "/admin/options/batch-create", produces = "application/json")
     @Operation(summary = "批量创建产品选项", description = "管理员为指定产品批量创建贷款选项")
     public ResponseEntity<ApiResult<String>> batchCreateOptions(

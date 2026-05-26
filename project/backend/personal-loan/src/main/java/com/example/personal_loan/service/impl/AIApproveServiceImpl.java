@@ -3,12 +3,11 @@ package com.example.personal_loan.service.impl;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.personal_loan.aop.RedisLocked;
 import com.example.personal_loan.entity.LoanApplication;
 import com.example.personal_loan.entity.Order;
 import com.example.personal_loan.enums.ApplicationStatus;
@@ -49,7 +48,6 @@ public class AIApproveServiceImpl implements AIApproveService {
 
     @Override
     @Transactional
-    @RedisLocked(key = "'lock:loan-application:ai-check:' + #p0.id")
     public Boolean AICheck(LoanApplication application) {
         // 1. 计算信用分
         int creditScore = creditScoreCalculator.calculate(application.getUserId());
