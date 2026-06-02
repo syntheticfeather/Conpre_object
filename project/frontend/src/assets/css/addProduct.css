@@ -68,8 +68,8 @@
 
 /*  一级表单容器 */
 .form-container {
-  margin: 0 20px;
-  padding: 24px;
+  margin: 0 40px;
+  padding: 40px;
 
   background-color: var(--add-container-bg);
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
@@ -202,7 +202,7 @@
   justify-content: center; /* 水平居中 */
   align-items: center; /* 垂直居中（防止按钮高度不一致时错位） */
 
-  margin-top: 10px;
+  margin-top: 40px;
   gap: 20px; /* 保持按钮之间的间距 */
 }
 .form-actions .btn {

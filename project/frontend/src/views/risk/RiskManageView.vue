@@ -1,5 +1,25 @@
 <template>
   <div class="risk-dashboard">
+    <!-- 抬头区域 -->
+    <div class="welcome-section">
+      <div class="welcome-info">
+        <h1 class="welcome-title">风险监控中心</h1>
+        <div class="date-info">
+          <span>今日日期：{{ currentDate }}</span>
+          <span class="divider">|</span>
+          <span>系统运行正常</span>
+          <span class="divider">|</span>
+          <span class="status-badge" :class="riskStatusClass">{{ riskStatusText }}</span>
+        </div>
+      </div>
+      <div class="action-buttons">
+        <el-button class="screen-btn" @click="goToDVScreen" type="primary" size="default">
+          <el-icon><Monitor /></el-icon>
+          数据大屏
+        </el-button>
+      </div>
+    </div>
+
     <!-- 四个数据卡片 -->
     <div class="stats-cards">
       <!-- 用户数卡片 -->
@@ -211,6 +231,7 @@
         </div>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -227,12 +248,40 @@ import {
   Top, 
   Bottom, 
   ArrowRight,
-  CircleCheck
+  CircleCheck,
+  Monitor
 } from '@element-plus/icons-vue'
 import { useNotificationStream } from '@/composables/useNotificationStream'
 
 const router = useRouter()
 const route = useRoute()
+
+// 当前日期
+const getCurrentDate = () => {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = now.getMonth() + 1
+  const day = now.getDate()
+  return `${year}年${month}月${day}日`
+}
+const currentDate = getCurrentDate()
+
+// 跳转到数据大屏
+const goToDVScreen = () => {
+  router.push('/dv-screen')
+}
+
+// 风控状态
+const riskStatusText = computed(() => {
+  if (stats.overdueRate > 10) return '⚠ 逾期率偏高'
+  if (stats.overdueRate > 5) return '⚡ 需关注风险'
+  return '✅ 风险可控'
+})
+const riskStatusClass = computed(() => {
+  if (stats.overdueRate > 10) return 'status-danger'
+  if (stats.overdueRate > 5) return 'status-warning'
+  return 'status-safe'
+})
 
 // 统计数据
 const stats = reactive({

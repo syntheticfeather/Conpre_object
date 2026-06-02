@@ -5,7 +5,7 @@
         <div class="chat-panel">
           <div class="chat-header">
             <span class="chat-title">💬 智能对话</span>
-            <button class="close-btn" @click="close" :disabled="isThinking">✕</button>
+            <button class="close-btn" @click="close">✕</button>
           </div>
 
           <div class="chat-messages" ref="messagesRef">
@@ -15,13 +15,13 @@
               :class="['message-item', msg.role]"
             >
               <div v-if="msg.role === 'user'" class="message-bubble user-bubble">
-                {{ msg.content }}
+                <div v-html="renderMarkdown(msg.content)"></div>
               </div>
               <div v-else-if="msg.role === 'system'" class="message-tool">
                 {{ msg.content }}
               </div>
               <div v-else class="message-bubble assistant-bubble">
-                <div v-if="msg.content" class="assistant-content">{{ msg.content }}</div>
+                <div v-if="msg.content" class="assistant-content" v-html="renderMarkdown(msg.content)"></div>
               </div>
             </div>
 
@@ -56,6 +56,19 @@
 
 <script setup>
 import { ref, computed, nextTick, watch } from 'vue'
+import MarkdownIt from 'markdown-it'
+
+const md = new MarkdownIt({
+  html: false,
+  breaks: true,
+  linkify: true,
+  typographer: true
+})
+
+const renderMarkdown = (content) => {
+  if (!content) return ''
+  return md.render(content)
+}
 
 const props = defineProps({
   modelValue: {
@@ -68,7 +81,7 @@ const emit = defineEmits(['update:modelValue'])
 
 import { useChatSSE } from '@/composables/useChatSSE'
 
-const { messages, isThinking, streamingContent, sendMessage } = useChatSSE()
+const { messages, isThinking, streamingContent, sendMessage, abort } = useChatSSE()
 
 const visible = computed({
   get: () => props.modelValue,
@@ -80,6 +93,7 @@ const inputRef = ref(null)
 const messagesRef = ref(null)
 
 const close = () => {
+  abort()
   visible.value = false
 }
 
@@ -197,30 +211,29 @@ const doSend = async () => {
 }
 
 .message-bubble {
-  max-width: 85%;
-  padding: 10px 14px;
+  max-width: 88%;
+  padding: 12px 16px;
   border-radius: 12px;
   font-size: 14px;
-  line-height: 1.6;
+  line-height: 1.7;
   word-break: break-word;
-  white-space: pre-wrap;
 }
 
 .user-bubble {
   background: #1a73e8;
   color: #fff;
-  border-bottom-right-radius: 12px;
+  border-bottom-right-radius: 4px;
+}
+
+.user-bubble p {
+  margin: 0;
 }
 
 .assistant-bubble {
   background: #fff;
   color: #333;
-  border-bottom-left-radius: 12px;
+  border-bottom-left-radius: 4px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-}
-
-.assistant-content {
-  white-space: pre-wrap;
 }
 
 .message-tool {
@@ -314,5 +327,143 @@ const doSend = async () => {
 }
 .chat-slide-leave-to .chat-panel {
   transform: translateX(100%);
+}
+</style>
+
+<style>
+.assistant-content {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #333;
+}
+
+.assistant-content h1,
+.assistant-content h2,
+.assistant-content h3,
+.assistant-content h4 {
+  margin: 14px 0 8px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #1a1a1a;
+}
+
+.assistant-content h1 { font-size: 17px; }
+.assistant-content h2 { font-size: 16px; }
+.assistant-content h3 { font-size: 15px; }
+.assistant-content h4 { font-size: 14px; }
+
+.assistant-content h1:first-child,
+.assistant-content h2:first-child,
+.assistant-content h3:first-child,
+.assistant-content h4:first-child {
+  margin-top: 0;
+}
+
+.assistant-content p {
+  margin: 0 0 8px;
+  line-height: 1.7;
+}
+
+.assistant-content p:last-child {
+  margin-bottom: 0;
+}
+
+.assistant-content ul,
+.assistant-content ol {
+  padding-left: 20px;
+  margin: 6px 0 10px;
+}
+
+.assistant-content li {
+  margin-bottom: 4px;
+  line-height: 1.7;
+}
+
+.assistant-content li:last-child {
+  margin-bottom: 0;
+}
+
+.assistant-content code {
+  font-family: 'Consolas', 'Courier New', 'SFMono-Regular', monospace;
+  font-size: 13px;
+  background: #f0f2f5;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #d63384;
+  word-break: break-word;
+}
+
+.assistant-content pre {
+  background: #1e1e1e;
+  color: #d4d4d4;
+  padding: 12px 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 8px 0 12px;
+}
+
+.assistant-content pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.assistant-content blockquote {
+  border-left: 3px solid #1a73e8;
+  padding: 6px 12px;
+  margin: 8px 0;
+  color: #666;
+  background: #f8f9fa;
+  border-radius: 0 6px 6px 0;
+}
+
+.assistant-content blockquote p {
+  margin: 4px 0;
+}
+
+.assistant-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0 12px;
+  font-size: 13px;
+}
+
+.assistant-content th,
+.assistant-content td {
+  border: 1px solid #e0e0e0;
+  padding: 6px 10px;
+  text-align: left;
+}
+
+.assistant-content th {
+  background: #f5f5f5;
+  font-weight: 600;
+}
+
+.assistant-content a {
+  color: #1a73e8;
+  text-decoration: underline;
+}
+
+.assistant-content a:hover {
+  color: #1557b0;
+}
+
+.assistant-content hr {
+  border: none;
+  border-top: 1px solid #e0e0e0;
+  margin: 12px 0;
+}
+
+.assistant-content strong {
+  font-weight: 600;
+}
+
+.assistant-content img {
+  max-width: 100%;
+  border-radius: 6px;
+  margin: 8px 0;
 }
 </style>

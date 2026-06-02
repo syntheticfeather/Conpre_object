@@ -16,14 +16,28 @@
         </div>
       </div>
 
-      <div class="preview-content" @wheel.prevent="handleWheel">
+      <div class="preview-content" @wheel.prevent="handleWheel" @mousemove="handleMouseMove" @mouseleave="handleMouseLeave">
+        <div 
+          v-if="showLeftArrow" 
+          class="nav-arrow left-arrow" 
+          @click.stop="prevImage"
+        >
+          <el-icon><ArrowLeft /></el-icon>
+        </div>
+        <div 
+          v-if="showRightArrow" 
+          class="nav-arrow right-arrow" 
+          @click.stop="nextImage"
+        >
+          <el-icon><ArrowRight /></el-icon>
+        </div>
         <div 
           class="image-wrapper"
           :style="{ transform: `scale(${scale}) rotate(${rotation}deg)` }"
         >
           <img 
-            v-if="imageUrl" 
-            :src="imageUrl" 
+            v-if="currentImage" 
+            :src="currentImage" 
             :alt="title"
             @load="handleImageLoad"
             @error="handleImageError"
@@ -36,6 +50,9 @@
       </div>
 
       <div class="preview-footer">
+        <div class="image-counter" v-if="imageList.length > 1">
+          {{ title }} ({{ currentIndex + 1 }}/{{ imageList.length }})
+        </div>
         <div class="zoom-controls">
           <button class="zoom-btn" @click="handleZoomOut" :disabled="scale <= 0.5">
             <el-icon><ZoomOut /></el-icon>
@@ -52,9 +69,11 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onUnmounted } from 'vue'
-import { Download, RefreshRight, Close, Picture, ZoomIn, ZoomOut } from '@element-plus/icons-vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { Download, RefreshRight, Close, Picture, ZoomIn, ZoomOut, ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
+
+
 
 const props = defineProps({
   visible: {
@@ -64,6 +83,10 @@ const props = defineProps({
   imageUrl: {
     type: String,
     default: ''
+  },
+  images: {
+    type: Array,
+    default: () => []
   },
   title: {
     type: String,
@@ -76,6 +99,30 @@ const emit = defineEmits(['update:visible', 'close'])
 const scale = ref(1)
 const rotation = ref(0)
 const loading = ref(false)
+const currentIndex = ref(0)
+const mouseSide = ref(null)
+
+const imageList = computed(() => {
+  if (props.images && props.images.length > 0) {
+    return props.images
+  }
+  if (props.imageUrl) {
+    return [props.imageUrl]
+  }
+  return []
+})
+
+const currentImage = computed(() => {
+  return imageList.value[currentIndex.value] || null
+})
+
+const showLeftArrow = computed(() => {
+  return mouseSide.value === 'left' && currentIndex.value > 0 && imageList.value.length > 1
+})
+
+const showRightArrow = computed(() => {
+  return mouseSide.value === 'right' && currentIndex.value < imageList.value.length - 1 && imageList.value.length > 1
+})
 
 const handleZoomIn = () => {
   if (scale.value < 3) {
@@ -106,15 +153,41 @@ const handleReset = () => {
   rotation.value = 0
 }
 
+const prevImage = () => {
+  if (currentIndex.value > 0) {
+    currentIndex.value--
+    scale.value = 1
+    rotation.value = 0
+  }
+}
+
+const nextImage = () => {
+  if (currentIndex.value < imageList.value.length - 1) {
+    currentIndex.value++
+    scale.value = 1
+    rotation.value = 0
+  }
+}
+
+const handleMouseMove = (e) => {
+  const rect = e.currentTarget.getBoundingClientRect()
+  const x = e.clientX - rect.left
+  mouseSide.value = x < rect.width / 2 ? 'left' : 'right'
+}
+
+const handleMouseLeave = () => {
+  mouseSide.value = null
+}
+
 const handleDownload = () => {
-  if (!props.imageUrl) {
+  if (!currentImage.value) {
     ElMessage.warning('暂无图片可下载')
     return
   }
 
   try {
     const link = document.createElement('a')
-    link.href = props.imageUrl
+    link.href = currentImage.value
     link.download = props.title || 'image'
     link.target = '_blank'
     document.body.appendChild(link)
@@ -156,6 +229,12 @@ const handleKeyDown = (e) => {
     case '-':
       handleZoomOut()
       break
+    case 'ArrowLeft':
+      prevImage()
+      break
+    case 'ArrowRight':
+      nextImage()
+      break
     case 'r':
     case 'R':
       handleRotate()
@@ -168,8 +247,15 @@ watch(() => props.visible, (newVal) => {
     loading.value = true
     scale.value = 1
     rotation.value = 0
+    currentIndex.value = 0
+    mouseSide.value = null
   }
 })
+
+watch(() => props.images, () => {
+  currentIndex.value = 0
+  mouseSide.value = null
+}, { deep: true })
 
 onMounted(() => {
   window.addEventListener('keydown', handleKeyDown)
@@ -360,5 +446,43 @@ onUnmounted(() => {
 .reset-btn:hover {
   background: var(--preview-btn-hover-bg);
   color: var(--text-color);
+}
+
+.nav-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  cursor: pointer;
+  z-index: 10;
+  border-radius: 6px;
+  transition: background 0.2s;
+  font-size: 24px;
+}
+
+.nav-arrow:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.left-arrow {
+  left: 0;
+  border-radius: 0 6px 6px 0;
+}
+
+.right-arrow {
+  right: 0;
+  border-radius: 6px 0 0 6px;
+}
+
+.image-counter {
+  font-size: 14px;
+  color: var(--preview-icon-color);
+  min-width: 120px;
 }
 </style>

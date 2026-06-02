@@ -24,6 +24,7 @@
     "echarts-gl": "^2.0.9",
     "element-plus": "^2.13.2",
     "lodash": "^4.18.1",
+    "markdown-it": "^14.2.0",
     "pinia": "^3.0.4",
     "pinia-plugin-persistedstate": "^4.7.1",
     "point-in-polygon": "^1.1.0",

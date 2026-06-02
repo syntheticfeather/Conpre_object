@@ -15,7 +15,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUpdated, watch } from 'vue'
+import { ref, onMounted, onUpdated, watch, nextTick, onUnmounted } from 'vue'
 
 const props = defineProps({
   content: {
@@ -31,14 +31,27 @@ const props = defineProps({
 const textRef = ref(null)
 const isOverflow = ref(false)
 
-const checkOverflow = () => {
+const checkOverflow = async () => {
+  await nextTick()
   if (!textRef.value) return
+  
   const el = textRef.value
-  isOverflow.value = el.scrollWidth > el.clientWidth
+  // 使用更严格的检测方式，处理表格单元格中的特殊情况
+  const range = document.createRange()
+  range.selectNodeContents(el)
+  const contentWidth = range.getBoundingClientRect().width
+  const containerWidth = el.clientWidth
+  
+  // 两种方式都检测，确保可靠性
+  const scrollOverflow = el.scrollWidth > el.clientWidth + 1 // +1 避免浮点误差
+  const rangeOverflow = contentWidth > containerWidth + 1
+  
+  isOverflow.value = scrollOverflow || rangeOverflow
 }
 
 onMounted(() => {
   checkOverflow()
+  window.addEventListener('resize', checkOverflow)
 })
 
 onUpdated(() => {
@@ -47,17 +60,22 @@ onUpdated(() => {
 
 watch(() => props.content, () => {
   checkOverflow()
+}, { immediate: true, deep: true })
+
+onUnmounted(() => {
+  window.removeEventListener('resize', checkOverflow)
 })
 </script>
 
 <style scoped>
 .tooltip-trigger {
   display: inline-block;
+  width: 100%;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  vertical-align: bottom;
+  vertical-align: middle;
 }
 </style>
 

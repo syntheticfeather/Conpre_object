@@ -178,7 +178,7 @@
               </template>
             </el-table-column>
             <el-table-column prop="id" label="ID" width="200" />
-            <el-table-column prop="question" label="问题">
+            <el-table-column prop="question" label="问题" width="200" >
               <template #default="{ row }">
                 <ContentTooltip :content="row.question || ''">
                   <span class="cell-text">{{ row.question }}</span>
@@ -247,23 +247,18 @@
                 <el-tag size="small">{{ row.section_level || '-' }}</el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="section_path" label="章节路径" min-width="100">
+            <el-table-column prop="section_path" label="章节路径" min-width="250">
               <template #default="{ row }">
                 <ContentTooltip :content="row.section_path || ''">
                   <span class="cell-text">{{ row.section_path || '-' }}</span>
                 </ContentTooltip>
               </template>
             </el-table-column>
-            <el-table-column prop="source_path" label="资源路径" max-width="100">
+            <el-table-column prop="source_path" label="资源路径" width="350">
               <template #default="{ row }">
                 <ContentTooltip :content="row.source_path || ''">
                   <span class="cell-text">{{ row.source_path || '-' }}</span>
                 </ContentTooltip>
-              </template>
-            </el-table-column>
-            <el-table-column label="上传日期" width="180">
-              <template #default="{ row }">
-                {{ formatUploadDate(row.document_name) }}
               </template>
             </el-table-column>
             <el-table-column prop="chunk_index" label="分块序号" width="90" align="center" />
@@ -533,25 +528,25 @@ const getActualDocName = (documentName) => {
 }
 
 // 格式化上传日期（从文档名中提取时间戳）
-const formatUploadDate = (documentName) => {
-  if (!documentName) return '-'
-  // 格式: "20260512_190225_9bc3b228_启动方式" -> "2026-05-12 19:02:25"
-  const parts = documentName.split('_')
-  if (parts.length >= 2) {
-    const datePart = parts[0] // "20260512"
-    const timePart = parts[1] // "190225"
-    if (datePart.length === 8 && timePart.length === 6) {
-      const year = datePart.substring(0, 4)
-      const month = datePart.substring(4, 6)
-      const day = datePart.substring(6, 8)
-      const hour = timePart.substring(0, 2)
-      const minute = timePart.substring(2, 4)
-      const second = timePart.substring(4, 6)
-      return `${year}-${month}-${day} ${hour}:${minute}:${second}`
-    }
-  }
-  return '-'
-}
+// const formatUploadDate = (documentName) => {
+//   if (!documentName) return '-'
+//   // 格式: "20260512_190225_9bc3b228_启动方式" -> "2026-05-12 19:02:25"
+//   const parts = documentName.split('_')
+//   if (parts.length >= 2) {
+//     const datePart = parts[0] // "20260512"
+//     const timePart = parts[1] // "190225"
+//     if (datePart.length === 8 && timePart.length === 6) {
+//       const year = datePart.substring(0, 4)
+//       const month = datePart.substring(4, 6)
+//       const day = datePart.substring(6, 8)
+//       const hour = timePart.substring(0, 2)
+//       const minute = timePart.substring(2, 4)
+//       const second = timePart.substring(4, 6)
+//       return `${year}-${month}-${day} ${hour}:${minute}:${second}`
+//     }
+//   }
+//   return '-'
+// }
 // ====== 接口#1: 获取问答对知识项 GET /api/knowledge/faq ======
 const fetchKnowledge = async () => {
   loading.value = true
@@ -1111,12 +1106,8 @@ onMounted(async () => {
 
 .cell-text {
   display: inline-block;
-  width: fit-content;
   max-width: 150px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  vertical-align: bottom;
+  /* 其他样式由 ContentTooltip 内部的 .tooltip-trigger 处理 */
 }
 
 .document-content-viewer {

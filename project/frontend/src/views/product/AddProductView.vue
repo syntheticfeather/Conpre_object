@@ -212,31 +212,32 @@
         </div>
 
       </el-form>
-    </div>
 
-    <!-- 表单操作按钮 -->
-    <div class="form-actions-container">
-      <!-- 第一步按钮 -->
-      <div v-if="currentStep === 1" class="form-actions">
-        <button class="btn-cancel btn" @click="handleCancel">
-          取消
-        </button>
-        <button class="btn-next btn" @click="goToStep2">
-          下一步
-        </button>
+      <!-- 表单操作按钮 -->
+      <div class="form-actions-container">
+        <!-- 第一步按钮 -->
+        <div v-if="currentStep === 1" class="form-actions">
+          <button class="btn-cancel btn" @click="handleCancel">
+            取消
+          </button>
+          <button class="btn-next btn" @click="goToStep2">
+            下一步
+          </button>
+        </div>
+        <!-- 第二步按钮 -->
+        <div v-if="currentStep === 2" class="form-actions">
+          <button class="btn-prev btn" @click="goToStep1">
+            上一步
+          </button>
+          <button class="btn-cancel btn" @click="handleCancel">
+            取消
+          </button>
+          <button class="btn-confirm btn" @click="handleSubmit">
+            确认添加
+          </button>
+        </div>
       </div>
-      <!-- 第二步按钮 -->
-      <div v-if="currentStep === 2" class="form-actions">
-        <button class="btn-prev btn" @click="goToStep1">
-          上一步
-        </button>
-        <button class="btn-cancel btn" @click="handleCancel">
-          取消
-        </button>
-        <button class="btn-confirm btn" @click="handleSubmit">
-          确认添加
-        </button>
-      </div>
+      
     </div>
   </div>
 </template>

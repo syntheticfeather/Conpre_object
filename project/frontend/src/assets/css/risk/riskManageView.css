@@ -20,7 +20,6 @@
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
-
 /* 欢迎信息区域 */
 .welcome-title {
   font-size: 24px;
@@ -45,6 +44,27 @@
 /* 分隔符 */
 .divider {
   color: #d9d9d9;
+}
+
+/* 风控状态徽标 */
+.status-badge {
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.status-badge.status-safe {
+  background: rgba(90, 216, 166, 0.2);
+  color: #5AD8A6;
+}
+.status-badge.status-warning {
+  background: rgba(246, 189, 22, 0.2);
+  color: #F6BD16;
+}
+.status-badge.status-danger {
+  background: rgba(248, 116, 116, 0.2);
+  color: #F87474;
 }
 
 /* 操作按钮区域 */

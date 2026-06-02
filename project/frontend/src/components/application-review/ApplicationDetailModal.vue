@@ -143,7 +143,7 @@
 
     <ImagePreview
       v-model:visible="showImagePreview"
-      :image-url="previewImageUrl"
+      :images="previewImages"
       :title="previewTitle"
     />
   </div>
@@ -187,7 +187,7 @@ const userDetail = ref(null);
 const loading = ref(false);
 
 const showImagePreview = ref(false)
-const previewImageUrl = ref('')
+const previewImages = ref([])
 const previewTitle = ref('')
 const showCertDetails = ref({})
 
@@ -352,6 +352,33 @@ const isMaterialUploaded = (key) => {
   return userDetail.value?.userCert?.[key] != null
 }
 
+const processImagePath = (url) => {
+  let processed = url.replace(/[\\/]/g, '/')
+
+  if (processed.startsWith('/uploads/')) {
+    if (!processed.startsWith('/')) {
+      processed = '/' + processed
+    }
+  } else {
+    if (processed.includes('project/frontend/public/')) {
+      processed = processed.replace('project/frontend/public/', '')
+    }
+    if (processed.includes('public/')) {
+      processed = processed.replace('public/', '')
+    }
+
+    if (processed === 'thr_c.jpg') {
+      processed = 'thir_c.jpg'
+    }
+
+    if (!processed.startsWith('/')) {
+      processed = '/' + processed
+    }
+  }
+
+  return processed
+}
+
 const fetchCertImage = async (certId, certType, materialKey) => {
   if (!certId) {
     ElMessage.warning('该材料未上传')
@@ -360,25 +387,28 @@ const fetchCertImage = async (certId, certType, materialKey) => {
 
   try {
     let response
-    let imageUrl
+    const images = []
 
     switch (certType) {
       case 'workCert':
         response = await authAPI.getWorkCert(certId)
         if (response.code === 200 && response.data) {
-          imageUrl = response.data.employmentCertPath || response.data.salaryCertPath
+          if (response.data.employmentCertPath) images.push(response.data.employmentCertPath)
+          if (response.data.salaryCertPath) images.push(response.data.salaryCertPath)
         }
         break
       case 'triCert':
         response = await authAPI.getTriCert(certId)
         if (response.code === 200 && response.data) {
-          imageUrl = response.data.socialSecurityPath || response.data.creditReportPath
+          if (response.data.socialSecurityPath) images.push(response.data.socialSecurityPath)
+          if (response.data.creditReportPath) images.push(response.data.creditReportPath)
         }
         break
       case 'immovableCert':
         response = await authAPI.getImmovablesCert(certId)
         if (response.code === 200 && response.data) {
-          imageUrl = response.data.propertyCertPath || response.data.carCertPath
+          if (response.data.propertyCertPath) images.push(response.data.propertyCertPath)
+          if (response.data.carCertPath) images.push(response.data.carCertPath)
         }
         break
       default:
@@ -386,31 +416,8 @@ const fetchCertImage = async (certId, certType, materialKey) => {
         return
     }
 
-    if (imageUrl) {
-      imageUrl = imageUrl.replace(/[\\/]/g, '/')
-
-      if (imageUrl.startsWith('/uploads/')) {
-        if (!imageUrl.startsWith('/')) {
-          imageUrl = '/' + imageUrl
-        }
-      } else {
-        if (imageUrl.includes('project/frontend/public/')) {
-          imageUrl = imageUrl.replace('project/frontend/public/', '')
-        }
-        if (imageUrl.includes('public/')) {
-          imageUrl = imageUrl.replace('public/', '')
-        }
-
-        if (imageUrl === 'thr_c.jpg') {
-          imageUrl = 'thir_c.jpg'
-        }
-
-        if (!imageUrl.startsWith('/')) {
-          imageUrl = '/' + imageUrl
-        }
-      }
-
-      previewImageUrl.value = imageUrl
+    if (images.length > 0) {
+      previewImages.value = images.map(processImagePath)
       previewTitle.value = materialMap[materialKey] || '认证材料'
       showImagePreview.value = true
     } else {

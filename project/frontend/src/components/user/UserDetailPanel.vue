@@ -376,7 +376,7 @@
     <!-- 图片预览组件 -->
     <ImagePreview
       v-model:visible="showImagePreview"
-      :image-url="previewImageUrl"
+      :images="previewImages"
       :title="previewTitle"
     />
   </div>
@@ -416,7 +416,7 @@ const radarChartRef = ref(null)
 let radarChart = null
 
 const showImagePreview = ref(false)
-const previewImageUrl = ref('')
+const previewImages = ref([])
 const previewTitle = ref('')
 
 const showIdCardFull = ref(false)
@@ -724,6 +724,14 @@ const handleBlacklist = async () => {
   }
 }
 
+const processImagePath = (url) => {
+  let processed = url.replace(/[\\/]/g, '/')
+  if (!processed.startsWith('/')) {
+    processed = '/' + processed
+  }
+  return processed
+}
+
 const fetchCertImage = async (certId, certType) => {
   if (!certId) {
     ElMessage.warning('该材料未上传')
@@ -732,25 +740,28 @@ const fetchCertImage = async (certId, certType) => {
 
   try {
     let response
-    let imageUrl
+    const images = []
 
     switch (certType) {
       case 'workCert':
         response = await authAPI.getWorkCert(certId)
         if (response.code === 200 && response.data) {
-          imageUrl = response.data.employmentCertPath || response.data.salaryCertPath
+          if (response.data.employmentCertPath) images.push(response.data.employmentCertPath)
+          if (response.data.salaryCertPath) images.push(response.data.salaryCertPath)
         }
         break
       case 'triCert':
         response = await authAPI.getTriCert(certId)
         if (response.code === 200 && response.data) {
-          imageUrl = response.data.socialSecurityPath || response.data.creditReportPath
+          if (response.data.socialSecurityPath) images.push(response.data.socialSecurityPath)
+          if (response.data.creditReportPath) images.push(response.data.creditReportPath)
         }
         break
       case 'immovableCert':
         response = await authAPI.getImmovablesCert(certId)
         if (response.code === 200 && response.data) {
-          imageUrl = response.data.propertyCertPath || response.data.carCertPath
+          if (response.data.propertyCertPath) images.push(response.data.propertyCertPath)
+          if (response.data.carCertPath) images.push(response.data.carCertPath)
         }
         break
       default:
@@ -758,12 +769,8 @@ const fetchCertImage = async (certId, certType) => {
         return
     }
 
-    if (imageUrl) {
-      imageUrl = imageUrl.replace(/[\\/]/g, '/')
-      if (!imageUrl.startsWith('/')) {
-        imageUrl = '/' + imageUrl
-      }
-      previewImageUrl.value = imageUrl
+    if (images.length > 0) {
+      previewImages.value = images.map(processImagePath)
       previewTitle.value = materialMap[certType] || '认证材料'
       showImagePreview.value = true
     } else {
