@@ -1,18 +1,15 @@
 package com.example.personal_loan.service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.example.personal_loan.entity.Order;
 import com.example.personal_loan.entity.RepaymentSchedule;
-import com.example.personal_loan.mapper.OrderMapper;
+import com.example.personal_loan.exception.BusinessException;
 import com.example.personal_loan.mapper.RepaymentScheduleMapper;
-import com.example.personal_loan.utils.CalculateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,94 +20,36 @@ public class RepaymentScheduleService {
     @Autowired
     private RepaymentScheduleMapper repaymentScheduleMapper;
 
-    @Autowired
-    private OrderMapper orderMapper;
-
-    @Autowired
-    private CalculateUtil calculateUtil;
-
     /**
-     * 生成还款计划
+     * 生成还款计划（调用存储过程，事务由 SP 内部管理）
      * @param orderId 订单ID
      */
-    @Transactional
     public void generateRepaymentSchedule(Long orderId) {
-        Order order = orderMapper.selectById(orderId);
-        LocalDate startDate = order.getStartTime().toLocalDate();
-
-        List<RepaymentSchedule> plan = calculateUtil.calculateRepaymentPlan(
-            order.getLoanAmount(),
-            order.getInterestRate(),
-            order.getTerm(),
-            order.getRepaidType(),
-            startDate
-        );
-
-        for (RepaymentSchedule item : plan) {
-            RepaymentSchedule schedule = new RepaymentSchedule(
-                null,
-                orderId,
-                item.getTerm(),
-                item.getPrincipal(),
-                item.getInterest(),
-                item.getTotalAmount(),
-                "未还",
-                item.getRemainingPrincipal(),
-                item.getRemainingInterest(),
-                item.getDueDate(),
-                null,
-                LocalDateTime.now(),
-                LocalDateTime.now()
-            );
-            repaymentScheduleMapper.insert(schedule);
+        Map<String, Object> params = new HashMap<>();
+        params.put("orderId", orderId);
+        repaymentScheduleMapper.callGenerateRepaymentSchedule(params);
+        Integer success = (Integer) params.get("success");
+        if (success == null || success != 1) {
+            throw new BusinessException("生成还款计划失败");
         }
-
-        log.info("for order {} to generate {} schedules", orderId, plan.size());
+        log.info("存储过程生成还款计划完成, orderId={}", orderId);
     }
 
     /**
-     * 延期后修改还款计划
+     * 延期后修改还款计划（调用存储过程，事务由 SP 内部管理）
      * @param orderId 订单ID
-     * @param term 指定期数
+     * @param term    申请延期的当期期数
      */
-    @Transactional
     public void updateDueDateAfterPostpone(Long orderId, Integer term) {
-        List<RepaymentSchedule> schedules = repaymentScheduleMapper.selectByOrderId(orderId);
-        RepaymentSchedule targetSchedule = null;
-
-        // 1. 找到目标期数（建议直接用 Stream 或 Mapper 层查询，减少循环）
-        for (RepaymentSchedule schedule : schedules) {
-            if (schedule.getTerm().equals(term)) {
-                targetSchedule = schedule;
-                break;
-            }
+        Map<String, Object> params = new HashMap<>();
+        params.put("orderId", orderId);
+        params.put("term", term);
+        repaymentScheduleMapper.callUpdateDueDateAfterPostpone(params);
+        Integer success = (Integer) params.get("success");
+        if (success == null || success != 1) {
+            throw new BusinessException("延期更新还款计划失败");
         }
-
-        if (targetSchedule == null) {
-            throw new IllegalArgumentException("未找到指定期数的还款计划");
-        }
-
-        // 2. 计算目标期数的新还款日期（直接加1个月，Java会自动处理月末情况）
-        LocalDate targetOldDueDate = targetSchedule.getDueDate();
-        // 核心修改：直接用 plusMonths，抛弃手动计算天数和月末判断
-        LocalDate targetNewDueDate = targetOldDueDate.plusMonths(1); 
-
-        // 3. 更新目标期数
-        targetSchedule.setDueDate(targetNewDueDate);
-        targetSchedule.setUpdatedAt(LocalDateTime.now());
-        repaymentScheduleMapper.updateById(targetSchedule);
-        // 4. 顺延之后的每一期（同样直接加1个月）
-        for (RepaymentSchedule schedule : schedules) {
-            if (schedule.getTerm() > term) {
-                LocalDate oldDueDate = schedule.getDueDate();
-                // 核心修改：后续期数统一往后推1个月
-                LocalDate newDueDate = oldDueDate.plusMonths(1); 
-                
-                schedule.setDueDate(newDueDate);
-                schedule.setUpdatedAt(LocalDateTime.now());
-                repaymentScheduleMapper.updateById(schedule);
-            }
-        }
+        log.info("存储过程更新到期日完成, orderId={}, term={}", orderId, term);
     }
 
     public List<RepaymentSchedule> getRepaymentSchedule(Long orderId) {

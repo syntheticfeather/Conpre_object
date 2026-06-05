@@ -22,6 +22,7 @@ class ResponseModel(BaseModel, Generic[T]):
 class ChatRequest(BaseModel):
     message: str = Field(..., min_length=1, max_length=1000, description="用户消息")
     session_id: Optional[str] = None
+    agent_mode: Optional[str] = "react"  # react / plan / reflection / plan+reflection
 
 class ChatResponse(BaseModel):
     message: str
@@ -108,3 +109,28 @@ class MCPServerResponse(BaseModel):
         if value:
             return value.strftime("%Y-%m-%d %H:%M:%S")
         return None
+
+
+# --- 路由请求/响应模型 ---
+
+class RouteRequest(BaseModel):
+    message: str = Field(..., min_length=1, max_length=1000, description="用户消息")
+
+class RouteResult(BaseModel):
+    intent: str = Field(..., description="分类意图")
+    confidence: float = Field(..., ge=0.0, le=1.0, description="置信度 0~1")
+    action: str = Field(..., description="WORKFLOW 或 AGENT")
+
+
+# --- LLM 参数提取模型 ---
+
+class ExtractLoanParamsRequest(BaseModel):
+    message: str = Field(..., min_length=1, description="用户消息")
+    available_products: list[str] = Field(default_factory=list, description="可用产品名列表")
+
+class LoanParams(BaseModel):
+    product_name: Optional[str] = None   # 产品名
+    amount: Optional[float] = None       # 贷款金额（元）
+    months: Optional[int] = None         # 贷款期限（月）
+    repaid_type: Optional[str] = None    # 等额本息 / 等额本金 / 先息后本 / 一次性还本付息
+    intent: Optional[str] = None         # apply / calculate / modify / cancel / unknown

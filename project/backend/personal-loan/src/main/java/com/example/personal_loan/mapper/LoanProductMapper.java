@@ -123,6 +123,28 @@ public interface LoanProductMapper {
     )
     List<LoanProduct> findAllActive();
 
+    /** 查询最新上架的 top-k 产品 */
+    @Select(
+        "SELECT " +
+        "id, " +
+        "product_name as productName, " +
+        "description, " +
+        "loan_usage as loanUsage, " +
+        "min_term as minTerm, " +
+        "max_term as maxTerm, " +
+        "term_step as termStep, " +
+        "min_amount AS minAmount, " +
+        "max_amount AS maxAmount, " +
+        "promotion_details as promotionDetails, " +
+        "create_time as createTime, " +
+        "update_time as updateTime " +
+        "FROM loan_products " +
+        "WHERE status = '上架中' " +
+        "ORDER BY create_time DESC " +
+        "LIMIT #{limit}"
+    )
+    List<LoanProduct> findTopActive(@Param("limit") int limit);
+
     // 用productName搜索查询
     @Select(
         "SELECT " +

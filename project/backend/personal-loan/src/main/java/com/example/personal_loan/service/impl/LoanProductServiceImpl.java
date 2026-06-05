@@ -482,6 +482,37 @@ public class LoanProductServiceImpl implements LoanProductService{
         }).collect(Collectors.toList());
     }
 
+    @Override
+    public List<UserGetProductResponse> getTopLoanProducts(int limit) {
+        List<LoanProduct> products = loanProductMapper.findTopActive(limit);
+        return products.stream().map(product -> {
+            List<Integer> terms = generateTerms(product);
+            List<LoanOption> options = loanOptionMapper.selectByProductId(product.getId());
+            List<LoanOptionResponse> optionResponses = options.stream()
+                .map(opt -> {
+                    LoanOptionResponse resp = new LoanOptionResponse();
+                    resp.setOptionId(opt.getOptionId());
+                    resp.setInterestRate(opt.getInterestRate());
+                    resp.setLoanPeriod(opt.getLoanPeriod());
+                    resp.setRepaidType(opt.getRepaidType());
+                    return resp;
+                })
+                .collect(Collectors.toList());
+
+            UserGetProductResponse response = new UserGetProductResponse();
+            response.setProductId(product.getId());
+            response.setProductName(product.getProductName());
+            response.setDescription(product.getDescription());
+            response.setLoanUsage(product.getLoanUsage());
+            response.setPromotionDetails(product.getPromotionDetails());
+            response.setMinAmount(product.getMinAmount());
+            response.setMaxAmount(product.getMaxAmount());
+            response.setTerms(terms);
+            response.setOptions(optionResponses);
+            return response;
+        }).collect(Collectors.toList());
+    }
+
     // 内部工具方法，生成terms列表
     private List<Integer> generateTerms(LoanProduct product) {
         List<Integer> terms = new ArrayList<>();

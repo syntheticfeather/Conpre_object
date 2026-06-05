@@ -59,4 +59,6 @@ public interface LoanProductService {
     List<UserGetProductResponse> searchProductsByName(String name);
     // 查询所有产品
     List<UserGetProductResponse> getAllLoanProducts();
+    // 查询最新上架的 top-k 产品
+    List<UserGetProductResponse> getTopLoanProducts(int limit);
 }

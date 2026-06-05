@@ -21,6 +21,7 @@ from utils.token_utils import extract_user_id_from_token
 from api.knowledge_routes import router as knowledge_router
 from api.tool_routes import router as tool_router
 from api.prompt_routes import router as prompt_router
+from api.route_routes import router as route_router
 from api.init_data import init_knowledge_base
 from agent.chat_agent import get_chat_agent
 from tools.tool_manager import tool_manager
@@ -63,6 +64,7 @@ app.add_middleware(
 app.include_router(knowledge_router, dependencies=[Depends(security)])
 app.include_router(tool_router, dependencies=[Depends(security)])
 app.include_router(prompt_router, dependencies=[Depends(security)])
+app.include_router(route_router)
 
 # --- 配置日志系统 ---
 logging.basicConfig(
@@ -90,10 +92,11 @@ async def chat_stream(body: ChatRequest, credentials: HTTPAuthorizationCredentia
     message = body.message
     session_id = body.session_id or str(uuid.uuid4())
 
-    # 获取 ChatAgent 单例实例
-    agent = get_chat_agent()
+    # 获取 ChatAgent，按请求的 agent_mode 创建
+    agent_mode = body.agent_mode or "react"
+    agent = get_chat_agent(agent_mode)
 
-    logger.info(f"开始处理用户请求，session_id: {session_id}, message: {message}")
+    logger.info(f"开始处理请求 session={session_id} mode={agent_mode} msg={message[:30]}")
 
     # 异步生成事件流
     async def event_generator():

@@ -130,6 +130,11 @@ file-storage:
     employment-proof: work/employment
     salary-proof: work/salary
 
+# Agent 服务配置（Python 智能客服）
+agent:
+  service:
+    url: http://localhost:8000
+
 # SpringDoc 配置
 springdoc:
   api-docs:
