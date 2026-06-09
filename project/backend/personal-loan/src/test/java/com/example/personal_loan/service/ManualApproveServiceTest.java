@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -33,6 +34,7 @@ import com.example.personal_loan.enums.OrderStatus;
 import com.example.personal_loan.exception.BusinessException;
 import com.example.personal_loan.mapper.ApplicationMapper;
 import com.example.personal_loan.mapper.OrderMapper;
+import com.example.personal_loan.mapper.PostponeRequestMapper;
 import com.example.personal_loan.mq.NotificationOutboxPublisher;
 import com.example.personal_loan.service.impl.ManualApproveServiceImpl;
 
@@ -50,6 +52,12 @@ class ManualApproveServiceTest {
 
     @Mock
     private NotificationOutboxPublisher notificationOutboxPublisher;
+
+    @Mock
+    private RepaymentScheduleService repaymentScheduleService;
+
+    @Mock
+    private PostponeRequestMapper postponeRequestMapper;
 
     @InjectMocks
     private ManualApproveServiceImpl manualApproveService;
@@ -175,6 +183,7 @@ class ManualApproveServiceTest {
             order.setId(1L);
             return null;
         });
+        doNothing().when(repaymentScheduleService).generateRepaymentSchedule(1L);
 
         ManualCheckResponse response = manualApproveService.manualCheck(1L, true, null);
 
@@ -185,6 +194,7 @@ class ManualApproveServiceTest {
         assertEquals(ApplicationStatus.人工通过, loanApplication.getStatus());
         assertNotNull(response.getReviewTime());
         verify(orderMapper).insert(any(Order.class));
+        verify(repaymentScheduleService).generateRepaymentSchedule(1L);
         verify(notificationOutboxPublisher).enqueueNotification(2L, 1L, "LOAN_APPLICATION_STATUS");
     }
 
@@ -248,6 +258,7 @@ class ManualApproveServiceTest {
             order.setId(1L);
             return null;
         });
+        doNothing().when(repaymentScheduleService).generateRepaymentSchedule(1L);
 
         manualApproveService.manualCheck(1L, true, null);
 
@@ -263,6 +274,7 @@ class ManualApproveServiceTest {
             order.getOverdueDays() == 0 &&
             order.getRepaidAmount().equals(BigDecimal.ZERO)
         ));
+        verify(repaymentScheduleService).generateRepaymentSchedule(1L);
     }
 
     @Test
@@ -308,10 +320,12 @@ class ManualApproveServiceTest {
             order.setId(1L);
             return null;
         });
+        doNothing().when(repaymentScheduleService).generateRepaymentSchedule(1L);
 
         ManualCheckResponse response = manualApproveService.manualCheck(1L, true, null);
 
         assertNotNull(response.getReviewTime());
         assertNotNull(loanApplication.getReviewTime());
+        verify(repaymentScheduleService).generateRepaymentSchedule(1L);
     }
 }

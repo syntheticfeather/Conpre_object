@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.personal_loan.config.FileStorageConfig;
+import com.example.personal_loan.exception.BusinessException;
 import com.example.personal_loan.service.LocalFileStorageService;
 import com.example.personal_loan.utils.FileNamingUtil;
 
@@ -49,13 +50,13 @@ public class LocalFileStorageServiceImpl implements LocalFileStorageService{
     public String storeFile(MultipartFile file, String prefix, Long userId, String subDirPath) {
         if (file == null || file.isEmpty()) {
             log.warn("The file is empty");
-            return null;
+            throw new BusinessException(400, "图片为空");
         }
         // 校验文件扩展名
         String fileExtension = FileNamingUtil.getFileExtension(file.getOriginalFilename());
         if (!ALLOWED_EXTENSIONS.contains(fileExtension.toLowerCase())) {
             log.warn("File type {} is not allowed", fileExtension);
-            return null;
+            throw new BusinessException(400, "不支持的文件类型");
         }
         // 校验文件大小
         if (file.getSize() > MAX_FILE_SIZE) {
@@ -95,7 +96,7 @@ public class LocalFileStorageServiceImpl implements LocalFileStorageService{
 
         } catch (IOException | URISyntaxException e) {
             log.error("File storage failed: prefix={}, userId={}, error={}", prefix, userId, e.getMessage(), e);
-            throw new RuntimeException("File storage failed: " + e.getMessage(), e);
+            throw new RuntimeException("文件存储失败: " + e.getMessage(), e);
         }
     }
 

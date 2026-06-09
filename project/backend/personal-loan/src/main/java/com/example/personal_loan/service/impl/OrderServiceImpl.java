@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.personal_loan.aop.RedisLocked;
-import com.example.personal_loan.config.RabbitMQConfig;
 import com.example.personal_loan.dto.PaymentRequestedEvent;
 import com.example.personal_loan.dto.UserGetOrderResponse;
 import com.example.personal_loan.dto.UserOrderListResponse;
@@ -89,12 +88,15 @@ public class OrderServiceImpl implements OrderService{
     public void repay(Long orderId) {
         // 检查订单状态
         Order order = orderMapper.selectById(orderId);
+        if (order == null) {
+            throw new BusinessException(404, "订单不存在");
+        }
         if (order.getCurrentTerm() >= order.getTerm()) {
-            throw new BusinessException("订单已结清，无需还款");
+            throw new BusinessException(400, "订单已结清");
         }
         OrderStatus status = order.getStatus();
         if (status == OrderStatus.已完成) {
-            throw new BusinessException("订单已完成，无需还款");
+            throw new BusinessException(400, "订单不可还款");
         }
 
         // 检查还款计划
@@ -139,12 +141,15 @@ public class OrderServiceImpl implements OrderService{
     @Override
     public Boolean postpone(Long orderId) {
         Order order = orderMapper.selectById(orderId);
+        if (order == null) {
+            throw new BusinessException(404, "订单不存在");
+        }
         if (order.getCurrentTerm() >= order.getTerm()) {
             throw new BusinessException(400,"订单已结清，无法延期");
         }
         OrderStatus status = order.getStatus();
         if (status == OrderStatus.已完成) {
-            throw new BusinessException(400,"当前订单无法申请延期");
+            throw new BusinessException(400,"订单已结清，无法延期");
         }
         
         PostponeRequest existingRequest = postponeRequestMapper.selectByOrderIdAndCurrentTerm(orderId, order.getCurrentTerm());

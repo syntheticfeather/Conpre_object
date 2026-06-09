@@ -88,9 +88,13 @@ class LoanApplicationConsumerTest {
     void consume_missingMessageId_shouldNack() throws Exception {
         when(rabbitUtil.getTag(any())).thenReturn(2L);
 
+        LoanApplication app = new LoanApplication();
+        app.setId(1L);
+        app.setStatus(ApplicationStatus.审核中);
+
         MessageProperties props = new MessageProperties();
         props.setDeliveryTag(2L);
-        Message message = new Message(objectMapper.writeValueAsBytes(new LoanApplication()), props);
+        Message message = new Message(objectMapper.writeValueAsBytes(app), props);
 
         LoanApplicationConsumer consumer = new LoanApplicationConsumer(
                 processedMessageMapper,
@@ -112,6 +116,10 @@ class LoanApplicationConsumerTest {
 
         LoanApplication app = new LoanApplication();
         app.setId(11L);
+        app.setStatus(ApplicationStatus.审核中);
+        app.setStatus(ApplicationStatus.审核中);
+        app.setStatus(ApplicationStatus.审核中);
+        app.setStatus(ApplicationStatus.审核中);
         Message message = buildMessage(objectMapper.writeValueAsBytes(app), "mid", 3L);
 
         List<Map<String, Object>> xDeath = List.of(buildXDeathEntry(RabbitMQConfig.LOAN_APPLICATION_QUEUE, 3L));

@@ -1,5 +1,7 @@
 package com.example.personal_loan.entity;
 
+import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,6 +14,7 @@ public class UserCert {
     private String realName;
     private String idCard;
     private Integer creditScore;
+    private BigDecimal maxLoanAmount;
     private String bankCardId;
     private Integer workCertId;
     private Integer triCertId;

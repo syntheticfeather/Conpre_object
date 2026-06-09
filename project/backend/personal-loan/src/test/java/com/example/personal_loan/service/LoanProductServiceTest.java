@@ -23,6 +23,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import com.example.personal_loan.dto.AdminGetProDetailResponse;
 import com.example.personal_loan.dto.ListProductResponse;
@@ -33,11 +35,14 @@ import com.example.personal_loan.entity.LoanOption;
 import com.example.personal_loan.entity.LoanProduct;
 import com.example.personal_loan.enums.ProductStatus;
 import com.example.personal_loan.exception.BusinessException;
+import com.example.personal_loan.mapper.ApplicationMapper;
 import com.example.personal_loan.mapper.LoanOptionMapper;
 import com.example.personal_loan.mapper.LoanProductMapper;
+import com.example.personal_loan.mapper.OrderMapper;
 import com.example.personal_loan.service.impl.LoanProductServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class LoanProductServiceTest {
 
     @Mock
@@ -45,6 +50,12 @@ class LoanProductServiceTest {
 
     @Mock
     private LoanOptionMapper loanOptionMapper;
+
+    @Mock
+    private ApplicationMapper applicationMapper;
+
+    @Mock
+    private OrderMapper orderMapper;
 
     @InjectMocks
     private LoanProductServiceImpl loanProductService;
@@ -88,6 +99,9 @@ class LoanProductServiceTest {
         productDto.setMaxTerm(24);
         productDto.setTermStep(3);
         productDto.setOptions(Arrays.asList(loanOption));
+
+        when(loanOptionMapper.selectById(1L)).thenReturn(loanOption);
+        when(loanProductMapper.findById(1L)).thenReturn(loanProduct);
     }
 
     @Test
@@ -125,11 +139,19 @@ class LoanProductServiceTest {
 
     @Test
     void testCreateLoanProduct_InvalidAmount() {
-        productDto.setMinAmount(new BigDecimal("50000"));
-        productDto.setMaxAmount(new BigDecimal("1000"));
+        ProductDto invalidDto = new ProductDto();
+        invalidDto.setProductName("测试产品");
+        invalidDto.setDescription("测试描述");
+        invalidDto.setLoanUsage("测试用途");
+        invalidDto.setMinAmount(new BigDecimal("50000"));
+        invalidDto.setMaxAmount(new BigDecimal("1000"));
+        invalidDto.setMinTerm(3);
+        invalidDto.setMaxTerm(24);
+        invalidDto.setTermStep(3);
+        invalidDto.setOptions(Arrays.asList(loanOption));
 
         BusinessException exception = assertThrows(BusinessException.class, () -> 
-            loanProductService.createLoanProduct(productDto)
+            loanProductService.createLoanProduct(invalidDto)
         );
         assertEquals(400, exception.getCode());
         assertTrue(exception.getMessage().contains("最小贷款金额必须小于最大贷款金额"));
@@ -201,6 +223,8 @@ class LoanProductServiceTest {
 
     @Test
     void testDeleteLoanOption_Success() {
+        when(applicationMapper.countByProductId(1L)).thenReturn(0);
+        when(orderMapper.countByProductId(1L)).thenReturn(0);
         when(loanOptionMapper.deleteById(1L)).thenReturn(1);
 
         int result = loanProductService.deleteLoanOption(1L);
@@ -210,6 +234,8 @@ class LoanProductServiceTest {
 
     @Test
     void testDeleteLoanProduct_Success() {
+        when(applicationMapper.countByProductId(1L)).thenReturn(0);
+        when(orderMapper.countByProductId(1L)).thenReturn(0);
         when(loanProductMapper.delete(1L)).thenReturn(1);
 
         int result = loanProductService.deleteLoanProduct(1L);
@@ -253,6 +279,7 @@ class LoanProductServiceTest {
         updateDto.setMaxAmount(new BigDecimal("60000"));
         updateDto.setMinTerm(6);
         updateDto.setMaxTerm(36);
+        updateDto.setTermStep(6);
         updateDto.setOptions(Arrays.asList(loanOption));
 
         when(loanProductMapper.findById(1L)).thenReturn(loanProduct);
@@ -283,6 +310,7 @@ class LoanProductServiceTest {
         ProductDto updateDto = new ProductDto();
         updateDto.setMinTerm(36);
         updateDto.setMaxTerm(6);
+        updateDto.setTermStep(3);
 
         when(loanProductMapper.findById(1L)).thenReturn(loanProduct);
 

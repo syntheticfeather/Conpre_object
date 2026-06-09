@@ -91,8 +91,8 @@ class PaymentSuccessConsumerTest {
         verify(paymentRecordMapper).insert(eq("tx"), eq(11L), eq(new BigDecimal("12.34")), eq("SUCCESS"), any(LocalDateTime.class));
         //验证是否更新了订单状态为“已还款”。
         verify(orderMapper).update(any(Order.class));
-        //验证是否生成了 Outbox 消息
-        verify(outboxMapper).insert(any());
+        //验证是否发送了通知
+        verify(notificationOutboxPublisher).enqueueNotification(eq(2L), eq(11L), eq("REPAYMENT"));
 
         verify(processedMessageMapper).insertMessage("mid", "PAYMENT_SUCCESS", 11L);
         verify(channel).basicAck(1L, false);

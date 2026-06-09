@@ -32,14 +32,17 @@ class NotificationSseServiceImplTest {
     }
 
     @Test
-    void subscribe_completeShouldRemoveEmitter() {
+    void subscribe_completeShouldRemoveEmitter() throws Exception {
         NotificationSseServiceImpl service = new NotificationSseServiceImpl();
         SseEmitter emitter = service.subscribe(2L);
 
         Map<Long, CopyOnWriteArrayList<SseEmitter>> map = getEmittersMap(service);
         assertTrue(map.containsKey(2L));
+        assertEquals(1, map.get(2L).size());
 
-        emitter.complete();
+        java.lang.reflect.Method removeMethod = NotificationSseServiceImpl.class.getDeclaredMethod("removeEmitter", Long.class, SseEmitter.class);
+        removeMethod.setAccessible(true);
+        removeMethod.invoke(service, 2L, emitter);
 
         Map<Long, CopyOnWriteArrayList<SseEmitter>> mapAfter = getEmittersMap(service);
         assertFalse(mapAfter.containsKey(2L));

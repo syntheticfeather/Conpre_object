@@ -15,12 +15,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import com.example.personal_loan.dto.ApplicationRequest;
 import com.example.personal_loan.dto.UserAppListResponse;
@@ -29,15 +32,21 @@ import com.example.personal_loan.entity.LoanOption;
 import com.example.personal_loan.entity.LoanProduct;
 import com.example.personal_loan.entity.OutboxMessage;
 import com.example.personal_loan.entity.User;
+import com.example.personal_loan.entity.UserCert;
 import com.example.personal_loan.enums.ApplicationStatus;
+import com.example.personal_loan.enums.BusinessType;
 import com.example.personal_loan.exception.BusinessException;
+import com.example.personal_loan.factory.OutboxMessageFactory;
 import com.example.personal_loan.mapper.ApplicationMapper;
 import com.example.personal_loan.mapper.LoanOptionMapper;
 import com.example.personal_loan.mapper.LoanProductMapper;
 import com.example.personal_loan.mapper.OutboxMapper;
+import com.example.personal_loan.mapper.UserCertMapper;
+import com.example.personal_loan.mq.NotificationOutboxPublisher;
 import com.example.personal_loan.service.impl.ApplicationServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class ApplicationServiceTest {
 
     @Mock
@@ -53,13 +62,19 @@ class ApplicationServiceTest {
     private OutboxMapper outboxMapper;
 
     @Mock
+    private UserCertMapper userCertMapper;
+
+    @Mock
     private AuthService authService;
 
     @Mock
-    private LoanProductService loanProductService;
+    private UserService userService;
 
     @Mock
-    private UserService userService;
+    private OutboxMessageFactory outboxMessageFactory;
+
+    @Mock
+    private NotificationOutboxPublisher notificationOutboxPublisher;
 
     @InjectMocks
     private ApplicationServiceImpl applicationService;
@@ -108,16 +123,24 @@ class ApplicationServiceTest {
         request.setProductId(1L);
         request.setLoanAmount(new BigDecimal("10000"));
         request.setOptionId(1L);
+
+        when(loanProductMapper.findById(1L)).thenReturn(loanProduct);
     }
 
     @Test
     void testAddApplication_Success() {
         when(loanOptionMapper.selectById(1L)).thenReturn(loanOption);
+        UserCert userCert = new UserCert();
+        userCert.setRealName("测试用户");
+        userCert.setIdCard("110101199001011234");
+        userCert.setBankCardId("6222021234567890");
+        when(userCertMapper.selectByUserId(1L)).thenReturn(userCert);
         doAnswer(invocation -> {
             LoanApplication app = invocation.getArgument(0);
             app.setId(1L);
             return null;
         }).when(applicationMapper).insert(any(LoanApplication.class));
+        when(outboxMessageFactory.create(any(BusinessType.class), any(), anyLong())).thenReturn(new OutboxMessage());
         doAnswer(invocation -> {
             OutboxMessage msg = invocation.getArgument(0);
             msg.setId(1L);
@@ -174,7 +197,7 @@ class ApplicationServiceTest {
             applicationService.withdrawApplication(1L, 1L)
         );
         assertEquals(404, exception.getCode());
-        assertTrue(exception.getMessage().contains("申请不存在"));
+        assertTrue(exception.getMessage().contains("申请记录不存在"));
     }
 
     @Test
@@ -198,13 +221,12 @@ class ApplicationServiceTest {
             applicationService.withdrawApplication(1L, 1L)
         );
         assertEquals(400, exception.getCode());
-        assertTrue(exception.getMessage().contains("只能撤回审核中的申请"));
+        assertTrue(exception.getMessage().contains("仅可撤回待审核的申请"));
     }
 
     @Test
     void testUserGetApplication_Success() {
         when(applicationMapper.selectById(1L)).thenReturn(loanApplication);
-        when(loanProductMapper.findById(1L)).thenReturn(loanProduct);
 
         LoanApplication response = applicationService.userGetApplication(1L, 1L);
 
@@ -221,7 +243,7 @@ class ApplicationServiceTest {
             applicationService.userGetApplication(1L, 1L)
         );
         assertEquals(403, exception.getCode());
-        assertTrue(exception.getMessage().contains("无权查看"));
+        assertTrue(exception.getMessage().contains("无权查看他人的贷款申请"));
     }
 
     @Test
@@ -232,13 +254,15 @@ class ApplicationServiceTest {
             applicationService.userGetApplication(1L, 1L)
         );
         assertEquals(404, exception.getCode());
-        assertTrue(exception.getMessage().contains("申请不存在"));
+        assertTrue(exception.getMessage().contains("贷款申请不存在"));
     }
 
     @Test
     void testUserGetAllApplications_Success() {
-        when(applicationMapper.selectByUserId(1L)).thenReturn(Arrays.asList(loanApplication));
-        when(loanProductMapper.findById(1L)).thenReturn(loanProduct);
+        UserAppListResponse response = new UserAppListResponse();
+        response.setApplicationId(1L);
+        response.setLoanAmount(new BigDecimal("10000"));
+        when(applicationMapper.selectByUserIdWithProduct(1L)).thenReturn(Arrays.asList(response));
 
         List<UserAppListResponse> responses = applicationService.userGetAllApplications(1L);
 
@@ -248,7 +272,7 @@ class ApplicationServiceTest {
 
     @Test
     void testUserGetAllApplications_EmptyList() {
-        when(applicationMapper.selectByUserId(1L)).thenReturn(Collections.emptyList());
+        when(applicationMapper.selectByUserIdWithProduct(1L)).thenReturn(Collections.emptyList());
 
         List<UserAppListResponse> responses = applicationService.userGetAllApplications(1L);
 

@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.verify;
@@ -22,12 +23,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.example.personal_loan.entity.LoanProduct;
 import com.example.personal_loan.entity.Order;
 import com.example.personal_loan.entity.OutboxMessage;
+import com.example.personal_loan.entity.RepaymentSchedule;
+import com.example.personal_loan.enums.BusinessType;
 import com.example.personal_loan.enums.OrderStatus;
 import com.example.personal_loan.exception.BusinessException;
+import com.example.personal_loan.factory.OutboxMessageFactory;
 import com.example.personal_loan.mapper.LoanProductMapper;
 import com.example.personal_loan.mapper.OrderMapper;
 import com.example.personal_loan.mapper.OutboxMapper;
+import com.example.personal_loan.mapper.PostponeRequestMapper;
+import com.example.personal_loan.mapper.RepaymentScheduleMapper;
 import com.example.personal_loan.service.impl.OrderServiceImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
@@ -40,6 +47,21 @@ class OrderServiceTest {
 
     @Mock
     private OutboxMapper outboxMapper;
+
+    @Mock
+    private PostponeRequestMapper postponeRequestMapper;
+
+    @Mock
+    private OutboxMessageFactory outboxMessageFactory;
+
+    @Mock
+    private ObjectMapper objectMapper;
+
+    @Mock
+    private RepaymentScheduleService repaymentScheduleService;
+
+    @Mock
+    private RepaymentScheduleMapper repaymentScheduleMapper;
 
     @InjectMocks
     private OrderServiceImpl orderService;
@@ -121,6 +143,13 @@ class OrderServiceTest {
         order.setCurrentTerm(5);
         order.setTerm(12);
         when(orderMapper.selectById(1L)).thenReturn(order);
+        
+        RepaymentSchedule schedule = new RepaymentSchedule();
+        schedule.setTerm(6);
+        schedule.setStatus("未还");
+        schedule.setTotalAmount(new BigDecimal("916.67"));
+        when(repaymentScheduleMapper.selectByOrderId(1L)).thenReturn(Arrays.asList(schedule));
+        when(outboxMessageFactory.create(any(BusinessType.class), any(), anyLong())).thenReturn(new OutboxMessage());
 
         orderService.repay(1L);
 
@@ -169,6 +198,13 @@ class OrderServiceTest {
         order.setCurrentTerm(5);
         order.setTerm(12);
         when(orderMapper.selectById(1L)).thenReturn(order);
+        
+        RepaymentSchedule schedule = new RepaymentSchedule();
+        schedule.setTerm(6);
+        schedule.setStatus("逾期");
+        schedule.setTotalAmount(new BigDecimal("916.67"));
+        when(repaymentScheduleMapper.selectByOrderId(1L)).thenReturn(Arrays.asList(schedule));
+        when(outboxMessageFactory.create(any(BusinessType.class), any(), anyLong())).thenReturn(new OutboxMessage());
 
         orderService.repay(1L);
 
@@ -201,6 +237,13 @@ class OrderServiceTest {
         order.setCurrentTerm(0);
         order.setTerm(12);
         when(orderMapper.selectById(1L)).thenReturn(order);
+        
+        RepaymentSchedule schedule = new RepaymentSchedule();
+        schedule.setTerm(1);
+        schedule.setStatus("未还");
+        schedule.setTotalAmount(new BigDecimal("916.67"));
+        when(repaymentScheduleMapper.selectByOrderId(1L)).thenReturn(Arrays.asList(schedule));
+        when(outboxMessageFactory.create(any(BusinessType.class), any(), anyLong())).thenReturn(new OutboxMessage());
 
         orderService.repay(1L);
 

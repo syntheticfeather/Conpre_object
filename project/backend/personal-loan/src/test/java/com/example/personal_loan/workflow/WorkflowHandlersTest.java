@@ -1,20 +1,19 @@
 package com.example.personal_loan.workflow;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -22,6 +21,7 @@ import com.example.personal_loan.dto.LoanOptionResponse;
 import com.example.personal_loan.dto.UserAppListResponse;
 import com.example.personal_loan.dto.UserGetProductResponse;
 import com.example.personal_loan.enums.ApplicationStatus;
+import com.example.personal_loan.enums.ChatIntent;
 import com.example.personal_loan.enums.RepaidType;
 import com.example.personal_loan.service.ApplicationService;
 import com.example.personal_loan.service.LoanProductService;
@@ -196,9 +196,9 @@ class WorkflowHandlersTest {
     @Test
     void router_unknownIntent() {
         var router = new ChatRouterService(List.of(queryStatusHandler));
-        assertTrue(router.hasHandler("QUERY_STATUS"));
+        assertTrue(router.hasHandler(ChatIntent.QUERY_STATUS));
         // 未知 intent 不会抛异常
-        SseEmitter emitter = router.handleWorkflow("UNKNOWN", "test", 1L, "s1");
+        SseEmitter emitter = router.handleWorkflow(ChatIntent.UNKNOWN, "test", 1L, "s1");
         assertNotNull(emitter);
     }
 }

@@ -36,6 +36,7 @@ test_chroma_db/
 __pycache__/
 .pytest_cache/
 venv/
+.venv/
 
 # 其他
 .trae

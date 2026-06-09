@@ -17,6 +17,7 @@ public interface UserCertMapper {
         "    real_name, " +
         "    id_card, " +
         "    credit_score, " +
+        "    max_loan_amount, " +
         "    work_cert_id, " +
         "    tri_cert_id, " +
         "    bank_card_id, " +
@@ -32,6 +33,7 @@ public interface UserCertMapper {
         "  real_name, " +
         "  id_card, " +
         "  credit_score, " +
+        "  max_loan_amount, " +
         "  bank_card_id, " +
         "  work_cert_id, " +
         "  tri_cert_id, " +
@@ -41,6 +43,7 @@ public interface UserCertMapper {
         "  #{realName}, " +
         "  #{idCard}, " +
         "  #{creditScore}, " +
+        "  #{maxLoanAmount}, " +
         "  #{bankCardId}, " +
         "  #{workCertId}, " +
         "  #{triCertId}, " +

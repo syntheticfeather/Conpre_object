@@ -27,6 +27,7 @@ import org.mockito.quality.Strictness;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.personal_loan.config.FileStorageConfig;
 import com.example.personal_loan.dto.BlackListDto;
 import com.example.personal_loan.dto.LoginRequest;
 import com.example.personal_loan.dto.RegisterRequest;
@@ -48,6 +49,7 @@ import com.example.personal_loan.mapper.OrderMapper;
 import com.example.personal_loan.mapper.UserCertMapper;
 import com.example.personal_loan.mapper.UserMapper;
 import com.example.personal_loan.service.impl.UserServiceImpl;
+import com.example.personal_loan.utils.CalculateUtil;
 import com.example.personal_loan.utils.JwtUtil;
 import com.example.personal_loan.utils.RedisUtil;
 
@@ -81,6 +83,15 @@ class UserServiceTest {
 
     @Mock
     private MultipartFile mockFile;
+
+    @Mock
+    private FileStorageConfig fileStorageConfig;
+
+    @Mock
+    private LocalFileStorageService localFileStorageService;
+
+    @Mock
+    private CalculateUtil calculateUtil;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -238,12 +249,16 @@ class UserServiceTest {
 
     @Test
     void testAdminGetAllUsersWithStats_Success() {
+        when(userMapper.findAll()).thenReturn(Arrays.asList(user));
         when(orderMapper.selectAllByUserId(1L)).thenReturn(Arrays.asList(order));
-        when(applicationMapper.selectByUserId(1L)).thenReturn(Arrays.asList(loanApplication));
+        when(userCertMapper.selectByUserId(1L)).thenReturn(userCert);
+        when(calculateUtil.getTotalTransactionCount(Arrays.asList(order))).thenReturn(1);
+        when(calculateUtil.getTotalLoanAmount(Arrays.asList(order))).thenReturn(new BigDecimal("10000"));
 
         List<UserListResponse> responses = userService.adminGetAllUsersWithStats();
 
         assertNotNull(responses);
+        assertEquals(1, responses.size());
     }
 
     @Test

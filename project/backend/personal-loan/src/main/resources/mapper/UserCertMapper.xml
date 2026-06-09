@@ -17,6 +17,9 @@
             <if test="creditScore != null">
                 credit_score = #{creditScore},
             </if>
+            <if test="maxLoanAmount != null">
+                max_loan_amount = #{maxLoanAmount},
+            </if>
             <if test="bankCardId != null">
                 bank_card_id = #{bankCardId},
             </if>

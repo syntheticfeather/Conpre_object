@@ -1,20 +1,26 @@
 package com.example.personal_loan.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.argThat;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.quality.Strictness;
 import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import com.example.personal_loan.entity.LoanApplication;
 import com.example.personal_loan.entity.Order;
@@ -22,6 +28,7 @@ import com.example.personal_loan.enums.ApplicationStatus;
 import com.example.personal_loan.enums.OrderStatus;
 import com.example.personal_loan.mapper.ApplicationMapper;
 import com.example.personal_loan.mapper.OrderMapper;
+import com.example.personal_loan.mq.NotificationOutboxPublisher;
 import com.example.personal_loan.service.impl.AIApproveServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,13 +36,19 @@ import com.example.personal_loan.service.impl.AIApproveServiceImpl;
 class AIApproveServiceTest {
 
     @Mock
-    private AuthService authService;
-
-    @Mock
     private ApplicationMapper applicationMapper;
 
     @Mock
     private OrderMapper orderMapper;
+
+    @Mock
+    private CreditScoreCalculator creditScoreCalculator;
+
+    @Mock
+    private NotificationOutboxPublisher notificationOutboxPublisher;
+
+    @Mock
+    private RepaymentScheduleService repaymentScheduleService;
 
     @InjectMocks
     private AIApproveServiceImpl aiApproveService;
@@ -43,7 +56,7 @@ class AIApproveServiceTest {
     private LoanApplication loanApplication;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
         loanApplication = new LoanApplication();
         loanApplication.setId(1L);
         loanApplication.setUserId(1L);
@@ -61,16 +74,26 @@ class AIApproveServiceTest {
             order.setId(1L);
             return null;
         }).when(orderMapper).insert(any(Order.class));
+
+        java.lang.reflect.Field passField = AIApproveServiceImpl.class.getDeclaredField("passThreshold");
+        passField.setAccessible(true);
+        passField.set(aiApproveService, 80);
+
+        java.lang.reflect.Field rejectField = AIApproveServiceImpl.class.getDeclaredField("rejectThreshold");
+        rejectField.setAccessible(true);
+        rejectField.set(aiApproveService, 40);
     }
 
     @Test
     void testAICheck_UpdatesApplication() {
+        when(creditScoreCalculator.calculate(anyLong())).thenReturn(80);
         aiApproveService.AICheck(loanApplication);
         verify(applicationMapper).update(loanApplication);
     }
 
     @Test
     void testAICheck_Approve_StatusChangedToApproved() {
+        when(creditScoreCalculator.calculate(anyLong())).thenReturn(80);
         aiApproveService.AICheck(loanApplication);
         assertTrue(loanApplication.getStatus() == ApplicationStatus.AI通过 || 
                    loanApplication.getStatus() == ApplicationStatus.AI拒绝);
@@ -78,6 +101,7 @@ class AIApproveServiceTest {
 
     @Test
     void testAICheck_Approve_CreatesOrder() {
+        when(creditScoreCalculator.calculate(anyLong())).thenReturn(80);
         aiApproveService.AICheck(loanApplication);
         if (loanApplication.getStatus() == ApplicationStatus.AI通过) {
             verify(orderMapper).insert(any(Order.class));
@@ -86,6 +110,7 @@ class AIApproveServiceTest {
 
     @Test
     void testAICheck_Reject_DoesNotCreateOrder() {
+        when(creditScoreCalculator.calculate(anyLong())).thenReturn(30);
         aiApproveService.AICheck(loanApplication);
         if (loanApplication.getStatus() == ApplicationStatus.AI拒绝) {
             verify(orderMapper, never()).insert(any(Order.class));
@@ -94,6 +119,7 @@ class AIApproveServiceTest {
 
     @Test
     void testAICheck_Approve_OrderFieldsCorrect() {
+        when(creditScoreCalculator.calculate(anyLong())).thenReturn(80);
         aiApproveService.AICheck(loanApplication);
         if (loanApplication.getStatus() == ApplicationStatus.AI通过) {
             verify(orderMapper).insert(argThat(order -> 
@@ -115,12 +141,14 @@ class AIApproveServiceTest {
 
     @Test
     void testAICheck_Approve_SetsReviewTime() {
+        when(creditScoreCalculator.calculate(anyLong())).thenReturn(80);
         aiApproveService.AICheck(loanApplication);
         assertNotNull(loanApplication.getReviewTime());
     }
 
     @Test
     void testAICheck_Approve_RejectReasonSetToNone() {
+        when(creditScoreCalculator.calculate(anyLong())).thenReturn(80);
         aiApproveService.AICheck(loanApplication);
         if (loanApplication.getStatus() == ApplicationStatus.AI通过) {
             assertEquals("无", loanApplication.getRejectReason());
@@ -129,10 +157,18 @@ class AIApproveServiceTest {
 
     @Test
     void testAICheck_Reject_RejectReasonContainsAIRejectMessage() {
+        when(creditScoreCalculator.calculate(anyLong())).thenReturn(30);
         aiApproveService.AICheck(loanApplication);
-        if (loanApplication.getStatus() == ApplicationStatus.AI拒绝) {
-            assertNotNull(loanApplication.getRejectReason());
-            assertTrue(loanApplication.getRejectReason().contains("AI审核未通过"));
-        }
+        assertEquals(ApplicationStatus.AI拒绝, loanApplication.getStatus());
+        assertNotNull(loanApplication.getRejectReason());
+        assertTrue(loanApplication.getRejectReason().contains("信用分不足"));
+    }
+
+    @Test
+    void testAICheck_ManualReview() {
+        when(creditScoreCalculator.calculate(anyLong())).thenReturn(50);
+        aiApproveService.AICheck(loanApplication);
+        assertEquals(ApplicationStatus.审核中, loanApplication.getStatus());
+        assertTrue(loanApplication.getRejectReason().contains("信用分不足，需人工审核"));
     }
 }

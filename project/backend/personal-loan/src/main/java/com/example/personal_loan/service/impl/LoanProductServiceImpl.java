@@ -69,7 +69,7 @@ public class LoanProductServiceImpl implements LoanProductService{
             throw new BusinessException(400, "最短期数不能大于最长期数");
         }
         // 基础非负校验
-        if (dto.getMinTerm() <= 0 || dto.getMaxTerm() <= 0 || dto.getTermStep().compareTo(dto.getMinTerm()) <= 0 || dto.getTermStep() <= 0) {
+        if (dto.getMinTerm() <= 0 || dto.getMaxTerm() <= 0 || dto.getTermStep() <= 0) {
             throw new BusinessException(400, "期数和步长必须大于0");
         }
         // 期数，步长合法性校验，满足等差关系
