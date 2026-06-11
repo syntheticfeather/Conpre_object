@@ -25,13 +25,10 @@ class PlanExecuteAgent(BaseAgent):
     async def chat(
         self, message: str, session_id: str, user_id=None, token=None
     ) -> AsyncGenerator[str, None]:
-        # 1. 判断是否复杂
-        if not self._is_complex(message):
-            async for chunk in self.inner.chat(message, session_id, user_id, token):
-                yield chunk
-            return
+        # 既然被包装了 PlanExecuteAgent，就始终走规划流程
+        # 复杂度判断由上层负责（Java Router + ChatAgent 工厂选 Agent 时已决定）
 
-        # 2. 规划
+        # 1. 规划
         plan = self._create_plan(message)
         if not plan:
             async for chunk in self.inner.chat(message, session_id, user_id, token):
@@ -75,12 +72,6 @@ class PlanExecuteAgent(BaseAgent):
             yield chunk
 
     # ========== 辅助 ==========
-
-    def _is_complex(self, message: str) -> bool:
-        """快速判断：含多步推理关键词则为复杂问题"""
-        keywords = ["推荐", "评估", "对比", "哪个更适合", "能不能贷",
-                     "为什么被拒", "帮我分析", "帮我看看", "资格"]
-        return any(k in message for k in keywords)
 
     def _create_plan(self, message: str) -> List[str]:
         """LLM 拆解步骤"""
