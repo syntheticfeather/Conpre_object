@@ -29,6 +29,7 @@ import com.example.personal_loan.mapper.OrderMapper;
 import com.example.personal_loan.mapper.OutboxMapper;
 import com.example.personal_loan.mapper.PostponeRequestMapper;
 import com.example.personal_loan.mapper.RepaymentScheduleMapper;
+import com.example.personal_loan.service.MlTrainingLogService;
 import com.example.personal_loan.service.OrderService;
 import com.example.personal_loan.service.RepaymentScheduleService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,6 +61,9 @@ public class OrderServiceImpl implements OrderService{
 
     @Autowired
     private RepaymentScheduleMapper repaymentScheduleMapper;
+
+    @Autowired
+    private MlTrainingLogService mlTrainingLogService;
 
     @Autowired
     private PostponeRequestMapper postponeRequestMapper;
@@ -239,6 +243,11 @@ public class OrderServiceImpl implements OrderService{
                 order.setStatus(OrderStatus.已逾期);
                 orderMapper.update(order);
                 log.info("订单 {} 已逾期 {} 天", order.getId(), overdueDays);
+
+                // 🆕 逾期≥90天 → 标记为违约
+                if (overdueDays >= 90 && order.getApplicationId() != null) {
+                    mlTrainingLogService.markDefaulted(order.getApplicationId());
+                }
             }
         }
         log.info("check overdue done");

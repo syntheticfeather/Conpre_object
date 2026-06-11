@@ -19,6 +19,7 @@ public interface OrderMapper {
         "SELECT " +
         "  id, " +
         "  user_id, " +
+        "  application_id, " +
         "  product_id, " +
         "  status, " +
         "  repaid_amount, " +
@@ -34,12 +35,13 @@ public interface OrderMapper {
         "FROM orders WHERE id = #{id}"
     )
     Order selectById(Long id);
-    
+
     // 查询用户的所有订单
     @Select(
         "SELECT " +
         "  id, " +
         "  user_id, " +
+        "  application_id, " +
         "  product_id, " +
         "  status, " +
         "  repaid_amount, " +
@@ -55,11 +57,12 @@ public interface OrderMapper {
         "FROM orders WHERE user_id = #{userId}"
     )
     List<Order> selectAllByUserId(Long userId);
-    
+
     // 插入新订单
     @Insert(
         "INSERT INTO orders (" +
         "  user_id, " +
+        "  application_id, " +
         "  product_id, " +
         "  status, " +
         "  repaid_amount, " +
@@ -74,6 +77,7 @@ public interface OrderMapper {
         "  start_time " +
         ") VALUES (" +
         "  #{userId}, " +
+        "  #{applicationId}, " +
         "  #{productId}, " +
         "  #{status}, " +
         "  #{repaidAmount}, " +

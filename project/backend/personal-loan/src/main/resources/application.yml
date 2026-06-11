@@ -130,6 +130,12 @@ file-storage:
     employment-proof: work/employment
     salary-proof: work/salary
 
+# 风控审批阈值 (0-750 信用分体系)
+approval:
+  score:
+    pass: 600     # ≥600 自动通过
+    reject: 400   # <400 自动拒绝，400-599 转人工
+
 # Agent 服务配置（Python 智能客服）
 agent:
   service:

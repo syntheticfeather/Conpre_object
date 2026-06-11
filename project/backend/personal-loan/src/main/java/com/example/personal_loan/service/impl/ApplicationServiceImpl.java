@@ -2,6 +2,7 @@ package com.example.personal_loan.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,8 @@ import com.example.personal_loan.mq.NotificationOutboxPublisher;
 import com.example.personal_loan.service.ApplicationService;
 import com.example.personal_loan.service.AuthService;
 import com.example.personal_loan.service.LoanProductService;
+import com.example.personal_loan.service.MlTrainingLogService;
+import com.example.personal_loan.service.RiskScoringService;
 import com.example.personal_loan.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -72,6 +75,12 @@ public class ApplicationServiceImpl implements ApplicationService{
 
     @Autowired
     private NotificationOutboxPublisher notificationOutboxPublisher;
+
+    @Autowired
+    private MlTrainingLogService mlTrainingLogService;
+
+    @Autowired
+    private RiskScoringService riskScoringService;
 
     /**
      * 添加贷款申请
@@ -126,6 +135,42 @@ public class ApplicationServiceImpl implements ApplicationService{
         outboxMapper.insert(outbox); // 同一事务中插入
 
         notificationOutboxPublisher.enqueueNotification(userId, application.getId(), "LOAN_APPLICATION_STATUS");
+
+        // 🆕 XGBoost 风控打分（失败不阻塞主流程）
+        try {
+            Map<String, Object> modelFeatures = mlTrainingLogService.extractModelFeatures(
+                userId, application.getId());
+
+            int creditScore;
+            if (riskScoringService.isReady()) {
+                int realCount = riskScoringService.countRealFeatures(modelFeatures);
+                if (realCount < 3) {
+                    creditScore = 0;  // 数据不足，直接拒绝
+                    log.info("风控: userId={} 数据质量不足 realFeatures={}/9 → 信用分=0",
+                             userId, realCount);
+                } else {
+                    double prob = riskScoringService.predict(modelFeatures);
+                    creditScore = riskScoringService.toCreditScore(prob);
+                    log.info("风控: userId=" + userId
+                             + String.format(" defaultProb=%.4f", prob)
+                             + " creditScore=" + creditScore
+                             + " realFeatures=" + realCount + "/9");
+                }
+            } else {
+                creditScore = 375;  // 模型未就绪，默认中等分
+                log.warn("风控: userId={} 模型未就绪 → 默认分 375", userId);
+            }
+
+            // 写入 user_certification
+            userCert.setCreditScore(creditScore);
+            userCertMapper.update(userCert);
+
+        } catch (Exception e) {
+            log.error("风控打分失败 userId={}: {}", userId, e.getMessage(), e);
+        }
+
+        // 🆕 采集 ML 训练特征（失败不阻塞主流程）
+        mlTrainingLogService.collectFeatures(userId, application.getId());
     }
 
     /**

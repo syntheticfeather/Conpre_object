@@ -99,6 +99,7 @@ public class ManualApproveServiceImpl implements ManualApproveService{
             // 创建订单
             Order order = new Order();
             order.setUserId(application.getUserId());
+            order.setApplicationId(application.getId());  // 🆕
             order.setProductId(application.getProductId());
             order.setStatus(OrderStatus.正常);
             order.setRepaidAmount(BigDecimal.ZERO);

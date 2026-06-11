@@ -1,0 +1,458 @@
+{
+    "description": "RAG 基准测试 - Ground Truth 查询集。标注正确答案的匹配规则（文档名/FAQ分类/关键词），支持自动评判。",
+    "version": "1.0",
+    "queries": [
+        {
+            "query_id": "Q001",
+            "query": "申请个人贷款需要什么条件？",
+            "difficulty": "easy",
+            "type": "faq_exact",
+            "relevant_conditions": {
+                "source_type": "faq",
+                "must_contain": ["年满", "收入", "征信", "身份"],
+                "category": "贷款申请",
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q002",
+            "query": "我想借钱，要满足啥要求啊？",
+            "difficulty": "hard",
+            "type": "faq_paraphrase",
+            "relevant_conditions": {
+                "source_type": "faq",
+                "must_contain": ["年满", "稳定", "征信"],
+                "category": "贷款申请",
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q003",
+            "query": "每个月还多少钱？等额本息怎么算？",
+            "difficulty": "easy",
+            "type": "faq_exact",
+            "relevant_conditions": {
+                "source_type": "faq",
+                "must_contain": ["等额本息", "月供", "利息"],
+                "category": "还款方式",
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q004",
+            "query": "你们有哪几种还钱的方式？",
+            "difficulty": "hard",
+            "type": "faq_paraphrase",
+            "relevant_conditions": {
+                "source_type": "faq",
+                "must_contain": ["等额", "先息后本"],
+                "category": "还款方式",
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q005",
+            "query": "贷款年化利率是多少？",
+            "difficulty": "easy",
+            "type": "faq_exact",
+            "relevant_conditions": {
+                "source_type": "faq",
+                "must_contain": ["年化利率", "APR", "4.5%"],
+                "category": "利率费用",
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q006",
+            "query": "利息贵不贵？最低多少？",
+            "difficulty": "hard",
+            "type": "faq_paraphrase",
+            "relevant_conditions": {
+                "source_type": "faq",
+                "must_contain": ["利率", "4.5%"],
+                "category": "利率费用",
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q007",
+            "query": "提前还款要违约金吗？",
+            "difficulty": "easy",
+            "type": "faq_exact",
+            "relevant_conditions": {
+                "must_contain": ["违约金", "提前还款", "满6个月"],
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q008",
+            "query": "逾期了会怎么样？影响征信吗？",
+            "difficulty": "easy",
+            "type": "faq_exact",
+            "relevant_conditions": {
+                "source_type": "faq",
+                "must_contain": ["逾期", "征信", "罚息"],
+                "category": "逾期处理",
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q009",
+            "query": "还不上钱了，后果严重不？",
+            "difficulty": "hard",
+            "type": "faq_paraphrase",
+            "relevant_conditions": {
+                "must_contain": ["逾期", "征信", "催收"],
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q010",
+            "query": "征信不好能申请贷款吗？",
+            "difficulty": "easy",
+            "type": "faq_exact",
+            "relevant_conditions": {
+                "source_type": "faq",
+                "must_contain": ["征信", "逾期", "申请"],
+                "category": "贷款申请",
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q011",
+            "query": "贷款审批多久能下来？",
+            "difficulty": "easy",
+            "type": "faq_exact",
+            "relevant_conditions": {
+                "must_contain": ["工作日", "审批", "放款"],
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q012",
+            "query": "急用钱，最快多久能拿到？",
+            "difficulty": "medium",
+            "type": "faq_paraphrase",
+            "relevant_conditions": {
+                "must_contain": ["30分钟", "放款", "最快"],
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q013",
+            "query": "借出来的钱可以炒股吗？",
+            "difficulty": "medium",
+            "type": "faq_exact",
+            "relevant_conditions": {
+                "must_contain": ["炒股", "股票", "投资", "禁止"],
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q014",
+            "query": "怎么查我的贷款进度？",
+            "difficulty": "easy",
+            "type": "faq_exact",
+            "relevant_conditions": {
+                "source_type": "faq",
+                "must_contain": ["进度", "查询", "APP"],
+                "category": "贷款查询",
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q015",
+            "query": "我的贷款批到哪一步了？",
+            "difficulty": "medium",
+            "type": "faq_paraphrase",
+            "relevant_conditions": {
+                "must_contain": ["审核", "进度", "申请"],
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q016",
+            "query": "你们有哪些贷款产品？",
+            "difficulty": "easy",
+            "type": "faq_exact",
+            "relevant_conditions": {
+                "source_type": "faq",
+                "must_contain": ["极速贷", "优享贷"],
+                "category": "产品介绍",
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q017",
+            "query": "给我推荐一个合适的贷款产品",
+            "difficulty": "medium",
+            "type": "faq_paraphrase",
+            "relevant_conditions": {
+                "must_contain": ["极速贷", "优享贷", "公积金贷"],
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q018",
+            "query": "怎么注册账号？要什么材料？",
+            "difficulty": "easy",
+            "type": "faq_exact",
+            "relevant_conditions": {
+                "source_type": "faq",
+                "must_contain": ["注册", "身份证", "认证"],
+                "category": "账户管理",
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q019",
+            "query": "忘还钱了，过了还款日一天，现在补还行吗？",
+            "difficulty": "hard",
+            "type": "faq_paraphrase",
+            "relevant_conditions": {
+                "must_contain": ["宽限期", "逾期", "还款"],
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q020",
+            "query": "贷款被拒绝的原因有哪些？",
+            "difficulty": "easy",
+            "type": "document_mixed",
+            "relevant_conditions": {
+                "must_contain": ["征信", "收入", "负债", "拒绝"],
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q021",
+            "query": "怎样可以提高贷款额度？",
+            "difficulty": "medium",
+            "type": "faq_paraphrase",
+            "relevant_conditions": {
+                "source_type": "faq",
+                "must_contain": ["按时还款", "额度", "完善"],
+                "category": "额度管理",
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q022",
+            "query": "极速贷的产品详情是什么？",
+            "difficulty": "easy",
+            "type": "document_exact",
+            "relevant_conditions": {
+                "source_type": "document",
+                "must_contain": ["极速贷", "额度", "利率"],
+                "document_name": "01_产品说明书_个人消费贷",
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q023",
+            "query": "大额尊享贷款和极速贷有什么区别？",
+            "difficulty": "medium",
+            "type": "document_compare",
+            "relevant_conditions": {
+                "source_type": "document",
+                "must_contain": ["极速贷", "大额尊享"],
+                "document_name": "01_产品说明书_个人消费贷",
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q024",
+            "query": "申请贷款需要准备哪些材料？",
+            "difficulty": "easy",
+            "type": "document_exact",
+            "relevant_conditions": {
+                "source_type": "document",
+                "must_contain": ["身份证", "银行卡", "流水"],
+                "document_name": "02_操作指南_申请流程",
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q025",
+            "query": "人脸识别一直失败怎么办？",
+            "difficulty": "easy",
+            "type": "document_exact",
+            "relevant_conditions": {
+                "source_type": "document",
+                "must_contain": ["人脸识别", "光线", "失败"],
+                "document_name": "02_操作指南_申请流程",
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q026",
+            "query": "你们的风控系统怎么判断能不能贷款？",
+            "difficulty": "medium",
+            "type": "document_semantic",
+            "relevant_conditions": {
+                "source_type": "document",
+                "must_contain": ["征信", "收入", "风控"],
+                "document_name": "03_风控规则与审核标准",
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q027",
+            "query": "DTI是什么？怎么计算的？",
+            "difficulty": "medium",
+            "type": "document_detail",
+            "relevant_conditions": {
+                "source_type": "document",
+                "must_contain": ["DTI", "负债收入比", "55%"],
+                "document_name": "03_风控规则与审核标准",
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q028",
+            "query": "逾期3天和逾期30天有什么不同？",
+            "difficulty": "medium",
+            "type": "document_detail",
+            "relevant_conditions": {
+                "source_type": "document",
+                "must_contain": ["逾期", "征信", "催收"],
+                "document_name": "04_还款指南与逾期处理",
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q029",
+            "query": "逾期超过90天会面临什么法律后果？",
+            "difficulty": "medium",
+            "type": "document_exact",
+            "relevant_conditions": {
+                "source_type": "document",
+                "must_contain": ["90天", "诉讼", "法院"],
+                "document_name": "04_还款指南与逾期处理",
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q030",
+            "query": "特殊困难还不上怎么办？可以申请救济吗？",
+            "difficulty": "medium",
+            "type": "document_semantic",
+            "relevant_conditions": {
+                "source_type": "document",
+                "must_contain": ["困难", "救济", "展期"],
+                "document_name": "04_还款指南与逾期处理",
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q031",
+            "query": "经常查征信会影响信用吗？",
+            "difficulty": "medium",
+            "type": "document_detail",
+            "relevant_conditions": {
+                "must_contain": ["征信", "查询", "软查询"],
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q032",
+            "query": "什么是28/36法则？",
+            "difficulty": "medium",
+            "type": "document_detail",
+            "relevant_conditions": {
+                "source_type": "document",
+                "must_contain": ["28/36", "月收入", "月还款"],
+                "document_name": "05_常见误区与注意事项",
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q033",
+            "query": "有哪些常见的贷款诈骗套路？",
+            "difficulty": "medium",
+            "type": "document_semantic",
+            "relevant_conditions": {
+                "source_type": "document",
+                "must_contain": ["诈骗", "假冒", "客服"],
+                "document_name": "05_常见误区与注意事项",
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q034",
+            "query": "公积金贷需要什么条件？利率多少？",
+            "difficulty": "medium",
+            "type": "document_detail",
+            "relevant_conditions": {
+                "source_type": "document",
+                "must_contain": ["公积金", "缴存", "4.5%"],
+                "document_name": "01_产品说明书_个人消费贷",
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q035",
+            "query": "以贷养贷有什么风险？",
+            "difficulty": "hard",
+            "type": "document_semantic",
+            "relevant_conditions": {
+                "must_contain": ["以贷养贷", "借贷", "风险"],
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q036",
+            "query": "还款日能不能改到发工资那天？",
+            "difficulty": "medium",
+            "type": "faq_paraphrase",
+            "relevant_conditions": {
+                "source_type": "faq",
+                "must_contain": ["还款日", "修改"],
+                "category": "还款方式",
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q037",
+            "query": "贷款结清后怎么开证明？",
+            "difficulty": "medium",
+            "type": "faq_paraphrase",
+            "relevant_conditions": {
+                "must_contain": ["结清证明", "贷款", "PDF"],
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q038",
+            "query": "现在有什么优惠活动？新用户有福利吗？",
+            "difficulty": "medium",
+            "type": "faq_paraphrase",
+            "relevant_conditions": {
+                "source_type": "faq",
+                "must_contain": ["优惠", "免息", "新用户"],
+                "category": "优惠活动",
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q039",
+            "query": "对服务不满意找谁投诉？",
+            "difficulty": "medium",
+            "type": "faq_paraphrase",
+            "relevant_conditions": {
+                "must_contain": ["投诉", "客服", "电话"],
+                "min_results": 1
+            }
+        },
+        {
+            "query_id": "Q040",
+            "query": "手机丢了APP里的账户安全吗？",
+            "difficulty": "hard",
+            "type": "faq_paraphrase",
+            "relevant_conditions": {
+                "must_contain": ["冻结", "账户", "安全"],
+                "min_results": 1
+            }
+        }
+    ]
+}

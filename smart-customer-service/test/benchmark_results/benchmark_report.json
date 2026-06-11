@@ -1,0 +1,3375 @@
+{
+  "config": {
+    "top_k": 5,
+    "total_queries": 40
+  },
+  "ablations": {
+    "A": {
+      "name": "Baseline (Vector Only)",
+      "description": "纯向量语义检索，无改写/BM25/Reranker",
+      "metrics": {
+        "total_queries": 40,
+        "hit_rate@1": 0.525,
+        "hit_rate@3": 0.65,
+        "hit_rate@5": 0.65,
+        "mrr": 0.575,
+        "recall@1": 0.525,
+        "recall@3": 0.65,
+        "recall@5": 0.65,
+        "ndcg@1": 0.525,
+        "ndcg@3": 0.5936019236584229,
+        "ndcg@5": 0.5894792740437361,
+        "latency_avg_ms": 32.994630000121106,
+        "latency_p50_ms": 33.96210000209976,
+        "latency_p99_ms": 51.30980000103591,
+        "latency_min_ms": 21.164100002351915,
+        "latency_max_ms": 51.30980000103591,
+        "hit_rate@3_easy": 0.7142857142857143,
+        "hit_rate@3_medium": 0.5789473684210527,
+        "hit_rate@3_hard": 0.7142857142857143
+      },
+      "query_details": [
+        {
+          "query_id": "Q001",
+          "query": "申请个人贷款需要什么条件？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 51.31,
+          "top3_ids": [
+            "bench_faq_000",
+            "bench_faq_001",
+            "bench_faq_048"
+          ]
+        },
+        {
+          "query_id": "Q002",
+          "query": "我想借钱，要满足啥要求啊？",
+          "difficulty": "hard",
+          "relevant_positions": [
+            0
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 39.87,
+          "top3_ids": [
+            "bench_faq_001",
+            "bench_faq_018",
+            "bench_faq_048"
+          ]
+        },
+        {
+          "query_id": "Q003",
+          "query": "每个月还多少钱？等额本息怎么算？",
+          "difficulty": "easy",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 37.1,
+          "top3_ids": [
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_2",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_1",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_3"
+          ]
+        },
+        {
+          "query_id": "Q004",
+          "query": "你们有哪几种还钱的方式？",
+          "difficulty": "hard",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 30.66,
+          "top3_ids": [
+            "bench_faq_005",
+            "bench_faq_004",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_1"
+          ]
+        },
+        {
+          "query_id": "Q005",
+          "query": "贷款年化利率是多少？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            1,
+            2
+          ],
+          "hit": true,
+          "first_rank": 2,
+          "latency_ms": 37.75,
+          "top3_ids": [
+            "bench_faq_024",
+            "bench_faq_007",
+            "bench_faq_006"
+          ]
+        },
+        {
+          "query_id": "Q006",
+          "query": "利息贵不贵？最低多少？",
+          "difficulty": "hard",
+          "relevant_positions": [
+            1,
+            4
+          ],
+          "hit": true,
+          "first_rank": 2,
+          "latency_ms": 37.37,
+          "top3_ids": [
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_3",
+            "bench_faq_007",
+            "bench_faq_004"
+          ]
+        },
+        {
+          "query_id": "Q007",
+          "query": "提前还款要违约金吗？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 42.06,
+          "top3_ids": [
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_4",
+            "bench_faq_008",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_17"
+          ]
+        },
+        {
+          "query_id": "Q008",
+          "query": "逾期了会怎么样？影响征信吗？",
+          "difficulty": "easy",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 36.1,
+          "top3_ids": [
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_13",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_14",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_9"
+          ]
+        },
+        {
+          "query_id": "Q009",
+          "query": "还不上钱了，后果严重不？",
+          "difficulty": "hard",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 29.09,
+          "top3_ids": [
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_4",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_17",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_3"
+          ]
+        },
+        {
+          "query_id": "Q010",
+          "query": "征信不好能申请贷款吗？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1,
+            2
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 36.73,
+          "top3_ids": [
+            "bench_faq_031",
+            "bench_faq_013",
+            "bench_faq_012"
+          ]
+        },
+        {
+          "query_id": "Q011",
+          "query": "贷款审批多久能下来？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 27.67,
+          "top3_ids": [
+            "bench_faq_014",
+            "bench_faq_015",
+            "bench_faq_022"
+          ]
+        },
+        {
+          "query_id": "Q012",
+          "query": "急用钱，最快多久能拿到？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1,
+            2
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 36.78,
+          "top3_ids": [
+            "bench_faq_015",
+            "fe65962d-1687-54fc-988e-18b282b20944_3",
+            "fe65962d-1687-54fc-988e-18b282b20944_2"
+          ]
+        },
+        {
+          "query_id": "Q013",
+          "query": "借出来的钱可以炒股吗？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 25.01,
+          "top3_ids": [
+            "bench_faq_019",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_11",
+            "bench_faq_004"
+          ]
+        },
+        {
+          "query_id": "Q014",
+          "query": "怎么查我的贷款进度？",
+          "difficulty": "easy",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 35.06,
+          "top3_ids": [
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_18",
+            "bench_faq_002",
+            "bench_faq_003"
+          ]
+        },
+        {
+          "query_id": "Q015",
+          "query": "我的贷款批到哪一步了？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 34.91,
+          "top3_ids": [
+            "bench_faq_009",
+            "bench_faq_031",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_18"
+          ]
+        },
+        {
+          "query_id": "Q016",
+          "query": "你们有哪些贷款产品？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            2,
+            4
+          ],
+          "hit": true,
+          "first_rank": 3,
+          "latency_ms": 34.86,
+          "top3_ids": [
+            "fe65962d-1687-54fc-988e-18b282b20944_0",
+            "bench_faq_018",
+            "bench_faq_025"
+          ]
+        },
+        {
+          "query_id": "Q017",
+          "query": "给我推荐一个合适的贷款产品",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 22.82,
+          "top3_ids": [
+            "bench_faq_025",
+            "bench_faq_024",
+            "bench_faq_001"
+          ]
+        },
+        {
+          "query_id": "Q018",
+          "query": "怎么注册账号？要什么材料？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 32.88,
+          "top3_ids": [
+            "bench_faq_027",
+            "bench_faq_026",
+            "9b821cad-3d43-531b-957a-42c582e36202_5"
+          ]
+        },
+        {
+          "query_id": "Q019",
+          "query": "忘还钱了，过了还款日一天，现在补还行吗？",
+          "difficulty": "hard",
+          "relevant_positions": [
+            0,
+            3
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 36.92,
+          "top3_ids": [
+            "bench_faq_021",
+            "bench_faq_037",
+            "bench_faq_036"
+          ]
+        },
+        {
+          "query_id": "Q020",
+          "query": "贷款被拒绝的原因有哪些？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            2
+          ],
+          "hit": true,
+          "first_rank": 3,
+          "latency_ms": 26.09,
+          "top3_ids": [
+            "bench_faq_031",
+            "bench_faq_030",
+            "9b821cad-3d43-531b-957a-42c582e36202_9"
+          ]
+        },
+        {
+          "query_id": "Q021",
+          "query": "怎样可以提高贷款额度？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 33.96,
+          "top3_ids": [
+            "bench_faq_033",
+            "bench_faq_032",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_10"
+          ]
+        },
+        {
+          "query_id": "Q022",
+          "query": "极速贷的产品详情是什么？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            2,
+            3
+          ],
+          "hit": true,
+          "first_rank": 3,
+          "latency_ms": 28.3,
+          "top3_ids": [
+            "fe65962d-1687-54fc-988e-18b282b20944_0",
+            "fe65962d-1687-54fc-988e-18b282b20944_1",
+            "fe65962d-1687-54fc-988e-18b282b20944_2"
+          ]
+        },
+        {
+          "query_id": "Q023",
+          "query": "大额尊享贷款和极速贷有什么区别？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 35.87,
+          "top3_ids": [
+            "bench_faq_024",
+            "bench_faq_032",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_3"
+          ]
+        },
+        {
+          "query_id": "Q024",
+          "query": "申请贷款需要准备哪些材料？",
+          "difficulty": "easy",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 33.94,
+          "top3_ids": [
+            "bench_faq_048",
+            "9b821cad-3d43-531b-957a-42c582e36202_0",
+            "bench_faq_018"
+          ]
+        },
+        {
+          "query_id": "Q025",
+          "query": "人脸识别一直失败怎么办？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 27.54,
+          "top3_ids": [
+            "9b821cad-3d43-531b-957a-42c582e36202_11",
+            "9b821cad-3d43-531b-957a-42c582e36202_10",
+            "9b821cad-3d43-531b-957a-42c582e36202_12"
+          ]
+        },
+        {
+          "query_id": "Q026",
+          "query": "你们的风控系统怎么判断能不能贷款？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 35.62,
+          "top3_ids": [
+            "bench_faq_019",
+            "bench_faq_018",
+            "bench_faq_003"
+          ]
+        },
+        {
+          "query_id": "Q027",
+          "query": "DTI是什么？怎么计算的？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 34.33,
+          "top3_ids": [
+            "736bd1f6-5959-5728-80fe-1b55e5b63d9a_5",
+            "bench_faq_002",
+            "bench_faq_003"
+          ]
+        },
+        {
+          "query_id": "Q028",
+          "query": "逾期3天和逾期30天有什么不同？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1,
+            2
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 31.56,
+          "top3_ids": [
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_10",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_9",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_11"
+          ]
+        },
+        {
+          "query_id": "Q029",
+          "query": "逾期超过90天会面临什么法律后果？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 35.21,
+          "top3_ids": [
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_14",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_13",
+            "bench_faq_010"
+          ]
+        },
+        {
+          "query_id": "Q030",
+          "query": "特殊困难还不上怎么办？可以申请救济吗？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 27.02,
+          "top3_ids": [
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_18",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_17",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_13"
+          ]
+        },
+        {
+          "query_id": "Q031",
+          "query": "经常查征信会影响信用吗？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            2
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 35.09,
+          "top3_ids": [
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_8",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_14",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_7"
+          ]
+        },
+        {
+          "query_id": "Q032",
+          "query": "什么是28/36法则？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 33.31,
+          "top3_ids": [
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_16",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_17",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_13"
+          ]
+        },
+        {
+          "query_id": "Q033",
+          "query": "有哪些常见的贷款诈骗套路？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 33.48,
+          "top3_ids": [
+            "bench_faq_019",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_10",
+            "bench_faq_013"
+          ]
+        },
+        {
+          "query_id": "Q034",
+          "query": "公积金贷需要什么条件？利率多少？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 30.5,
+          "top3_ids": [
+            "bench_faq_007",
+            "bench_faq_018",
+            "fe65962d-1687-54fc-988e-18b282b20944_7"
+          ]
+        },
+        {
+          "query_id": "Q035",
+          "query": "以贷养贷有什么风险？",
+          "difficulty": "hard",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 33.05,
+          "top3_ids": [
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_10",
+            "fe65962d-1687-54fc-988e-18b282b20944_9",
+            "bench_faq_018"
+          ]
+        },
+        {
+          "query_id": "Q036",
+          "query": "还款日能不能改到发工资那天？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 22.66,
+          "top3_ids": [
+            "bench_faq_037",
+            "bench_faq_036",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_10"
+          ]
+        },
+        {
+          "query_id": "Q037",
+          "query": "贷款结清后怎么开证明？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 28.5,
+          "top3_ids": [
+            "bench_faq_012",
+            "bench_faq_013",
+            "bench_faq_009"
+          ]
+        },
+        {
+          "query_id": "Q038",
+          "query": "现在有什么优惠活动？新用户有福利吗？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 34.05,
+          "top3_ids": [
+            "bench_faq_041",
+            "bench_faq_040",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_12"
+          ]
+        },
+        {
+          "query_id": "Q039",
+          "query": "对服务不满意找谁投诉？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 21.16,
+          "top3_ids": [
+            "bench_faq_043",
+            "bench_faq_042",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_8"
+          ]
+        },
+        {
+          "query_id": "Q040",
+          "query": "手机丢了APP里的账户安全吗？",
+          "difficulty": "hard",
+          "relevant_positions": [
+            0,
+            4
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 33.58,
+          "top3_ids": [
+            "bench_faq_035",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_7",
+            "bench_faq_020"
+          ]
+        }
+      ]
+    },
+    "B": {
+      "name": "Vector + Query Rewrite",
+      "description": "向量检索 + Query改写",
+      "metrics": {
+        "total_queries": 40,
+        "hit_rate@1": 0.525,
+        "hit_rate@3": 0.625,
+        "hit_rate@5": 0.65,
+        "mrr": 0.5729166666666667,
+        "recall@1": 0.525,
+        "recall@3": 0.625,
+        "recall@5": 0.65,
+        "ndcg@1": 0.525,
+        "ndcg@3": 0.5795395074072776,
+        "ndcg@5": 0.5847759680087461,
+        "latency_avg_ms": 627.9706874997828,
+        "latency_p50_ms": 90.32120000119903,
+        "latency_p99_ms": 4051.641300000483,
+        "latency_min_ms": 34.335899999859976,
+        "latency_max_ms": 4051.641300000483,
+        "hit_rate@3_easy": 0.6428571428571429,
+        "hit_rate@3_medium": 0.5789473684210527,
+        "hit_rate@3_hard": 0.7142857142857143
+      },
+      "query_details": [
+        {
+          "query_id": "Q001",
+          "query": "申请个人贷款需要什么条件？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 840.02,
+          "top3_ids": [
+            "bench_faq_000",
+            "bench_faq_001",
+            "bench_faq_048"
+          ]
+        },
+        {
+          "query_id": "Q002",
+          "query": "我想借钱，要满足啥要求啊？",
+          "difficulty": "hard",
+          "relevant_positions": [
+            0
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 34.9,
+          "top3_ids": [
+            "bench_faq_001",
+            "bench_faq_018",
+            "bench_faq_048"
+          ]
+        },
+        {
+          "query_id": "Q003",
+          "query": "每个月还多少钱？等额本息怎么算？",
+          "difficulty": "easy",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 34.68,
+          "top3_ids": [
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_2",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_1",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_3"
+          ]
+        },
+        {
+          "query_id": "Q004",
+          "query": "你们有哪几种还钱的方式？",
+          "difficulty": "hard",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 34.34,
+          "top3_ids": [
+            "bench_faq_005",
+            "bench_faq_004",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_1"
+          ]
+        },
+        {
+          "query_id": "Q005",
+          "query": "贷款年化利率是多少？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            1,
+            3
+          ],
+          "hit": true,
+          "first_rank": 2,
+          "latency_ms": 3171.72,
+          "top3_ids": [
+            "bench_faq_024",
+            "bench_faq_006",
+            "bench_faq_028"
+          ]
+        },
+        {
+          "query_id": "Q006",
+          "query": "利息贵不贵？最低多少？",
+          "difficulty": "hard",
+          "relevant_positions": [
+            1,
+            4
+          ],
+          "hit": true,
+          "first_rank": 2,
+          "latency_ms": 34.89,
+          "top3_ids": [
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_3",
+            "bench_faq_007",
+            "bench_faq_004"
+          ]
+        },
+        {
+          "query_id": "Q007",
+          "query": "提前还款要违约金吗？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 2724.89,
+          "top3_ids": [
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_4",
+            "bench_faq_008",
+            "bench_faq_020"
+          ]
+        },
+        {
+          "query_id": "Q008",
+          "query": "逾期了会怎么样？影响征信吗？",
+          "difficulty": "easy",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 73.14,
+          "top3_ids": [
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_13",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_14",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_9"
+          ]
+        },
+        {
+          "query_id": "Q009",
+          "query": "还不上钱了，后果严重不？",
+          "difficulty": "hard",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 78.01,
+          "top3_ids": [
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_4",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_17",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_3"
+          ]
+        },
+        {
+          "query_id": "Q010",
+          "query": "征信不好能申请贷款吗？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1,
+            2
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 86.93,
+          "top3_ids": [
+            "bench_faq_031",
+            "bench_faq_013",
+            "bench_faq_012"
+          ]
+        },
+        {
+          "query_id": "Q011",
+          "query": "贷款审批多久能下来？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1,
+            3
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 4030.37,
+          "top3_ids": [
+            "bench_faq_014",
+            "bench_faq_015",
+            "bench_faq_022"
+          ]
+        },
+        {
+          "query_id": "Q012",
+          "query": "急用钱，最快多久能拿到？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1,
+            2
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 75.86,
+          "top3_ids": [
+            "bench_faq_015",
+            "fe65962d-1687-54fc-988e-18b282b20944_3",
+            "fe65962d-1687-54fc-988e-18b282b20944_2"
+          ]
+        },
+        {
+          "query_id": "Q013",
+          "query": "借出来的钱可以炒股吗？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 81.56,
+          "top3_ids": [
+            "bench_faq_019",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_11",
+            "bench_faq_004"
+          ]
+        },
+        {
+          "query_id": "Q014",
+          "query": "怎么查我的贷款进度？",
+          "difficulty": "easy",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 4051.64,
+          "top3_ids": [
+            "9b821cad-3d43-531b-957a-42c582e36202_0",
+            "bench_faq_002",
+            "bench_faq_003"
+          ]
+        },
+        {
+          "query_id": "Q015",
+          "query": "我的贷款批到哪一步了？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 96.32,
+          "top3_ids": [
+            "bench_faq_009",
+            "bench_faq_031",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_18"
+          ]
+        },
+        {
+          "query_id": "Q016",
+          "query": "你们有哪些贷款产品？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            3
+          ],
+          "hit": true,
+          "first_rank": 4,
+          "latency_ms": 3854.58,
+          "top3_ids": [
+            "fe65962d-1687-54fc-988e-18b282b20944_0",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_0",
+            "bench_faq_018"
+          ]
+        },
+        {
+          "query_id": "Q017",
+          "query": "给我推荐一个合适的贷款产品",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 112.49,
+          "top3_ids": [
+            "bench_faq_025",
+            "bench_faq_024",
+            "bench_faq_001"
+          ]
+        },
+        {
+          "query_id": "Q018",
+          "query": "怎么注册账号？要什么材料？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 110.29,
+          "top3_ids": [
+            "bench_faq_027",
+            "bench_faq_026",
+            "9b821cad-3d43-531b-957a-42c582e36202_5"
+          ]
+        },
+        {
+          "query_id": "Q019",
+          "query": "忘还钱了，过了还款日一天，现在补还行吗？",
+          "difficulty": "hard",
+          "relevant_positions": [
+            0,
+            3
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 108.92,
+          "top3_ids": [
+            "bench_faq_021",
+            "bench_faq_037",
+            "bench_faq_036"
+          ]
+        },
+        {
+          "query_id": "Q020",
+          "query": "贷款被拒绝的原因有哪些？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            2
+          ],
+          "hit": true,
+          "first_rank": 3,
+          "latency_ms": 83.93,
+          "top3_ids": [
+            "bench_faq_031",
+            "bench_faq_030",
+            "9b821cad-3d43-531b-957a-42c582e36202_9"
+          ]
+        },
+        {
+          "query_id": "Q021",
+          "query": "怎样可以提高贷款额度？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 96.39,
+          "top3_ids": [
+            "bench_faq_033",
+            "bench_faq_032",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_10"
+          ]
+        },
+        {
+          "query_id": "Q022",
+          "query": "极速贷的产品详情是什么？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            2,
+            3
+          ],
+          "hit": true,
+          "first_rank": 3,
+          "latency_ms": 79.94,
+          "top3_ids": [
+            "fe65962d-1687-54fc-988e-18b282b20944_0",
+            "fe65962d-1687-54fc-988e-18b282b20944_1",
+            "fe65962d-1687-54fc-988e-18b282b20944_2"
+          ]
+        },
+        {
+          "query_id": "Q023",
+          "query": "大额尊享贷款和极速贷有什么区别？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 91.12,
+          "top3_ids": [
+            "bench_faq_024",
+            "bench_faq_032",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_3"
+          ]
+        },
+        {
+          "query_id": "Q024",
+          "query": "申请贷款需要准备哪些材料？",
+          "difficulty": "easy",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 85.46,
+          "top3_ids": [
+            "bench_faq_048",
+            "9b821cad-3d43-531b-957a-42c582e36202_0",
+            "bench_faq_018"
+          ]
+        },
+        {
+          "query_id": "Q025",
+          "query": "人脸识别一直失败怎么办？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 84.64,
+          "top3_ids": [
+            "9b821cad-3d43-531b-957a-42c582e36202_11",
+            "9b821cad-3d43-531b-957a-42c582e36202_10",
+            "9b821cad-3d43-531b-957a-42c582e36202_12"
+          ]
+        },
+        {
+          "query_id": "Q026",
+          "query": "你们的风控系统怎么判断能不能贷款？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 88.32,
+          "top3_ids": [
+            "bench_faq_019",
+            "bench_faq_018",
+            "bench_faq_003"
+          ]
+        },
+        {
+          "query_id": "Q027",
+          "query": "DTI是什么？怎么计算的？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 85.7,
+          "top3_ids": [
+            "736bd1f6-5959-5728-80fe-1b55e5b63d9a_5",
+            "bench_faq_002",
+            "bench_faq_003"
+          ]
+        },
+        {
+          "query_id": "Q028",
+          "query": "逾期3天和逾期30天有什么不同？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1,
+            2
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 87.19,
+          "top3_ids": [
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_10",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_9",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_11"
+          ]
+        },
+        {
+          "query_id": "Q029",
+          "query": "逾期超过90天会面临什么法律后果？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 76.5,
+          "top3_ids": [
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_14",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_13",
+            "bench_faq_010"
+          ]
+        },
+        {
+          "query_id": "Q030",
+          "query": "特殊困难还不上怎么办？可以申请救济吗？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 85.02,
+          "top3_ids": [
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_18",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_17",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_13"
+          ]
+        },
+        {
+          "query_id": "Q031",
+          "query": "经常查征信会影响信用吗？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            2
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 95.15,
+          "top3_ids": [
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_8",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_14",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_7"
+          ]
+        },
+        {
+          "query_id": "Q032",
+          "query": "什么是28/36法则？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 96.63,
+          "top3_ids": [
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_16",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_17",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_13"
+          ]
+        },
+        {
+          "query_id": "Q033",
+          "query": "有哪些常见的贷款诈骗套路？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 102.39,
+          "top3_ids": [
+            "bench_faq_019",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_10",
+            "bench_faq_013"
+          ]
+        },
+        {
+          "query_id": "Q034",
+          "query": "公积金贷需要什么条件？利率多少？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 85.91,
+          "top3_ids": [
+            "bench_faq_007",
+            "bench_faq_018",
+            "fe65962d-1687-54fc-988e-18b282b20944_7"
+          ]
+        },
+        {
+          "query_id": "Q035",
+          "query": "以贷养贷有什么风险？",
+          "difficulty": "hard",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 3684.68,
+          "top3_ids": [
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_10",
+            "bench_faq_030",
+            "bench_faq_031"
+          ]
+        },
+        {
+          "query_id": "Q036",
+          "query": "还款日能不能改到发工资那天？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 92.89,
+          "top3_ids": [
+            "bench_faq_037",
+            "bench_faq_036",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_10"
+          ]
+        },
+        {
+          "query_id": "Q037",
+          "query": "贷款结清后怎么开证明？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 97.65,
+          "top3_ids": [
+            "bench_faq_012",
+            "bench_faq_013",
+            "bench_faq_009"
+          ]
+        },
+        {
+          "query_id": "Q038",
+          "query": "现在有什么优惠活动？新用户有福利吗？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 103.69,
+          "top3_ids": [
+            "bench_faq_041",
+            "bench_faq_040",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_12"
+          ]
+        },
+        {
+          "query_id": "Q039",
+          "query": "对服务不满意找谁投诉？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 90.32,
+          "top3_ids": [
+            "bench_faq_043",
+            "bench_faq_042",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_8"
+          ]
+        },
+        {
+          "query_id": "Q040",
+          "query": "手机丢了APP里的账户安全吗？",
+          "difficulty": "hard",
+          "relevant_positions": [
+            0,
+            4
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 89.79,
+          "top3_ids": [
+            "bench_faq_035",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_7",
+            "bench_faq_020"
+          ]
+        }
+      ]
+    },
+    "C": {
+      "name": "Vector + BM25 + RRF",
+      "description": "多路召回：向量 + BM25关键词 + RRF融合",
+      "metrics": {
+        "total_queries": 40,
+        "hit_rate@1": 0.65,
+        "hit_rate@3": 0.7,
+        "hit_rate@5": 0.75,
+        "mrr": 0.6820833333333333,
+        "recall@1": 0.65,
+        "recall@3": 0.7,
+        "recall@5": 0.75,
+        "ndcg@1": 0.65,
+        "ndcg@3": 0.6738147192765458,
+        "ndcg@5": 0.6789622681379479,
+        "latency_avg_ms": 135.52428500051974,
+        "latency_p50_ms": 34.2744000008679,
+        "latency_p99_ms": 4135.646300001099,
+        "latency_min_ms": 22.614299999986542,
+        "latency_max_ms": 4135.646300001099,
+        "hit_rate@3_easy": 0.7857142857142857,
+        "hit_rate@3_medium": 0.631578947368421,
+        "hit_rate@3_hard": 0.7142857142857143
+      },
+      "query_details": [
+        {
+          "query_id": "Q001",
+          "query": "申请个人贷款需要什么条件？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 4135.65,
+          "top3_ids": [
+            "bench_faq_000",
+            "bench_faq_001",
+            "9b821cad-3d43-531b-957a-42c582e36202_2"
+          ]
+        },
+        {
+          "query_id": "Q002",
+          "query": "我想借钱，要满足啥要求啊？",
+          "difficulty": "hard",
+          "relevant_positions": [
+            0
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 33.73,
+          "top3_ids": [
+            "bench_faq_001",
+            "bench_faq_025",
+            "bench_faq_018"
+          ]
+        },
+        {
+          "query_id": "Q003",
+          "query": "每个月还多少钱？等额本息怎么算？",
+          "difficulty": "easy",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 40.71,
+          "top3_ids": [
+            "bench_faq_004",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_3",
+            "bench_faq_005"
+          ]
+        },
+        {
+          "query_id": "Q004",
+          "query": "你们有哪几种还钱的方式？",
+          "difficulty": "hard",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 27.24,
+          "top3_ids": [
+            "bench_faq_005",
+            "bench_faq_004",
+            "bench_faq_021"
+          ]
+        },
+        {
+          "query_id": "Q005",
+          "query": "贷款年化利率是多少？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            1,
+            2
+          ],
+          "hit": true,
+          "first_rank": 2,
+          "latency_ms": 35.15,
+          "top3_ids": [
+            "bench_faq_024",
+            "bench_faq_007",
+            "bench_faq_006"
+          ]
+        },
+        {
+          "query_id": "Q006",
+          "query": "利息贵不贵？最低多少？",
+          "difficulty": "hard",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 34.27,
+          "top3_ids": [
+            "bench_faq_007",
+            "bench_faq_006",
+            "bench_faq_004"
+          ]
+        },
+        {
+          "query_id": "Q007",
+          "query": "提前还款要违约金吗？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1,
+            2,
+            4
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 31.41,
+          "top3_ids": [
+            "bench_faq_008",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_4",
+            "bench_faq_009"
+          ]
+        },
+        {
+          "query_id": "Q008",
+          "query": "逾期了会怎么样？影响征信吗？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            4
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 30.78,
+          "top3_ids": [
+            "bench_faq_011",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_9",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_12"
+          ]
+        },
+        {
+          "query_id": "Q009",
+          "query": "还不上钱了，后果严重不？",
+          "difficulty": "hard",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 31.68,
+          "top3_ids": [
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_4",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_3",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_17"
+          ]
+        },
+        {
+          "query_id": "Q010",
+          "query": "征信不好能申请贷款吗？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1,
+            3
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 34.31,
+          "top3_ids": [
+            "bench_faq_012",
+            "bench_faq_013",
+            "bench_faq_019"
+          ]
+        },
+        {
+          "query_id": "Q011",
+          "query": "贷款审批多久能下来？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 28.31,
+          "top3_ids": [
+            "bench_faq_014",
+            "bench_faq_015",
+            "bench_faq_013"
+          ]
+        },
+        {
+          "query_id": "Q012",
+          "query": "急用钱，最快多久能拿到？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 36.51,
+          "top3_ids": [
+            "bench_faq_015",
+            "bench_faq_014",
+            "fe65962d-1687-54fc-988e-18b282b20944_2"
+          ]
+        },
+        {
+          "query_id": "Q013",
+          "query": "借出来的钱可以炒股吗？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 32.14,
+          "top3_ids": [
+            "bench_faq_019",
+            "bench_faq_005",
+            "bench_faq_013"
+          ]
+        },
+        {
+          "query_id": "Q014",
+          "query": "怎么查我的贷款进度？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            4
+          ],
+          "hit": true,
+          "first_rank": 5,
+          "latency_ms": 34.09,
+          "top3_ids": [
+            "bench_faq_002",
+            "bench_faq_014",
+            "bench_faq_032"
+          ]
+        },
+        {
+          "query_id": "Q015",
+          "query": "我的贷款批到哪一步了？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 30.73,
+          "top3_ids": [
+            "bench_faq_009",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_18",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_17"
+          ]
+        },
+        {
+          "query_id": "Q016",
+          "query": "你们有哪些贷款产品？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 35.77,
+          "top3_ids": [
+            "bench_faq_025",
+            "bench_faq_024",
+            "bench_faq_048"
+          ]
+        },
+        {
+          "query_id": "Q017",
+          "query": "给我推荐一个合适的贷款产品",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 30.26,
+          "top3_ids": [
+            "bench_faq_025",
+            "bench_faq_024",
+            "fe65962d-1687-54fc-988e-18b282b20944_9"
+          ]
+        },
+        {
+          "query_id": "Q018",
+          "query": "怎么注册账号？要什么材料？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 24.31,
+          "top3_ids": [
+            "bench_faq_027",
+            "bench_faq_051",
+            "9b821cad-3d43-531b-957a-42c582e36202_5"
+          ]
+        },
+        {
+          "query_id": "Q019",
+          "query": "忘还钱了，过了还款日一天，现在补还行吗？",
+          "difficulty": "hard",
+          "relevant_positions": [
+            0,
+            3
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 36.26,
+          "top3_ids": [
+            "bench_faq_021",
+            "bench_faq_037",
+            "bench_faq_036"
+          ]
+        },
+        {
+          "query_id": "Q020",
+          "query": "贷款被拒绝的原因有哪些？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            3
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 36.38,
+          "top3_ids": [
+            "9b821cad-3d43-531b-957a-42c582e36202_9",
+            "bench_faq_031",
+            "bench_faq_030"
+          ]
+        },
+        {
+          "query_id": "Q021",
+          "query": "怎样可以提高贷款额度？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 23.83,
+          "top3_ids": [
+            "bench_faq_033",
+            "bench_faq_032",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_10"
+          ]
+        },
+        {
+          "query_id": "Q022",
+          "query": "极速贷的产品详情是什么？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            2
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 32.91,
+          "top3_ids": [
+            "fe65962d-1687-54fc-988e-18b282b20944_2",
+            "bench_faq_025",
+            "fe65962d-1687-54fc-988e-18b282b20944_3"
+          ]
+        },
+        {
+          "query_id": "Q023",
+          "query": "大额尊享贷款和极速贷有什么区别？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 37.29,
+          "top3_ids": [
+            "bench_faq_024",
+            "bench_faq_025",
+            "fe65962d-1687-54fc-988e-18b282b20944_3"
+          ]
+        },
+        {
+          "query_id": "Q024",
+          "query": "申请贷款需要准备哪些材料？",
+          "difficulty": "easy",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 28.15,
+          "top3_ids": [
+            "bench_faq_048",
+            "bench_faq_049",
+            "9b821cad-3d43-531b-957a-42c582e36202_0"
+          ]
+        },
+        {
+          "query_id": "Q025",
+          "query": "人脸识别一直失败怎么办？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 35.83,
+          "top3_ids": [
+            "9b821cad-3d43-531b-957a-42c582e36202_11",
+            "9b821cad-3d43-531b-957a-42c582e36202_10",
+            "bench_faq_026"
+          ]
+        },
+        {
+          "query_id": "Q026",
+          "query": "你们的风控系统怎么判断能不能贷款？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 37.08,
+          "top3_ids": [
+            "bench_faq_019",
+            "bench_faq_046",
+            "bench_faq_047"
+          ]
+        },
+        {
+          "query_id": "Q027",
+          "query": "DTI是什么？怎么计算的？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            4
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 36.29,
+          "top3_ids": [
+            "736bd1f6-5959-5728-80fe-1b55e5b63d9a_5",
+            "bench_faq_002",
+            "bench_faq_003"
+          ]
+        },
+        {
+          "query_id": "Q028",
+          "query": "逾期3天和逾期30天有什么不同？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1,
+            2,
+            4
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 33.4,
+          "top3_ids": [
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_11",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_10",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_12"
+          ]
+        },
+        {
+          "query_id": "Q029",
+          "query": "逾期超过90天会面临什么法律后果？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            2
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 34.86,
+          "top3_ids": [
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_14",
+            "bench_faq_010",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_13"
+          ]
+        },
+        {
+          "query_id": "Q030",
+          "query": "特殊困难还不上怎么办？可以申请救济吗？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 37.51,
+          "top3_ids": [
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_18",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_17",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_14"
+          ]
+        },
+        {
+          "query_id": "Q031",
+          "query": "经常查征信会影响信用吗？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 30.52,
+          "top3_ids": [
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_8",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_7",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_5"
+          ]
+        },
+        {
+          "query_id": "Q032",
+          "query": "什么是28/36法则？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 33.83,
+          "top3_ids": [
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_16",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_17",
+            "bench_faq_010"
+          ]
+        },
+        {
+          "query_id": "Q033",
+          "query": "有哪些常见的贷款诈骗套路？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            2
+          ],
+          "hit": true,
+          "first_rank": 3,
+          "latency_ms": 36.84,
+          "top3_ids": [
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_0",
+            "bench_faq_031",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_15"
+          ]
+        },
+        {
+          "query_id": "Q034",
+          "query": "公积金贷需要什么条件？利率多少？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            3
+          ],
+          "hit": true,
+          "first_rank": 4,
+          "latency_ms": 38.66,
+          "top3_ids": [
+            "bench_faq_007",
+            "bench_faq_024",
+            "bench_faq_006"
+          ]
+        },
+        {
+          "query_id": "Q035",
+          "query": "以贷养贷有什么风险？",
+          "difficulty": "hard",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 22.61,
+          "top3_ids": [
+            "bench_faq_018",
+            "fe65962d-1687-54fc-988e-18b282b20944_9",
+            "fe65962d-1687-54fc-988e-18b282b20944_8"
+          ]
+        },
+        {
+          "query_id": "Q036",
+          "query": "还款日能不能改到发工资那天？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 36.28,
+          "top3_ids": [
+            "bench_faq_037",
+            "bench_faq_036",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_6"
+          ]
+        },
+        {
+          "query_id": "Q037",
+          "query": "贷款结清后怎么开证明？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 35.32,
+          "top3_ids": [
+            "bench_faq_012",
+            "bench_faq_013",
+            "bench_faq_008"
+          ]
+        },
+        {
+          "query_id": "Q038",
+          "query": "现在有什么优惠活动？新用户有福利吗？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 28.98,
+          "top3_ids": [
+            "bench_faq_041",
+            "bench_faq_040",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_12"
+          ]
+        },
+        {
+          "query_id": "Q039",
+          "query": "对服务不满意找谁投诉？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 34.6,
+          "top3_ids": [
+            "bench_faq_043",
+            "bench_faq_042",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_8"
+          ]
+        },
+        {
+          "query_id": "Q040",
+          "query": "手机丢了APP里的账户安全吗？",
+          "difficulty": "hard",
+          "relevant_positions": [
+            0,
+            2
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 26.48,
+          "top3_ids": [
+            "bench_faq_035",
+            "bench_faq_051",
+            "bench_faq_034"
+          ]
+        }
+      ]
+    },
+    "D": {
+      "name": "Vector + BM25 + RRF + Reranker",
+      "description": "多路召回 + RRF融合 + Cross-Encoder精排",
+      "metrics": {
+        "total_queries": 40,
+        "hit_rate@1": 0.65,
+        "hit_rate@3": 0.7,
+        "hit_rate@5": 0.75,
+        "mrr": 0.6820833333333333,
+        "recall@1": 0.65,
+        "recall@3": 0.7,
+        "recall@5": 0.75,
+        "ndcg@1": 0.65,
+        "ndcg@3": 0.6738147192765458,
+        "ndcg@5": 0.6789622681379479,
+        "latency_avg_ms": 32.177237500400224,
+        "latency_p50_ms": 33.50200000204495,
+        "latency_p99_ms": 45.13239999869256,
+        "latency_min_ms": 22.652799998468254,
+        "latency_max_ms": 45.13239999869256,
+        "hit_rate@3_easy": 0.7857142857142857,
+        "hit_rate@3_medium": 0.631578947368421,
+        "hit_rate@3_hard": 0.7142857142857143
+      },
+      "query_details": [
+        {
+          "query_id": "Q001",
+          "query": "申请个人贷款需要什么条件？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 45.13,
+          "top3_ids": [
+            "bench_faq_000",
+            "bench_faq_001",
+            "9b821cad-3d43-531b-957a-42c582e36202_2"
+          ]
+        },
+        {
+          "query_id": "Q002",
+          "query": "我想借钱，要满足啥要求啊？",
+          "difficulty": "hard",
+          "relevant_positions": [
+            0
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 31.03,
+          "top3_ids": [
+            "bench_faq_001",
+            "bench_faq_025",
+            "bench_faq_018"
+          ]
+        },
+        {
+          "query_id": "Q003",
+          "query": "每个月还多少钱？等额本息怎么算？",
+          "difficulty": "easy",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 29.28,
+          "top3_ids": [
+            "bench_faq_004",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_3",
+            "bench_faq_005"
+          ]
+        },
+        {
+          "query_id": "Q004",
+          "query": "你们有哪几种还钱的方式？",
+          "difficulty": "hard",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 36.63,
+          "top3_ids": [
+            "bench_faq_005",
+            "bench_faq_004",
+            "bench_faq_021"
+          ]
+        },
+        {
+          "query_id": "Q005",
+          "query": "贷款年化利率是多少？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            1,
+            2
+          ],
+          "hit": true,
+          "first_rank": 2,
+          "latency_ms": 32.06,
+          "top3_ids": [
+            "bench_faq_024",
+            "bench_faq_007",
+            "bench_faq_006"
+          ]
+        },
+        {
+          "query_id": "Q006",
+          "query": "利息贵不贵？最低多少？",
+          "difficulty": "hard",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 33.74,
+          "top3_ids": [
+            "bench_faq_007",
+            "bench_faq_006",
+            "bench_faq_004"
+          ]
+        },
+        {
+          "query_id": "Q007",
+          "query": "提前还款要违约金吗？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1,
+            2,
+            4
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 33.8,
+          "top3_ids": [
+            "bench_faq_008",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_4",
+            "bench_faq_009"
+          ]
+        },
+        {
+          "query_id": "Q008",
+          "query": "逾期了会怎么样？影响征信吗？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            4
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 34.83,
+          "top3_ids": [
+            "bench_faq_011",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_9",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_12"
+          ]
+        },
+        {
+          "query_id": "Q009",
+          "query": "还不上钱了，后果严重不？",
+          "difficulty": "hard",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 34.85,
+          "top3_ids": [
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_4",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_3",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_17"
+          ]
+        },
+        {
+          "query_id": "Q010",
+          "query": "征信不好能申请贷款吗？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1,
+            3
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 22.65,
+          "top3_ids": [
+            "bench_faq_012",
+            "bench_faq_013",
+            "bench_faq_019"
+          ]
+        },
+        {
+          "query_id": "Q011",
+          "query": "贷款审批多久能下来？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 27.78,
+          "top3_ids": [
+            "bench_faq_014",
+            "bench_faq_015",
+            "bench_faq_013"
+          ]
+        },
+        {
+          "query_id": "Q012",
+          "query": "急用钱，最快多久能拿到？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 35.67,
+          "top3_ids": [
+            "bench_faq_015",
+            "bench_faq_014",
+            "fe65962d-1687-54fc-988e-18b282b20944_2"
+          ]
+        },
+        {
+          "query_id": "Q013",
+          "query": "借出来的钱可以炒股吗？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 23.02,
+          "top3_ids": [
+            "bench_faq_019",
+            "bench_faq_005",
+            "bench_faq_013"
+          ]
+        },
+        {
+          "query_id": "Q014",
+          "query": "怎么查我的贷款进度？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            4
+          ],
+          "hit": true,
+          "first_rank": 5,
+          "latency_ms": 33.83,
+          "top3_ids": [
+            "bench_faq_002",
+            "bench_faq_014",
+            "bench_faq_032"
+          ]
+        },
+        {
+          "query_id": "Q015",
+          "query": "我的贷款批到哪一步了？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 32.41,
+          "top3_ids": [
+            "bench_faq_009",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_18",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_17"
+          ]
+        },
+        {
+          "query_id": "Q016",
+          "query": "你们有哪些贷款产品？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 25.82,
+          "top3_ids": [
+            "bench_faq_025",
+            "bench_faq_024",
+            "bench_faq_048"
+          ]
+        },
+        {
+          "query_id": "Q017",
+          "query": "给我推荐一个合适的贷款产品",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 33.95,
+          "top3_ids": [
+            "bench_faq_025",
+            "bench_faq_024",
+            "fe65962d-1687-54fc-988e-18b282b20944_9"
+          ]
+        },
+        {
+          "query_id": "Q018",
+          "query": "怎么注册账号？要什么材料？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 29.52,
+          "top3_ids": [
+            "bench_faq_027",
+            "bench_faq_051",
+            "9b821cad-3d43-531b-957a-42c582e36202_5"
+          ]
+        },
+        {
+          "query_id": "Q019",
+          "query": "忘还钱了，过了还款日一天，现在补还行吗？",
+          "difficulty": "hard",
+          "relevant_positions": [
+            0,
+            3
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 35.32,
+          "top3_ids": [
+            "bench_faq_021",
+            "bench_faq_037",
+            "bench_faq_036"
+          ]
+        },
+        {
+          "query_id": "Q020",
+          "query": "贷款被拒绝的原因有哪些？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            3
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 33.44,
+          "top3_ids": [
+            "9b821cad-3d43-531b-957a-42c582e36202_9",
+            "bench_faq_031",
+            "bench_faq_030"
+          ]
+        },
+        {
+          "query_id": "Q021",
+          "query": "怎样可以提高贷款额度？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 27.56,
+          "top3_ids": [
+            "bench_faq_033",
+            "bench_faq_032",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_10"
+          ]
+        },
+        {
+          "query_id": "Q022",
+          "query": "极速贷的产品详情是什么？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            2
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 32.76,
+          "top3_ids": [
+            "fe65962d-1687-54fc-988e-18b282b20944_2",
+            "bench_faq_025",
+            "fe65962d-1687-54fc-988e-18b282b20944_3"
+          ]
+        },
+        {
+          "query_id": "Q023",
+          "query": "大额尊享贷款和极速贷有什么区别？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 25.25,
+          "top3_ids": [
+            "bench_faq_024",
+            "bench_faq_025",
+            "fe65962d-1687-54fc-988e-18b282b20944_3"
+          ]
+        },
+        {
+          "query_id": "Q024",
+          "query": "申请贷款需要准备哪些材料？",
+          "difficulty": "easy",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 34.34,
+          "top3_ids": [
+            "bench_faq_048",
+            "bench_faq_049",
+            "9b821cad-3d43-531b-957a-42c582e36202_0"
+          ]
+        },
+        {
+          "query_id": "Q025",
+          "query": "人脸识别一直失败怎么办？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 33.89,
+          "top3_ids": [
+            "9b821cad-3d43-531b-957a-42c582e36202_11",
+            "9b821cad-3d43-531b-957a-42c582e36202_10",
+            "bench_faq_026"
+          ]
+        },
+        {
+          "query_id": "Q026",
+          "query": "你们的风控系统怎么判断能不能贷款？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 36.39,
+          "top3_ids": [
+            "bench_faq_019",
+            "bench_faq_046",
+            "bench_faq_047"
+          ]
+        },
+        {
+          "query_id": "Q027",
+          "query": "DTI是什么？怎么计算的？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            4
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 36.32,
+          "top3_ids": [
+            "736bd1f6-5959-5728-80fe-1b55e5b63d9a_5",
+            "bench_faq_002",
+            "bench_faq_003"
+          ]
+        },
+        {
+          "query_id": "Q028",
+          "query": "逾期3天和逾期30天有什么不同？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1,
+            2,
+            4
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 27.81,
+          "top3_ids": [
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_11",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_10",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_12"
+          ]
+        },
+        {
+          "query_id": "Q029",
+          "query": "逾期超过90天会面临什么法律后果？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            2
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 30.7,
+          "top3_ids": [
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_14",
+            "bench_faq_010",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_13"
+          ]
+        },
+        {
+          "query_id": "Q030",
+          "query": "特殊困难还不上怎么办？可以申请救济吗？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 34.85,
+          "top3_ids": [
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_18",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_17",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_14"
+          ]
+        },
+        {
+          "query_id": "Q031",
+          "query": "经常查征信会影响信用吗？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 33.5,
+          "top3_ids": [
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_8",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_7",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_5"
+          ]
+        },
+        {
+          "query_id": "Q032",
+          "query": "什么是28/36法则？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 33.41,
+          "top3_ids": [
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_16",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_17",
+            "bench_faq_010"
+          ]
+        },
+        {
+          "query_id": "Q033",
+          "query": "有哪些常见的贷款诈骗套路？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            2
+          ],
+          "hit": true,
+          "first_rank": 3,
+          "latency_ms": 33.9,
+          "top3_ids": [
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_0",
+            "bench_faq_031",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_15"
+          ]
+        },
+        {
+          "query_id": "Q034",
+          "query": "公积金贷需要什么条件？利率多少？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            3
+          ],
+          "hit": true,
+          "first_rank": 4,
+          "latency_ms": 33.35,
+          "top3_ids": [
+            "bench_faq_007",
+            "bench_faq_024",
+            "bench_faq_006"
+          ]
+        },
+        {
+          "query_id": "Q035",
+          "query": "以贷养贷有什么风险？",
+          "difficulty": "hard",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 33.61,
+          "top3_ids": [
+            "bench_faq_018",
+            "fe65962d-1687-54fc-988e-18b282b20944_9",
+            "fe65962d-1687-54fc-988e-18b282b20944_8"
+          ]
+        },
+        {
+          "query_id": "Q036",
+          "query": "还款日能不能改到发工资那天？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 23.88,
+          "top3_ids": [
+            "bench_faq_037",
+            "bench_faq_036",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_6"
+          ]
+        },
+        {
+          "query_id": "Q037",
+          "query": "贷款结清后怎么开证明？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 33.02,
+          "top3_ids": [
+            "bench_faq_012",
+            "bench_faq_013",
+            "bench_faq_008"
+          ]
+        },
+        {
+          "query_id": "Q038",
+          "query": "现在有什么优惠活动？新用户有福利吗？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 35.9,
+          "top3_ids": [
+            "bench_faq_041",
+            "bench_faq_040",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_12"
+          ]
+        },
+        {
+          "query_id": "Q039",
+          "query": "对服务不满意找谁投诉？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 25.75,
+          "top3_ids": [
+            "bench_faq_043",
+            "bench_faq_042",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_8"
+          ]
+        },
+        {
+          "query_id": "Q040",
+          "query": "手机丢了APP里的账户安全吗？",
+          "difficulty": "hard",
+          "relevant_positions": [
+            0,
+            2
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 36.11,
+          "top3_ids": [
+            "bench_faq_035",
+            "bench_faq_051",
+            "bench_faq_034"
+          ]
+        }
+      ]
+    },
+    "E": {
+      "name": "Full Pipeline (All Components)",
+      "description": "Query改写 + 多路召回 + RRF融合 + 精排 — 完整流水线",
+      "metrics": {
+        "total_queries": 40,
+        "hit_rate@1": 0.625,
+        "hit_rate@3": 0.7,
+        "hit_rate@5": 0.75,
+        "mrr": 0.6654166666666665,
+        "recall@1": 0.625,
+        "recall@3": 0.7,
+        "recall@5": 0.75,
+        "ndcg@1": 0.625,
+        "ndcg@3": 0.6613147192765457,
+        "ndcg@5": 0.6686560090629138,
+        "latency_avg_ms": 501.0730350000813,
+        "latency_p50_ms": 35.38990000015474,
+        "latency_p99_ms": 3926.8711999975494,
+        "latency_min_ms": 21.576199997070944,
+        "latency_max_ms": 3926.8711999975494,
+        "hit_rate@3_easy": 0.7857142857142857,
+        "hit_rate@3_medium": 0.631578947368421,
+        "hit_rate@3_hard": 0.7142857142857143
+      },
+      "query_details": [
+        {
+          "query_id": "Q001",
+          "query": "申请个人贷款需要什么条件？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 31.8,
+          "top3_ids": [
+            "bench_faq_000",
+            "bench_faq_001",
+            "9b821cad-3d43-531b-957a-42c582e36202_2"
+          ]
+        },
+        {
+          "query_id": "Q002",
+          "query": "我想借钱，要满足啥要求啊？",
+          "difficulty": "hard",
+          "relevant_positions": [
+            0
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 35.18,
+          "top3_ids": [
+            "bench_faq_001",
+            "bench_faq_025",
+            "bench_faq_018"
+          ]
+        },
+        {
+          "query_id": "Q003",
+          "query": "每个月还多少钱？等额本息怎么算？",
+          "difficulty": "easy",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 35.43,
+          "top3_ids": [
+            "bench_faq_004",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_3",
+            "bench_faq_005"
+          ]
+        },
+        {
+          "query_id": "Q004",
+          "query": "你们有哪几种还钱的方式？",
+          "difficulty": "hard",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 25.79,
+          "top3_ids": [
+            "bench_faq_005",
+            "bench_faq_004",
+            "bench_faq_021"
+          ]
+        },
+        {
+          "query_id": "Q005",
+          "query": "贷款年化利率是多少？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            2,
+            3
+          ],
+          "hit": true,
+          "first_rank": 3,
+          "latency_ms": 2539.79,
+          "top3_ids": [
+            "bench_faq_024",
+            "bench_faq_028",
+            "bench_faq_006"
+          ]
+        },
+        {
+          "query_id": "Q006",
+          "query": "利息贵不贵？最低多少？",
+          "difficulty": "hard",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 37.55,
+          "top3_ids": [
+            "bench_faq_007",
+            "bench_faq_006",
+            "bench_faq_004"
+          ]
+        },
+        {
+          "query_id": "Q007",
+          "query": "提前还款要违约金吗？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 2647.87,
+          "top3_ids": [
+            "bench_faq_008",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_4",
+            "bench_faq_009"
+          ]
+        },
+        {
+          "query_id": "Q008",
+          "query": "逾期了会怎么样？影响征信吗？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            4
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 89.08,
+          "top3_ids": [
+            "bench_faq_011",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_9",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_12"
+          ]
+        },
+        {
+          "query_id": "Q009",
+          "query": "还不上钱了，后果严重不？",
+          "difficulty": "hard",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 105.73,
+          "top3_ids": [
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_4",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_3",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_17"
+          ]
+        },
+        {
+          "query_id": "Q010",
+          "query": "征信不好能申请贷款吗？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1,
+            3
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 100.34,
+          "top3_ids": [
+            "bench_faq_012",
+            "bench_faq_013",
+            "bench_faq_019"
+          ]
+        },
+        {
+          "query_id": "Q011",
+          "query": "贷款审批多久能下来？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 3926.87,
+          "top3_ids": [
+            "bench_faq_014",
+            "bench_faq_015",
+            "fe65962d-1687-54fc-988e-18b282b20944_3"
+          ]
+        },
+        {
+          "query_id": "Q012",
+          "query": "急用钱，最快多久能拿到？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 140.35,
+          "top3_ids": [
+            "bench_faq_015",
+            "bench_faq_014",
+            "fe65962d-1687-54fc-988e-18b282b20944_2"
+          ]
+        },
+        {
+          "query_id": "Q013",
+          "query": "借出来的钱可以炒股吗？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 122.84,
+          "top3_ids": [
+            "bench_faq_019",
+            "bench_faq_005",
+            "bench_faq_013"
+          ]
+        },
+        {
+          "query_id": "Q014",
+          "query": "怎么查我的贷款进度？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            4
+          ],
+          "hit": true,
+          "first_rank": 5,
+          "latency_ms": 3874.33,
+          "top3_ids": [
+            "bench_faq_032",
+            "bench_faq_014",
+            "bench_faq_031"
+          ]
+        },
+        {
+          "query_id": "Q015",
+          "query": "我的贷款批到哪一步了？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 34.78,
+          "top3_ids": [
+            "bench_faq_009",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_18",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_17"
+          ]
+        },
+        {
+          "query_id": "Q016",
+          "query": "你们有哪些贷款产品？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            1,
+            2
+          ],
+          "hit": true,
+          "first_rank": 2,
+          "latency_ms": 3021.43,
+          "top3_ids": [
+            "fe65962d-1687-54fc-988e-18b282b20944_0",
+            "bench_faq_024",
+            "bench_faq_025"
+          ]
+        },
+        {
+          "query_id": "Q017",
+          "query": "给我推荐一个合适的贷款产品",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 33.71,
+          "top3_ids": [
+            "bench_faq_025",
+            "bench_faq_024",
+            "fe65962d-1687-54fc-988e-18b282b20944_9"
+          ]
+        },
+        {
+          "query_id": "Q018",
+          "query": "怎么注册账号？要什么材料？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 36.62,
+          "top3_ids": [
+            "bench_faq_027",
+            "bench_faq_051",
+            "9b821cad-3d43-531b-957a-42c582e36202_5"
+          ]
+        },
+        {
+          "query_id": "Q019",
+          "query": "忘还钱了，过了还款日一天，现在补还行吗？",
+          "difficulty": "hard",
+          "relevant_positions": [
+            0,
+            3
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 38.68,
+          "top3_ids": [
+            "bench_faq_021",
+            "bench_faq_037",
+            "bench_faq_036"
+          ]
+        },
+        {
+          "query_id": "Q020",
+          "query": "贷款被拒绝的原因有哪些？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            3
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 34.85,
+          "top3_ids": [
+            "9b821cad-3d43-531b-957a-42c582e36202_9",
+            "bench_faq_031",
+            "bench_faq_030"
+          ]
+        },
+        {
+          "query_id": "Q021",
+          "query": "怎样可以提高贷款额度？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 36.56,
+          "top3_ids": [
+            "bench_faq_033",
+            "bench_faq_032",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_10"
+          ]
+        },
+        {
+          "query_id": "Q022",
+          "query": "极速贷的产品详情是什么？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            2
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 31.72,
+          "top3_ids": [
+            "fe65962d-1687-54fc-988e-18b282b20944_2",
+            "bench_faq_025",
+            "fe65962d-1687-54fc-988e-18b282b20944_3"
+          ]
+        },
+        {
+          "query_id": "Q023",
+          "query": "大额尊享贷款和极速贷有什么区别？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 37.68,
+          "top3_ids": [
+            "bench_faq_024",
+            "bench_faq_025",
+            "fe65962d-1687-54fc-988e-18b282b20944_3"
+          ]
+        },
+        {
+          "query_id": "Q024",
+          "query": "申请贷款需要准备哪些材料？",
+          "difficulty": "easy",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 21.58,
+          "top3_ids": [
+            "bench_faq_048",
+            "bench_faq_049",
+            "9b821cad-3d43-531b-957a-42c582e36202_0"
+          ]
+        },
+        {
+          "query_id": "Q025",
+          "query": "人脸识别一直失败怎么办？",
+          "difficulty": "easy",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 30.13,
+          "top3_ids": [
+            "9b821cad-3d43-531b-957a-42c582e36202_11",
+            "9b821cad-3d43-531b-957a-42c582e36202_10",
+            "bench_faq_026"
+          ]
+        },
+        {
+          "query_id": "Q026",
+          "query": "你们的风控系统怎么判断能不能贷款？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 27.84,
+          "top3_ids": [
+            "bench_faq_019",
+            "bench_faq_046",
+            "bench_faq_047"
+          ]
+        },
+        {
+          "query_id": "Q027",
+          "query": "DTI是什么？怎么计算的？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            4
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 29.52,
+          "top3_ids": [
+            "736bd1f6-5959-5728-80fe-1b55e5b63d9a_5",
+            "bench_faq_002",
+            "bench_faq_003"
+          ]
+        },
+        {
+          "query_id": "Q028",
+          "query": "逾期3天和逾期30天有什么不同？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1,
+            2,
+            4
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 28.15,
+          "top3_ids": [
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_11",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_10",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_12"
+          ]
+        },
+        {
+          "query_id": "Q029",
+          "query": "逾期超过90天会面临什么法律后果？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            2
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 28.11,
+          "top3_ids": [
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_14",
+            "bench_faq_010",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_13"
+          ]
+        },
+        {
+          "query_id": "Q030",
+          "query": "特殊困难还不上怎么办？可以申请救济吗？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 30.23,
+          "top3_ids": [
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_18",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_17",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_14"
+          ]
+        },
+        {
+          "query_id": "Q031",
+          "query": "经常查征信会影响信用吗？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 32.51,
+          "top3_ids": [
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_8",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_7",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_5"
+          ]
+        },
+        {
+          "query_id": "Q032",
+          "query": "什么是28/36法则？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 35.12,
+          "top3_ids": [
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_16",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_17",
+            "bench_faq_010"
+          ]
+        },
+        {
+          "query_id": "Q033",
+          "query": "有哪些常见的贷款诈骗套路？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            2
+          ],
+          "hit": true,
+          "first_rank": 3,
+          "latency_ms": 35.39,
+          "top3_ids": [
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_0",
+            "bench_faq_031",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_15"
+          ]
+        },
+        {
+          "query_id": "Q034",
+          "query": "公积金贷需要什么条件？利率多少？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            3
+          ],
+          "hit": true,
+          "first_rank": 4,
+          "latency_ms": 31.05,
+          "top3_ids": [
+            "bench_faq_007",
+            "bench_faq_024",
+            "bench_faq_006"
+          ]
+        },
+        {
+          "query_id": "Q035",
+          "query": "以贷养贷有什么风险？",
+          "difficulty": "hard",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 2537.04,
+          "top3_ids": [
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_19",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_10",
+            "fe65962d-1687-54fc-988e-18b282b20944_9"
+          ]
+        },
+        {
+          "query_id": "Q036",
+          "query": "还款日能不能改到发工资那天？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 37.01,
+          "top3_ids": [
+            "bench_faq_037",
+            "bench_faq_036",
+            "4c198ea6-a27e-5078-a1e9-3aa3fadaea42_6"
+          ]
+        },
+        {
+          "query_id": "Q037",
+          "query": "贷款结清后怎么开证明？",
+          "difficulty": "medium",
+          "relevant_positions": [],
+          "hit": false,
+          "first_rank": null,
+          "latency_ms": 28.16,
+          "top3_ids": [
+            "bench_faq_012",
+            "bench_faq_013",
+            "bench_faq_008"
+          ]
+        },
+        {
+          "query_id": "Q038",
+          "query": "现在有什么优惠活动？新用户有福利吗？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0,
+            1
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 26.57,
+          "top3_ids": [
+            "bench_faq_041",
+            "bench_faq_040",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_12"
+          ]
+        },
+        {
+          "query_id": "Q039",
+          "query": "对服务不满意找谁投诉？",
+          "difficulty": "medium",
+          "relevant_positions": [
+            0
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 37.54,
+          "top3_ids": [
+            "bench_faq_043",
+            "bench_faq_042",
+            "20d0f8f2-8765-5b7c-b72e-8f1ae1d8b37a_8"
+          ]
+        },
+        {
+          "query_id": "Q040",
+          "query": "手机丢了APP里的账户安全吗？",
+          "difficulty": "hard",
+          "relevant_positions": [
+            0,
+            2
+          ],
+          "hit": true,
+          "first_rank": 1,
+          "latency_ms": 28.0,
+          "top3_ids": [
+            "bench_faq_035",
+            "bench_faq_051",
+            "bench_faq_034"
+          ]
+        }
+      ]
+    }
+  }
+}

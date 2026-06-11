@@ -20,6 +20,7 @@ import com.example.personal_loan.mapper.OrderMapper;
 import com.example.personal_loan.mapper.PaymentRecordMapper;
 import com.example.personal_loan.mapper.ProcessMessageMapper;
 import com.example.personal_loan.mapper.RepaymentScheduleMapper;
+import com.example.personal_loan.service.MlTrainingLogService;
 import com.example.personal_loan.utils.RabbitUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
@@ -38,6 +39,7 @@ public class PaymentSuccessConsumer {
     private final PaymentRecordMapper paymentRecordMapper;
     private final RepaymentScheduleMapper repaymentScheduleMapper;
     private final NotificationOutboxPublisher notificationOutboxPublisher;
+    private final MlTrainingLogService mlTrainingLogService;
 
     @RabbitListener(queues = RabbitMQConfig.PAYMENT_SUCCESS_QUEUE)
     public void consume(Message message, Channel channel) throws IOException {
@@ -116,6 +118,11 @@ public class PaymentSuccessConsumer {
             }
             
             orderMapper.update(order);
+
+            // 🆕 如果订单已完成，补填 ML 标签: 正常结清
+            if (OrderStatus.已完成.equals(order.getStatus()) && order.getApplicationId() != null) {
+                mlTrainingLogService.markCompleted(order.getApplicationId());
+            }
 
             // 记录已处理信息，插入幂等表
             processedMessageMapper.insertMessage(messageId, "PAYMENT_SUCCESS", order.getId());

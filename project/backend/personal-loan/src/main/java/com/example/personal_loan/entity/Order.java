@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 public class Order {
     private Long id;
     private Long userId;
+    private Long applicationId;  // 🆕 关联的贷款申请ID
     private Long productId;
 
     private OrderStatus status; // "正常", "已逾期", "已完成"

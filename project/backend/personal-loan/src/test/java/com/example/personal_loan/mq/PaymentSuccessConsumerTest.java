@@ -25,6 +25,7 @@ import com.example.personal_loan.mapper.OutboxMapper;
 import com.example.personal_loan.mapper.PaymentRecordMapper;
 import com.example.personal_loan.mapper.ProcessMessageMapper;
 import com.example.personal_loan.mapper.RepaymentScheduleMapper;
+import com.example.personal_loan.service.MlTrainingLogService;
 import com.example.personal_loan.utils.RabbitUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
@@ -56,6 +57,9 @@ class PaymentSuccessConsumerTest {
     private NotificationOutboxPublisher notificationOutboxPublisher;
 
     @Mock
+    private MlTrainingLogService mlTrainingLogService;
+
+    @Mock
     private Channel channel;
 
     //验证当收到一条“新的”支付成功消息时，系统是否按顺序执行了所有必要的业务操作（记录流水、更新订单、发送下游消息）。
@@ -83,7 +87,8 @@ class PaymentSuccessConsumerTest {
                 orderMapper,
                 paymentRecordMapper,
                 repaymentScheduleMapper,
-                notificationOutboxPublisher
+                notificationOutboxPublisher,
+                mlTrainingLogService
         );
         consumer.consume(message, channel);
 
@@ -116,7 +121,8 @@ class PaymentSuccessConsumerTest {
                 orderMapper,
                 paymentRecordMapper,
                 repaymentScheduleMapper,
-                notificationOutboxPublisher
+                notificationOutboxPublisher,
+                mlTrainingLogService
         );
         consumer.consume(message, channel);
 
@@ -140,7 +146,8 @@ class PaymentSuccessConsumerTest {
                 orderMapper,
                 paymentRecordMapper,
                 repaymentScheduleMapper,
-                notificationOutboxPublisher
+                notificationOutboxPublisher,
+                mlTrainingLogService
         );
         consumer.consume(message, channel);
 

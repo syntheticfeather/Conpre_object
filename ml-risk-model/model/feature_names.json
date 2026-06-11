@@ -1,0 +1,38 @@
+{
+  "feature_names": [
+    "age",
+    "education_level",
+    "work_years",
+    "monthly_income",
+    "has_social_security",
+    "has_fund",
+    "overdue_count_2y",
+    "max_overdue_days",
+    "credit_card_usage_pct",
+    "credit_inquiries_3m",
+    "multi_loan_count",
+    "has_mortgage",
+    "dti_ratio",
+    "application_hour",
+    "info_completeness",
+    "income_missing",
+    "late_night_apply",
+    "high_dti",
+    "severe_overdue"
+  ],
+  "feature_count": 19,
+  "model_type": "XGBoost",
+  "metrics": {
+    "auc": 0.8491,
+    "ks": 0.5455,
+    "precision": 0.6688,
+    "recall": 0.4174,
+    "f1": 0.514,
+    "confusion_matrix": {
+      "tn": 3101,
+      "fp": 154,
+      "fn": 434,
+      "tp": 311
+    }
+  }
+}

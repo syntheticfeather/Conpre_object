@@ -65,6 +65,7 @@ public class AIApproveServiceImpl implements AIApproveService {
             Order order = new Order(
                 null,
                 application.getUserId(),
+                application.getId(),   // 🆕 application_id
                 application.getProductId(),
                 OrderStatus.正常,
                 BigDecimal.ZERO,
