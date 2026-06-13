@@ -50,7 +50,7 @@ public class LocalFileStorageServiceImpl implements LocalFileStorageService{
     public String storeFile(MultipartFile file, String prefix, Long userId, String subDirPath) {
         if (file == null || file.isEmpty()) {
             log.warn("The file is empty");
-            throw new BusinessException(400, "图片为空");
+            return null;
         }
         // 校验文件扩展名
         String fileExtension = FileNamingUtil.getFileExtension(file.getOriginalFilename());

@@ -144,7 +144,7 @@ public class ApplicationServiceImpl implements ApplicationService{
             int creditScore;
             if (riskScoringService.isReady()) {
                 int realCount = riskScoringService.countRealFeatures(modelFeatures);
-                if (realCount < 3) {
+                if (realCount < 2) {  // 3 -> 2
                     creditScore = 0;  // 数据不足，直接拒绝
                     log.info("风控: userId={} 数据质量不足 realFeatures={}/9 → 信用分=0",
                              userId, realCount);

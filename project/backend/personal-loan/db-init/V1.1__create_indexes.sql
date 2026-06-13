@@ -8,7 +8,7 @@ CREATE INDEX idx_users_role ON users(role);
 CREATE INDEX idx_loan_products_status ON loan_products(status);
 CREATE INDEX idx_loan_products_create_update_time ON loan_products(create_time, update_time);
 CREATE INDEX idx_loan_products_update_time ON loan_products(update_time);
-REATE INDEX idx_update_create ON loan_products(update_time DESC, create_time DESC);
+CREATE INDEX idx_update_create ON loan_products(update_time DESC, create_time DESC);
 
 -- loan_applications表索引
 CREATE INDEX idx_loan_applications_user_id ON loan_applications(user_id);
