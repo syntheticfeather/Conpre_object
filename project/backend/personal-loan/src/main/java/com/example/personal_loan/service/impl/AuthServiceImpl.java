@@ -209,7 +209,6 @@ public class AuthServiceImpl implements AuthService{
     @Override
     public GetCertResponse getCert(Long userId) {
         UserCert userCert = userCertMapper.selectByUserId(userId);
-        userCert.setCreditScore(calScore(userId));
         userCert.setBankCardId(userCert.getBankCardId());
         
         WorkCert workCert = null;
