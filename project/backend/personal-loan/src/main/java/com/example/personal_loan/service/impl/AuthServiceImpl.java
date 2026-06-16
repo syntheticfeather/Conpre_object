@@ -254,8 +254,12 @@ public class AuthServiceImpl implements AuthService{
         cert.setPropertyCertPath(propertyPath);
         cert.setCarCertPath(carPath);
         // total_value 可后续计算，暂不设
+        // 模拟
+        if (propertyPath != null || carPath != null) {
+            cert.setTotalValue(10000);
+        }
 
-        Integer existingId = userCert.getImmovableCertId();
+               Integer existingId = userCert.getImmovableCertId();
         if (existingId == null) {
             immovablesCertMapper.insert(cert);
             userCert.setImmovableCertId(cert.getImmovableCertId());
