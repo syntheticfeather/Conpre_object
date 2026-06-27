@@ -93,22 +93,22 @@
                 <el-tag type="primary">{{ row.server_id }}</el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="transport" label="传输方式" width="100">
+            <el-table-column label="传输方式" width="100">
               <template #default="{ row }">
-                <el-tag :type="row.transport === 'sse' ? 'success' : 'warning'" size="small">
-                  {{ row.transport?.toUpperCase() }}
+                <el-tag :type="(row.config?.transport || 'sse') === 'sse' ? 'success' : 'warning'" size="small">
+                  {{ (row.config?.transport || 'sse').toUpperCase() }}
                 </el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="url" label="服务地址 / 命令">
+            <el-table-column label="服务地址 / 命令">
               <template #default="{ row }">
-                <span v-if="row.transport === 'sse'">{{ row.url || '-' }}</span>
-                <span v-else>{{ row.command }} {{ (row.args || []).join(' ') }}</span>
+                <span v-if="(row.config?.transport || 'sse') === 'sse'">{{ row.config?.url || '-' }}</span>
+                <span v-else>{{ row.config?.command }} {{ (row.config?.args || []).join(' ') }}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="timeout" label="超时(s)" width="80" align="center">
+            <el-table-column label="超时(s)" width="80" align="center">
               <template #default="{ row }">
-                {{ row.timeout || 30 }}
+                {{ row.config?.timeout || 30 }}
               </template>
             </el-table-column>
             <el-table-column prop="created_at" label="创建时间" width="180" />
@@ -289,7 +289,12 @@ const saveServer = async () => {
   await formRef.value.validate(async (valid) => {
     if (!valid) return
 
-    const payload = { ...serverForm.value }
+    const { server_id, url, api_key, command, args, timeout } = serverForm.value
+    // 后端 MCPServerCreate 模型期望 config 是嵌套对象
+    const payload = {
+      server_id,
+      config: { url, api_key, command, args, timeout }
+    }
 
     try {
       if (isEditing.value) {
@@ -310,16 +315,17 @@ const saveServer = async () => {
 
 const editServer = (row) => {
   isEditing.value = true
+  const cfg = row.config || {}
   serverForm.value = {
     server_id: row.server_id,
-    transport: row.transport || 'sse',
-    url: row.url || '',
-    api_key: row.api_key || '',
-    command: row.command || '',
-    args: row.args || [],
-    timeout: row.timeout || 30
+    transport: cfg.transport || 'sse',
+    url: cfg.url || '',
+    api_key: cfg.api_key || '',
+    command: cfg.command || '',
+    args: cfg.args || [],
+    timeout: cfg.timeout || 30
   }
-  argsInput.value = (row.args || []).join(',')
+  argsInput.value = (cfg.args || []).join(',')
 }
 
 const cancelEdit = () => {
