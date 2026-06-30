@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="cli-anything" agent="cli-anything-drawio/1.0.0" version="24.0.0">
+  <diagram id="diagram_1" name="Page-1">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1280" pageHeight="720" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="v_2" value="RAG 知识检索五级优化管线" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="10" width="500" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="v_3" value="离线入库" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="45" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="v_4" value="FAQ JSON&#10;+ 7份MD文档" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=0.27;fillColor=#FFF3E0;" vertex="1" parent="1">
+          <mxGeometry x="30" y="70" width="140" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="v_5" value="MarkdownProcessor&#10;Chunk切割(200重叠)" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#E8F5E9;" vertex="1" parent="1">
+          <mxGeometry x="200" y="70" width="140" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="v_6" value="BAAI/bge-m3&#10;向量化(1024维)" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#E3F2FD;" vertex="1" parent="1">
+          <mxGeometry x="370" y="70" width="140" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="v_7" value="ChromaDB&#10;向量存储" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#E8F5E9;" vertex="1" parent="1">
+          <mxGeometry x="540" y="70" width="130" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="e_8" value="" style="edgeStyle=none;" edge="1" parent="1" source="v_4" target="v_5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_9" value="" style="edgeStyle=none;" edge="1" parent="1" source="v_5" target="v_6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_10" value="" style="edgeStyle=none;" edge="1" parent="1" source="v_6" target="v_7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="v_11" value="在线检索 (5级优化)" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="130" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="v_12" value="① Query 改写&#10;补全代词/转口语" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF8E1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="155" width="110" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="v_13" value="②a 向量检索&#10;ChromaDB HNSW" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;" vertex="1" parent="1">
+          <mxGeometry x="170" y="150" width="110" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="v_14" value="②b BM25 关键词&#10;jieba+rank_bm25" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;" vertex="1" parent="1">
+          <mxGeometry x="170" y="198" width="110" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="e_15" value="" style="edgeStyle=none;" edge="1" parent="1" source="v_12" target="v_13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_16" value="" style="edgeStyle=none;" edge="1" parent="1" source="v_12" target="v_14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="v_17" value="③ RRF 融合&#10;两路加权合并" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E5F5;" vertex="1" parent="1">
+          <mxGeometry x="310" y="170" width="110" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="e_18" value="" style="edgeStyle=none;" edge="1" parent="1" source="v_13" target="v_17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_19" value="" style="edgeStyle=none;" edge="1" parent="1" source="v_14" target="v_17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="v_20" value="④ Cross-Encoder&#10;精排 Top-3" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEBEE;" vertex="1" parent="1">
+          <mxGeometry x="450" y="170" width="120" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="e_21" value="" style="edgeStyle=none;" edge="1" parent="1" source="v_17" target="v_20">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="v_22" value="⑤ Prompt 增强&#10;知识注入生成" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;" vertex="1" parent="1">
+          <mxGeometry x="600" y="170" width="110" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="e_23" value="" style="edgeStyle=none;" edge="1" parent="1" source="v_20" target="v_22">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="v_24" value="Embedding 三级降级链" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="260" width="250" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="v_25" value="① SiliconFlow API (BAAI/bge-m3)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;" vertex="1" parent="1">
+          <mxGeometry x="30" y="285" width="160" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="v_26" value="② sentence-transformers 本地兜底" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF8E1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="330" width="160" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="v_27" value="③ MD5 哈希 最终兜底" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEBEE;" vertex="1" parent="1">
+          <mxGeometry x="30" y="375" width="160" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="e_28" value="失败" style="edgeStyle=none;" edge="1" parent="1" source="v_25" target="v_26">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_29" value="也失败" style="edgeStyle=none;" edge="1" parent="1" source="v_26" target="v_27">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_30" value="正常路径" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" parent="1" source="v_25" target="v_7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

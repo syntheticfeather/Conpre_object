@@ -1,0 +1,107 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="cli-anything" agent="cli-anything-drawio/1.0.0" version="24.0.0">
+  <diagram id="diagram_1" name="Page-1">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1280" pageHeight="720" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="v_2" value="Web前端&#10;Vue 3 + ECharts + Three.js" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#BF360C;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="20" y="50" width="170" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="v_3" value="Android App&#10;Kotlin + Jetpack MVVM" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#BF360C;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="220" y="50" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="v_4" value="智能客服对话&#10;ChatDialog SSE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#BF360C;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="400" y="50" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="v_5" value="JWT Token 鉴权 ｜ 请求路由分发 ｜ 限流防护 ｜ SSE 长连接" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#F3E5F5;strokeColor=#4A148C;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="30" y="140" width="510" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="v_6" value="Java Spring Boot 后端 (业务核心)" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="200" width="250" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="v_7" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF8E1;strokeColor=#E65100;" vertex="1" parent="1">
+          <mxGeometry x="20" y="218" width="270" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="v_8" value="Redis 缓存策略&#10;BloomFilter+Redisson&#10;随机过期防雪崩" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFDE7;strokeColor=#E65100;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="28" y="225" width="120" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="v_9" value="RabbitMQ 消息&#10;Outbox发件箱&#10;幂等+重试+DLQ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFDE7;strokeColor=#E65100;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="160" y="225" width="120" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="v_10" value="AOP 分布式锁&#10;@RedisLocked 注解&#10;SpEL 动态Key" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFDE7;strokeColor=#E65100;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="28" y="282" width="120" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="v_11" value="SSE 实时通知&#10;用户+管理双通道&#10;还款计算引擎" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFDE7;strokeColor=#E65100;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="160" y="282" width="120" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="v_12" value="数据库优化(9索引+N+1修复) ｜ 月度统计 ｜ 催收管理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFDE7;strokeColor=#E65100;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="28" y="340" width="252" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="v_13" value="Python AI 服务层" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" vertex="1" parent="1">
+          <mxGeometry x="320" y="200" width="250" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="v_14" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#0D47A1;" vertex="1" parent="1">
+          <mxGeometry x="310" y="218" width="260" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="v_15" value="可组合Agent链&#10;React/Plan&#10;Reflection 四种模式" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BBDEFB;strokeColor=#0D47A1;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="318" y="225" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="v_16" value="RAG检索管线&#10;多路召回+RRF&#10;Cross-Encoder精排" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BBDEFB;strokeColor=#0D47A1;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="445" y="225" width="118" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="v_17" value="长期记忆系统&#10;Mem0+Zep&#10;时序衰减+冲突过期" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BBDEFB;strokeColor=#0D47A1;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="318" y="288" width="120" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="v_18" value="ML风控系统&#10;XGBoost 54维特征&#10;双轨训练+双格式导出" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BBDEFB;strokeColor=#0D47A1;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="445" y="288" width="118" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="v_19" value="Java+Python 双端协同路由 (Workflow快通道 + Agent深度)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BBDEFB;strokeColor=#0D47A1;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="318" y="345" width="245" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v_20" value="数据与中间件层" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="410" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="v_21" value="MySQL 8.0" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#E8F5E9;strokeColor=#1B5E20;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="25" y="435" width="110" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="v_22" value="Redis 7.x" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#E8F5E9;strokeColor=#1B5E20;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="150" y="435" width="100" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="v_23" value="RabbitMQ 3.x" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#E8F5E9;strokeColor=#1B5E20;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="265" y="435" width="100" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="v_24" value="ChromaDB + MongoDB" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#E8F5E9;strokeColor=#1B5E20;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="380" y="435" width="130" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="e_25" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" parent="1" source="v_2" target="v_5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_26" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" parent="1" source="v_3" target="v_5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_27" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" parent="1" source="v_4" target="v_5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_28" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" parent="1" source="v_5" target="v_7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_29" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" parent="1" source="v_5" target="v_14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_30" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" parent="1" source="v_7" target="v_21">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_31" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" parent="1" source="v_7" target="v_22">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_32" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" parent="1" source="v_7" target="v_23">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_33" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" parent="1" source="v_14" target="v_24">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

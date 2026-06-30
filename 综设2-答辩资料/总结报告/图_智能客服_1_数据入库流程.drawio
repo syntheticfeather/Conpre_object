@@ -1,0 +1,97 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.2.5 Chrome/138.0.7204.251 Electron/37.6.1 Safari/537.36" version="28.2.5">
+  <diagram id="diagram_1" name="Page-1">
+    <mxGraphModel dx="1213" dy="828" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1280" pageHeight="720" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="v_2" value="智能客服 — 知识库数据入库流程 (Offline)" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" parent="1" vertex="1">
+          <mxGeometry x="250" y="8" width="300" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="v_3" value="FAQ 问答对&#xa;(initial_data.json)&#xa;产品/流程/还款/利率" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=0.27;fillColor=#FFF3E0;" parent="1" vertex="1">
+          <mxGeometry x="20" y="50" width="130" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="v_4" value="产品说明书&#xa;操作指南" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=0.27;fillColor=#FFF3E0;" parent="1" vertex="1">
+          <mxGeometry x="20" y="115" width="130" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="v_5" value="风控规则&#xa;还款指南" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=0.27;fillColor=#FFF3E0;" parent="1" vertex="1">
+          <mxGeometry x="20" y="170" width="130" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="v_6" value="常见误区&#xa;法律条例" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=0.27;fillColor=#FFF3E0;" parent="1" vertex="1">
+          <mxGeometry x="20" y="225" width="130" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="v_7" value="用户协议&#xa;隐私政策" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=0.27;fillColor=#FFF3E0;" parent="1" vertex="1">
+          <mxGeometry x="20" y="280" width="130" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="v_8" value="MarkdownProcessor&#xa;&#xa;overlap_chars = 200&#xa;max_chunk_chars = 800&#xa;二级句子切分&#xa;&#xa;保留 Markdown 层级路径&#xa;(parent &gt; child &gt; grandchild)" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#E8F5E9;strokeColor=#2E7D32;" parent="1" vertex="1">
+          <mxGeometry x="200" y="70" width="175" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="e_9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_3" target="v_8" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_10" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_4" target="v_8" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_5" target="v_8" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_12" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_6" target="v_8" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_13" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_7" target="v_8" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="v_14" value="BAAI/bge-m3&#xa;SiliconFlow API&#xa;输出维度: 1024&#xa;CachedEmbeddingFunction&#xa;(缓存命中率 30-50%)" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#E3F2FD;strokeColor=#1565C0;" parent="1" vertex="1">
+          <mxGeometry x="430" y="70" width="175" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e_15" value="chunks" style="edgeStyle=none;" parent="1" source="v_8" target="v_14" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="v_16" value="主力: SiliconFlow BAAI/bge-m3 (1024维)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;" parent="1" vertex="1">
+          <mxGeometry x="430" y="150" width="175" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="v_17" value="兜底: sentence-transformers 本地 (384-&gt;1024)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF8E1;" parent="1" vertex="1">
+          <mxGeometry x="430" y="190" width="175" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="v_18" value="最终: MD5 哈希 (保系统不崩溃)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEBEE;" parent="1" vertex="1">
+          <mxGeometry x="430" y="230" width="175" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="e_19" value="API 失败" style="edgeStyle=none;strokeColor=#E65100;" parent="1" source="v_16" target="v_17" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_20" value="也失败" style="edgeStyle=none;strokeColor=#E65100;" parent="1" source="v_17" target="v_18" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="v_21" value="ChromaDB&#xa;向量数据库&#xa;HNSW 索引&#xa;本地持久化" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#E8F5E9;strokeColor=#1B5E20;" parent="1" vertex="1">
+          <mxGeometry x="660" y="70" width="135" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="e_22" value="向量写入" style="edgeStyle=none;" parent="1" source="v_14" target="v_21" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="v_23" value="离 线 入 库 总 流 程" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" parent="1" vertex="1">
+          <mxGeometry x="120" y="310" width="500" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="v_24" value="FAQ + 7份MD 文档" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#1565C0;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="60" y="340" width="130" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="v_25" value="MarkdownProcessor&#xa;Chunk 切割" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#1565C0;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="220" y="340" width="140" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="v_26" value="BAAI/bge-m3&#xa;向量化 (1024维)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#1565C0;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="390" y="340" width="140" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="v_27" value="ChromaDB&#xa;向量存储" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#1565C0;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="560" y="340" width="120" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="e_28" value="" style="edgeStyle=none;" parent="1" source="v_24" target="v_25" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_29" value="" style="edgeStyle=none;" parent="1" source="v_25" target="v_26" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_30" value="" style="edgeStyle=none;" parent="1" source="v_26" target="v_27" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

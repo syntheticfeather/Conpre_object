@@ -1,0 +1,316 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.2.5 Chrome/138.0.7204.251 Electron/37.6.1 Safari/537.36" version="28.2.5">
+  <diagram id="diagram_1" name="Page-1">
+    <mxGraphModel dx="1427" dy="974" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1280" pageHeight="720" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="v_2" value="风控系统 — XGBoost 54维特征模型 完整流水线" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" parent="1" vertex="1">
+          <mxGeometry x="200" y="5" width="400" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="v_3" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#E65100;dashed=1;" parent="1" vertex="1">
+          <mxGeometry x="10" y="42" width="790" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="v_4" value="Stage 1: 数据采集 — Java 后端 6张核心业务表 -&gt; 54维特征" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" parent="1" vertex="1">
+          <mxGeometry x="20" y="47" width="300" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="v_5" value="users&#xa;用户基础信息" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#FFF8E1;strokeColor=#E65100;fontSize=7;" parent="1" vertex="1">
+          <mxGeometry x="25" y="70" width="95" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="v_6" value="user_certification&#xa;认证信用分" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#FFF8E1;strokeColor=#E65100;fontSize=7;" parent="1" vertex="1">
+          <mxGeometry x="128" y="70" width="105" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="v_7" value="orders&#xa;贷款订单聚合" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#FFF8E1;strokeColor=#E65100;fontSize=7;" parent="1" vertex="1">
+          <mxGeometry x="240" y="70" width="95" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="v_8" value="repayment_schedule&#xa;还款计划明细" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#FFF8E1;strokeColor=#E65100;fontSize=7;" parent="1" vertex="1">
+          <mxGeometry x="343" y="70" width="110" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="v_9" value="loan_applications&#xa;申请记录行为" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#FFF8E1;strokeColor=#E65100;fontSize=7;" parent="1" vertex="1">
+          <mxGeometry x="460" y="70" width="105" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="v_10" value="black_list&#xa;黑名单匹配" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#FFF8E1;strokeColor=#E65100;fontSize=7;" parent="1" vertex="1">
+          <mxGeometry x="573" y="70" width="90" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="v_11" value="immovables_cert&#xa;资产证明(房/车)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#FFF8E1;strokeColor=#E65100;fontSize=7;" parent="1" vertex="1">
+          <mxGeometry x="671" y="70" width="110" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="v_12" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#1565C0;dashed=1;" parent="1" vertex="1">
+          <mxGeometry x="10" y="130" width="790" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="v_13" value="Stage 2: 特征工程 — feature_config.py 统一配置 (Python + Java 双端单点源)" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" parent="1" vertex="1">
+          <mxGeometry x="20" y="135" width="400" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="v_14" value="身份特征 x7&#xa;age, gender,&#xa;education, work_years&#xa;has_bank_card,&#xa;info_completeness" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;fontSize=7;" parent="1" vertex="1">
+          <mxGeometry x="25" y="158" width="118" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="v_15" value="收入/工作 x5&#xa;monthly_income,&#xa;has_employment_cert,&#xa;has_salary_cert,&#xa;has_social_security,&#xa;has_credit_report" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;fontSize=7;" parent="1" vertex="1">
+          <mxGeometry x="155" y="158" width="118" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="v_16" value="信用/逾期 x14&#xa;credit_score,&#xa;active_loan_count,&#xa;max_overdue_days,&#xa;on_time_payment_count,&#xa;overdue_schedule_count..." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEBEE;fontSize=7;" parent="1" vertex="1">
+          <mxGeometry x="290" y="158" width="118" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="v_17" value="资产 x7&#xa;has_house, has_car,&#xa;total_asset_value,&#xa;has_mortgage,&#xa;max_loan_amount_single,&#xa;total_loan_amount..." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;fontSize=7;" parent="1" vertex="1">
+          <mxGeometry x="425" y="158" width="118" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="v_18" value="行为 x13&#xa;dti_ratio,&#xa;repayment_ratio,&#xa;on_time_payment_ratio,&#xa;has_postpone_history,&#xa;avg_days_past_due..." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;fontSize=7;" parent="1" vertex="1">
+          <mxGeometry x="555" y="158" width="118" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="v_19" value="申请 x8&#xa;applied_amount,&#xa;applied_term,&#xa;application_hour,&#xa;is_late_night_apply,&#xa;rejection_rate..." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;fontSize=7;" parent="1" vertex="1">
+          <mxGeometry x="685" y="158" width="118" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e_20" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_5" target="v_14" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_21" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_5" target="v_15" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_22" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_5" target="v_16" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_23" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_5" target="v_17" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_24" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_5" target="v_18" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_25" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_5" target="v_19" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_26" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_6" target="v_14" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_27" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_6" target="v_15" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_28" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_6" target="v_16" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_29" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_6" target="v_17" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_30" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_6" target="v_18" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_31" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_6" target="v_19" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_32" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_7" target="v_14" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_33" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_7" target="v_15" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_34" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_7" target="v_16" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_35" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_7" target="v_17" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_36" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_7" target="v_18" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_37" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_7" target="v_19" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_38" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_8" target="v_14" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_39" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_8" target="v_15" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_40" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_8" target="v_16" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_41" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_8" target="v_17" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_42" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_8" target="v_18" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_43" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_8" target="v_19" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_44" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_9" target="v_14" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_45" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_9" target="v_15" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_46" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_9" target="v_16" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_47" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_9" target="v_17" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_48" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_9" target="v_18" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_49" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_9" target="v_19" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_50" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_10" target="v_14" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_51" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_10" target="v_15" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_52" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_10" target="v_16" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_53" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_10" target="v_17" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_54" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_10" target="v_18" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_55" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_10" target="v_19" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_56" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_11" target="v_14" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_57" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_11" target="v_15" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_58" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_11" target="v_16" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_59" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_11" target="v_17" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_60" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_11" target="v_18" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_61" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_11" target="v_19" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="v_62" value="共计 54 维特征 (GMS 9 + Java 48 + Derived 4)" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#BBDEFB;strokeColor=#1565C0;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="310" y="222" width="180" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="v_63" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#2E7D32;dashed=1;" parent="1" vertex="1">
+          <mxGeometry x="10" y="255" width="790" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="v_64" value="Stage 3: 模型训练 — 双轨流水线 (合成数据 + 真实数据)" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" parent="1" vertex="1">
+          <mxGeometry x="20" y="260" width="400" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="v_65" value="train.py — 合成数据训练" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" parent="1" vertex="1">
+          <mxGeometry x="30" y="285" width="180" height="15" as="geometry" />
+        </mxCell>
+        <mxCell id="v_66" value="generate_synthetic_data()&#xa;20000条, 目标违约率 ~7%&#xa;sigmoid逻辑标签生成&#xa;3-5%随机缺失值模拟" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#C8E6C9;fontSize=8;" parent="1" vertex="1">
+          <mxGeometry x="25" y="302" width="200" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="v_67" value="train_real.py — 真实数据训练" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" parent="1" vertex="1">
+          <mxGeometry x="280" y="285" width="200" height="15" as="geometry" />
+        </mxCell>
+        <mxCell id="v_68" value="Give Me Some Credit 数据集&#xa;cs-training.csv (15万条)&#xa;9特征 -&gt; Java字段映射对齐&#xa;不可用时自动回退合成数据" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#C8E6C9;fontSize=8;" parent="1" vertex="1">
+          <mxGeometry x="260" y="302" width="200" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="v_69" value="特征工程&#xa;缺失值填充&#xa;4衍生特征创建&#xa;StandardScaler&#xa;80/20分层划分" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#BBDEFB;fontSize=8;" parent="1" vertex="1">
+          <mxGeometry x="510" y="288" width="130" height="62" as="geometry" />
+        </mxCell>
+        <mxCell id="v_70" value="XGBoost 训练&#xa;max_depth=5&#xa;lr=0.05&#xa;200 estimators&#xa;reg_alpha=0.1&#xa;reg_lambda=1.0" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#BBDEFB;fontSize=8;" parent="1" vertex="1">
+          <mxGeometry x="680" y="288" width="105" height="62" as="geometry" />
+        </mxCell>
+        <mxCell id="e_71" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_66" target="v_69" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_72" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_68" target="v_69" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_73" value="" style="edgeStyle=none;" parent="1" source="v_69" target="v_70" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="v_74" value="XGBoost 超参数: objective=binary:logistic | max_depth=5 | lr=0.05 | n_estimators=200 | subsample=0.8 | colsample_bytree=0.8 | min_child_weight=5 | gamma=0.1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;fontSize=7;" parent="1" vertex="1">
+          <mxGeometry x="30" y="358" width="500" height="15" as="geometry" />
+        </mxCell>
+        <mxCell id="v_75" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E5F5;strokeColor=#7B1FA2;dashed=1;" parent="1" vertex="1">
+          <mxGeometry x="10" y="390" width="790" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="v_76" value="Stage 4: 模型评估 + 双格式导出" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" parent="1" vertex="1">
+          <mxGeometry x="20" y="395" width="400" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="v_77" value="评估指标:  AUC (区分能力) | KS (区分度)&#xa;Precision (精准率) | Recall (召回率) | F1&#xa;混淆矩阵 (TN/FP/FN/TP + 误拒率 + 漏过率)&#xa;Top-10 特征重要性 (gain 排序)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1BEE7;fontSize=8;" parent="1" vertex="1">
+          <mxGeometry x="25" y="418" width="300" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="e_78" value="" style="edgeStyle=none;" parent="1" source="v_70" target="v_77" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="v_79" value="PKL 格式&#xa;pickle 打包&#xa;(model+scaler+features+metrics)&#xa;-&gt; Python 推理服务加载" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#CE93D8;fontSize=9;" parent="1" vertex="1">
+          <mxGeometry x="380" y="418" width="180" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="v_80" value="JSON 格式&#xa;XGBoost 原生 save_model()&#xa;-&gt; Java XGBoost4j 本地加载&#xa;-&gt; 无需 Python 推理服务" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#CE93D8;fontSize=9;" parent="1" vertex="1">
+          <mxGeometry x="590" y="418" width="195" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="e_81" value="" style="edgeStyle=none;" parent="1" source="v_77" target="v_79" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_82" value="" style="edgeStyle=none;" parent="1" source="v_77" target="v_80" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="v_83" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEBEE;strokeColor=#C62828;dashed=1;" parent="1" vertex="1">
+          <mxGeometry x="10" y="485" width="790" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="v_84" value="Stage 5: Java 后端推理集成 + 风控决策" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" parent="1" vertex="1">
+          <mxGeometry x="20" y="490" width="400" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="v_85" value="Java 后端 (MlTrainingLogServiceImpl)&#xa;&#xa;1. 读取 feature_config.py Schema&#xa;2. 从6张业务表聚合 54维特征&#xa;3. 构造 JSON 请求 / XGBoost4j 本地推理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFCDD2;fontSize=8;" parent="1" vertex="1">
+          <mxGeometry x="25" y="513" width="250" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="v_86" value="模型输出: 违约概率 (0~1)&#xa;&#xa;三级阈值风控建议:&#xa;  &lt;0.10  -&gt; 低风险, 建议通过, 正常利率&#xa;  0.10-0.25 -&gt; 中风险, 利率上浮或降额&#xa;  &gt;0.25 -&gt; 高风险, 拒绝或增信" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFCDD2;fontSize=8;" parent="1" vertex="1">
+          <mxGeometry x="310" y="513" width="200" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="e_87" value="" style="edgeStyle=none;" parent="1" source="v_85" target="v_86" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="v_88" value="风控日志 (ml_training_log)&#xa;&#xa;记录: user_id, 54维特征快照,&#xa;违约概率, 风控建议, 时间戳&#xa;-&gt; 后续模型迭代的标注数据" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFCDD2;fontSize=8;" parent="1" vertex="1">
+          <mxGeometry x="550" y="513" width="230" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="e_89" value="" style="edgeStyle=none;" parent="1" source="v_86" target="v_88" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_90" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_79" target="v_85" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_91" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_80" target="v_85" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="v_92" value="风控模型完整流水线:  数据采集 -&gt; 54维特征工程 -&gt; 双轨训练 -&gt; 评估导出 -&gt; Java推理 -&gt; 风控决策 -&gt; 日志回馈" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" parent="1" vertex="1">
+          <mxGeometry x="80" y="590" width="650" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="v_93" value="6张业务表&#xa;特征采集" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;fontSize=8;" parent="1" vertex="1">
+          <mxGeometry x="30" y="615" width="115" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="v_94" value="54维特征&#xa;feature_config.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;fontSize=8;" parent="1" vertex="1">
+          <mxGeometry x="160" y="615" width="115" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="v_95" value="合成+真实&#xa;双轨训练" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;fontSize=8;" parent="1" vertex="1">
+          <mxGeometry x="290" y="615" width="115" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="v_96" value="AUC/KS评估&#xa;PKL+JSON导出" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E5F5;fontSize=8;" parent="1" vertex="1">
+          <mxGeometry x="420" y="615" width="115" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="v_97" value="Java后端&#xa;推理集成" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEBEE;fontSize=8;" parent="1" vertex="1">
+          <mxGeometry x="550" y="615" width="115" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="v_98" value="3级阈值&#xa;风控决策" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEBEE;fontSize=8;" parent="1" vertex="1">
+          <mxGeometry x="680" y="615" width="115" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="e_99" value="" style="edgeStyle=none;" parent="1" source="v_93" target="v_94" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_100" value="" style="edgeStyle=none;" parent="1" source="v_94" target="v_95" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_101" value="" style="edgeStyle=none;" parent="1" source="v_95" target="v_96" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_102" value="" style="edgeStyle=none;" parent="1" source="v_96" target="v_97" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_103" value="" style="edgeStyle=none;" parent="1" source="v_97" target="v_98" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

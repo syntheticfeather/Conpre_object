@@ -1,0 +1,82 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.2.5 Chrome/138.0.7204.251 Electron/37.6.1 Safari/537.36" version="28.2.5">
+  <diagram id="diagram_1" name="Page-1">
+    <mxGraphModel dx="1866" dy="1274" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1280" pageHeight="720" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="v_2" value="智能客服 — 长期记忆系统 (Memory System)" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" parent="1" vertex="1">
+          <mxGeometry x="220" y="8" width="300" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="v_3" value="对 话 后: LLM 异步提取记忆" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" parent="1" vertex="1">
+          <mxGeometry x="40" y="45" width="240" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="v_4" value="一轮对话结束&#xa;user: &quot;我想贷20万，偏好等额本息&quot;&#xa;AI: &quot;好的，推荐个人消费贷...&quot;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;fontSize=9;" parent="1" vertex="1">
+          <mxGeometry x="30" y="68" width="220" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="v_5" value="MemoryExtractor&#xa;LLM 提取结构化记忆&#xa;&#xa;- type: preference / fact / habit&#xa;- content: &quot;用户偏好等额本息还款&quot;&#xa;- key: &quot;repaid_type&quot;&#xa;- importance: 0.9" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#E3F2FD;" parent="1" vertex="1">
+          <mxGeometry x="30" y="130" width="220" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="e_6" value="" style="edgeStyle=none;" parent="1" source="v_4" target="v_5" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="v_7" value="存 储 层" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" parent="1" vertex="1">
+          <mxGeometry x="310" y="45" width="200" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="v_8" value="UserMemoryStore&#xa;ChromaDB collection&#xa;&quot;user_memory&quot;&#xa;&#xa;metadata: user_id, type, key,&#xa;entities, importance, created_at,&#xa;valid_until (默认1年)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#E8F5E9;strokeColor=#1B5E20;" parent="1" vertex="1">
+          <mxGeometry x="310" y="68" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e_9" value="save()" style="edgeStyle=none;" parent="1" source="v_5" target="v_8" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="v_10" value="实体索引 (Mem0 式)&#xa;ChromaDB collection&#xa;&quot;user_memory_entities&quot;&#xa;&#xa;- &quot;等额本息&quot; -&gt; user_id=4&#xa;- &quot;短期&quot; -&gt; user_id=4" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#E8F5E9;strokeColor=#1B5E20;" parent="1" vertex="1">
+          <mxGeometry x="310" y="150" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="v_11" value="MongoDB 短期记忆&#xa;chat_history collection&#xa;&#xa;原始对话流水&#xa;按 session_id + 时间排序&#xa;最近 2 轮对话" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#FFF8E1;strokeColor=#E65100;" parent="1" vertex="1">
+          <mxGeometry x="310" y="220" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="v_12" value="对 话 前: 多信号检索 + 记忆注入" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" parent="1" vertex="1">
+          <mxGeometry x="550" y="45" width="280" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="v_13" value="用户新消息&#xa;&quot;帮我算一下月供&quot;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;" parent="1" vertex="1">
+          <mxGeometry x="550" y="68" width="220" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="v_14" value="UserMemoryStore.search()&#xa;多信号综合评分:&#xa;  vector_similarity x 0.50&#xa;+ importance         x 0.20&#xa;+ time_decay          x 0.15&#xa;+ entity_match        x 0.15&#xa;&#xa;过滤: valid_until &lt; now (过期)" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#E3F2FD;" parent="1" vertex="1">
+          <mxGeometry x="550" y="130" width="220" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="e_15" value="" style="edgeStyle=none;" parent="1" source="v_13" target="v_14" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="v_16" value="评 分 细 节" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" parent="1" vertex="1">
+          <mxGeometry x="550" y="220" width="250" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="v_17" value="time_decay = e^(-lambda * t)    lambda = ln(2)/90" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E5F5;" parent="1" vertex="1">
+          <mxGeometry x="550" y="238" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v_18" value="entity_match:&#xa;query 实体 &quot;等额本息&quot; 命中记忆实体&#xa;-&gt; overlap/min(len) -&gt; 0~1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E5F5;" parent="1" vertex="1">
+          <mxGeometry x="550" y="273" width="220" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="v_19" value="Zep 冲突检测&#xa;同 user_id + key 旧记忆&#xa;-&gt; valid_until = now (过期)&#xa;写入新记忆 (1年有效)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEBEE;" parent="1" vertex="1">
+          <mxGeometry x="310" y="290" width="180" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="v_20" value="Semantic 得分 &lt; 0.3?&#xa;-&gt; 回退 MongoDB 短期记忆兜底" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF8E1;strokeColor=#E65100;" parent="1" vertex="1">
+          <mxGeometry x="550" y="340" width="220" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="e_21" value="" style="edgeStyle=none;" parent="1" source="v_14" target="v_20" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="v_22" value="记忆注入 System Prompt&#xa;[用户历史信息]&#xa;- 用户偏好等额本息&#xa;- 用户月收入15000&#xa;[当前问题]&#xa;帮我算一下月供" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#2E7D32;" parent="1" vertex="1">
+          <mxGeometry x="550" y="395" width="220" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="e_23" value="" style="edgeStyle=none;" parent="1" source="v_20" target="v_22" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_24" value="Semantic 检索" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_8" target="v_14" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_25" value="实体匹配" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="v_10" target="v_14" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,82 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.2.5 Chrome/138.0.7204.251 Electron/37.6.1 Safari/537.36" version="28.2.5">
+  <diagram id="diagram_1" name="Page-1">
+    <mxGraphModel dx="1011" dy="690" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1280" pageHeight="720" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="v_2" value="Agentic Workflow 可组合Agent链架构" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" parent="1" vertex="1">
+          <mxGeometry x="30" y="10" width="500" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="v_3" value="Java 端 - 路由分发" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" parent="1" vertex="1">
+          <mxGeometry x="30" y="45" width="180" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="v_4" value="用户消息" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;" parent="1" vertex="1">
+          <mxGeometry x="60" y="70" width="130" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="v_5" value="LLM 意图分类&#xa;(6类意图)" style="rhombus;whiteSpace=wrap;html=1;fillColor=#F3E5F5;" parent="1" vertex="1">
+          <mxGeometry x="55" y="135" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="v_6" value="Workflow 快通道&#xa;(Java本地)&#xa;查询/计算&#xa;产品/申请" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#2E7D32;" parent="1" vertex="1">
+          <mxGeometry x="15" y="235" width="105" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="v_7" value="Agent&#xa;通道&#xa;咨询/投诉&#xa;兜底" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#1565C0;" parent="1" vertex="1">
+          <mxGeometry x="140" y="235" width="80" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="e_8" value="" style="edgeStyle=none;" parent="1" source="v_4" target="v_5" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_9" value="&gt;=0.8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#2E7D32;" parent="1" source="v_5" target="v_6" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_10" value="&lt;0.8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#1565C0;" parent="1" source="v_5" target="v_7" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="v_11" value="Python 端 - 可组合Agent链 (装饰器模式)" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" parent="1" vertex="1">
+          <mxGeometry x="270" y="45" width="280" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="v_12" value="BaseAgent 抽象基类 (统一 async chat() 接口)" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#FFF3E0;" parent="1" vertex="1">
+          <mxGeometry x="310" y="70" width="250" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="v_13" value="ReactAgent (底层基础)&#xa;LangChain AgentExecutor + 工具调用 + 流式输出" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;" parent="1" vertex="1">
+          <mxGeometry x="310" y="120" width="250" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="e_14" value="" style="edgeStyle=none;" parent="1" source="v_12" target="v_13" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="v_15" value="ChatAgent 工厂 (按 agent_mode 组装链)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF8E1;strokeColor=#E65100;" parent="1" vertex="1">
+          <mxGeometry x="310" y="195" width="250" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="v_16" value="ReactAgent()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;fontSize=9;" parent="1" vertex="1">
+          <mxGeometry x="620" y="70" width="250" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v_17" value="PlanExecuteAgent(ReactAgent())" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BBDEFB;fontSize=9;" parent="1" vertex="1">
+          <mxGeometry x="620" y="140" width="250" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v_18" value="ReflectionAgent(ReactAgent())" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E5F5;fontSize=9;" parent="1" vertex="1">
+          <mxGeometry x="620" y="210" width="250" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v_19" value="PlanExecuteAgent(ReflectionAgent(ReactAgent()))" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEBEE;fontSize=9;" parent="1" vertex="1">
+          <mxGeometry x="620" y="280" width="250" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="e_20" value="" style="edgeStyle=none;" parent="1" source="v_13" target="v_15" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="v_21" value="Java 意图自动匹配 Agent 模式" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" parent="1" vertex="1">
+          <mxGeometry x="30" y="350" width="500" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="v_22" value="CALCULATE / APPLY_LOAN  → reflection" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E5F5;fontSize=9;" parent="1" vertex="1">
+          <mxGeometry x="30" y="370" width="215" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v_23" value="CONSULT  → plan+reflection" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEBEE;fontSize=9;" parent="1" vertex="1">
+          <mxGeometry x="260" y="370" width="215" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v_24" value="COMPLAINT  → plan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BBDEFB;fontSize=9;" parent="1" vertex="1">
+          <mxGeometry x="30" y="405" width="215" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v_25" value="default  → react (兜底)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;fontSize=9;" parent="1" vertex="1">
+          <mxGeometry x="260" y="405" width="215" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
