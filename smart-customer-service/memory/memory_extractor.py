@@ -68,7 +68,7 @@ AI 回复: {ai_response}
 
         try:
             response = self.client.chat.completions.create(
-                model="gpt-4.1-mini-free",
+                model="deepseek-v4-flash",
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.0, max_tokens=500,
             )

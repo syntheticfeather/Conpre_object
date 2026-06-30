@@ -81,7 +81,7 @@ class PlanExecuteAgent(BaseAgent):
                 base_url=os.getenv("LLM_BASE_URL", "https://aihubmix.com").rstrip("/") + "/v1",
             )
             response = client.chat.completions.create(
-                model="gpt-4.1-mini-free",
+                model="deepseek-v4-flash",
                 messages=[{"role": "user", "content": f"""将以下用户问题拆解为 {self.MAX_STEPS} 步以内的执行计划。
 每步一行，不要编号，不要多余解释。
 

@@ -96,7 +96,7 @@ AI 回复: {response}
 输出 JSON: {{"score": 0.85, "issues": "问题描述(通过则写'无')"}}"""
 
             resp = client.chat.completions.create(
-                model="gpt-4.1-mini-free",
+                model="deepseek-v4-flash",
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.0, max_tokens=200,
             )
@@ -122,7 +122,7 @@ AI 回复: {response}
 请输出修改后的完整回复。"""
 
             resp = client.chat.completions.create(
-                model="gpt-4.1-mini-free",
+                model="deepseek-v4-flash",
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.3, max_tokens=1000,
             )
