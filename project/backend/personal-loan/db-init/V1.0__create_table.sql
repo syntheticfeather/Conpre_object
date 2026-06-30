@@ -1,5 +1,8 @@
 
--- 设置字符集
+-- 设置字符集，确保中文数据正确解析
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+
 ALTER DATABASE `person-loan` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE users(  
@@ -230,25 +233,23 @@ INSERT INTO users (user_name, password, phone, role) VALUES
 ('gcc', '$2a$10$tgL5vVw82nDYyqMhiS0BJeYyl.Ar7ox6N6RMEUmggBD1Tvo5Z0FiK', '17777777777', 1),
 ('zff', '$2a$10$60kyX/HezEaHChvKpZB9j.fByPl8is6etEiay0oqusri6zA5/Pl1C', '19999999999', 1),
 ('wt', '$2a$10$ODq7dU6Bvz8Ks9b7mNGt5OLExUV3gmY2wPHXrXICJi0j.pjCfyuYC', '18888888888', 1),
-('qyx', '$2a$10$UDcyeEjze0A3K8pNSzMoFOyoaN.G3/v/ilQpMv2/6J28.6GxvhhTK', '16666666666', 1)
+('qyx', '$2a$10$UDcyeEjze0A3K8pNSzMoFOyoaN.G3/v/ilQpMv2/6J28.6GxvhhTK', '16666666666', 1);
 
 /* 
 * 插入普通用户,明文密码分别是 WangFang@2025 ZhangWei@2025 LiMing@2025 Alice2025!
  */
 INSERT INTO users(user_name, password, phone, role) VALUES
-('王芳', '$2a$10$LjWKXLLidSLSdr2iS6.RZe785XyAy.LNpO2AlHKpj4x0WLLqOafO.', '13100001111', 0),
-('张伟', '$2a$10$J2gSAyblu0zxSMiKMXamF.wjn2z4yFDJNfBclb/CyPtQyYWY08eQe', '15098765432', 0),
-('李明', '$2a$10$n2eK0EQQBpBexTGD7KqMPuMI7bU149gMwq1W55.l48.pmO1NySmga', '13912345678', 0),
+('WangFang', '$2a$10$LjWKXLLidSLSdr2iS6.RZe785XyAy.LNpO2AlHKpj4x0WLLqOafO.', '13100001111', 0),
+('ZhangWei', '$2a$10$J2gSAyblu0zxSMiKMXamF.wjn2z4yFDJNfBclb/CyPtQyYWY08eQe', '15098765432', 0),
+('LiMing', '$2a$10$n2eK0EQQBpBexTGD7KqMPuMI7bU149gMwq1W55.l48.pmO1NySmga', '13912345678', 0),
 ('Alice', '$2a$10$MdGHJwB6IbBPrl7dbogSMOV2qsMkKT/u2Nd9DqF39C5EE5rS6CIVK', '13800138000', 0);
 
 /* 
 * 插入上面四个用户的认证记录
  */
-INSERT INTO user_certification(user_id) VALUES
-(5),
-(6),
-(7),
-(8);
+-- 插入普通用户的认证记录（通过子查询获取正确的user_id）
+INSERT INTO user_certification(user_id)
+SELECT id FROM users WHERE user_name IN ('WangFang', 'ZhangWei', 'LiMing', 'Alice');
 
 -- 插入产品
 INSERT INTO loan_products (
@@ -266,8 +267,8 @@ INSERT INTO loan_products (
 );
 
 INSERT INTO loan_options (product_id, interest_rate, loan_period, repaid_type) VALUES
-(1, 0.0650, 1, '先息后本'),
-(1, 0.0720, 2, '等额本息');
+((SELECT id FROM loan_products WHERE product_name = '小微经营贷'), 0.0650, 1, '先息后本'),
+((SELECT id FROM loan_products WHERE product_name = '小微经营贷'), 0.0720, 2, '等额本息');
 
 INSERT INTO loan_products (
     product_name, description, loan_usage, status,
@@ -284,8 +285,8 @@ INSERT INTO loan_products (
 );
 
 INSERT INTO loan_options (product_id, interest_rate, loan_period, repaid_type) VALUES
-(2, 0.0720, 1, '等额本息'),
-(2, 0.0780, 2, '等额本息');
+((SELECT id FROM loan_products WHERE product_name = '创业启航贷'), 0.0720, 1, '等额本息'),
+((SELECT id FROM loan_products WHERE product_name = '创业启航贷'), 0.0780, 2, '等额本息');
 
 INSERT INTO loan_products (
     product_name, description, loan_usage, status,
@@ -302,7 +303,7 @@ INSERT INTO loan_products (
 );
 
 INSERT INTO loan_options (product_id, interest_rate, loan_period, repaid_type) VALUES
-(3, 0.0800, 1, '先息后本');
+((SELECT id FROM loan_products WHERE product_name = '灵活周转贷'), 0.0800, 1, '先息后本');
 
 INSERT INTO loan_products (
     product_name, description, loan_usage, status,
@@ -319,9 +320,9 @@ INSERT INTO loan_products (
 );
 
 INSERT INTO loan_options (product_id, interest_rate, loan_period, repaid_type) VALUES
-(4, 0.0580, 5, '等额本息'),
-(4, 0.0620, 10, '等额本息'),
-(4, 0.0650, 5, '等额本金');
+((SELECT id FROM loan_products WHERE product_name = '设备升级贷'), 0.0580, 5, '等额本息'),
+((SELECT id FROM loan_products WHERE product_name = '设备升级贷'), 0.0620, 10, '等额本息'),
+((SELECT id FROM loan_products WHERE product_name = '设备升级贷'), 0.0650, 5, '等额本金');
 
 INSERT INTO loan_products (
     product_name, description, loan_usage, status,
@@ -338,7 +339,7 @@ INSERT INTO loan_products (
 );
 
 INSERT INTO loan_options (product_id, interest_rate, loan_period, repaid_type) VALUES
-(5, 0.0750, 6, '先息后本');
+((SELECT id FROM loan_products WHERE product_name = '季节备货贷'), 0.0750, 6, '先息后本');
 
 /* DELETE FROM loan_applications;
 DELETE FROM outbox_message;

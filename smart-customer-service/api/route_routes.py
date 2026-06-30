@@ -44,8 +44,8 @@ def _get_llm():
     if _llm_client is None:
         api_key = os.getenv("LLM_API_KEY")
         base_url = os.getenv("LLM_BASE_URL", "https://aihubmix.com")
-        if not base_url.endswith("/v1"):
-            base_url = base_url.rstrip("/") + "/v1"
+        # if not base_url.endswith("/v1"):
+        #     base_url = base_url.rstrip("/") + "/v1"
         _llm_client = OpenAI(api_key=api_key, base_url=base_url)
     return _llm_client
 
@@ -76,7 +76,7 @@ async def classify_route(request: RouteRequest):
     try:
         client = _get_llm()
         response = client.chat.completions.create(
-            model="gpt-4.1-mini-free",
+            model="deepseek-v4-flash",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.0,
             max_tokens=100,
@@ -165,7 +165,7 @@ async def extract_loan_params(request: ExtractLoanParamsRequest):
     try:
         client = _get_llm()
         response = client.chat.completions.create(
-            model="gpt-4.1-mini-free",
+            model="deepseek-v4-flash",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.0,
             max_tokens=200,

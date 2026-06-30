@@ -32,7 +32,7 @@ class ReactAgent(BaseAgent):
         http_client = Client(timeout=30.0, verify=True)
 
         self.llm = ChatOpenAI(
-            model="gpt-4.1-mini-free",
+            model="deepseek-v4-flash",
             api_key=api_key,
             base_url=base_url,
             temperature=0.7,

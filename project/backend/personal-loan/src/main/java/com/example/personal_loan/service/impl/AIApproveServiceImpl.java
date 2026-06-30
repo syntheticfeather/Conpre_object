@@ -106,7 +106,7 @@ public class AIApproveServiceImpl implements AIApproveService {
         } else {
             // AI审核拒绝
             application.setStatus(ApplicationStatus.AI拒绝);
-            application.setRejectReason("信用分不足");
+            application.setRejectReason("信用分不足\n");
             application.setReviewTime(LocalDateTime.now());
             applicationMapper.update(application);
 

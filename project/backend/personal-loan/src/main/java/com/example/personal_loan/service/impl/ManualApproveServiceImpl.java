@@ -84,6 +84,10 @@ public class ManualApproveServiceImpl implements ManualApproveService{
         if (application == null) {
             throw new BusinessException(404,"贷款申请不存在");
         }
+        // 检查状态
+        if (!ApplicationStatus.审核中.equals(application.getStatus())&&!ApplicationStatus.AI拒绝.equals(application.getStatus())) {
+            throw new BusinessException(400, "该申请的状态有误");
+        }
         ApplicationStatus newStatus;
         String currentRejectReason = application.getRejectReason();
         ManualCheckResponse response = new ManualCheckResponse();

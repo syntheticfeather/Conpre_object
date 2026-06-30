@@ -305,15 +305,25 @@ const loadProductDetail = async () => {
     if (response.code === 200) {
       productData.value = response.data || {}
       editForm.value = { ...productData.value }
-      
-      // 设置默认值
-      if (!editForm.value.minTerm && editForm.value.minTerm !== 0) {
+
+      // 从 terms 数组推算 minTerm / maxTerm / termStep
+      const terms = response.data.terms
+      if (terms && terms.length >= 2) {
+        editForm.value.minTerm = terms[0]
+        editForm.value.maxTerm = terms[terms.length - 1]
+        const diffs = []
+        for (let i = 1; i < terms.length; i++) {
+          diffs.push(terms[i] - terms[i - 1])
+        }
+        const step = Math.min(...diffs)
+        const allSameStep = diffs.every(d => d === step)
+        editForm.value.termStep = allSameStep ? step : diffs[0]
+      } else {
         editForm.value.minTerm = 0
-      }
-      if (!editForm.value.maxTerm) {
         editForm.value.maxTerm = 12
+        editForm.value.termStep = null
       }
-      
+
       originalOptions.value = productData.value.options || []
       options.value = [...originalOptions.value]
     } else {
@@ -370,7 +380,7 @@ const saveChanges = async () => {
       if (toDeleteIds.length === 1) {
         await loanAPI.deleteOption(toDeleteIds[0])
       } else {
-        await loanAPI.batchDeleteOptions({ optionIds: toDeleteIds })
+        await loanAPI.batchDeleteOptions(toDeleteIds)
       }
     }
 
@@ -382,11 +392,31 @@ const saveChanges = async () => {
       })
     }
 
-    // 确保 editForm.value.options 只包含已存在的选项（有 optionId 的选项）
-    editForm.value.options = options.value.filter(opt => opt.optionId)
-    
+    // 构建提交数据：保留 optionId 字段名（后端 LoanOption 实体使用 getOptionId()）
+    const modifiedOptions = options.value
+      .filter(opt => opt.optionId)
+      .map(opt => ({
+        optionId: opt.optionId,
+        ...(opt.loanPeriod !== undefined && { loanPeriod: opt.loanPeriod }),
+        ...(opt.interestRate !== undefined && { interestRate: opt.interestRate }),
+        ...(opt.repaidType !== undefined && { repaidType: opt.repaidType }),
+      }))
+
+    // 收集基本字段中真正有变更的字段
+    const submitData = {}
+    const basicFields = ['productName', 'description', 'loanUsage',
+                         'minTerm', 'maxTerm', 'termStep',
+                         'minAmount', 'maxAmount', 'promotionDetails',
+                         'status']
+    for (const field of basicFields) {
+      if (editForm.value[field] !== undefined) {
+        submitData[field] = editForm.value[field]
+      }
+    }
+    submitData.options = modifiedOptions
+
     // 更新产品基本信息 - 使用正确的API函数
-    await loanAPI.updateProduct(props.productId, editForm.value)
+    await loanAPI.updateProduct(props.productId, submitData)
 
     ElMessage.success('更新成功')
     isEditMode.value = false
@@ -448,8 +478,8 @@ const formatDate = (dateString) => {
 const formatAmount = (amount) => {
   if (!amount) return '0'
   const num = Number(amount)
-  if (num >= 100000000) return (num / 100000000).toFixed(2)
-  if (num >= 10000) return (num / 10000).toFixed(1)
+  if (num >= 100000000) return (num / 100000000).toFixed(2)+'亿'
+  if (num >= 10000) return (num / 10000).toFixed(1)+'万'
   return num.toLocaleString()
 }
 

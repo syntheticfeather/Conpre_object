@@ -298,7 +298,9 @@ public class LoanProductServiceImpl implements LoanProductService{
         }
 
         // 更新
+        Long existingId = existing.getId();
         BeanUtils.copyProperties(dto, existing);
+        existing.setId(existingId);
         existing.setUpdateTime(LocalDateTime.now());
         loanProductMapper.update(existing);
         

@@ -32,7 +32,12 @@ class MongoDBClient:
         prompts_collection_name = os.getenv("MONGODB_PROMPTS_COLLECTION", "prompts")
         mcp_servers_collection_name = os.getenv("MONGODB_MCP_COLLECTION", "mcp_servers")
 
-        self._client = MongoClient(mongodb_url)
+        self._client = MongoClient(
+            mongodb_url,
+            connectTimeoutMS=5000,
+            serverSelectionTimeoutMS=5000,
+            ssl=False
+        )
         self._db = self._client[db_name]
         self._chat_collection = self._db[chat_collection_name]
         self._prompts_collection = self._db[prompts_collection_name]

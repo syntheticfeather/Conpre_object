@@ -236,6 +236,93 @@ const doSend = async () => {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
+/* Markdown 渲染样式 */
+.assistant-content p {
+  margin: 0 0 8px;
+}
+.assistant-content p:last-child {
+  margin-bottom: 0;
+}
+
+.assistant-content ul,
+.assistant-content ol {
+  padding-left: 20px;
+  margin: 4px 0;
+}
+
+.assistant-content li {
+  margin-bottom: 4px;
+}
+
+.assistant-content code {
+  background: #f0f2f5;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: 'Consolas', 'Monaco', monospace;
+  color: #d63384;
+}
+
+.assistant-content pre {
+  background: #f6f8fa;
+  border: 1px solid #e4e7ed;
+  border-radius: 8px;
+  padding: 12px 16px;
+  overflow-x: auto;
+  margin: 8px 0;
+}
+
+.assistant-content pre code {
+  background: none;
+  padding: 0;
+  color: #333;
+}
+
+.assistant-content a {
+  color: #1a73e8;
+  text-decoration: underline;
+}
+
+.assistant-content blockquote {
+  border-left: 4px solid #1a73e8;
+  padding-left: 12px;
+  margin: 8px 0;
+  color: #666;
+  background: #f8f9fa;
+  border-radius: 0 4px 4px 0;
+}
+
+.assistant-content h1,
+.assistant-content h2,
+.assistant-content h3,
+.assistant-content h4 {
+  margin: 12px 0 6px;
+  line-height: 1.4;
+}
+
+.assistant-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 8px 0;
+  font-size: 13px;
+}
+
+.assistant-content th,
+.assistant-content td {
+  border: 1px solid #e4e7ed;
+  padding: 6px 10px;
+  text-align: left;
+}
+
+.assistant-content th {
+  background: #f5f7fa;
+  font-weight: 600;
+}
+
+.assistant-content strong {
+  font-weight: 600;
+}
+
 .message-tool {
   font-size: 12px;
   color: #909399;

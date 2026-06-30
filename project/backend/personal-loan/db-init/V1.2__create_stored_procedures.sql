@@ -1,3 +1,5 @@
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
 -- ============================================
 -- V1.2: 存储过程
 -- 1. sp_generate_repayment_schedule  — 生成还款计划
