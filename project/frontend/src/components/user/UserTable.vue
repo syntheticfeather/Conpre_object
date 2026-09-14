@@ -1,5 +1,6 @@
 <template>
   <div class="user-table-wrapper">
+    <FilterChips v-model="activeChip" :chips="chips" />
     <BaseTable
       ref="tableRef"
       :data-source="paginatedUsers"
@@ -14,6 +15,10 @@
       :show-action="true"
       :row-clickable="true"
       :selected-row-class="selectedUserId"
+      :empty-title="activeChip === 'all' ? '暂无用户数据' : '没有符合筛选条件的用户'"
+      :empty-description="activeChip === 'all' ? '注册用户会在这里展示' : '试试切换其他筛选条件'"
+      empty-cta="重置筛选"
+      @empty-action="resetAllFilters"
       @page-change="handlePageChange"
       @row-click="selectUser"
       @table-change="handleTableChange"
@@ -57,10 +62,11 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import BaseTable from '@/components/shared/BaseTable.vue'
+import FilterChips from '@/components/shared/FilterChips.vue'
 
 const emit = defineEmits(['user-selected'])
 
@@ -72,6 +78,38 @@ const pageSize = 5
 const selectedUserId = ref(null)
 const sortInfo = ref({ field: null, order: null })
 const filterConditions = ref({})
+
+/* ===== chip 快捷筛选（用户：按信誉分分层，无时间字段故省略"本周新增"） ===== */
+const activeChip = ref('all')
+const chips = [
+  { key: 'all', label: '全部', color: '#909399' },
+  { key: 'success', label: '正常用户', color: 'var(--status-success)' },
+  { key: 'warning', label: '中风险用户', color: 'var(--status-warning)' },
+  { key: 'danger', label: '高风险用户', color: 'var(--status-danger)' },
+  { key: 'priority', label: '高优先级', color: '#8B5CF6' }
+]
+
+const applyChipFilter = (users) => {
+  switch (activeChip.value) {
+    case 'success': // 信誉分 ≥ 600
+      return users.filter(u => (u.creditScore || 0) >= 600)
+    case 'warning': // 信誉分 500~600
+      return users.filter(u => (u.creditScore || 0) >= 500 && (u.creditScore || 0) < 600)
+    case 'danger': // 信誉分 < 500
+      return users.filter(u => (u.creditScore || 0) < 500)
+    case 'priority': // 高优先级：信誉分 < 600 或已在黑名单
+      return users.filter(u =>
+        (u.creditScore || 0) < 600 || userStore.blacklist.some(b => b.userId === u.userId)
+      )
+    default:
+      return users
+  }
+}
+
+// 切换筛选条件时回到第一页
+watch(activeChip, () => {
+  currentPage.value = 1
+})
 
 const columns = [
   {
@@ -111,7 +149,8 @@ const columns = [
 
 const paginatedUsers = computed(() => {
   let users = [...userStore.users]
-  
+  users = applyChipFilter(users)
+
   // 应用筛选条件
   if (filterConditions.value.creditScore) {
     const condition = filterConditions.value.creditScore
@@ -153,7 +192,8 @@ const paginatedUsers = computed(() => {
 // 筛选后的总用户数
 const filteredTotal = computed(() => {
   let users = [...userStore.users]
-  
+  users = applyChipFilter(users)
+
   // 应用筛选条件
   if (filterConditions.value.creditScore) {
     const condition = filterConditions.value.creditScore
@@ -295,6 +335,12 @@ const setFilter = (filters) => {
 const resetFilter = () => {
   filterConditions.value = {}
   currentPage.value = 1
+}
+
+// 空态 CTA：同时重置 chip 与高级筛选
+const resetAllFilters = () => {
+  activeChip.value = 'all'
+  resetFilter()
 }
 
 // 暴露方法给父组件

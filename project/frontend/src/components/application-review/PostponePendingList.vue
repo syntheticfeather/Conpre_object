@@ -1,18 +1,24 @@
 <template>
-  <BaseTable
-    :data-source="paginatedPostponeRequests"
-    :columns="columns"
-    :current-page="currentPage"
-    :total="postponeRequests.length"
-    :page-size="pageSize"
-    :row-key="'id'"
-    :show-row-selection="false"
-    :show-batch-actions="false"
-    :show-index="false"
-    :show-action="false"
-    @page-change="handlePageChange"
-    @row-click="handleRowClick"
-  >
+  <div class="list-wrapper">
+    <FilterChips v-model="activeChip" :chips="chips" />
+    <BaseTable
+      :data-source="paginatedPostponeRequests"
+      :columns="columns"
+      :current-page="currentPage"
+      :total="filteredPostponeRequests.length"
+      :page-size="pageSize"
+      :row-key="'id'"
+      :show-row-selection="false"
+      :show-batch-actions="false"
+      :show-index="false"
+      :show-action="false"
+      :empty-title="activeChip === 'all' ? '暂无待审延期申请' : '没有符合筛选条件的申请'"
+      :empty-description="activeChip === 'all' ? '用户提交延期申请后将实时出现在这里' : '试试切换其他筛选条件'"
+      empty-cta="刷新数据"
+      @empty-action="$emit('refresh')"
+      @page-change="handlePageChange"
+      @row-click="handleRowClick"
+    >
     <template #createdAt="{ record }">
       {{ formatDate(record.createdAt) }}
     </template>
@@ -29,11 +35,13 @@
       </span>
     </template>
   </BaseTable>
+  </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import BaseTable from '@/components/shared/BaseTable.vue'
+import FilterChips from '@/components/shared/FilterChips.vue'
 
 const props = defineProps({
   postponeRequests: {
@@ -42,10 +50,43 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['show-detail'])
+const emit = defineEmits(['show-detail', 'refresh'])
 
 const currentPage = ref(1)
 const pageSize = 5
+
+/* ===== chip 快捷筛选（延期待审：全部/待审核/本周新增） ===== */
+const activeChip = ref('all')
+const chips = [
+  { key: 'all', label: '全部', color: '#909399' },
+  { key: 'warning', label: '待审核', color: 'var(--status-warning)' },
+  { key: 'week', label: '本周新增', color: 'var(--brand-500)' }
+]
+
+// 本周一 0 点
+const weekStart = (() => {
+  const d = new Date()
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7))
+  d.setHours(0, 0, 0, 0)
+  return d.getTime()
+})()
+
+const filteredPostponeRequests = computed(() => {
+  const list = props.postponeRequests
+  switch (activeChip.value) {
+    case 'warning':
+      return list.filter(r => r.status === '待审核' || r.status === 'PENDING')
+    case 'week':
+      return list.filter(r => r.createdAt && new Date(r.createdAt).getTime() >= weekStart)
+    default:
+      return list
+  }
+})
+
+// 切换筛选条件时回到第一页
+watch(activeChip, () => {
+  currentPage.value = 1
+})
 
 const columns = [
   {
@@ -84,7 +125,7 @@ const columns = [
 
 const paginatedPostponeRequests = computed(() => {
   const start = (currentPage.value - 1) * pageSize
-  return props.postponeRequests.slice(start, start + pageSize)
+  return filteredPostponeRequests.value.slice(start, start + pageSize)
 })
 
 const handlePageChange = (page) => {

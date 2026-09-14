@@ -75,21 +75,10 @@ const router = createRouter({
 
 import { isTokenExpired } from '@/utils/jwt'
 import { authAPI } from '@/api'
-
-function updateStoredToken(token, refreshToken) {
-  const stored = localStorage.getItem('auth-store')
-  if (!stored) return
-  try {
-    const data = JSON.parse(stored)
-    data.token = token
-    data.refreshToken = refreshToken
-    localStorage.setItem('auth-store', JSON.stringify(data))
-  } catch {
-    // 忽略解析错误
-  }
-}
+import { useAuthStore } from '@/stores/auth'
 
 router.beforeEach(async (to) => {
+  const authStore = useAuthStore()
   const stored = localStorage.getItem('auth-store')
   if (!stored) {
     // 没有存储的认证信息
@@ -105,7 +94,7 @@ router.beforeEach(async (to) => {
     authData = JSON.parse(stored)
   } catch (e) {
     console.error('[Router Guard] 解析认证信息失败:', e)
-    localStorage.removeItem('auth-store')
+    authStore.logout()
     if (to.meta.requiresAuth) return '/login'
     return
   }
@@ -128,7 +117,7 @@ router.beforeEach(async (to) => {
   const refreshToken = authData.refreshToken
   if (!refreshToken) {
     console.log('[Router Guard] 无refreshToken，跳转登录页')
-    localStorage.removeItem('auth-store')
+    authStore.logout()
     return '/login'
   }
 
@@ -137,18 +126,21 @@ router.beforeEach(async (to) => {
     const res = await authAPI.refreshToken(refreshToken)
     if (res.code === 200) {
       const { token, refreshToken: newRefreshToken } = res.data
-      updateStoredToken(token, newRefreshToken)
+      // 走 store action 单点更新：Pinia 内存态与 localStorage 持久化同步
+      authStore.setAuthInfo({ token, refreshToken: newRefreshToken })
       console.log('[Router Guard] Token刷新成功')
-      // 刷新成功，放行访问
+      // 刷新成功后，已登录用户访问登录/注册页则重定向到控制台
+      if (to.name === 'Login' || to.name === 'Register') {
+        return '/dashboard/pending-applications'
+      }
       return
-    } else {
-      console.warn('[Router Guard] Token刷新失败:', res.message)
-      localStorage.removeItem('auth-store')
-      return '/login'
     }
+    console.warn('[Router Guard] Token刷新失败:', res.message)
+    authStore.logout()
+    return '/login'
   } catch (error) {
     console.error('[Router Guard] Token刷新异常:', error)
-    localStorage.removeItem('auth-store')
+    authStore.logout()
     return '/login'
   }
 })

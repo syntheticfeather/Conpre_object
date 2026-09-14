@@ -167,7 +167,7 @@ a {
     --notif-header-bg: #fafafa;                 /* 通知面板头部背景色 */
     --notif-header-border: #f0f0f0;             /* 通知面板头部边框色 */
     --notif-header-text: #303133;               /* 通知面板头部文字色 */
-    --notif-item-border: #f5f5f5;               /* 通知项边框色 */
+    --notif-item-border: #25e0bf;               /* 通知项边框色 */
     --notif-item-hover-bg: #f5f7fa;             /* 通知项悬停背景色 */
     --notif-unread-bg: #ecf5ff;                 /* 未读通知背景色 */
     --notif-unread-border: #409EFF;             /* 未读通知左边框高亮色 */
@@ -484,6 +484,77 @@ a {
     --conversation-bg: #f5f7fa;                 /* 会话日志消息项背景色 */
 
     --semi-transparent-white: rgba(255, 255, 255, 0.8); /* 通用半透明白色背景 */
+
+    /* ============================================================
+       设计令牌（产品化）— 间距 / 排版 / 动效 / 圆角 / 品牌色
+       全站样式只能引用以下令牌，不再手写零散像素值
+       ============================================================ */
+    /* 间距系统（4 的倍数，六档） */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 40px;
+    --space-2xl: 64px;
+
+    /* 排版系统（clamp 流式字号，随视口轻微缩放） */
+    --text-sm: clamp(12px, 0.78rem + 0.1vw, 13px);
+    --text-base: clamp(13px, 0.82rem + 0.15vw, 15px);
+    --text-lg: clamp(15px, 0.92rem + 0.2vw, 18px);
+    --text-xl: clamp(18px, 1.08rem + 0.3vw, 22px);
+    --text-2xl: clamp(22px, 1.28rem + 0.4vw, 28px);
+
+    /* 动效系统（三档时长 + 两条缓动曲线） */
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --duration-fast: 150ms;
+    --duration-normal: 300ms;
+    --duration-slow: 600ms;
+
+    /* 圆角系统（四档） */
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-full: 9999px;
+
+    /* 品牌色（从外壳紫→蓝→青渐变同源提取） */
+    --brand-purple: #2D1B69;                    /* 品牌紫（渐变左端） */
+    --brand-50: #EFF6FF;                        /* 品牌蓝极浅底 */
+    --brand-100: #DBEAFE;                       /* 品牌蓝浅底 */
+    --brand-500: #3B82F6;                       /* 主操作蓝 */
+    --brand-600: #2563EB;                       /* 主操作蓝（按下/深色） */
+    --brand-accent: #25E0BF;                    /* 强调青（成功/激活，渐变右端） */
+
+    /* 语义状态色 */
+    --status-success: #10B981;
+    --status-warning: #F59E0B;
+    --status-danger: #EF4444;
+
+    /* 浮层材质（主卡片等浮于画布之上的元素） */
+    --float-border: rgba(255, 255, 255, 0.35);
+    --float-shadow: 0 8px 32px rgba(15, 23, 42, 0.10),
+                    inset 0 -40px 48px -40px rgba(15, 23, 42, 0.08); /* 底部内阴影：纸越深越暗 */
+
+    /* 列表装饰：极淡点阵图案（data URI，仅用于空数据区背景） */
+    --list-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='2' cy='2' r='1' fill='%233B82F6' fill-opacity='0.12'/%3E%3C/svg%3E");
+
+    /* 表格表头：浅品牌蓝底（取代旧灰绿 #335b623b） */
+    --table-head-bg: rgba(59, 130, 246, 0.06);
+
+    /* Element Plus 主题变量一次性覆盖（亮色） — 禁止在各组件内重复覆盖 */
+    --el-color-primary: #3B82F6;
+    --el-color-primary-light-3: #76A8F8;
+    --el-color-primary-light-5: #9DC1FB;
+    --el-color-primary-light-7: #C4DAFC;
+    --el-color-primary-light-8: #D8E6FD;
+    --el-color-primary-light-9: #EBF3FE;
+    --el-color-primary-dark-2: #2563EB;
+    --el-color-success: #10B981;
+    --el-color-success-light-9: #E7F5EF;
+    --el-color-warning: #F59E0B;
+    --el-color-warning-light-9: #FEF4E2;
+    --el-color-danger: #EF4444;
+    --el-color-danger-light-9: #FEEBEB;
 }
 
 /* 深色模式 */
@@ -940,6 +1011,40 @@ html.dark {
     --conversation-up-color: #67c23a;           /* 会话日志上升趋势色 */
     --conversation-down-color: #f56c6c;         /* 会话日志下降趋势色 */
     --conversation-bg: #2a2a4a;                 /* 会话日志消息项背景色 */
+
+    /* ============================================================
+       设计令牌（产品化）— 暗色模式取值
+       间距/排版/动效/圆角/品牌色与亮色一致，仅覆盖材质类变量
+       ============================================================ */
+    /* 品牌色浅底（暗色下用半透明） */
+    --brand-50: rgba(59, 130, 246, 0.12);
+    --brand-100: rgba(59, 130, 246, 0.20);
+
+    /* 浮层材质（暗色：边框减弱、阴影加深） */
+    --float-border: rgba(255, 255, 255, 0.08);
+    --float-shadow: 0 8px 32px rgba(0, 0, 0, 0.45),
+                    inset 0 -40px 48px -40px rgba(0, 0, 0, 0.35);
+
+    /* 列表装饰点阵（暗色下用强调青低透明） */
+    --list-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='2' cy='2' r='1' fill='%2325E0BF' fill-opacity='0.10'/%3E%3C/svg%3E");
+
+    /* 表格表头暗色 */
+    --table-head-bg: rgba(59, 130, 246, 0.14);
+
+    /* Element Plus 主题变量覆盖（暗色：light 系列为深色混合/低透明） */
+    --el-color-primary: #3B82F6;
+    --el-color-primary-light-3: #2F6AC8;
+    --el-color-primary-light-5: #2A5AA8;
+    --el-color-primary-light-7: #244A88;
+    --el-color-primary-light-8: #1F4078;
+    --el-color-primary-light-9: rgba(59, 130, 246, 0.14);
+    --el-color-primary-dark-2: #6DA3F8;
+    --el-color-success: #10B981;
+    --el-color-success-light-9: rgba(16, 185, 129, 0.14);
+    --el-color-warning: #F59E0B;
+    --el-color-warning-light-9: rgba(245, 158, 11, 0.14);
+    --el-color-danger: #EF4444;
+    --el-color-danger-light-9: rgba(239, 68, 68, 0.14);
 }
 
 /*字体图标-右尖括号*/

@@ -33,12 +33,13 @@
     </div>
 
     <!-- 产品表格 -->
+    <FilterChips v-model="activeChip" :chips="chips" />
     <BaseTable
       ref="tableRef"
       :data-source="paginatedProducts"
       :columns="columns"
       :current-page="currentPage"
-      :total="loanStore.products.length"
+      :total="filteredProducts.length"
       :page-size="pageSize"
       :row-key="'productId'"
       :show-row-selection="true"
@@ -46,6 +47,10 @@
       :show-index="true"
       :show-action="true"
       :row-clickable="true"
+      :empty-title="activeChip === 'all' ? '暂无贷款产品' : '没有符合筛选条件的产品'"
+      :empty-description="activeChip === 'all' ? '点击右上角「添加新项目」创建第一款产品' : '试试切换其他筛选条件'"
+      empty-cta="刷新列表"
+      @empty-action="refreshProducts"
       @page-change="handlePageChange"
       @row-click="selectProduct"
       @selection-change="handleSelectionChange"
@@ -130,11 +135,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useLoanStore } from '@/stores/loan'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { loanAPI, applicationAPI } from '@/api'
 import BaseTable from '@/components/shared/BaseTable.vue'
+import FilterChips from '@/components/shared/FilterChips.vue'
 
 const loanStore = useLoanStore()
 const emit = defineEmits(['product-selected'])
@@ -150,6 +156,53 @@ const selectedKeys = ref([])
 const hasSearchCriteria = computed(() => {
   return createDateRange.value.length > 0 || updateDateRange.value.length > 0
 })
+
+/* ===== chip 快捷筛选（产品：上下架语义 + 大额优先级） ===== */
+const activeChip = ref('all')
+const chips = [
+  { key: 'all', label: '全部', color: '#909399' },
+  { key: 'success', label: '在售中', color: 'var(--status-success)' },
+  { key: 'warning', label: '已下架', color: 'var(--status-warning)' },
+  { key: 'week', label: '本周新增', color: 'var(--brand-500)' },
+  { key: 'priority', label: '高优先级', color: '#8B5CF6' }
+]
+
+// 本周一 0 点
+const weekStart = (() => {
+  const d = new Date()
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7))
+  d.setHours(0, 0, 0, 0)
+  return d.getTime()
+})()
+
+const filteredProducts = computed(() => {
+  const list = loanStore.products
+  switch (activeChip.value) {
+    case 'success':
+      return list.filter(p => p.status === '上架中')
+    case 'warning':
+      return list.filter(p => p.status !== '上架中')
+    case 'week':
+      return list.filter(p => p.createTime && new Date(p.createTime).getTime() >= weekStart)
+    case 'priority': // 高优先级：大额产品（最高可贷 ≥10万）
+      return list.filter(p => Number(p.maxAmount) >= 100000)
+    default:
+      return list
+  }
+})
+
+// 切换筛选条件时回到第一页
+watch(activeChip, () => {
+  currentPage.value = 1
+})
+
+const refreshProducts = async () => {
+  try {
+    await loanStore.fetchProducts()
+  } catch (error) {
+    console.error('刷新产品列表失败:', error)
+  }
+}
 
 const columns = [
   {
@@ -195,7 +248,7 @@ const columns = [
 
 const paginatedProducts = computed(() => {
   const start = (currentPage.value - 1) * pageSize
-  return loanStore.products.slice(start, start + pageSize)
+  return filteredProducts.value.slice(start, start + pageSize)
 })
 
 onMounted(async () => {

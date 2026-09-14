@@ -1,18 +1,24 @@
 <template>
-  <BaseTable
-    :data-source="paginatedApplications"
-    :columns="columns"
-    :current-page="currentPage"
-    :total="applications.length"
-    :page-size="pageSize"
-    :row-key="'applicationId'"
-    :show-row-selection="false"
-    :show-batch-actions="false"
-    :show-index="false"
-    :show-action="false"
-    @page-change="handlePageChange"
-    @row-click="handleRowClick"
-  >
+  <div class="list-wrapper">
+    <FilterChips v-model="activeChip" :chips="chips" />
+    <BaseTable
+      :data-source="paginatedApplications"
+      :columns="columns"
+      :current-page="currentPage"
+      :total="filteredApplications.length"
+      :page-size="pageSize"
+      :row-key="'applicationId'"
+      :show-row-selection="false"
+      :show-batch-actions="false"
+      :show-index="false"
+      :show-action="false"
+      :empty-title="activeChip === 'all' ? '暂无已完成的申请' : '没有符合筛选条件的申请'"
+      :empty-description="activeChip === 'all' ? '完成审核的申请会归档在这里' : '试试切换其他筛选条件'"
+      empty-cta="刷新数据"
+      @empty-action="$emit('refresh')"
+      @page-change="handlePageChange"
+      @row-click="handleRowClick"
+    >
     <!-- 贷款金额格式化 -->
     <template #loanAmount="{ record }">
       {{ formatCurrency(record.loanAmount) }}
@@ -35,8 +41,8 @@
 
     <!-- 审核状态格式化 -->
     <template #status="{ record }" >
-      <span 
-      class="status-tag" 
+      <span
+      class="status-tag"
       :style="{
         '--status-color': getStatusColor(record.status).color,
       '--status-bg': getStatusColor(record.status).background,
@@ -46,11 +52,13 @@
       </span>
     </template>
   </BaseTable>
+  </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import BaseTable from '@/components/shared/BaseTable.vue'
+import FilterChips from '@/components/shared/FilterChips.vue'
 // import { color } from 'echarts'
 
 const props = defineProps({
@@ -60,10 +68,51 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['show-detail'])
+const emit = defineEmits(['show-detail', 'refresh'])
 
 const currentPage = ref(1)
 const pageSize = 5
+
+/* ===== chip 快捷筛选 ===== */
+const activeChip = ref('all')
+const chips = [
+  { key: 'all', label: '全部', color: '#909399' },
+  { key: 'success', label: '通过', color: 'var(--status-success)' },
+  { key: 'danger', label: '人工拒绝', color: 'var(--status-danger)' },
+  { key: 'week', label: '本周新增', color: 'var(--brand-500)' },
+  { key: 'priority', label: '高优先级', color: '#8B5CF6' }
+]
+
+// 本周一 0 点（周一作为一周开始）
+const weekStart = (() => {
+  const d = new Date()
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7))
+  d.setHours(0, 0, 0, 0)
+  return d.getTime()
+})()
+
+const filteredApplications = computed(() => {
+  const list = props.applications
+  switch (activeChip.value) {
+    case 'success':
+      return list.filter(a => a.status === 'APPROVED' || a.status === '已通过')
+    case 'warning':
+      return list.filter(a => a.status === 'PENDING' || a.status === '待审核')
+    case 'danger':
+      return list.filter(a => a.status === 'MANUAL_REJECTED' || a.status === '人工拒绝' || String(a.status || '').includes('REJECTED'))
+    case 'week':
+      return list.filter(a => a.applyTime && new Date(a.applyTime).getTime() >= weekStart)
+    case 'priority': // 高优先级：大额申请（≥10万）
+      return list.filter(a => Number(a.loanAmount) >= 100000)
+    default:
+      return list
+  }
+})
+
+// 切换筛选条件时回到第一页
+watch(activeChip, () => {
+  currentPage.value = 1
+})
 
 const columns = [
   {
@@ -110,7 +159,7 @@ const columns = [
 
 const paginatedApplications = computed(() => {
   const start = (currentPage.value - 1) * pageSize
-  return props.applications.slice(start, start + pageSize)
+  return filteredApplications.value.slice(start, start + pageSize)
 })
 
 const handlePageChange = (page) => {
@@ -160,14 +209,13 @@ const getStatusColor = (status) => {
     border: '#ffd6d6'
   }
 
-  if(status === '已通过') {
+  if(status === 'AI通过' || status === '人工通过') {
     return colorMap_pass
   }
   else if(status === '人工拒绝') {
     return colorMap_reject
   }
   else {
-    console.log(status)
     return {
       color: '#999',
       background: '#f5f5f5',

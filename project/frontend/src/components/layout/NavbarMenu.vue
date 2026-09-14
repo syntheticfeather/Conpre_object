@@ -43,6 +43,7 @@
         </el-badge>
         
         <!-- 通知下拉面板 -->
+        <Transition name="pop">
         <div v-show="showNotificationPanel" class="notification-panel" @mouseenter="keepNotificationVisible" @mouseleave="hideNotificationPanel">
           <div class="panel-header">
             <div class="header-left">
@@ -50,6 +51,9 @@
               <span class="connection-dot" :class="{ connected: isStreamConnected, disconnected: !isStreamConnected }" :title="isStreamConnected ? '实时连接中' : '连接断开'"></span>
             </div>
             <div class="header-actions">
+              <el-button v-if="notifications.length > 0" size="small" type="primary" @click="loadMore" :disabled="loading">
+                加载更多
+              </el-button>
               <el-button size="small" type="primary" @click="markAllRead" :disabled="unreadCount === 0">
                 全部已读
               </el-button>
@@ -104,23 +108,40 @@
             </div>
           </div>
           
-          <div v-if="notifications.length > 0" class="panel-footer">
-            <el-button size="small" @click="loadMore" :disabled="loading">加载更多</el-button>
-          </div>
         </div>
+        </Transition>
       </div>
-      
+
       <div class="admin-info" @mouseenter="showAdminTable" @mouseleave="hideAdminTable">
         <div class="avatar-container">
           <img :src="avatarUrl" alt="admin" class="avatar">
         </div>
         <span>{{ admin }}</span>
         
-        <div id="admin-table" ref="adminTable" @mouseenter="keepAdminTableVisible" @mouseleave="hideAdminTable">
-          <button class="admin-btn" @click="triggerFileInput">修改头像</button>
-          <button id="logout-btn" @click="handleLogout">退出登录</button>
+        <Transition name="pop">
+        <div id="admin-table" ref="adminTable" v-show="showAdminPanel" @mouseenter="keepAdminTableVisible" @mouseleave="hideAdminTable">
+          <div class="admin-menu-item" @click="triggerFileInput">
+            <span class="admin-menu-icon">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+            </span>
+            <span class="admin-menu-text">修改头像</span>
+          </div>
+          <div class="admin-menu-item admin-menu-item--danger" @click="handleLogout">
+            <span class="admin-menu-icon">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+              </svg>
+            </span>
+            <span class="admin-menu-text">退出登录</span>
+          </div>
           <input type="file" ref="fileInput" accept="image/*" @change="handleFileChange" style="display: none;">
         </div>
+        </Transition>
       </div>
     </div>
     
@@ -216,6 +237,7 @@ export default {
       // 通知相关
       notifications: [],
       showNotificationPanel: false,
+      showAdminPanel: false,
       loading: false,
       notificationPanelTimer: null
     }
@@ -251,15 +273,15 @@ export default {
         clearTimeout(this.hideTimer)
         this.hideTimer = null
       }
-      this.$refs.adminTable.classList.add('show')
+      this.showAdminPanel = true
     },
     hideAdminTable() {
-      // 设置三秒后消失的定时器
+      // 设置 500ms 后消失的定时器
       if (this.hideTimer) {
         clearTimeout(this.hideTimer)
       }
       this.hideTimer = setTimeout(() => {
-        this.$refs.adminTable.classList.remove('show')
+        this.showAdminPanel = false
         this.hideTimer = null
       }, 500)
     },
@@ -269,7 +291,7 @@ export default {
         clearTimeout(this.hideTimer)
         this.hideTimer = null
       }
-      this.$refs.adminTable.classList.add('show')
+      this.showAdminPanel = true
     },
     // 触发文件选择
     triggerFileInput() {
@@ -506,7 +528,7 @@ export default {
   justify-content: space-between;
   width: 100%;
   height: 75px;
-  background-image: var(--navbar-bg-gradient);
+  background: transparent;                    /* 露出 DashboardView 共享画布渐变 */
   color: var(--navbar-text-color);
   align-items: center;
 }
@@ -575,27 +597,37 @@ export default {
   transform: scale(1.1);
 }
 
-/* 通知面板样式 */
+/* 通知面板样式 — 毛玻璃化 */
 .notification-panel {
+  display: flex;
+  flex-direction: column;
+
   position: absolute;
   top: 100%;
   right: 0;
   margin-top: 10px;
+  padding-bottom: 10px;
+
   width: 400px;
   max-height: 500px;
-  background-color: var(--notif-panel-bg);
-  border-radius: 12px;
-  box-shadow: 0 4px 20px var(--notif-panel-shadow);
+
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: var(--radius-lg, 20px);
+  box-shadow: 0 20px 60px rgba(45, 27, 105, 0.25);
+
   z-index: 10000;
-  display: flex;
-  flex-direction: column;
   overflow: hidden;
 }
 .panel-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 20px;
+
+  padding: 11px 9px;
+
   border-bottom: 1px solid var(--notif-header-border);
   background-color: var(--notif-header-bg);
 }
@@ -633,6 +665,24 @@ export default {
   display: flex;
   gap: 8px;
 }
+/* 头部按钮改为 link 风格：无边框 */
+.header-actions :deep(.el-button) {
+  background: transparent !important;
+  border: none !important;
+  padding: 2px 4px !important;
+  font-size: 13px;
+  color: var(--brand-500, #3B82F6);
+  transition: padding 0.2s var(--ease-out-expo, ease), color 0.2s;
+}
+.header-actions :deep(.el-button:hover) {
+  padding-left: 8px !important;
+  color: var(--brand-accent, #25E0BF);
+  background: transparent !important;
+}
+.header-actions :deep(.el-button.is-disabled) {
+  color: var(--text-color-caption, #94a3b8) !important;
+  background: transparent !important;
+}
 .notification-list {
   flex: 1;
   overflow-y: auto;
@@ -645,7 +695,7 @@ export default {
 .notification-item {
   display: flex;
   justify-content: space-between;
-  padding: 15px 20px;
+  padding: 5px 15px;
   border-bottom: 1px solid var(--notif-item-border);
   cursor: pointer;
   transition: all 0.3s ease;
@@ -654,8 +704,8 @@ export default {
   background-color: var(--notif-item-hover-bg);
 }
 .notification-item.unread {
-  background-color: var(--notif-unread-bg);
-  border-left: 3px solid var(--notif-unread-border);
+  background: linear-gradient(90deg, rgba(37, 224, 191, 0.12), transparent 60%);
+  border-left: 3px solid var(--brand-accent, #25E0BF);
 }
 .notif-left {
   flex: 1;
@@ -706,12 +756,6 @@ export default {
 }
 .notification-item:hover .notif-actions {
   opacity: 1;
-}
-.panel-footer {
-  padding: 12px 20px;
-  border-top: 1px solid var(--notif-footer-border);
-  text-align: center;
-  background-color: var(--notif-footer-bg);
 }
 .theme-toggle {
   margin-right: 10px;
@@ -823,42 +867,62 @@ img[alt="admin"] {
   justify-content: flex-end;
 }
 
+/* 管理员菜单 — 毛玻璃 + 条目风 */
 #admin-table {
   position: absolute;
   top: 100%;
   left: 0;
   margin-top: 5px;
-  background-color: var(--notif-panel-bg);
-  padding: 10px;
-  border-radius: 12px;
-  box-shadow: 0 0 10px var(--navbar-dropdown-shadow);
-  display: none;
-  min-width: 150px;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  padding: var(--space-xs, 4px);
+  border-radius: var(--radius-md, 12px);
+  box-shadow: 0 20px 60px rgba(45, 27, 105, 0.25);
+  min-width: 180px;
   z-index: 1000;
 }
 
-#admin-table.show {
-  display: block;
-}
-
-/*管理员按钮样式*/ 
-.admin-btn, #logout-btn {
-  display: block;
-  width: 100%;
-  margin: 5px 0;
-  padding: 2px 11px;
-  background-color: transparent;
-  color: var(--navbar-admin-text);
-  font-size: 16px;
-  border: none;
-  border-radius: 12px;
-  text-align: center;
+/* 条目菜单项 */
+.admin-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm, 6px);
   cursor: pointer;
-  transition: all 0.3s ease;
+  color: var(--navbar-admin-text, #0f172a);
+  font-size: 14px;
+  transition: background 0.2s var(--ease-out-expo, ease), padding 0.2s var(--ease-out-expo, ease), color 0.2s;
 }
 
-.admin-btn:hover, #logout-btn:hover {
-  background-color: var(--navbar-admin-hover-bg);
-  color: var(--navbar-text-color);
+.admin-menu-item:hover {
+  background: rgba(59, 130, 246, 0.1);
+  padding-left: 20px;
+  color: var(--brand-500, #3B82F6);
+}
+
+.admin-menu-item--danger:hover {
+  background: rgba(239, 68, 68, 0.08);
+  color: var(--status-danger, #EF4444);
+}
+
+.admin-menu-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Transition 进出场动画 */
+.pop-enter-active,
+.pop-leave-active {
+  transition: opacity 0.2s var(--ease-out-expo, ease), transform 0.2s var(--ease-out-expo, ease);
+}
+.pop-enter-from,
+.pop-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
 }
 </style>

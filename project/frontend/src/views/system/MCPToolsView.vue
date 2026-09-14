@@ -146,45 +146,33 @@
             </div>
           </template>
 
-          <el-table :data="toolsList" stripe v-loading="toolsLoading" empty-text="暂无工具数据">
-            <el-table-column prop="name" label="工具名称" width="220">
-              <template #default="{ row }">
-                <el-tag type="primary">{{ row.name }}</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column prop="description" label="描述">
-              <template #default="{ row }">
-                <ContentTooltip :content="row.description || '暂无描述'">
-                  <span class="cell-text">{{ row.description || '暂无描述' }}</span>
-                </ContentTooltip>
-              </template>
-            </el-table-column>
-            <el-table-column prop="source" label="来源" width="100">
-              <template #default="{ row }">
-                <el-tag :type="row.source === 'mcp' ? 'success' : 'info'" size="small">
-                  {{ row.source === 'mcp' ? 'MCP' : '内置' }}
+          <div class="tool-card-grid" v-loading="toolsLoading">
+            <div v-if="!toolsList.length" class="tool-empty">暂无工具数据</div>
+            <div v-for="tool in toolsList" :key="tool.id || tool.name" class="tool-card">
+              <div class="tool-header">
+                <div class="tool-icon" :class="{ 'tool-icon--mcp': tool.source === 'mcp' }">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 7h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h2"/>
+                    <rect x="9" y="3" width="6" height="4" rx="1"/>
+                  </svg>
+                </div>
+                <div class="tool-info">
+                  <div class="tool-name">{{ tool.name || tool.toolName }}</div>
+                  <div class="tool-desc-short">{{ tool.description || tool.desc || '暂无描述' }}</div>
+                </div>
+                <el-switch :model-value="tool.enabled" @change="toggleToolStatus(tool)" />
+              </div>
+              <div class="tool-desc">
+                {{ tool.description || tool.desc || '暂无描述' }}
+              </div>
+              <div class="tool-footer">
+                <el-tag size="small" :type="tool.source === 'mcp' ? 'warning' : 'info'">
+                  {{ tool.source === 'mcp' ? 'MCP' : '内置' }}
                 </el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column label="状态" width="100">
-              <template #default="{ row }">
-                <el-tag :type="row.enabled ? 'success' : 'danger'" size="small">
-                  {{ row.enabled ? '启用' : '禁用' }}
-                </el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" width="180" fixed="right">
-              <template #default="{ row }">
-                <el-button
-                  size="small"
-                  :type="row.enabled ? 'warning' : 'success'"
-                  @click="toggleToolStatus(row)"
-                >
-                  {{ row.enabled ? '禁用' : '启用' }}
-                </el-button>
-              </template>
-            </el-table-column>
-          </el-table>
+                <el-button link type="primary">查看详情 ></el-button>
+              </div>
+            </div>
+          </div>
         </el-card>
       </el-tab-pane>
     </el-tabs>
@@ -200,7 +188,6 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search } from '@element-plus/icons-vue'
 import toolsAPI from '@/api/modules/tools'
 import ChatDialog from '@/components/chat/ChatDialog.vue'
-import ContentTooltip from '@/components/shared/ContentTooltip.vue'
 
 const activeTab = ref('mcp')
 
@@ -453,5 +440,104 @@ onMounted(fetchServers)
 
 .search-icon:hover {
   color: var(--color-primary);
+}
+
+.tool-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+@media (max-width: 1280px) {
+  .tool-card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 768px) {
+  .tool-card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.tool-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #94a3b8;
+  padding: 40px 0;
+}
+.tool-card {
+  position: relative;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.tool-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #2D1B69, #25E0BF);
+  border-radius: 12px 12px 0 0;
+}
+.tool-card:hover {
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+  border-color: #cbd5e1;
+}
+.tool-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.tool-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(59, 130, 246, 0.1);
+  color: #3B82F6;
+  flex-shrink: 0;
+}
+.tool-icon--mcp {
+  background: rgba(45, 27, 105, 0.1);
+  color: #2D1B69;
+}
+.tool-info {
+  flex: 1;
+  min-width: 0;
+}
+.tool-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+.tool-desc-short {
+  font-size: 12px;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tool-desc {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.tool-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px dashed #e2e8f0;
 }
 </style>

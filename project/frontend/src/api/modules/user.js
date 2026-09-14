@@ -2,6 +2,8 @@
 import request from '@/utils/request'
 
 const userAPI = {
+  // 获取当前登录用户信息（需携带有效 token）
+  getCurrentUser: () => request.get('/users/me'),
   // 获取用户统计信息
   getUserStats: () => request.get('/users/stats'),
   // 获取用户详情

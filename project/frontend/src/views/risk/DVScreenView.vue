@@ -473,11 +473,13 @@ export default {
           this.animationStop = window.requestAnimationFrame(() => {
             this.loop()
           })
-          // 调用父类的 handleMouseHover 处理鼠标悬浮
-          if (typeof this.handleMouseHover === 'function') {
-            this.handleMouseHover()
-          }
-          
+          // 帧率限制：父类 targetFps 控制，未到允许时间则跳过渲染
+          const now = performance.now()
+          const frameInterval = 1000 / this.options.targetFps
+          if (now - this.lastFrameTime < frameInterval) return
+          this.lastFrameTime = now - ((now - this.lastFrameTime) % frameInterval)
+          // 鼠标悬浮检测已改为事件驱动（父类 initMouseEvents 的 mousemove 中触发），
+          // 不再每帧执行 raycast
           // 处理相机移动动画（使用 Composable）
           if (this.cameraControl) {
             this.cameraControl.updateCamera()
@@ -518,7 +520,7 @@ export default {
           super.resize()
           // 这里是你自己业务上需要的 code
           this.renderer.render(this.scene, this.camera)
-          this.renderer.setPixelRatio(window.devicePixelRatio)
+          this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
 
           if (this.css2dRender) {
             this.css2dRender.setSize(this.options.width, this.options.height)
@@ -528,6 +530,7 @@ export default {
       baseEarth = new CurrentMap3d({
         container: "#app-32-map",
         axesVisibel: false, // 隐藏辅助坐标轴
+        targetFps: 30,      // 帧率封顶 30fps：流畅度与 GPU 占用的平衡点
         controls: {
           enableDamping: false,  // 关闭阻尼，消除地图震颤
           autoRotate: false,     // 关闭自动旋转

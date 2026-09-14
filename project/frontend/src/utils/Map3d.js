@@ -28,6 +28,7 @@ export default class Map3d {
       statsVisibel: true,
       axesVisibel: false, // 隐藏辅助坐标轴
       axesHelperSize: 250, // 左边尺寸
+      targetFps: 60,       // 目标帧率（可按需调低以降低 GPU 占用，如 30）
     };
     this.options = deepMerge(defaultOptions, options);
     this.container = document.querySelector(this.options.container);
@@ -72,13 +73,22 @@ export default class Map3d {
   run() {
     this.loop();
   }
-  // 循环渲染
+  // 循环渲染（帧率限制版）
+  // 帧率自适应策略：
+  //   - 首选 targetFps（默认 60，即不限制）
+  //   - 可通过 new Map3d({ targetFps: 30 }) 传入目标帧率
+  //   - minFps 为兜底下限，防止机器卡顿时画面冻结
   loop() {
     this.animationStop = window.requestAnimationFrame(() => {
       this.loop()
     })
-    // 处理鼠标悬浮
-    this.handleMouseHover();
+    // 帧率限制：未到下一帧的允许时间则跳过本轮渲染（rAF 调度仍保持，不会中断循环）
+    const now = performance.now()
+    if (this.lastFrameTime === undefined) this.lastFrameTime = 0
+    const frameInterval = 1000 / this.options.targetFps
+    if (now - this.lastFrameTime < frameInterval) return
+    // 用实际间隔更新，避免高刷屏上累积误差；掉帧时自动放慢而不是追帧
+    this.lastFrameTime = now - ((now - this.lastFrameTime) % frameInterval)
     // 这里是你自己业务上需要的code
     this.renderer.render(this.scene, this.camera)
     // 控制相机旋转缩放的更新
@@ -112,8 +122,8 @@ export default class Map3d {
     let renderer = new THREE.WebGLRenderer({
       antialias: true, // 锯齿
     });
-    // 设置canvas的分辨率
-    renderer.setPixelRatio(window.devicePixelRatio)
+    // 设置canvas的分辨率（封顶 1.5，避免高分屏缩放下渲染量过大导致 GPU 占用飙升）
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
     // 设置canvas 的尺寸大小
     renderer.setSize(width, height)
     // 设置背景色
@@ -241,6 +251,9 @@ export default class Map3d {
         this.tooltip.style.left = (event.clientX + 15) + 'px';
         this.tooltip.style.top = (event.clientY + 15) + 'px';
       }
+
+      // 事件驱动：只在鼠标移动时做 raycast 悬浮检测
+      this.handleMouseHover();
     });
     
     // 鼠标离开事件

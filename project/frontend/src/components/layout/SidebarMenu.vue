@@ -155,7 +155,7 @@ const toggleCollapse = () => {
   flex-direction: column;
 
   height: 100%;
-  background-image: var(--sidebar-image);
+  background: transparent;                    /* 露出 DashboardView 共享画布渐变 */
 }
 
 .logo-container {

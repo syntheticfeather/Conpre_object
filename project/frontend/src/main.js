@@ -8,9 +8,10 @@ import ElementPlus from 'element-plus'
 import Antd from 'ant-design-vue'
 import DataVVue3 from '@kjgl77/datav-vue3'
 
-import './assets/css/base.css'
+// 样式加载顺序：组件库默认样式在前，项目 base.css 作为最终主题覆盖层在最后
 import 'element-plus/dist/index.css'
 import 'ant-design-vue/dist/reset.css'
+import './assets/css/base.css'
 import './assets/iconfont/iconfont.css'
 
 // 导入认证相关工具和 store
@@ -91,6 +92,10 @@ async function checkAuthStatus() {
           user: data.userInfo
         })
         console.log('Token 有效，恢复认证状态')
+        // 若持久化的用户信息不完整（旧版本数据或缺少 userName），补拉一次
+        if (!authStore.userInfo || !authStore.userInfo.userName) {
+          await authStore.loadUserInfo()
+        }
         return true
       }
     }

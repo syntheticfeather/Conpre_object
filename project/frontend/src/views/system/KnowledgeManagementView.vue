@@ -171,39 +171,34 @@
         <!-- Tab 1: 问答对知识项 (接口#1 GET /api/knowledge/faq) -->
         <el-tab-pane label="问答对" name="faq">
           <div class="tab-info">共 {{ faqTotal }} 条问答对</div>
-          <el-table :data="paginatedFaqList" stripe v-loading="loading">
-            <el-table-column label="序号" width="60" align="center">
-              <template #default="{ $index }">
-                {{ (faqPage - 1) * faqPageSize + $index + 1 }}
-              </template>
-            </el-table-column>
-            <el-table-column prop="id" label="ID" width="200" />
-            <el-table-column prop="question" label="问题" width="200" >
-              <template #default="{ row }">
-                <ContentTooltip :content="row.question || ''">
-                  <span class="cell-text">{{ row.question }}</span>
-                </ContentTooltip>
-              </template>
-            </el-table-column>
-            <el-table-column prop="answer" label="答案">
-              <template #default="{ row }">
-                <ContentTooltip :content="row.answer || ''">
-                  <span class="cell-text">{{ row.answer }}</span>
-                </ContentTooltip>
-              </template>
-            </el-table-column>
-            <el-table-column prop="category" label="分类" width="100">
-              <template #default="{ row }">
-                <el-tag :type="getCategoryTagType(row.category)">{{ row.category }}</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" width="150" fixed="right">
-              <template #default="{ row }">
-                <el-button type="primary" size="small" @click="editKnowledge(row)">编辑</el-button>
-                <el-button type="danger" size="small" @click="deleteKnowledge(row.id)">删除</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
+          <!-- 顶部工具栏 -->
+          <div class="faq-toolbar">
+            <span class="faq-count">共 {{ filteredFaqList.length }} 条</span>
+          </div>
+
+          <!-- 卡片流 -->
+          <div class="faq-card-grid" v-loading="loading">
+            <div v-for="item in paginatedFaqList" :key="item.id" class="faq-card" @click="toggleCardExpand(item.id)">
+              <div class="faq-card-top">
+                <el-tag size="small" effect="light" :type="getCategoryTagType(item.category)">{{ item.category || '未分类' }}</el-tag>
+                <span class="faq-update-time">{{ item.updateTime || '' }}</span>
+              </div>
+              <div class="faq-question">
+                <span class="faq-dot"></span>
+                <span class="faq-question-text">{{ item.question }}</span>
+              </div>
+              <div class="faq-answer" :class="{ expanded: expandedIds.includes(item.id) }">
+                {{ item.answer }}
+              </div>
+              <div class="faq-card-actions">
+                <div class="faq-action-left">
+                  <el-button link type="primary" @click.stop="editKnowledge(item)">编辑</el-button>
+                  <el-button link type="danger" @click.stop="deleteKnowledge(item.id)">删除</el-button>
+                </div>
+                <span class="faq-expand-hint">{{ expandedIds.includes(item.id) ? '收起 ↑' : '展开全文 ↓' }}</span>
+              </div>
+            </div>
+          </div>
 
           <div class="pagination-container">
             <el-pagination
@@ -400,6 +395,7 @@ const filteredFaqList = ref([])
 const faqPage = ref(1)
 const faqPageSize = ref(10)
 const faqTotal = computed(() => filteredFaqList.value.length)
+const expandedIds = ref([])
 
 const paginatedFaqList = computed(() => {
   const start = (faqPage.value - 1) * faqPageSize.value
@@ -610,6 +606,15 @@ const resetSearch = () => {
   faqPage.value = 1
 }
 
+const toggleCardExpand = (id) => {
+  const idx = expandedIds.value.indexOf(id)
+  if (idx === -1) {
+    expandedIds.value.push(id)
+  } else {
+    expandedIds.value.splice(idx, 1)
+  }
+}
+
 const saveKnowledge = async () => {
   if (!form.value.question.trim() || !form.value.answer.trim()) {
     ElMessage.warning('请填写完整信息')
@@ -737,10 +742,12 @@ const deleteDocChunk = async (id) => {
 
 const getCategoryTagType = (category) => {
   const types = {
-    '申请流程': 'primary',
+    '贷款申请': 'primary',
     '产品咨询': 'success',
-    '还款问题': 'warning',
-    '通用': 'info'
+    '贷款查询': 'info',
+    '还款': 'warning',
+    '通用': 'info',
+    '其他': 'normal'
   }
   return types[category] || 'info'
 }
@@ -1134,5 +1141,112 @@ onMounted(async () => {
   max-height: 400px;
   overflow-y: auto;
   margin: 0;
+}
+
+/* ====== 问答对卡片流布局 ====== */
+.faq-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.faq-count {
+  font-size: 14px;
+  color: #64748b;
+}
+.faq-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+@media (max-width: 1280px) {
+  .faq-card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.faq-card {
+  position: relative;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  overflow: hidden;
+}
+.faq-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #2D1B69, #25E0BF);
+  border-radius: 12px 12px 0 0;
+}
+.faq-card:hover {
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+  border-color: #cbd5e1;
+}
+.faq-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.faq-update-time {
+  font-size: 12px;
+  color: #94a3b8;
+}
+.faq-question {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.faq-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #25E0BF;
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+.faq-question-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.faq-answer {
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: -webkit-line-clamp 0.38s ease;
+}
+.faq-answer.expanded {
+  -webkit-line-clamp: unset;
+}
+.faq-card-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed #e2e8f0;
+}
+.faq-action-left {
+  display: flex;
+  gap: 4px;
+}
+.faq-expand-hint {
+  font-size: 12px;
+  color: #94a3b8;
 }
 </style>
