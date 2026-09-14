@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.apache.ibatis.mapping.StatementType;
 
+import com.example.personal_loan.dto.OrderStatisticsResponse;
 import com.example.personal_loan.entity.RepaymentSchedule;
 
 @Mapper
@@ -46,6 +47,20 @@ public interface RepaymentScheduleMapper {
 
     @Select("SELECT * FROM repayment_schedule WHERE order_id = #{orderId} AND term = #{term}")
     RepaymentSchedule selectByOrderIdAndTerm(@Param("orderId") Long orderId, @Param("term") Integer term);
+
+    /**
+     * 统计用户所有订单的待还总额、待还本金、待还利息（状态非"已还"的还款计划）
+     */
+    @Select(
+        "SELECT " +
+        "  COALESCE(SUM(rs.principal + rs.interest), 0) AS totalOutstandingAmount, " +
+        "  COALESCE(SUM(rs.principal), 0) AS totalOutstandingPrincipal, " +
+        "  COALESCE(SUM(rs.interest), 0) AS totalOutstandingInterest " +
+        "FROM repayment_schedule rs " +
+        "JOIN orders o ON rs.order_id = o.id " +
+        "WHERE o.user_id = #{userId} AND rs.status != '已还'"
+    )
+    OrderStatisticsResponse sumOutstandingByUserId(@Param("userId") Long userId);
 
     @Options(statementType = StatementType.CALLABLE)
     @Select("CALL sp_generate_repayment_schedule(#{orderId, mode=IN}, #{success, mode=OUT, jdbcType=INTEGER})")

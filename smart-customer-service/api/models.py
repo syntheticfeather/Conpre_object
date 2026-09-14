@@ -28,6 +28,16 @@ class ChatResponse(BaseModel):
     message: str
     session_id: str
 
+class ChatTurnPersistRequest(BaseModel):
+    """WORKFLOW 路径对话落库请求（Java workflow 处理完后回调）。
+
+    WORKFLOW 请求在 Java 本地处理，不经过 /api/chat/stream，
+    处理完成后由 Java 调 POST /api/chat/persist 把这一轮对话补录到 MongoDB。
+    """
+    session_id: str = Field(..., min_length=1, description="会话ID（与前端一致）")
+    message: str = Field(..., min_length=1, max_length=2000, description="用户原话")
+    response: str = Field(..., min_length=1, max_length=10000, description="workflow 最终回复文本")
+
 class KnowledgeItemCreate(BaseModel):
     question: str
     answer: str
@@ -134,3 +144,74 @@ class LoanParams(BaseModel):
     months: Optional[int] = None         # 贷款期限（月）
     repaid_type: Optional[str] = None    # 等额本息 / 等额本金 / 先息后本 / 一次性还本付息
     intent: Optional[str] = None         # apply / calculate / modify / cancel / unknown
+
+
+# ==================== 会话与消息模型 ====================
+# 配套 utils/mongodb_client.py 中 chat_sessions / chat_messages 两集合方案
+# 注：新建会话 POST /api/sessions 无请求体——标题由后端占位生成，
+#     首条消息后 LLM 异步摘要回填，用户手动改名走 PATCH。
+
+class SessionUpdate(BaseModel):
+    """更新会话请求（部分字段）"""
+    title: Optional[str] = None
+    pinned: Optional[bool] = None
+    archived: Optional[bool] = None
+
+
+class SessionPinRequest(BaseModel):
+    """置顶/取消置顶请求"""
+    pinned: bool = Field(..., description="True=置顶，False=取消置顶")
+
+
+class SessionItem(BaseModel):
+    """会话响应模型（列表 / 详情 / 新建 / PATCH / pin 通用）"""
+    model_config = ConfigDict(from_attributes=True)
+
+    session_id: str
+    user_id: Optional[str] = None
+    title: str
+    last_message_preview: Optional[str] = ""
+    last_message_at: Optional[datetime] = None
+    message_count: int = 0
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+    pinned: bool = False
+    archived: bool = False
+
+    @field_serializer('last_message_at', 'created_at', 'updated_at')
+    def serialize_datetime(self, value: datetime):
+        if value:
+            return value.strftime("%Y-%m-%d %H:%M:%S")
+        return None
+
+
+class SessionListResponse(BaseModel):
+    """会话列表分页响应"""
+    items: List[SessionItem]
+    next_cursor: Optional[str] = None
+    has_more: bool = False
+
+
+class MessageItem(BaseModel):
+    """单条消息"""
+    model_config = ConfigDict(from_attributes=True)
+
+    message_id: str
+    session_id: str
+    user_id: Optional[str] = None
+    role: str
+    content: str
+    created_at: Optional[datetime] = None
+
+    @field_serializer('created_at')
+    def serialize_datetime(self, value: datetime):
+        if value:
+            return value.strftime("%Y-%m-%d %H:%M:%S")
+        return None
+
+
+class MessageListResponse(BaseModel):
+    """消息分页响应"""
+    items: List[MessageItem]
+    next_cursor: Optional[str] = None
+    has_more: bool = False

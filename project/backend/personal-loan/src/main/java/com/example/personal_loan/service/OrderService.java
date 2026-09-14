@@ -2,6 +2,7 @@ package com.example.personal_loan.service;
 
 import java.util.List;
 
+import com.example.personal_loan.dto.OrderStatisticsResponse;
 import com.example.personal_loan.dto.UserGetOrderResponse;
 import com.example.personal_loan.dto.UserOrderListResponse;
 
@@ -16,5 +17,10 @@ public interface OrderService {
 
     Boolean postpone(Long orderId);
 
-    void earlyRepay(Long orderId);
+    void earlyRepay(Long orderId, Integer periods);
+
+    /**
+     * 统计用户所有订单的待还总额、待还本金、待还利息
+     */
+    OrderStatisticsResponse getUserOrderStatistics(Long userId);
 }

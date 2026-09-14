@@ -14,4 +14,6 @@ public class PaymentRequestedEvent {
     private Long orderId;
     private BigDecimal amount;
     private LocalDateTime requestTime;
+    /** 提前还款期数，null 表示一次性结清剩余全部期数 */
+    private Integer periods;
 }

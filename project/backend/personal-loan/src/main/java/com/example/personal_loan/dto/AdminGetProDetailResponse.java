@@ -21,6 +21,7 @@ public class AdminGetProDetailResponse {
     private String productName;
     private String description;
     private String loanUsage;
+    private String productType;
     private List<Integer> terms;
 
     private BigDecimal minAmount;

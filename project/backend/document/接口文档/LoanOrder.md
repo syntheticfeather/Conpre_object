@@ -54,13 +54,41 @@
 
 ![](../LoanOrderImgs/list.png "用户获取订单列表")
 
+## 用户订单还款统计
+
+**网址** /api/orders/statistics
+
+**请求方式** GET
+
+**返回数据**  
+
+```json
+{
+    "code": 200,
+    "data": {
+        "totalOutstandingAmount": 21137.57,
+        "totalOutstandingPrincipal": 20000.00,
+        "totalOutstandingInterest": 1137.57
+    },
+    "message": "操作成功"
+}
+```
+
+**返回数据字段说明**  
+
+| 参数 | 描述 | 类型 |
+| ---- | ---- | ---- |
+| totalOutstandingAmount | 待还总额（用户所有订单未还期数的本金+利息之和） | BigDecimal |
+| totalOutstandingPrincipal | 待还本金（用户所有订单未还期数的本金之和） | BigDecimal |
+| totalOutstandingInterest | 待还利息（用户所有订单未还期数的利息之和） | BigDecimal |
+
 ## 用户获取订单详情
 
 **网址** /api/orders/{orderId}
 
 **请求方式** GET
 
-**请求示例（网址）** /api/orders/2
+**请求示例（网址）** /api/orders/1
 
 **返回数据**
 
@@ -68,27 +96,43 @@
 {
     "code": 200,
     "data": {
-        "productName": "优享贷 Pro",
+        "productName": "小微经营贷",
         "order": {
-            "id": 2,
-            "userId": 1,
+            "id": 1,
+            "userId": 7,
+            "applicationId": 1,
             "productId": 1,
             "status": "正常",
             "repaidAmount": 0.00,
-            "loanAmount": 30000.00,
-            "interestRate": 0.0390,
-            "repaidType": "等额本息",
-            "loanPeriod": 24,
-            "term": 24,
+            "loanAmount": 10000.00,
+            "interestRate": 0.0650,
+            "repaidType": "先息后本",
+            "loanPeriod": 1,
+            "term": 12,
             "currentTerm": 0,
             "contract": null,
             "overdueDays": 0,
-            "startTime": "2025-12-10 16:57:50"
-        }
+            "startTime": "2026-09-11 15:35:34"
+        },
+        "totalAmountDue": 10650.04,
+        "outstandingAmount": 10650.04,
+        "outstandingPrincipal": 10000.00,
+        "outstandingInterest": 650.04
     },
     "message": "操作成功"
 }
 ```
+
+**返回数据字段说明**
+
+| 参数 | 描述 | 类型 |
+| ---- | ---- | ---- |
+| productName | 产品名称 | String |
+| order | 订单信息 | Order |
+| totalAmountDue | 应还总额（该订单所有期数应还金额之和） | BigDecimal |
+| outstandingAmount | 待还总额（未还期数的本金+利息之和） | BigDecimal |
+| outstandingPrincipal | 待还本金（未还期数的本金之和） | BigDecimal |
+| outstandingInterest | 待还利息（未还期数的利息之和） | BigDecimal |
 
 **postman测试结果**
 
@@ -102,7 +146,7 @@
 
 **请求示例（网址）** /api/orders/1/repay
 
-**返回数据**
+**返回数据**  
 
 ``` json
 {
@@ -112,7 +156,7 @@
 }
 ```
 
-**postman测试结果**
+**postman测试结果**  
 
 ![](../LoanOrderImgs/repay.png "用户发起还款")
 
@@ -366,7 +410,13 @@
 
 **请求方式** POST
 
-**请求示例（网址）** /api/orders/5/early-repay
+**请求参数**:
+
+| 字段名 | 类型 | 是否必填 | 说明 | 示例值 |
+| --- | --- | --- | --- | --- |
+| periods | integer | 否 | 提前还款期数，不传则结清剩余全部期数 | 3 |
+
+**请求示例（网址）** /api/orders/5/early-repay?periods=3
 
 **返回数据**  
 
@@ -378,6 +428,11 @@
 }
 ```
 
-**postman测试结果**  
+**说明**：
+
+- 不传 `periods` 或 `periods` 为 null：一次性结清该订单剩余全部期数
+- 传入 `periods`（1 ~ 剩余期数）：提前偿还接下来的 N 期，订单状态按实际结清期数更新
+
+**postman测试结果**
 
 ![](../LoanOrderImgs/earlyRepay.png "用户提前还款")

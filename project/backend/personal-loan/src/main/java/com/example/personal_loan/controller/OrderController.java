@@ -8,9 +8,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.personal_loan.dto.ApiResult;
+import com.example.personal_loan.dto.OrderStatisticsResponse;
 import com.example.personal_loan.dto.UserGetOrderResponse;
 import com.example.personal_loan.dto.UserOrderListResponse;
 import com.example.personal_loan.entity.RepaymentSchedule;
@@ -58,6 +60,17 @@ public class OrderController {
         return ResponseEntity.ok(ApiResult.success(responses));
     }
 
+    @GetMapping(value = "/statistics", produces = "application/json")
+    @Operation(summary = "订单还款统计", description = "统计用户所有订单的待还总额、待还本金、待还利息")
+    public ResponseEntity<ApiResult<OrderStatisticsResponse>> getOrderStatistics(
+            HttpServletRequest request) {
+
+        Long userId = (Long) request.getAttribute("userId");
+        OrderStatisticsResponse statistics = orderService.getUserOrderStatistics(userId);
+        log.info("/api/orders/statistics success called for user {}", userId);
+        return ResponseEntity.ok(ApiResult.success(statistics));
+    }
+
     @PostMapping(value = "/{orderId}/repay", produces = "application/json")
     @Operation(summary = "还款操作", description = "用户对指定贷款订单进行还款操作")
     public ResponseEntity<ApiResult<String>> repayOrder(
@@ -95,14 +108,15 @@ public class OrderController {
     }
 
     @PostMapping(value = "/{orderId}/early-repay", produces = "application/json")
-    @Operation(summary = "提前还款", description = "用户对指定贷款订单进行提前还款")
+    @Operation(summary = "提前还款", description = "用户对指定贷款订单进行提前还款，可选择提前还款期数；不传 periods 则结清剩余全部期数")
     public ResponseEntity<ApiResult<String>> earlyRepayOrder(
             HttpServletRequest request,
-            @Parameter(description = "订单ID") @PathVariable Long orderId) {
+            @Parameter(description = "订单ID") @PathVariable Long orderId,
+            @Parameter(description = "提前还款期数，不传则结清剩余全部期数") @RequestParam(required = false) Integer periods) {
 
         Long userId = (Long) request.getAttribute("userId");
-        orderService.earlyRepay(orderId);
-        log.info("/api/orders/{}/early-repay success called for user {} to early repay order {}", orderId, userId, orderId);
+        orderService.earlyRepay(orderId, periods);
+        log.info("/api/orders/{}/early-repay success called for user {} to early repay order {}, periods={}", orderId, userId, orderId, periods);
         return ResponseEntity.ok(ApiResult.success("已发起提前还款"));
     }
 }

@@ -75,7 +75,7 @@ public class PaymentSuccessConsumer {
                 return;
             }
             
-            // 检查是否是提前还款（如果还款金额大于当期应还金额，视为提前还款）
+            // 判断是否为提前还款（事件中携带 periods 字段，或还款金额大于当期应还金额）
             List<RepaymentSchedule> schedules = repaymentScheduleMapper.selectByOrderId(event.getOrderId());
             BigDecimal currentTermAmount = BigDecimal.ZERO;
             for (RepaymentSchedule schedule : schedules) {
@@ -84,21 +84,29 @@ public class PaymentSuccessConsumer {
                     break;
                 }
             }
-            
-            boolean isEarlyRepayment = event.getAmount().compareTo(currentTermAmount) > 0;
-            
+
+            Integer periods = event.getPeriods();
+            boolean isEarlyRepayment = periods != null || event.getAmount().compareTo(currentTermAmount) > 0;
+
             if (isEarlyRepayment) {
-                // 提前还款：更新所有剩余期数
+                // 提前还款：periods 为 null 表示结清全部剩余期数，否则按指定期数结清
+                int repayPeriods = (periods != null) ? periods : (order.getTerm() - order.getCurrentTerm());
+                int endTerm = order.getCurrentTerm() + repayPeriods;
+                int paidCount = 0;
                 for (RepaymentSchedule schedule : schedules) {
-                    if (schedule.getTerm() > order.getCurrentTerm()) {
+                    if (schedule.getTerm() > order.getCurrentTerm() && schedule.getTerm() <= endTerm) {
                         schedule.setStatus("已还");
                         schedule.setActualPayDate(LocalDate.now());
                         repaymentScheduleMapper.updateById(schedule);
+                        paidCount++;
                     }
                 }
-                order.setCurrentTerm(order.getTerm());
+                int newCurrentTerm = order.getCurrentTerm() + paidCount;
+                order.setCurrentTerm(newCurrentTerm);
                 order.setRepaidAmount(order.getRepaidAmount().add(event.getAmount()));
-                order.setStatus(OrderStatus.已完成);
+                if (newCurrentTerm >= order.getTerm()) {
+                    order.setStatus(OrderStatus.已完成);
+                }
             } else {
                 // 正常还款：更新当期
                 BigDecimal newRepaidAmount = order.getRepaidAmount().add(event.getAmount());

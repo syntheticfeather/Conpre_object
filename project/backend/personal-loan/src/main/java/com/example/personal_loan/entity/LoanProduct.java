@@ -31,6 +31,9 @@ public class LoanProduct {
     @Size(max = 200, message = "贷款用途说明不能超过200个字符")
     private String loanUsage;
 
+    @Size(max = 50, message = "产品类型不能超过50个字符")
+    private String productType;
+
     private ProductStatus status;
 
     @NotNull(message = "最短期数不能为空")

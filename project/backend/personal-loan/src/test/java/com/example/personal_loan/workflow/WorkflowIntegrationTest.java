@@ -76,7 +76,7 @@ class WorkflowIntegrationTest {
         );
         when(applicationService.userGetAllApplications(1L)).thenReturn(List.of(app1, app2));
 
-        SseEmitter emitter = queryStatusHandler.handle("查进度", 1L, "s1");
+        SseEmitter emitter = queryStatusHandler.handle("查进度", 1L, "s1").emitter();
         List<String> events = captureSse(emitter);
 
         printEvents("QUERY_STATUS (2笔申请)", events);
@@ -92,7 +92,7 @@ class WorkflowIntegrationTest {
     void queryStatus_empty() throws Exception {
         when(applicationService.userGetAllApplications(1L)).thenReturn(List.of());
 
-        SseEmitter emitter = queryStatusHandler.handle("查进度", 1L, "s1");
+        SseEmitter emitter = queryStatusHandler.handle("查进度", 1L, "s1").emitter();
         List<String> events = captureSse(emitter);
 
         printEvents("QUERY_STATUS (空)", events);
@@ -118,7 +118,7 @@ class WorkflowIntegrationTest {
                 RepaidType.等额本息, LocalDate.now()
         )).thenReturn(List.of(s1));
 
-        SseEmitter emitter = calculateHandler.handle("20万36期，利率4.5%，等额本息", 1L, "s1");
+        SseEmitter emitter = calculateHandler.handle("20万36期，利率4.5%，等额本息", 1L, "s1").emitter();
         List<String> events = captureSse(emitter);
 
         printEvents("CALCULATE (参数齐)", events);
@@ -133,7 +133,7 @@ class WorkflowIntegrationTest {
 
     @Test
     void calculate_missingAll() throws Exception {
-        SseEmitter emitter = calculateHandler.handle("算月供", 1L, "s1");
+        SseEmitter emitter = calculateHandler.handle("算月供", 1L, "s1").emitter();
         List<String> events = captureSse(emitter);
 
         printEvents("CALCULATE (全缺)", events);
@@ -151,13 +151,13 @@ class WorkflowIntegrationTest {
         var opt1 = new LoanOptionResponse(1L, new BigDecimal("4.5"), 36, RepaidType.等额本息);
         var opt2 = new LoanOptionResponse(2L, new BigDecimal("5.8"), 60, RepaidType.等额本金);
         var product = new UserGetProductResponse(
-                1L, "个人消费贷", "个人消费用途，快速审批", "消费",
+                1L, "个人消费贷", "个人消费用途，快速审批", "消费", null,
                 null, new BigDecimal("10000"), new BigDecimal("500000"),
                 List.of(12, 24, 36), List.of(opt1, opt2)
         );
         when(loanProductService.getTopLoanProducts(5)).thenReturn(List.of(product));
 
-        SseEmitter emitter = listProductsHandler.handle("有哪些产品", 1L, "s1");
+        SseEmitter emitter = listProductsHandler.handle("有哪些产品", 1L, "s1").emitter();
         List<String> events = captureSse(emitter);
 
         printEvents("LIST_PRODUCTS", events);
@@ -178,13 +178,13 @@ class WorkflowIntegrationTest {
     void applyLoan_foundProduct() throws Exception {
         var opt = new LoanOptionResponse(1L, new BigDecimal("4.5"), 36, RepaidType.等额本息);
         var product = new UserGetProductResponse(
-                1L, "个人消费贷", "消费用途", "消费",
+                1L, "个人消费贷", "消费用途", "消费", null,
                 null, new BigDecimal("10000"), new BigDecimal("500000"),
                 List.of(12, 24, 36), List.of(opt)
         );
         when(loanProductService.getTopLoanProducts(5)).thenReturn(List.of(product));
 
-        SseEmitter emitter = applyLoanHandler.handle("我要申请个人消费贷50万", 1L, "s1");
+        SseEmitter emitter = applyLoanHandler.handle("我要申请个人消费贷50万", 1L, "s1").emitter();
         List<String> events = captureSse(emitter);
 
         printEvents("APPLY_LOAN (确认卡)", events);
@@ -197,7 +197,7 @@ class WorkflowIntegrationTest {
     void applyLoan_noProduct() throws Exception {
         when(loanProductService.getTopLoanProducts(5)).thenReturn(List.of());
 
-        SseEmitter emitter = applyLoanHandler.handle("帮我申请贷款", 1L, "s1");
+        SseEmitter emitter = applyLoanHandler.handle("帮我申请贷款", 1L, "s1").emitter();
         List<String> events = captureSse(emitter);
 
         printEvents("APPLY_LOAN (缺产品)", events);

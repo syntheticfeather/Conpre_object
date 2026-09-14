@@ -9,6 +9,7 @@
         <result property="productName" column="product_name"/>
         <result property="description" column="description"/>
         <result property="loanUsage" column="loan_usage"/>
+        <result property="productType" column="product_type"/>
         <result property="status" column="status"/>
         <result property="minAmount" column="min_amount"/>
         <result property="maxAmount" column="max_amount"/>
@@ -23,6 +24,7 @@
             product_name,
             description,
             loan_usage, 
+            product_type,
             status,
             min_amount,
             max_amount,
@@ -49,7 +51,7 @@
 
     <!-- 定义可复用的列映射片段 (ResultMap 也可以，这里演示 SqlFragment) -->
     <sql id="Base_Column_List">
-        id, product_name, description, loan_usage, status, 
+        id, product_name, description, loan_usage, product_type, status, 
         min_term, max_term, term_step, 
         min_amount, max_amount, 
         promotion_details, create_time, update_time
@@ -61,6 +63,7 @@
         product_name AS productName, 
         description, 
         loan_usage AS loanUsage, 
+        product_type AS productType,
         status, 
         min_term AS minTerm, 
         max_term AS maxTerm, 
@@ -84,6 +87,9 @@
             </if>
             <if test="loanUsage != null">
                 loan_usage = #{loanUsage},
+            </if>
+            <if test="productType != null">
+                product_type = #{productType},
             </if>
             <if test="status != null">
                 status = #{status},

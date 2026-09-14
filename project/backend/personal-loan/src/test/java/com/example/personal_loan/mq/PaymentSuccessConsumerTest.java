@@ -77,7 +77,7 @@ class PaymentSuccessConsumerTest {
         order.setTerm(3);
         when(orderMapper.selectById(11L)).thenReturn(order);
 
-        PaymentSuccessEvent event = new PaymentSuccessEvent(11L, new BigDecimal("12.34"), "tx", LocalDateTime.now());
+        PaymentSuccessEvent event = new PaymentSuccessEvent(11L, new BigDecimal("12.34"), "tx", LocalDateTime.now(), null);
         Message message = buildMessage(objectMapper.writeValueAsBytes(event), "mid", 1L);
 
         PaymentSuccessConsumer consumer = new PaymentSuccessConsumer(
@@ -111,7 +111,7 @@ class PaymentSuccessConsumerTest {
         //模拟了数据库层面的唯一索引约束,模拟插入支付流水时抛出 DuplicateKeyException 异常
         when(paymentRecordMapper.insert(any(), any(), any(), any(), any())).thenThrow(new DuplicateKeyException("dup"));
 
-        PaymentSuccessEvent event = new PaymentSuccessEvent(11L, new BigDecimal("12.34"), "tx", LocalDateTime.now());
+        PaymentSuccessEvent event = new PaymentSuccessEvent(11L, new BigDecimal("12.34"), "tx", LocalDateTime.now(), null);
         Message message = buildMessage(objectMapper.writeValueAsBytes(event), "mid", 2L);
 
         PaymentSuccessConsumer consumer = new PaymentSuccessConsumer(

@@ -95,6 +95,7 @@ class OrderServiceTest {
     void testUserGetOrder_Success() {
         when(orderMapper.selectById(1L)).thenReturn(order);
         when(loanProductMapper.findById(1L)).thenReturn(loanProduct);
+        when(repaymentScheduleMapper.selectByOrderId(1L)).thenReturn(Arrays.asList());
 
         var response = orderService.userGetOrder(1L, 1L);
 
@@ -104,6 +105,11 @@ class OrderServiceTest {
         assertEquals(1L, response.getOrder().getId());
         assertEquals(new BigDecimal("10000"), response.getOrder().getLoanAmount());
         assertEquals(OrderStatus.正常, response.getOrder().getStatus());
+        // 无还款计划时，各项金额应为0
+        assertEquals(BigDecimal.ZERO, response.getTotalAmountDue());
+        assertEquals(BigDecimal.ZERO, response.getOutstandingAmount());
+        assertEquals(BigDecimal.ZERO, response.getOutstandingPrincipal());
+        assertEquals(BigDecimal.ZERO, response.getOutstandingInterest());
     }
 
     @Test

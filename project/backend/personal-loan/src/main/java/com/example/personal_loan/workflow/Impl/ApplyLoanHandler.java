@@ -16,6 +16,7 @@ import com.example.personal_loan.service.LoanProductService;
 import com.example.personal_loan.utils.RedisUtil;
 import com.example.personal_loan.workflow.SseUtil;
 import com.example.personal_loan.workflow.WorkflowHandler;
+import com.example.personal_loan.workflow.WorkflowResult;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,8 +34,8 @@ public class ApplyLoanHandler implements WorkflowHandler {
     @Override public String intent() { return "APPLY_LOAN"; }
 
     @Override
-    public SseEmitter handle(String message, Long userId, String sessionId) {
-        SseEmitter emitter = new SseEmitter(60_000L);
+    public WorkflowResult handle(String message, Long userId, String sessionId) {
+        SseEmitter emitter = SseUtil.newEmitter(sessionId);
 
         try {
             // 全量产品
@@ -51,38 +52,39 @@ public class ApplyLoanHandler implements WorkflowHandler {
             // 产品名缺失 → 引导
             if (merged.getProductName() == null) {
                 saveSessionParams(sessionId, merged);
-                SseUtil.sendMessage(emitter, buildMissingProduct(topNames, merged));
+                String reply = buildMissingProduct(topNames, merged);
+                SseUtil.sendMessage(emitter, reply);
                 SseUtil.complete(emitter);
-                return emitter;
+                return WorkflowResult.of(emitter, reply);
             }
 
             // 产品名无效
             ProductInfo product = findProduct(allProducts, merged.getProductName());
             if (product == null) {
-                SseUtil.sendMessage(emitter,
-                        "未找到产品\"" + merged.getProductName() + "\"，可以问我\"有哪些产品\"。");
+                String reply = "未找到产品\"" + merged.getProductName() + "\"，可以问我\"有哪些产品\"。";
+                SseUtil.sendMessage(emitter, reply);
                 SseUtil.complete(emitter);
-                return emitter;
+                return WorkflowResult.of(emitter, reply);
             }
 
             // 金额缺失 → 引导
             if (merged.getAmount() == null) {
                 saveSessionParams(sessionId, merged);
-                SseUtil.sendMessage(emitter,
-                        "该产品额度范围 " + product.minAmount + "~" + product.maxAmount
-                        + " 元，您想贷多少？");
+                String reply = "该产品额度范围 " + product.minAmount + "~" + product.maxAmount
+                        + " 元，您想贷多少？";
+                SseUtil.sendMessage(emitter, reply);
                 SseUtil.complete(emitter);
-                return emitter;
+                return WorkflowResult.of(emitter, reply);
             }
 
             // 金额校验
             BigDecimal amount = BigDecimal.valueOf(merged.getAmount());
             if (amount.compareTo(product.minAmount) < 0 || amount.compareTo(product.maxAmount) > 0) {
-                SseUtil.sendMessage(emitter,
-                        "额度范围 " + product.minAmount + "~" + product.maxAmount
-                        + " 元，您输入的 " + amount + " 不在范围内。请重新输入。");
+                String reply = "额度范围 " + product.minAmount + "~" + product.maxAmount
+                        + " 元，您输入的 " + amount + " 不在范围内。请重新输入。";
+                SseUtil.sendMessage(emitter, reply);
                 SseUtil.complete(emitter);
-                return emitter;
+                return WorkflowResult.of(emitter, reply);
             }
 
             // 齐全 → 检查是否在选择 Option
@@ -91,27 +93,29 @@ public class ApplyLoanHandler implements WorkflowHandler {
                 // 用户选了 Option → 提交
                 redisUtil.delete(REDIS_PREFIX + sessionId);
                 var chosen = product.options.get(optionIndex);
-                SseUtil.sendMessage(emitter,
-                        "已为您提交申请！\n"
+                String reply = "已为您提交申请！\n"
                         + "产品：" + product.name + "\n"
                         + "金额：" + amount + "元\n"
                         + "方案：" + chosen.getLoanPeriod() + "期 "
                         + chosen.getInterestRate() + "% "
                         + chosen.getRepaidType().name() + "\n\n"
-                        + "[实际提交需调用 ApplicationService.submit()，当前为演示]");
+                        + "[实际提交需调用 ApplicationService.submit()，当前为演示]";
+                SseUtil.sendMessage(emitter, reply);
                 SseUtil.complete(emitter);
+                return WorkflowResult.of(emitter, reply);
             } else {
                 // 还没选 → 确认卡（参数保留，等用户选）
                 saveSessionParams(sessionId, merged);
-                SseUtil.sendMessage(emitter, buildConfirmCard(product, amount));
+                String reply = buildConfirmCard(product, amount);
+                SseUtil.sendMessage(emitter, reply);
                 SseUtil.complete(emitter);
+                return WorkflowResult.of(emitter, reply);
             }
 
         } catch (Exception e) {
             log.error("APPLY_LOAN 失败", e);
-            SseUtil.errorReply(emitter, "处理失败，请稍后重试。");
+            return SseUtil.errorReply(emitter, "处理失败，请稍后重试。");
         }
-        return emitter;
     }
 
     // ===== 跨轮参数管理 =====

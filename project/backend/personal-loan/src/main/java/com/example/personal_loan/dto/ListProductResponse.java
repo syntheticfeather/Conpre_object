@@ -19,6 +19,7 @@ public class ListProductResponse {
     private String productName;
     private String description;
     private String loanUsage;
+    private String productType;
     private ProductStatus status;
 
     private BigDecimal minAmount;

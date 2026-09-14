@@ -16,6 +16,8 @@ from agent.plan_execute_agent import PlanExecuteAgent
 from agent.reflection_agent import ReflectionAgent
 from memory.user_memory import UserMemoryStore
 from memory.memory_extractor import MemoryExtractor
+from memory.chat_history_service import chat_history_service
+from utils.mongodb_client import mongodb_client
 
 load_dotenv()
 logger = logging.getLogger(__name__)
@@ -27,6 +29,7 @@ class ChatAgent:
     """对外统一入口，内部按 mode 组装 Agent 链。"""
 
     def __init__(self, mode: str = "react"):
+        self.mode = mode   # 记住模式，供日志/调试参考；会话不持久化 agent_mode
         react = ReactAgent()
 
         if mode == "react":
@@ -42,6 +45,8 @@ class ChatAgent:
 
     async def chat(self, message: str, session_id: str, user_id: str = None, token: str = None):
         # ===== 对话前：注入长期记忆（Semantic 优先 + Episode 兜底） =====
+        # 会话兜底创建 / 首条判断 / 落库 / 标题生成统一由 ChatHistoryService 处理，
+        # WORKFLOW 路径（Java 本地处理后回调 /api/chat/persist）也走同一服务。
         enriched_message = message
         if user_id:
             try:
@@ -55,8 +60,9 @@ class ChatAgent:
                 else:
                     # 2. Semantic 不够近 → 补 Episode 兜底（MongoDB 最近会话）
                     try:
-                        from utils.mongodb_client import mongodb_client
-                        raw = mongodb_client.get_session_history(session_id, limit=4)
+                        raw = mongodb_client.get_messages_paginated(
+                            session_id, limit=4
+                        ).get("items", [])
                         if raw:
                             memory_texts = ["## 用户最近对话:"]
                             for h in raw:
@@ -82,6 +88,15 @@ class ChatAgent:
                     full_response += evt.get("content", "")
             except (json.JSONDecodeError, AttributeError):
                 pass
+
+        # ===== 对话后：统一持久化（对话落库唯一入口） =====
+        # 服务内部完成：会话兜底创建 → 追加「用户原话 + 最终答案」两条 → 首条消息 LLM 标题回填。
+        # 注意存的是原始 message，不是带记忆前缀的 enriched_message；
+        # 内层 agent（react/plan/reflection）均不写库，中间步骤不会落库。
+        if full_response and session_id:
+            await chat_history_service.persist_turn(
+                session_id, user_id, message, full_response
+            )
 
         # ===== 对话后：提取新记忆（后台任务，不影响返回） =====
         if user_id and full_response:

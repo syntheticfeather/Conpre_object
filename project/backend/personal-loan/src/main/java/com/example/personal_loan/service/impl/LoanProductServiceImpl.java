@@ -355,6 +355,7 @@ public class LoanProductServiceImpl implements LoanProductService{
         response.setProductName(product.getProductName());
         response.setDescription(product.getDescription());
         response.setLoanUsage(product.getLoanUsage());
+        response.setProductType(product.getProductType());
         response.setTerms(terms);
         response.setMinAmount(product.getMinAmount());
         response.setMaxAmount(product.getMaxAmount());
@@ -378,6 +379,7 @@ public class LoanProductServiceImpl implements LoanProductService{
             response.setProductName(product.getProductName());
             response.setDescription(product.getDescription());
             response.setLoanUsage(product.getLoanUsage());
+            response.setProductType(product.getProductType());
             response.setStatus(product.getStatus());
             response.setMinAmount(product.getMinAmount());
             response.setMaxAmount(product.getMaxAmount());
@@ -435,6 +437,7 @@ public class LoanProductServiceImpl implements LoanProductService{
             response.setProductName(product.getProductName());
             response.setDescription(product.getDescription());
             response.setLoanUsage(product.getLoanUsage());
+            response.setProductType(product.getProductType());
             response.setPromotionDetails(product.getPromotionDetails());
             response.setMinAmount(product.getMinAmount());
             response.setMaxAmount(product.getMaxAmount());
@@ -474,6 +477,7 @@ public class LoanProductServiceImpl implements LoanProductService{
             response.setProductName(product.getProductName());
             response.setDescription(product.getDescription()); 
             response.setLoanUsage(product.getLoanUsage()); 
+            response.setProductType(product.getProductType());
             response.setPromotionDetails(product.getPromotionDetails());
             response.setMinAmount(product.getMinAmount());
             response.setMaxAmount(product.getMaxAmount());
@@ -506,6 +510,7 @@ public class LoanProductServiceImpl implements LoanProductService{
             response.setProductName(product.getProductName());
             response.setDescription(product.getDescription());
             response.setLoanUsage(product.getLoanUsage());
+            response.setProductType(product.getProductType());
             response.setPromotionDetails(product.getPromotionDetails());
             response.setMinAmount(product.getMinAmount());
             response.setMaxAmount(product.getMaxAmount());

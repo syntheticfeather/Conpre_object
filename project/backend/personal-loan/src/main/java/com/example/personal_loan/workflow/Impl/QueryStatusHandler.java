@@ -10,6 +10,7 @@ import com.example.personal_loan.dto.UserAppListResponse;
 import com.example.personal_loan.service.ApplicationService;
 import com.example.personal_loan.workflow.SseUtil;
 import com.example.personal_loan.workflow.WorkflowHandler;
+import com.example.personal_loan.workflow.WorkflowResult;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,8 +27,8 @@ public class QueryStatusHandler implements WorkflowHandler {
     }
 
     @Override
-    public SseEmitter handle(String message, Long userId, String sessionId) {
-        SseEmitter emitter = new SseEmitter(60_000L);
+    public WorkflowResult handle(String message, Long userId, String sessionId) {
+        SseEmitter emitter = SseUtil.newEmitter(sessionId);
 
         try {
             List<UserAppListResponse> apps = applicationService.userGetAllApplications(userId);
@@ -53,12 +54,11 @@ public class QueryStatusHandler implements WorkflowHandler {
 
             SseUtil.sendMessage(emitter, sb.toString());
             SseUtil.complete(emitter);
+            return WorkflowResult.of(emitter, sb.toString());
 
         } catch (Exception e) {
             log.error("QUERY_STATUS 失败", e);
-            SseUtil.errorReply(emitter, "查询失败，请稍后重试。");
+            return SseUtil.errorReply(emitter, "查询失败，请稍后重试。");
         }
-
-        return emitter;
     }
 }

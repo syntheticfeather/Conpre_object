@@ -48,7 +48,7 @@ public class ChatController {
         AgentMode agentMode = selectAgentMode(intent);
 
         if (WORKFLOW.equals(route.getAction()) && userId != null) {
-            return chatRouter.handleWorkflow(intent, request.getMessage(), userId, sessionId);
+            return chatRouter.handleWorkflow(intent, request.getMessage(), userId, sessionId, token);
         } else {
             return agentClient.forwardToAgent(request.getMessage(), userId, sessionId, token, agentMode.value());
         }

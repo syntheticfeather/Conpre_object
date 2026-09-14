@@ -17,6 +17,7 @@ public class UserGetProductResponse {
 
     private String description;
     private String loanUsage;
+    private String productType;
     private String promotionDetails;
 
     private BigDecimal minAmount;

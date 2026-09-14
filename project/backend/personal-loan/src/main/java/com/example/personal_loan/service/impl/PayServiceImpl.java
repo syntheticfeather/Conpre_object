@@ -27,6 +27,6 @@ public class PayServiceImpl implements PayService {
         LocalDateTime paidAt = LocalDateTime.now();
 
         log.info("mock pay success: orderId={}, txId={}, paidAt={}", request.getOrderId(), txId, paidAt);
-        return new PaymentSuccessEvent(request.getOrderId(), request.getAmount(), txId, paidAt);
+        return new PaymentSuccessEvent(request.getOrderId(), request.getAmount(), txId, paidAt, request.getPeriods());
     }
 }

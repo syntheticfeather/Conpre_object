@@ -15,4 +15,6 @@ public class PaymentSuccessEvent {
     private BigDecimal amount;
     private String txId; // 支付网关返回的 交易流水号/支付订单号 （第三方唯一标识）
     private LocalDateTime paidAt;
+    /** 提前还款期数，null 表示一次性结清剩余全部期数 */
+    private Integer periods;
 }

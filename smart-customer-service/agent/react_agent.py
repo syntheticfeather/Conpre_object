@@ -1,7 +1,7 @@
 # smart-customer-service/agent/react_agent.py
 """ReAct Agent — 纯 while 循环，不做 Plan/Reflection"""
 
-import os, json, uuid, logging
+import os, json, logging
 from datetime import datetime
 from typing import AsyncGenerator
 
@@ -68,10 +68,13 @@ class ReactAgent(BaseAgent):
             if token:
                 set_token(token)
 
-            # 恢复历史
+            # 恢复历史（新方案：chat_messages 集合分页查询，返回最新 N 条且已升序）
             processed_history = []
             if session_id:
-                for msg in mongodb_client.get_session_history(session_id, limit=10):
+                history = mongodb_client.get_messages_paginated(
+                    session_id, limit=10
+                ).get("items", [])
+                for msg in history:
                     if msg["role"] == "user":
                         processed_history.append(HumanMessage(content=msg["content"]))
                     elif msg["role"] == "assistant":
@@ -126,12 +129,9 @@ class ReactAgent(BaseAgent):
                 elif event_type == "on_chain_end":
                     yield json.dumps({"event": "done", "data": "final"}, ensure_ascii=False)
 
-            # 存历史
-            if full_response and session_id:
-                mongodb_client.save_session_history(session_id, user_id, [
-                    {"message_id": str(uuid.uuid4()), "role": "user", "content": message, "timestamp": datetime.now()},
-                    {"message_id": str(uuid.uuid4()), "role": "assistant", "content": full_response, "timestamp": datetime.now()},
-                ])
+            # 存储职责已统一上移到 ChatAgent：内层 Agent 不再写 chat_messages，
+            # 避免 plan/reflection 的中间步骤消息污染聊天记录。
+            # ChatAgent 在流式结束后统一 append「用户原话 + 最终 full_response」。
 
         except Exception as e:
             error_msg = f"发生错误：{str(e)}"

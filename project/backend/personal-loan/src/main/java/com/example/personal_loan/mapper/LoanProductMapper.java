@@ -22,6 +22,7 @@ public interface LoanProductMapper {
         "  product_name, " +
         "  description, " +
         "  loan_usage, " +
+        "  product_type, " +
         "  status, " +
         "  min_term, " +
         "  max_term, " +
@@ -35,6 +36,7 @@ public interface LoanProductMapper {
         "  #{productName}, " +
         "  #{description}, " +
         "  #{loanUsage}, " +
+        "  #{productType}, " +
         "  #{status}, " +
         "  #{minTerm}, " +
         "  #{maxTerm}, " +
@@ -67,6 +69,7 @@ public interface LoanProductMapper {
         "product_name as productName, " +
         "description, " +
         "loan_usage as loanUsage, " +
+        "product_type as productType, " +
         "status as status, " +
         "min_term as minTerm, " +
         "max_term as maxTerm, " +
@@ -88,6 +91,7 @@ public interface LoanProductMapper {
         "product_name as productName, " +
         "description, " +
         "loan_usage as loanUsage, " +
+        "product_type as productType, " +
         "status as status, " +
         "min_term as minTerm, " +
         "max_term as maxTerm, " +
@@ -109,6 +113,7 @@ public interface LoanProductMapper {
         "product_name as productName, " +
         "description, " +
         "loan_usage as loanUsage, " +
+        "product_type as productType, " +
         "min_term as minTerm, " +
         "max_term as maxTerm, " +
         "term_step as termStep, " +
@@ -130,6 +135,7 @@ public interface LoanProductMapper {
         "product_name as productName, " +
         "description, " +
         "loan_usage as loanUsage, " +
+        "product_type as productType, " +
         "min_term as minTerm, " +
         "max_term as maxTerm, " +
         "term_step as termStep, " +
@@ -152,6 +158,7 @@ public interface LoanProductMapper {
         "  product_name AS productName, " +
         "  description, " +
         "  loan_usage AS loanUsage, " +
+        "  product_type AS productType, " +
         "  status, " +
         "  min_term AS minTerm, " +
         "  max_term AS maxTerm, " +

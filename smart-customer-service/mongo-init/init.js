@@ -16,14 +16,12 @@ db.createUser({
 });
 
 // 创建集合
-db.createCollection('chat_history')
 db.createCollection('prompts');
-db.createCollection('mcp_servers');  // 新增MCP服务器配置集合
+db.createCollection('mcp_servers');
+db.createCollection('chat_sessions');  // 会话元信息（每会话一行）
+db.createCollection('chat_messages');   // 消息明细（每条消息一行）
 
 // 创建索引
-db.chat_history.createIndex({ "session_id": 1 }, { unique: true });
-db.chat_history.createIndex({ "user_id": 1, "updated_at": -1 });
-
 // prompts 集合索引
 db.prompts.createIndex({ "prompt_id": 1 }, { unique: true });
 db.prompts.createIndex({ "name": 1 });
@@ -34,27 +32,37 @@ db.prompts.createIndex({ "is_active": 1 });
 db.mcp_servers.createIndex({ "server_id": 1 }, { unique: true });
 db.mcp_servers.createIndex({ "created_at": -1 });
 
+// chat_sessions 集合索引（会话列表查询）
+db.chat_sessions.createIndex({ "session_id": 1 }, { unique: true });
+db.chat_sessions.createIndex({ "user_id": 1, "updated_at": -1 });               // 按用户列会话
+db.chat_sessions.createIndex({ "user_id": 1, "pinned": -1, "updated_at": -1 }); // 置顶排序
+
+// chat_messages 集合索引（消息分页查询）
+db.chat_messages.createIndex({ "message_id": 1 }, { unique: true });
+db.chat_messages.createIndex({ "session_id": 1, "created_at": -1 }); // 向上加载更早（主路径）
+db.chat_messages.createIndex({ "session_id": 1, "created_at": 1 });  // 向下加载更新
+
 // 插入测试数据（可选）
-db.chat_history.insertOne({
-    session_id: "test_session_001",
-    user_id: "test_user",
-    "messages": [
-        {
-            "message_id": "msg_test_001",
-            "role": "user",
-            "content": "你好，我想咨询一下贷款",
-            "timestamp": new Date("2024-01-15T10:00:00Z"),
-        },
-        {
-            "message_id": "msg_test_003",
-            "role": "user",
-            "content": "我想了解一下个人消费贷",
-            "timestamp": new Date("2024-01-15T10:01:00Z"),
-        }
-    ],
-    created_at: new Date(),
-    updated_at: new Date()
-});
+// db.chat_history.insertOne({
+//     session_id: "test_session_001",
+//     user_id: "test_user",
+//     "messages": [
+//         {
+//             "message_id": "msg_test_001",
+//             "role": "user",
+//             "content": "你好，我想咨询一下贷款",
+//             "timestamp": new Date("2024-01-15T10:00:00Z"),
+//         },
+//         {
+//             "message_id": "msg_test_003",
+//             "role": "user",
+//             "content": "我想了解一下个人消费贷",
+//             "timestamp": new Date("2024-01-15T10:01:00Z"),
+//         }
+//     ],
+//     created_at: new Date(),
+//     updated_at: new Date()
+// });
 
 // 插入默认提示词数据
 db.prompts.insertOne({
@@ -104,3 +112,65 @@ db.prompts.insertOne({
 //         "timeout": 60
 //     }
 // }
+
+// ==================== chat_sessions / chat_messages 示例数据 ====================
+// 用于联调"向上滑动加载更多"和"左侧会话列表"分页接口
+
+var now = new Date();
+var sid1 = "demo_session_001";   // 一条置顶会话
+var sid2 = "demo_session_002";   // 一条普通会话
+
+db.chat_sessions.insertMany([
+    {
+        session_id: sid1,
+        user_id: "demo_user",
+        title: "个人消费贷咨询",
+        last_message_preview: "好的，已为您生成等额本息还款计划",
+        last_message_at: new Date(now.getTime() - 60 * 1000),    // 1 分钟前
+        message_count: 3,
+        created_at: new Date(now.getTime() - 60 * 60 * 1000),    // 1 小时前
+        updated_at: new Date(now.getTime() - 60 * 1000),
+        pinned: true,
+        archived: false
+    },
+    {
+        session_id: sid2,
+        user_id: "demo_user",
+        title: "新对话 " + new Date(now.getTime() - 30 * 60 * 1000).toISOString().slice(0,16).replace("T"," "),
+        last_message_preview: "您也可以选择先息后本的方式",
+        last_message_at: new Date(now.getTime() - 30 * 60 * 1000), // 30 分钟前
+        message_count: 0,
+        created_at: new Date(now.getTime() - 30 * 60 * 1000),
+        updated_at: new Date(now.getTime() - 30 * 60 * 1000),
+        pinned: false,
+        archived: false
+    }
+]);
+
+db.chat_messages.insertMany([
+    // session1 的 3 条消息（时间从早到晚）
+    {
+        message_id: "demo_msg_001",
+        session_id: sid1,
+        user_id: "demo_user",
+        role: "user",
+        content: "你好，我想咨询个人消费贷",
+        created_at: new Date(now.getTime() - 60 * 60 * 1000)       // 1 小时前
+    },
+    {
+        message_id: "demo_msg_002",
+        session_id: sid1,
+        user_id: "demo_user",
+        role: "assistant",
+        content: "您好！很高兴为您服务。请问您想了解额度、利率还是还款方式？",
+        created_at: new Date(now.getTime() - 59 * 60 * 1000)      // 59 分钟前
+    },
+    {
+        message_id: "demo_msg_003",
+        session_id: sid1,
+        user_id: "demo_user",
+        role: "assistant",
+        content: "好的，已为您生成等额本息还款计划，月供约 3320 元",
+        created_at: new Date(now.getTime() - 60 * 1000)           // 1 分钟前
+    }
+]);

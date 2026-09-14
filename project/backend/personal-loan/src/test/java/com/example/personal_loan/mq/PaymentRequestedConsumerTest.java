@@ -58,8 +58,8 @@ class PaymentRequestedConsumerTest {
         when(rabbitUtil.getTag(any())).thenReturn(7L);
         when(processedMessageMapper.isProcessMessage("mid")).thenReturn(false);
 
-        PaymentRequestedEvent req = new PaymentRequestedEvent(11L, new BigDecimal("12.34"), LocalDateTime.now());
-        PaymentSuccessEvent success = new PaymentSuccessEvent(11L, req.getAmount(), "tx", LocalDateTime.now());
+        PaymentRequestedEvent req = new PaymentRequestedEvent(11L, new BigDecimal("12.34"), LocalDateTime.now(), null);
+        PaymentSuccessEvent success = new PaymentSuccessEvent(11L, req.getAmount(), "tx", LocalDateTime.now(), null);
         when(payService.pay(any())).thenReturn(success);
 
         OutboxMessage outboxMessage = new OutboxMessage();
@@ -97,7 +97,7 @@ class PaymentRequestedConsumerTest {
     void consume_missingMessageId_shouldMoveToDlqAndAck() throws Exception {
         when(rabbitUtil.getTag(any())).thenReturn(3L);
 
-        PaymentRequestedEvent req = new PaymentRequestedEvent(11L, new BigDecimal("12.34"), LocalDateTime.now());
+        PaymentRequestedEvent req = new PaymentRequestedEvent(11L, new BigDecimal("12.34"), LocalDateTime.now(), null);
         MessageProperties props = new MessageProperties();
         props.setDeliveryTag(3L);
         Message message = new Message(objectMapper.writeValueAsBytes(req), props);
@@ -123,7 +123,7 @@ class PaymentRequestedConsumerTest {
         when(rabbitUtil.getTag(any())).thenReturn(9L);
         when(processedMessageMapper.isProcessMessage("mid")).thenReturn(true);
 
-        PaymentRequestedEvent req = new PaymentRequestedEvent(11L, new BigDecimal("12.34"), LocalDateTime.now());
+        PaymentRequestedEvent req = new PaymentRequestedEvent(11L, new BigDecimal("12.34"), LocalDateTime.now(), null);
         Message message = buildMessage(objectMapper.writeValueAsBytes(req), "mid", 9L);
 
         PaymentRequestedConsumer consumer = new PaymentRequestedConsumer(

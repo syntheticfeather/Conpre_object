@@ -226,6 +226,10 @@ CREATE TABLE notifications(
     FOREIGN KEY (user_id) REFERENCES users(id)
 ) COMMENT '站内通知表';
 
+ALTER TABLE loan_products
+  ADD COLUMN product_type VARCHAR(50) NULL COMMENT '产品类型，如个人消费、农业生产、企业经营'
+  AFTER loan_usage;
+
 /* 
 * 插入管理员，明文密码分别是 @Gcc1234  @Zff1234  @Wting1234  @Qyx1234
  */
@@ -253,13 +257,14 @@ SELECT id FROM users WHERE user_name IN ('WangFang', 'ZhangWei', 'LiMing', 'Alic
 
 -- 插入产品
 INSERT INTO loan_products (
-    product_name, description, loan_usage, status,
+    product_name, description, loan_usage, product_type, status,
     min_term, max_term, term_step,
     min_amount, max_amount, promotion_details
 ) VALUES (
     '小微经营贷',
     '助力小微企业发展，快速审批，灵活还款',
     '进货周转、设备采购、门店扩张',
+    '企业经营',
     '上架中',
     12, 36, 6,
     10000.00, 500000.00,
@@ -271,13 +276,14 @@ INSERT INTO loan_options (product_id, interest_rate, loan_period, repaid_type) V
 ((SELECT id FROM loan_products WHERE product_name = '小微经营贷'), 0.0720, 2, '等额本息');
 
 INSERT INTO loan_products (
-    product_name, description, loan_usage, status,
+    product_name, description, loan_usage, product_type, status,
     min_term, max_term, term_step,
     min_amount, max_amount, promotion_details
 ) VALUES (
     '创业启航贷',
     '专为初创企业设计，低门槛准入，快速放款',
     '办公租赁、人员工资、品牌推广',
+    '企业经营',
     '上架中',
     12, 36, 6,
     20000.00, 100000.00,
@@ -289,13 +295,14 @@ INSERT INTO loan_options (product_id, interest_rate, loan_period, repaid_type) V
 ((SELECT id FROM loan_products WHERE product_name = '创业启航贷'), 0.0780, 2, '等额本息');
 
 INSERT INTO loan_products (
-    product_name, description, loan_usage, status,
+    product_name, description, loan_usage, product_type, status,
     min_term, max_term, term_step,
     min_amount, max_amount, promotion_details
 ) VALUES (
     '灵活周转贷',
     '随借随还，按日计息，满足短期流动性需求',
     '应付账款垫付、临时补货',
+    '企业经营',
     '上架中',
     1, 12, 1,
     5000.00, 30000.00,
@@ -306,13 +313,14 @@ INSERT INTO loan_options (product_id, interest_rate, loan_period, repaid_type) V
 ((SELECT id FROM loan_products WHERE product_name = '灵活周转贷'), 0.0800, 1, '先息后本');
 
 INSERT INTO loan_products (
-    product_name, description, loan_usage, status,
+    product_name, description, loan_usage, product_type, status,
     min_term, max_term, term_step,
     min_amount, max_amount, promotion_details
 ) VALUES (
     '设备升级贷',
     '专项用于购置或更新生产设备，支持制造业转型',
     '购买数控机床、自动化设备等',
+    '企业经营',
     '上架中',
     20, 60, 4,
     50000.00, 1000000.00,
@@ -325,13 +333,14 @@ INSERT INTO loan_options (product_id, interest_rate, loan_period, repaid_type) V
 ((SELECT id FROM loan_products WHERE product_name = '设备升级贷'), 0.0650, 5, '等额本金');
 
 INSERT INTO loan_products (
-    product_name, description, loan_usage, status,
+    product_name, description, loan_usage, product_type, status,
     min_term, max_term, term_step,
     min_amount, max_amount, promotion_details
 ) VALUES (
     '季节备货贷',
     '针对零售、餐饮等行业旺季前的集中备货需求',
     '节日商品采购、原材料囤积',
+    '企业经营',
     '已下架',
     3, 12, 3,
     10000.00, 200000.00,
@@ -340,6 +349,86 @@ INSERT INTO loan_products (
 
 INSERT INTO loan_options (product_id, interest_rate, loan_period, repaid_type) VALUES
 ((SELECT id FROM loan_products WHERE product_name = '季节备货贷'), 0.0750, 6, '先息后本');
+
+/* ==================== 个人消费 类产品 ==================== */
+
+INSERT INTO loan_products (
+    product_name, description, loan_usage, product_type, status,
+    min_term, max_term, term_step,
+    min_amount, max_amount, promotion_details
+) VALUES (
+    '优享贷',
+    '专为信用良好用户定制，利率优惠，期限灵活',
+    '教育、购车、旅游、大额消费',
+    '个人消费',
+    '上架中',
+    6, 60, 6,
+    3000.00, 100000.00,
+    '首年利率85折'
+);
+
+INSERT INTO loan_options (product_id, interest_rate, loan_period, repaid_type) VALUES
+((SELECT id FROM loan_products WHERE product_name = '优享贷'), 0.0390, 2, '等额本息'),
+((SELECT id FROM loan_products WHERE product_name = '优享贷'), 0.0410, 3, '等额本金');
+
+INSERT INTO loan_products (
+    product_name, description, loan_usage, product_type, status,
+    min_term, max_term, term_step,
+    min_amount, max_amount, promotion_details
+) VALUES (
+    '家装易贷',
+    '家装专属信贷，分期轻松装新家',
+    '装修材料、家具家电、软装布置',
+    '个人消费',
+    '上架中',
+    6, 36, 6,
+    5000.00, 200000.00,
+    '合作装修公司立减3000'
+);
+
+INSERT INTO loan_options (product_id, interest_rate, loan_period, repaid_type) VALUES
+((SELECT id FROM loan_products WHERE product_name = '家装易贷'), 0.0450, 1, '先息后本'),
+((SELECT id FROM loan_products WHERE product_name = '家装易贷'), 0.0480, 3, '等额本息');
+
+/* ==================== 农业生产 类产品 ==================== */
+
+INSERT INTO loan_products (
+    product_name, description, loan_usage, product_type, status,
+    min_term, max_term, term_step,
+    min_amount, max_amount, promotion_details
+) VALUES (
+    '春耕备播贷',
+    '支持春耕备播，不误农时，快速放款',
+    '种子、化肥、农药、农膜',
+    '农业生产',
+    '上架中',
+    3, 12, 3,
+    2000.00, 50000.00,
+    '播种季前免息30天'
+);
+
+INSERT INTO loan_options (product_id, interest_rate, loan_period, repaid_type) VALUES
+((SELECT id FROM loan_products WHERE product_name = '春耕备播贷'), 0.0380, 1, '先息后本'),
+((SELECT id FROM loan_products WHERE product_name = '春耕备播贷'), 0.0420, 1, '等额本息');
+
+INSERT INTO loan_products (
+    product_name, description, loan_usage, product_type, status,
+    min_term, max_term, term_step,
+    min_amount, max_amount, promotion_details
+) VALUES (
+    '农机购置贷',
+    '专项用于购置农业机械，助力农业现代化',
+    '拖拉机、收割机、插秧机等',
+    '农业生产',
+    '上架中',
+    12, 48, 6,
+    10000.00, 300000.00,
+    '合作农机厂商补贴利息1%'
+);
+
+INSERT INTO loan_options (product_id, interest_rate, loan_period, repaid_type) VALUES
+((SELECT id FROM loan_products WHERE product_name = '农机购置贷'), 0.0550, 3, '等额本息'),
+((SELECT id FROM loan_products WHERE product_name = '农机购置贷'), 0.0600, 5, '等额本金');
 
 /* DELETE FROM loan_applications;
 DELETE FROM outbox_message;

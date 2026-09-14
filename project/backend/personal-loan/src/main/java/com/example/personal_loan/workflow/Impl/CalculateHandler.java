@@ -15,6 +15,7 @@ import com.example.personal_loan.enums.RepaidType;
 import com.example.personal_loan.utils.CalculateUtil;
 import com.example.personal_loan.workflow.SseUtil;
 import com.example.personal_loan.workflow.WorkflowHandler;
+import com.example.personal_loan.workflow.WorkflowResult;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,8 +38,8 @@ public class CalculateHandler implements WorkflowHandler {
     }
 
     @Override
-    public SseEmitter handle(String message, Long userId, String sessionId) {
-        SseEmitter emitter = new SseEmitter(60_000L);
+    public WorkflowResult handle(String message, Long userId, String sessionId) {
+        SseEmitter emitter = SseUtil.newEmitter(sessionId);
 
         try {
             BigDecimal amount = extractAmount(message);
@@ -55,7 +56,7 @@ public class CalculateHandler implements WorkflowHandler {
                 prompt.append("\n您可以一次性告诉我，比如\"20万36期，利率4.5%，等额本息\"。");
                 SseUtil.sendMessage(emitter, prompt.toString());
                 SseUtil.complete(emitter);
-                return emitter;
+                return WorkflowResult.of(emitter, prompt.toString());
             }
 
             // 参数齐全 → 调 CalculateUtil 生成完整还款计划
@@ -89,13 +90,12 @@ public class CalculateHandler implements WorkflowHandler {
 
             SseUtil.sendMessage(emitter, result.toString());
             SseUtil.complete(emitter);
+            return WorkflowResult.of(emitter, result.toString());
 
         } catch (Exception e) {
             log.error("CALCULATE 失败", e);
-            SseUtil.errorReply(emitter, "计算失败，请稍后重试。");
+            return SseUtil.errorReply(emitter, "计算失败，请稍后重试。");
         }
-
-        return emitter;
     }
 
     // ===== 参数提取 =====

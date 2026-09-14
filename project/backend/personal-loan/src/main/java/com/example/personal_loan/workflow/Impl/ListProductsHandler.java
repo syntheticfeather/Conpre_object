@@ -11,6 +11,7 @@ import com.example.personal_loan.dto.UserGetProductResponse;
 import com.example.personal_loan.service.LoanProductService;
 import com.example.personal_loan.workflow.SseUtil;
 import com.example.personal_loan.workflow.WorkflowHandler;
+import com.example.personal_loan.workflow.WorkflowResult;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,8 +30,8 @@ public class ListProductsHandler implements WorkflowHandler {
     }
 
     @Override
-    public SseEmitter handle(String message, Long userId, String sessionId) {
-        SseEmitter emitter = new SseEmitter(60_000L);
+    public WorkflowResult handle(String message, Long userId, String sessionId) {
+        SseEmitter emitter = SseUtil.newEmitter(sessionId);
 
         try {
             List<UserGetProductResponse> products = loanProductService.getTopLoanProducts(TOP_K);
@@ -64,12 +65,11 @@ public class ListProductsHandler implements WorkflowHandler {
 
             SseUtil.sendMessage(emitter, sb.toString());
             SseUtil.complete(emitter);
+            return WorkflowResult.of(emitter, sb.toString());
 
         } catch (Exception e) {
             log.error("LIST_PRODUCTS 失败", e);
-            SseUtil.errorReply(emitter, "查询产品列表失败，请稍后重试。");
+            return SseUtil.errorReply(emitter, "查询产品列表失败，请稍后重试。");
         }
-
-        return emitter;
     }
 }

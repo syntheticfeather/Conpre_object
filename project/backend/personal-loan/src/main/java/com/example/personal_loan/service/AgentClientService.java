@@ -112,4 +112,36 @@ public class AgentClientService {
 
         return emitter;
     }
+
+    /**
+     * WORKFLOW 路径对话补录：Java 本地处理完 workflow 后，异步回调 Python
+     * POST /api/chat/persist，把本轮对话（用户原话 + workflow 回复）写入
+     * chat_sessions / chat_messages，并触发首条消息的 LLM 标题回填。
+     *
+     * fire-and-forget：不阻塞 SSE 返回，失败仅告警。
+     */
+    public void persistWorkflowTurn(String sessionId, String userMessage,
+                                    String replyText, String token) {
+        try {
+            var request = Map.of(
+                    "session_id", sessionId,
+                    "message", userMessage,
+                    "response", replyText
+            );
+
+            webClient.post()
+                    .uri("/api/chat/persist")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", "Bearer " + token)
+                    .bodyValue(request)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .subscribe(
+                            ok -> log.debug("WORKFLOW 对话已补录: session={}", sessionId),
+                            err -> log.warn("WORKFLOW 对话补录失败: {}", err.getMessage())
+                    );
+        } catch (Exception e) {
+            log.warn("WORKFLOW 对话补录调用异常: {}", e.getMessage());
+        }
+    }
 }

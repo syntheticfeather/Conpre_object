@@ -22,6 +22,9 @@ from api.knowledge_routes import router as knowledge_router
 from api.tool_routes import router as tool_router
 from api.prompt_routes import router as prompt_router
 from api.route_routes import router as route_router
+from api.session_routes import router as session_router
+from api.message_routes import router as message_router
+from api.chat_routes import router as chat_router
 from api.init_data import init_knowledge_base
 from agent.chat_agent import get_chat_agent
 from tools.tool_manager import tool_manager
@@ -65,6 +68,9 @@ app.include_router(knowledge_router, dependencies=[Depends(security)])
 app.include_router(tool_router, dependencies=[Depends(security)])
 app.include_router(prompt_router, dependencies=[Depends(security)])
 app.include_router(route_router)
+app.include_router(session_router, dependencies=[Depends(security)])
+app.include_router(message_router, dependencies=[Depends(security)])
+app.include_router(chat_router, dependencies=[Depends(security)])
 
 # --- 配置日志系统 ---
 logging.basicConfig(
@@ -105,8 +111,8 @@ async def chat_stream(body: ChatRequest, credentials: HTTPAuthorizationCredentia
         yield {"event": "session_init", "data": json.dumps({"session_id": session_id})}
 
         try:
-            # 设置 60 秒超时控制
-            async with asyncio.timeout(60):
+            # 设置 120 秒超时控制
+            async with asyncio.timeout(120):
             
                 # 流式接收与分发
                 async for chunk in agent.chat(message, session_id, user_id, token):
@@ -115,24 +121,11 @@ async def chat_stream(body: ChatRequest, credentials: HTTPAuthorizationCredentia
                         event_data = json.loads(chunk)
                         event_type = event_data.get("type", "")
 
-                        if event_type == "tool_call":
-                            # 处理工具调用事件
-                            yield {
-                                "event": "tool_call",
-                                "data": {
-                                    "tool_name": event_data.get("tool_name", ""),
-                                    "arguments": event_data.get("arguments", {})
-                                }
-                            }
-                        elif event_type == "tool_result":
-                            # 处理工具执行结果事件
-                            yield {
-                                "event": "tool_result",
-                                "data": {
-                                    "tool_name": event_data.get("tool_name", ""),
-                                    "result": event_data.get("result", None)
-                                }
-                            }
+                        if event_type == "tool_call" or event_type == "tool_result":
+                            # 工具调用细节属于 agent 内部执行过程，不转发给前端
+                            # （前端只需要最终的 message 流式文本；plan/step_done
+                            # 等过程事件当前也不透出，如需进度展示可在此另行放行）
+                            continue
                         elif event_type == "error":
                             # 处理错误事件
                             yield {"event": "error", "data": event_data.get("message", "")}
@@ -142,6 +135,7 @@ async def chat_stream(body: ChatRequest, credentials: HTTPAuthorizationCredentia
                             if content:
                                 full_response += content
                                 yield {"event": "message", "data": content}
+                        # plan / step_done / done 等事件当前不透出，前端无对应展示
                         # 如果还有 done 事件等，也可以在这里处理
                         
                     except json.JSONDecodeError:

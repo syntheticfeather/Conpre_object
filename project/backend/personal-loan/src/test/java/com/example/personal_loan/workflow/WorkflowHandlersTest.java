@@ -1,20 +1,19 @@
 package com.example.personal_loan.workflow;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -24,6 +23,7 @@ import com.example.personal_loan.dto.UserGetProductResponse;
 import com.example.personal_loan.enums.ApplicationStatus;
 import com.example.personal_loan.enums.ChatIntent;
 import com.example.personal_loan.enums.RepaidType;
+import com.example.personal_loan.service.AgentClientService;
 import com.example.personal_loan.service.ApplicationService;
 import com.example.personal_loan.service.LoanProductService;
 import com.example.personal_loan.utils.CalculateUtil;
@@ -43,6 +43,7 @@ class WorkflowHandlersTest {
     @Mock private ApplicationService applicationService;
     @Mock private LoanProductService loanProductService;
     @Mock private CalculateUtil calculateUtil;
+    @Mock private AgentClientService agentClient;
 
     @InjectMocks private QueryStatusHandler queryStatusHandler;
     @InjectMocks private ListProductsHandler listProductsHandler;
@@ -72,7 +73,7 @@ class WorkflowHandlersTest {
     void queryStatus_noApplications() throws Exception {
         when(applicationService.userGetAllApplications(1L)).thenReturn(List.of());
 
-        SseEmitter emitter = queryStatusHandler.handle("查进度", 1L, "s1");
+        SseEmitter emitter = queryStatusHandler.handle("查进度", 1L, "s1").emitter();
         assertNotNull(emitter);
         // SseEmitter 没法直接读内容，但至少不抛异常
     }
@@ -85,7 +86,7 @@ class WorkflowHandlersTest {
         );
         when(applicationService.userGetAllApplications(1L)).thenReturn(List.of(app));
 
-        SseEmitter emitter = queryStatusHandler.handle("查进度", 1L, "s1");
+        SseEmitter emitter = queryStatusHandler.handle("查进度", 1L, "s1").emitter();
         assertNotNull(emitter);
     }
 
@@ -101,13 +102,13 @@ class WorkflowHandlersTest {
     @Test
     void listProducts_hasData() throws Exception {
         var product = new UserGetProductResponse(
-                1L, "个人消费贷", "用于个人消费", "消费",
+                1L, "个人消费贷", "用于个人消费", "消费", null,
                 null, new BigDecimal("10000"), new BigDecimal("500000"),
                 List.of(12, 24, 36), new ArrayList<>()
         );
         when(loanProductService.getTopLoanProducts(5)).thenReturn(List.of(product));
 
-        SseEmitter emitter = listProductsHandler.handle("有哪些产品", 1L, "s1");
+        SseEmitter emitter = listProductsHandler.handle("有哪些产品", 1L, "s1").emitter();
         assertNotNull(emitter);
     }
 
@@ -115,7 +116,7 @@ class WorkflowHandlersTest {
     void listProducts_empty() throws Exception {
         when(loanProductService.getTopLoanProducts(5)).thenReturn(List.of());
 
-        SseEmitter emitter = listProductsHandler.handle("有哪些产品", 1L, "s1");
+        SseEmitter emitter = listProductsHandler.handle("有哪些产品", 1L, "s1").emitter();
         assertNotNull(emitter);
     }
 
@@ -132,7 +133,7 @@ class WorkflowHandlersTest {
     void applyLoan_missingProduct() throws Exception {
         when(loanProductService.getTopLoanProducts(5)).thenReturn(List.of());
 
-        SseEmitter emitter = applyLoanHandler.handle("我想申请贷款", 1L, "s1");
+        SseEmitter emitter = applyLoanHandler.handle("我想申请贷款", 1L, "s1").emitter();
         assertNotNull(emitter);
     }
 
@@ -140,13 +141,13 @@ class WorkflowHandlersTest {
     void applyLoan_hasProduct() throws Exception {
         var opt = new LoanOptionResponse(1L, new BigDecimal("4.5"), 36, RepaidType.等额本息);
         var product = new UserGetProductResponse(
-                1L, "个人消费贷", "消费用途", "消费",
+                1L, "个人消费贷", "消费用途", "消费", null,
                 null, new BigDecimal("10000"), new BigDecimal("500000"),
                 List.of(12, 24, 36), List.of(opt)
         );
         when(loanProductService.getTopLoanProducts(5)).thenReturn(List.of(product));
 
-        SseEmitter emitter = applyLoanHandler.handle("我要申请个人消费贷50万", 1L, "s1");
+        SseEmitter emitter = applyLoanHandler.handle("我要申请个人消费贷50万", 1L, "s1").emitter();
         assertNotNull(emitter);
     }
 
@@ -161,7 +162,7 @@ class WorkflowHandlersTest {
 
     @Test
     void calculate_missingParams() throws Exception {
-        SseEmitter emitter = calculateHandler.handle("算月供", 1L, "s1");
+        SseEmitter emitter = calculateHandler.handle("算月供", 1L, "s1").emitter();
         assertNotNull(emitter);
     }
 
@@ -181,7 +182,7 @@ class WorkflowHandlersTest {
                 java.time.LocalDate.now()
         )).thenReturn(List.of(schedule));
 
-        SseEmitter emitter = calculateHandler.handle("20万36期，利率4.5%，等额本息", 1L, "s1");
+        SseEmitter emitter = calculateHandler.handle("20万36期，利率4.5%，等额本息", 1L, "s1").emitter();
         assertNotNull(emitter);
     }
 
@@ -196,10 +197,10 @@ class WorkflowHandlersTest {
 
     @Test
     void router_unknownIntent() {
-        var router = new ChatRouterService(List.of(queryStatusHandler));        
+        var router = new ChatRouterService(List.of(queryStatusHandler), agentClient);
         assertTrue(router.hasHandler(ChatIntent.QUERY_STATUS));
         // 未知 intent 不会抛异常
-        SseEmitter emitter = router.handleWorkflow(ChatIntent.UNKNOWN, "test", 1L, "s1");
+        SseEmitter emitter = router.handleWorkflow(ChatIntent.UNKNOWN, "test", 1L, "s1", "token");
         assertNotNull(emitter);
     }
 }

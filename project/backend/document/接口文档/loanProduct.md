@@ -25,6 +25,7 @@
             "productName": "小微经营贷",
             "description": "助力小微企业发展，快速审批，灵活还款",
             "loanUsage": "进货周转、设备采购、门店扩张",
+            "productType": "企业经营",
             "promotionDetails": "前2期只还利息",
             "minAmount": 10000.00,
             "maxAmount": 50000.00,
@@ -56,6 +57,7 @@
             "productName": "优享贷",
             "description": "专为信用良好用户定制，利率优惠，期限灵活",
             "loanUsage": "教育、购车、旅游、大额消费",
+            "productType": "个人消费",
             "promotionDetails": "首年利率85折",
             "minAmount": 3000.00,
             "maxAmount": 100000.00,
@@ -124,6 +126,7 @@
             "productName": "优享贷",
             "description": "专为信用良好用户定制，利率优惠，期限灵活",
             "loanUsage": "教育、购车、旅游、大额消费",
+            "productType": "个人消费",
             "promotionDetails": "首年利率85折",
             "minAmount": 3000.00,
             "maxAmount": 100000.00,
@@ -182,6 +185,7 @@
 |  productName  |  string  |是|  贷款产品名称     |极速贷|
 |  description  |  string  |是|  产品描述         |  审批快，放贷快|
 |  loanUsage    |  string  |是|  产品用途         |   消费、装修、教育|
+|  productType  |  string  |否|  产品类型，如个人消费、农业生产、企业经营 | 个人消费 |
 |  minTerm      |  integer  |是|   最短借款期限（单位：月）  | 3|
 |  maxTerm      |  integer  |是|  最长借款期限（单位：月）  | 24 |
 |  termStep     |  integer  |是|   期限递增步长（单位：月）  | 3 |
@@ -205,6 +209,7 @@
   "productName": "小微经营贷",
   "description": "助力小微企业发展，快速审批，灵活还款",
   "loanUsage": "进货周转、设备采购、门店扩张",
+  "productType": "企业经营",
   "minTerm": 3,
   "maxTerm": 36,
   "termStep": 3,
@@ -231,6 +236,7 @@
         "productName": "小微经营贷",
         "description": "助力小微企业发展，快速审批，灵活还款",
         "loanUsage": "进货周转、设备采购、门店扩张",
+        "productType": "企业经营",
         "status": "已下架",
         "minTerm": 3,
         "maxTerm": 36,
@@ -547,6 +553,7 @@
 | productName | string | 否 | 产品名称 |极速贷 Pro（表示将该产品的名称改为极速贷 Pro）|
 | description | string | 否 | 产品描述 |  |
 | loanUsage | string | 否 | 产品用途 |   |
+| productType | string | 否 | 产品类型，如个人消费、农业生产、企业经营 | 个人消费 |
 | minTerm | integer | 否 | 最短借款期限（单位：月）|    |
 | maxTerm | integer | 否 | 最长借款期限（单位：月）|   |
 | termStep | integer | 否 | 期限递增步长（单位：月）|   |
@@ -658,6 +665,7 @@
             "productName": "灵活周转贷",
             "description": "随借随还，按日计息，满足短期资金流动性需求",
             "loanUsage": "应付账款垫付、临时库存补货、节日促销备货",
+            "productType": "个人消费",
             "status": "已下架",
             "minAmount": 5000.00,
             "maxAmount": 30000.00,
@@ -712,6 +720,7 @@
         "productName": "优享贷",
         "description": "专为信用良好用户定制，利率优惠，期限灵活",
         "loanUsage": "教育、购车、旅游、大额消费",
+        "productType": "个人消费",
         "terms": [
             6,
             12,
@@ -791,6 +800,7 @@
             "productName": "灵活周转贷",
             "description": "随借随还，按日计息，满足短期资金流动性需求",
             "loanUsage": "应付账款垫付、临时库存补货、节日促销备货",
+            "productType": "个人消费",
             "status": "已下架",
             "minAmount": 5000.00,
             "maxAmount": 30000.00,

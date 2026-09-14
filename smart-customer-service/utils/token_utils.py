@@ -1,14 +1,39 @@
 # smart-customer-service/utils/token_utils.py
 import jwt
 import os
+import base64
 from typing import Optional, Dict, Any
 import logging
+from dotenv import load_dotenv
+
+load_dotenv()
 
 logger = logging.getLogger(__name__)
 
 # JWT 密钥配置（与 Java 后端保持一致）
 JWT_SECRET = os.getenv("JWT_SECRET", "5H6fK9pL2mN8qR4sT7vW1xY3zA0bC2dE4fG6hJ8kL0nM2oP4qR6sT8uV0wX2yZ4")
 JWT_ALGORITHM = "HS256"
+
+
+def _resolve_secret_key(secret_key: str = None) -> bytes:
+    """
+    将 JWT 密钥解析为用于 HMAC 签名的原始字节。
+
+    背景：Java 端使用 jjwt 0.11.x，其 signWith(alg, String) / setSigningKey(String)
+    会把传入的 String 当作 Base64 编码，先解码再用作 HMAC 密钥字节。
+    Python 端若直接用字符串的 UTF-8 字节，与 Java 端密钥不一致，导致 "Signature verification failed"。
+
+    本函数对齐 Java 端行为：先尝试 Base64 解码得到密钥字节；
+    若字符串不是合法 Base64，则退回使用 UTF-8 字节（保证向后兼容）。
+    """
+    key_str = secret_key if secret_key else JWT_SECRET
+    try:
+        # jjwt 的 Decoders.BASE64.decode 对 padding 容错，这里补齐 padding 以对齐行为
+        padded = key_str + "=" * (-len(key_str) % 4)
+        return base64.b64decode(padded)
+    except Exception:
+        logger.warning("JWT_SECRET 非 Base64 编码，退回使用 UTF-8 字节作为密钥")
+        return key_str.encode("utf-8")
 
 
 def extract_user_id_from_token(token: str, secret_key: str = None) -> Optional[str]:
@@ -23,8 +48,8 @@ def extract_user_id_from_token(token: str, secret_key: str = None) -> Optional[s
         user_id 如果提取成功，否则返回 None
     """
     try:
-        # 使用提供的密钥或默认密钥
-        key = secret_key if secret_key else JWT_SECRET
+        # 对齐 Java jjwt 0.11.x 行为：密钥先 Base64 解码再用于 HMAC
+        key = _resolve_secret_key(secret_key)
 
         # 解码 token（验证签名）
         payload = jwt.decode(token, key, algorithms=[JWT_ALGORITHM])
@@ -94,7 +119,8 @@ def extract_user_phone_from_token(token: str, secret_key: str = None) -> Optiona
         user_phone 如果提取成功，否则返回 None
     """
     try:
-        key = secret_key if secret_key else JWT_SECRET
+        # 对齐 Java jjwt 0.11.x 行为：密钥先 Base64 解码再用于 HMAC
+        key = _resolve_secret_key(secret_key)
         payload = jwt.decode(token, key, algorithms=[JWT_ALGORITHM])
 
         # sub 字段存储的是 userPhone
