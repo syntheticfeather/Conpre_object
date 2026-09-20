@@ -16,7 +16,7 @@ const BlackUserManageView = () => import('@/views/user/BlackUserManageView.vue')
 
 const RiskManageView = () => import('@/views/risk/RiskManageView.vue')
 const DVScreenView = () => import('@/views/risk/DVScreenView.vue')
-const CollectManagementView = () => import('@/views/risk/CollectManagementView.vue')
+// const CollectManagementView = () => import('@/views/risk/CollectManagementView.vue')
 
 const KnowledgeManagementView = () => import('@/views/system/KnowledgeManagementView.vue')
 const ConversationLogsView = () => import('@/views/system/ConversationLogsView.vue')
@@ -55,7 +55,7 @@ const routes = [
       { path: 'black-users', name: 'BlackUsers', component: BlackUserManageView },
 
       { path: 'risk', name: 'Risk', component: RiskManageView },
-      { path: 'collect-management', name: 'CollectManagement', component: CollectManagementView },
+      // { path: 'collect-management', name: 'CollectManagement', component: CollectManagementView },
 
       { path: 'knowledge', name: 'Knowledge', component: KnowledgeManagementView },
       { path: 'conversation-logs', name: 'ConversationLogs', component: ConversationLogsView },

@@ -59,7 +59,7 @@
             </template>
             <el-menu-item index="/dv-screen">数据大屏</el-menu-item>      
             <el-menu-item index="/dashboard/risk">风险管理</el-menu-item>  
-            <el-menu-item index="/dashboard/collect-management">催收设置</el-menu-item>
+            <!-- <el-menu-item index="/dashboard/collect-management">催收设置</el-menu-item> -->
           </el-sub-menu>
 
           <!-- 系统管理 -->

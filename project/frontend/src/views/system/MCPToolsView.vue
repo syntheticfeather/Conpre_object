@@ -5,7 +5,31 @@
     <el-tabs v-model="activeTab" @tab-change="handleTabChange" class="main-tabs">
       <!-- Tab 1: MCP 服务器管理 -->
       <el-tab-pane label="MCP 服务器" name="mcp">
-        <el-card class="form-card">
+        <!-- 工具条：CTA 折叠入口 + 搜索 / 刷新 -->
+        <div class="tab-toolbar">
+          <el-button type="primary" class="cta-btn" @click="openCreateForm">
+            ＋ 添加 MCP 服务器
+          </el-button>
+          <div class="tab-toolbar__right">
+            <el-input
+              v-model="searchKeyword"
+              placeholder="搜索服务器 ID"
+              clearable
+              class="toolbar-search"
+              @clear="fetchServers"
+              @keyup.enter="searchServers"
+            >
+              <template #suffix>
+                <el-icon class="search-icon" @click="searchServers" title="点击执行搜索"><Search /></el-icon>
+              </template>
+            </el-input>
+            <el-button type="primary" @click="fetchServers">刷新</el-button>
+          </div>
+        </div>
+
+        <!-- 添加 / 编辑表单：默认折叠，点 CTA 或列表「编辑」展开 -->
+        <el-collapse-transition>
+        <el-card v-show="showServerForm" class="form-card">
           <template #header>
             <div class="card-header">
               <span>{{ isEditing ? '编辑 MCP 服务器' : '添加 MCP 服务器' }}</span>
@@ -61,29 +85,16 @@
             <el-form-item>
               <el-button type="primary" @click="saveServer">{{ isEditing ? '更新' : '添加' }}</el-button>
               <el-button v-if="isEditing" @click="cancelEdit">取消</el-button>
+              <el-button v-else text @click="showServerForm = false">收起</el-button>
             </el-form-item>
           </el-form>
         </el-card>
+        </el-collapse-transition>
 
         <el-card class="servers-card">
           <template #header>
             <div class="card-header">
               <span>已配置的 MCP 服务器（共 {{ serversList.length }} 个）</span>
-              <div class="header-right">
-                <el-input
-                  v-model="searchKeyword"
-                  placeholder="搜索服务器 ID"
-                  clearable
-                  style="width: 220px; margin-right: 10px"
-                  @clear="fetchServers"
-                  @keyup.enter="searchServers"
-                >
-                  <template #suffix>
-                    <el-icon class="search-icon" @click="searchServers" title="点击执行搜索"><Search /></el-icon>
-                  </template>
-                </el-input>
-                <el-button type="primary" @click="fetchServers">刷新</el-button>
-              </div>
             </div>
           </template>
 
@@ -124,27 +135,26 @@
 
       <!-- Tab 2: 工具管理 -->
       <el-tab-pane label="工具管理" name="tools">
+        <div class="tab-toolbar">
+          <span class="tab-toolbar__title">已注册工具（共 {{ toolsList.length }} 个）</span>
+          <div class="tab-toolbar__right">
+            <el-input
+              v-model="toolSearchKeyword"
+              placeholder="搜索工具名称"
+              clearable
+              class="toolbar-search"
+              @clear="fetchTools"
+              @keyup.enter="searchTools"
+            >
+              <template #suffix>
+                <el-icon class="search-icon" @click="searchTools" title="点击执行搜索"><Search /></el-icon>
+              </template>
+            </el-input>
+            <el-button type="primary" @click="fetchTools">刷新</el-button>
+          </div>
+        </div>
+
         <el-card class="tools-card">
-          <template #header>
-            <div class="card-header">
-              <span>已注册工具（共 {{ toolsList.length }} 个）</span>
-              <div class="header-right">
-                <el-input
-                  v-model="toolSearchKeyword"
-                  placeholder="搜索工具名称"
-                  clearable
-                  style="width: 220px; margin-right: 10px"
-                  @clear="fetchTools"
-                  @keyup.enter="searchTools"
-                >
-                  <template #suffix>
-                    <el-icon class="search-icon" @click="searchTools" title="点击执行搜索"><Search /></el-icon>
-                  </template>
-                </el-input>
-                <el-button type="primary" @click="fetchTools">刷新</el-button>
-              </div>
-            </div>
-          </template>
 
           <div class="tool-card-grid" v-loading="toolsLoading">
             <div v-if="!toolsList.length" class="tool-empty">暂无工具数据</div>
@@ -202,6 +212,14 @@ const isEditing = ref(false)
 const formRef = ref(null)
 const argsInput = ref('')
 
+// 添加/编辑表单默认折叠，点 CTA 按钮或"编辑"时展开
+const showServerForm = ref(false)
+
+const openCreateForm = () => {
+  resetForm()
+  showServerForm.value = true
+}
+
 const serverForm = ref({
   server_id: '',
   transport: 'sse',
@@ -239,6 +257,7 @@ const resetForm = () => {
   }
   argsInput.value = ''
   isEditing.value = false
+  showServerForm.value = false
 }
 
 const fetchServers = async () => {
@@ -302,6 +321,7 @@ const saveServer = async () => {
 
 const editServer = (row) => {
   isEditing.value = true
+  showServerForm.value = true
   const cfg = row.config || {}
   serverForm.value = {
     server_id: row.server_id,
@@ -403,6 +423,52 @@ onMounted(fetchServers)
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+/* ===== Tab 内工具条：左 CTA / 标题，右搜索 + 刷新 ===== */
+.tab-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.tab-toolbar__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-color, #303133);
+}
+
+.tab-toolbar__right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.toolbar-search {
+  width: 220px;
+}
+
+.cta-btn {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+@media (max-width: 640px) {
+  .tab-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tab-toolbar__right {
+    justify-content: flex-end;
+  }
+
+  .toolbar-search {
+    width: 100%;
+  }
 }
 
 :deep(.el-table .cell) {

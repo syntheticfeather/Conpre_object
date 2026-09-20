@@ -1,8 +1,7 @@
 <template>
   <div class="auth-page">
-    <!-- 背景装饰光晕 -->
-    <!-- <div class="bg-glow bg-glow--1"></div>
-    <div class="bg-glow bg-glow--2"></div> -->
+    <!-- 层叠波浪动态背景（纯装饰，不拦截交互） -->
+    <WaveBackground />
 
     <div class="auth-card" :class="{ 'is-register': isRegister }">
       <!-- 表单层：登录(左) + 注册(右) -->
@@ -208,6 +207,7 @@ import { ElMessage } from 'element-plus'
 import { useAuthStore } from '@/stores/auth'
 import { authAPI } from '@/api'
 import { isTokenExpired } from '@/utils/jwt'
+import WaveBackground from '@/components/shared/WaveBackground.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -415,6 +415,7 @@ onMounted(async () => {
 
 .auth-card {
   position: relative;
+  z-index: 1; /* 浮于波浪背景之上 */
   width: 960px;
   max-width: 50vw;
   height: 580px;

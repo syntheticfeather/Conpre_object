@@ -532,7 +532,7 @@ watch(() => props.productId, (newVal) => {
   display: flex;
   flex-direction: column;
   padding: 24px;
-  background: #f0f2f5;
+  background: var(--detail-normal-bg);
   min-height: 100vh;
 }
 

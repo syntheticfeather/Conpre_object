@@ -2,84 +2,92 @@
   <div class="agent-config">
     <div class="header">Agent 配置管理</div>
 
-    <el-card class="config-card">
-      <template #header>
-        <div class="card-header">
-          <span>新增提示词</span>
-          <div class="header-actions">
-            <el-button type="primary" @click="createPrompt">创建</el-button>
-            <el-button @click="resetCreateForm">重置</el-button>
+    <div class="config-split">
+      <!-- 左栏：Prompt 编辑表单（代码编辑器感灰底 + 等宽字体） -->
+      <el-card class="config-card editor-card">
+        <template #header>
+          <div class="card-header">
+            <span>新增提示词</span>
+            <div class="header-actions">
+              <el-button type="primary" @click="createPrompt">创建</el-button>
+              <el-button @click="resetCreateForm">重置</el-button>
+            </div>
+          </div>
+        </template>
+
+        <el-form label-position="top" class="prompt-editor">
+          <el-form-item label="提示词名称">
+            <el-input v-model="createName" placeholder="输入提示词名称，如「贷款客服 v1」" />
+          </el-form-item>
+          <el-form-item label="角色定义（系统规则）">
+            <el-input
+              v-model="createContent.role_definition"
+              type="textarea"
+              :rows="7"
+              placeholder="定义 AI 的身份和角色定位"
+            />
+          </el-form-item>
+          <el-form-item label="业务规则">
+            <el-input
+              v-model="createContent.business_rules"
+              type="textarea"
+              :rows="5"
+              placeholder="业务逻辑约束和行为规则"
+            />
+          </el-form-item>
+          <el-form-item label="回复风格">
+            <el-input
+              v-model="createContent.tone_style"
+              type="textarea"
+              :rows="4"
+              placeholder="回复的语气、风格要求"
+            />
+          </el-form-item>
+        </el-form>
+      </el-card>
+
+      <!-- 右栏：提示词列表（卡片堆叠 + 激活开关 + 语义色边） -->
+      <el-card class="config-card list-card">
+        <template #header>
+          <div class="card-header">
+            <span>提示词列表</span>
+            <el-button type="warning" @click="fetchPrompts">刷新</el-button>
+          </div>
+        </template>
+
+        <div v-loading="loading" class="prompt-card-list">
+          <div v-if="!promptsList.length && !loading" class="prompt-empty">暂无提示词数据</div>
+          <div
+            v-for="row in promptsList"
+            :key="row.prompt_id"
+            class="prompt-item"
+            :class="{ 'is-active': row.is_active }"
+          >
+            <div class="prompt-item__head">
+              <span class="prompt-item__name">{{ row.name }}</span>
+              <el-switch :model-value="row.is_active" @change="toggleActive(row)" />
+            </div>
+            <div class="prompt-item__meta">
+              <el-tag size="small" effect="plain">{{ row.category || '通用' }}</el-tag>
+              <span class="prompt-item__version">v{{ row.version }}</span>
+              <span class="prompt-item__time">更新于 {{ row.updated_at || '—' }}</span>
+            </div>
+            <div class="prompt-item__actions">
+              <el-button size="small" type="primary" text @click="openEditDialog(row)">编辑</el-button>
+              <el-button
+                size="small"
+                :type="row.is_active ? 'warning' : 'success'"
+                text
+                @click="toggleActive(row)"
+              >
+                {{ row.is_active ? '停用' : '激活' }}
+              </el-button>
+              <el-button size="small" type="danger" text @click="deletePrompt(row)">删除</el-button>
+            </div>
           </div>
         </div>
-      </template>
-
-      <el-form label-width="120px">
-        <el-form-item label="提示词名称">
-          <el-input v-model="createName" placeholder="输入提示词名称，如「贷款客服 v1」" />
-        </el-form-item>
-        <el-form-item label="角色定义">
-          <el-input
-            v-model="createContent.role_definition"
-            type="textarea"
-            :rows="6"
-            placeholder="定义 AI 的身份和角色定位"
-          />
-        </el-form-item>
-        <el-form-item label="业务规则">
-          <el-input
-            v-model="createContent.business_rules"
-            type="textarea"
-            :rows="4"
-            placeholder="业务逻辑约束和行为规则"
-          />
-        </el-form-item>
-        <el-form-item label="回复风格">
-          <el-input
-            v-model="createContent.tone_style"
-            type="textarea"
-            :rows="3"
-            placeholder="回复的语气、风格要求"
-          />
-        </el-form-item>
-      </el-form>
-    </el-card>
-
-    <el-card class="config-card">
-      <template #header>
-        <div class="card-header">
-          <span>提示词列表</span>
-          <el-button type="warning" @click="fetchPrompts">刷新</el-button>
-        </div>
-      </template>
-
-      <el-table :data="promptsList" stripe v-loading="loading" empty-text="暂无提示词数据">
-        <el-table-column prop="name" label="名称" min-width="150" />
-        <el-table-column prop="version" label="版本" width="80" />
-        <el-table-column prop="category" label="分类" width="100" />
-        <el-table-column label="状态" width="100">
-          <template #default="{ row }">
-            <el-tag :type="row.is_active ? 'success' : 'info'">
-              {{ row.is_active ? '激活' : '未激活' }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="created_at" label="创建时间" width="180" />
-        <el-table-column prop="updated_at" label="更新时间" width="180" sortable />
-        <el-table-column label="操作" width="280" fixed="right">
-          <template #default="{ row }">
-            <el-button size="small" type="primary" @click="openEditDialog(row)">编辑</el-button>
-            <el-button
-              size="small"
-              :type="row.is_active ? 'warning' : 'success'"
-              @click="toggleActive(row)"
-            >
-              {{ row.is_active ? '停用' : '激活' }}
-            </el-button>
-            <el-button size="small" type="danger" @click="deletePrompt(row)">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    </el-card>
+      </el-card>
+    </div>
 
     <el-dialog v-model="editDialogVisible" title="编辑提示词" width="700px">
       <el-form label-width="120px">
@@ -116,10 +124,11 @@
         <el-button type="primary" @click="saveEdit">保存</el-button>
       </template>
     </el-dialog>
-  </div>
 
-  <button class="chat-fab" @click="chatVisible = true" title="智能对话调试">💬</button>
-  <ChatDialog v-model="chatVisible" />
+    <!-- 悬浮入口与调试弹窗放在根节点内部，保证组件为单一根节点以支持路由过渡动画 -->
+    <button class="chat-fab" @click="chatVisible = true" title="智能对话调试">💬</button>
+    <ChatDialog v-model="chatVisible" />
+  </div>
 </template>
 
 <script setup>
@@ -277,6 +286,134 @@ onMounted(async () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+/* ===== 双栏布局：左编辑 / 右列表 ===== */
+.config-split {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.editor-card {
+  flex: 0 0 65%;
+  position: sticky;
+  top: 84px;
+}
+
+.list-card {
+  flex: 1 1 35%;
+  min-width: 0;
+}
+
+/* ===== 左栏：代码编辑器感（深色灰底 + 等宽字体 + 内阴影） ===== */
+.prompt-editor :deep(.el-textarea__inner) {
+  background: #23272e;
+  color: #d4dae3;
+  font-family: 'JetBrains Mono', 'Fira Code', Consolas, Monaco, 'Courier New', monospace;
+  font-size: 12.5px;
+  line-height: 1.75;
+  border: 1px solid #313742;
+  border-radius: 8px;
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.3);
+  transition: border-color var(--duration-fast, 150ms) ease;
+}
+
+.prompt-editor :deep(.el-textarea__inner:focus) {
+  border-color: var(--brand-500, #3b82f6);
+}
+
+.prompt-editor :deep(.el-textarea__inner::placeholder) {
+  color: #6b7686;
+}
+
+/* ===== 右栏：提示词卡片堆叠 ===== */
+.prompt-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: calc(100vh - 240px);
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.prompt-item {
+  padding: 12px 16px;
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--border-color-light, #ebeef5);
+  border-left: 3px solid var(--border-color-base, #dcdfe6);
+  border-radius: 10px;
+  transition: transform var(--duration-fast, 150ms) var(--ease-out-expo, ease),
+              box-shadow var(--duration-fast, 150ms) var(--ease-out-expo, ease),
+              border-color var(--duration-fast, 150ms) ease;
+}
+
+.prompt-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+}
+
+/* 激活态：品牌青左边框 + 青色浅光晕（语义色边） */
+.prompt-item.is-active {
+  border-left-color: var(--brand-accent, #25e0bf);
+  box-shadow: 0 2px 10px rgba(37, 224, 191, 0.14);
+}
+
+.prompt-item__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.prompt-item__name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-color, #303133);
+}
+
+.prompt-item__meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+  font-size: 12px;
+  color: var(--text-secondary, #606266);
+}
+
+.prompt-item__time {
+  margin-left: auto;
+}
+
+.prompt-item__actions {
+  display: flex;
+  gap: 4px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border-color-light, #ebeef5);
+}
+
+.prompt-empty {
+  padding: 48px 0;
+  text-align: center;
+  color: var(--text-color-placeholder, #909399);
+}
+
+/* 小屏降级为上下堆叠 */
+@media (max-width: 1024px) {
+  .config-split {
+    flex-direction: column;
+  }
+
+  .editor-card,
+  .list-card {
+    flex: 1 1 auto;
+    width: 100%;
+    position: static;
+  }
+
+  .prompt-card-list {
+    max-height: none;
+  }
 }
 
 .chat-fab {

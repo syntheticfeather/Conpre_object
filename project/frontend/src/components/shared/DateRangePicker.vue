@@ -132,5 +132,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
- @import '@/assets/css/dateRangePicker.css'
+ @import '@/assets/css/share/dateRangePicker.css'
 </style>

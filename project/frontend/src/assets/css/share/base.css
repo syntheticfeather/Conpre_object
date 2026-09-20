@@ -139,6 +139,7 @@ a {
     /* Dashboard/面板颜色 */
     --dashboard-bg: #331a6f;                    /* Dashboard 背景色 */
     --dashboard-shadow: rgb(92 175 146 / 34%);  /* Dashboard 主体阴影色 */
+    --detail-normal-bg: #f0f2f5;                /* 详情页正常背景色 */
 
     /* 导航栏颜色(Navbar) */
     --navbar-bg-gradient: linear-gradient(-225deg, #330c69 0%, #3584A7 51%, #30D2BE 100%); /* 导航栏渐变背景 */
@@ -167,7 +168,7 @@ a {
     --notif-header-bg: #fafafa;                 /* 通知面板头部背景色 */
     --notif-header-border: #f0f0f0;             /* 通知面板头部边框色 */
     --notif-header-text: #303133;               /* 通知面板头部文字色 */
-    --notif-item-border: #25e0bf;               /* 通知项边框色 */
+    --notif-item-border: #2570e0;               /* 通知项边框色 */
     --notif-item-hover-bg: #f5f7fa;             /* 通知项悬停背景色 */
     --notif-unread-bg: #ecf5ff;                 /* 未读通知背景色 */
     --notif-unread-border: #409EFF;             /* 未读通知左边框高亮色 */
@@ -493,7 +494,7 @@ a {
     --space-xs: 4px;
     --space-sm: 8px;
     --space-md: 16px;
-    --space-lg: 24px;
+    --space-lg: 10px;
     --space-xl: 40px;
     --space-2xl: 64px;
 
@@ -510,6 +511,12 @@ a {
     --duration-fast: 150ms;
     --duration-normal: 300ms;
     --duration-slow: 600ms;
+
+    /* Push 整页转场（列表 ⇄ 详情）：进场从容、退场略快跟手；
+       缓动起步不窜、尾段绵长，接近 iOS 原生推挤手感 */
+    --page-stage-enter: 380ms;
+    --page-stage-leave: 320ms;
+    --page-stage-ease: cubic-bezier(0.32, 0.72, 0, 1);
 
     /* 圆角系统（四档） */
     --radius-sm: 6px;
@@ -1148,14 +1155,6 @@ html.dark {
   display: block;
 }
 
-/*主体内容*/
-.main-content {
-    flex: 1;
-    flex-direction: column;
-
-    background-color: var(--html-bg);
-    transition: all 0.3s ease;
-}
 /*标题*/
 .header {
     margin-top: 10px;

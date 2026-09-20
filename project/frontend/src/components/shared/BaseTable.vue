@@ -61,7 +61,7 @@
             </svg>
             <p class="empty-state__title">{{ emptyTitle }}</p>
             <p class="empty-state__desc">{{ emptyDescription }}</p>
-            <a-button v-if="emptyCta" type="primary" shape="round" size="small" @click="$emit('empty-action')">
+            <a-button v-if="emptyCta" class="empty-state__cta" type="primary" shape="round" size="small" @click="$emit('empty-action')">
               {{ emptyCta }}
             </a-button>
           </div>
@@ -433,5 +433,34 @@ defineExpose({
   margin: 0;
   font-size: var(--text-sm);
   color: var(--text-color-placeholder);
+}
+
+/* 空态 CTA 按钮：默认浅蓝底 + 深蓝字（独立 class 定点覆盖，不影响其他 primary 按钮） */
+.empty-state__cta.ant-btn-primary,
+.empty-state__cta.ant-btn-primary:not(:disabled):not(.ant-btn-disabled):focus {
+  color: var(--brand-600);
+  background: var(--brand-100);
+  border-color: var(--brand-100);
+  box-shadow: 0 2px 6px rgba(147, 143, 143, 0.25);
+  transition: color var(--duration-fast, 150ms) var(--ease-out-expo, ease),
+              background-color var(--duration-fast, 150ms) var(--ease-out-expo, ease),
+              border-color var(--duration-fast, 150ms) var(--ease-out-expo, ease),
+              box-shadow var(--duration-fast, 150ms) var(--ease-out-expo, ease);
+}
+
+/* 悬浮：加深蓝底 + 白字，阴影变大营造“升起”感 */
+.empty-state__cta.ant-btn-primary:not(:disabled):not(.ant-btn-disabled):hover {
+  color: #fff;
+  background: var(--brand-500);
+  border-color: var(--brand-500);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+}
+
+/* 按下：再深一档，阴影收缩营造“按压”感 */
+.empty-state__cta.ant-btn-primary:not(:disabled):not(.ant-btn-disabled):active {
+  color: #fff;
+  background: var(--brand-600);
+  border-color: var(--brand-600);
+  box-shadow: 0 1px 2px rgba(37, 99, 235, 0.3);
 }
 </style>

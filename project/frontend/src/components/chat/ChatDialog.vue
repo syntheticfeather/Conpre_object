@@ -255,7 +255,7 @@ const doSend = async () => {
 }
 
 .assistant-content code {
-  background: #f0f2f5;
+  background: var(--detail-normal-bg);
   padding: 2px 6px;
   border-radius: 4px;
   font-size: 13px;
@@ -473,7 +473,7 @@ const doSend = async () => {
 .assistant-content code {
   font-family: 'Consolas', 'Courier New', 'SFMono-Regular', monospace;
   font-size: 13px;
-  background: #f0f2f5;
+  background: var(--detail-normal-bg);
   padding: 2px 6px;
   border-radius: 4px;
   color: #d63384;

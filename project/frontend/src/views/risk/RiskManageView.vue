@@ -27,7 +27,7 @@
         <div class="stat-main">
           <div class="text-container">
             <div class="stat-title">注册用户总数</div>
-            <div class="stat-value">{{ stats.totalUsers.toLocaleString() }}</div>
+            <div class="stat-value"><CountUpNumber :target="stats.totalUsers" group /></div>
             <div class="stat-subtitle">活跃用户 {{ stats.activeUsers.toLocaleString() }}</div>
           </div>
           <div class="stat-icon user-icon">
@@ -45,7 +45,7 @@
         <div class="stat-main">
           <div class="text-container">
             <div class="stat-title">本月申请数</div>
-            <div class="stat-value">{{ stats.monthlyApplications.toLocaleString() }}</div>
+            <div class="stat-value"><CountUpNumber :target="stats.monthlyApplications" group /></div>
             <div class="stat-subtitle">待处理 {{ stats.pendingApplications }} 笔</div>
           </div>
           <div class="stat-icon application-icon">
@@ -63,7 +63,9 @@
         <div class="stat-main">
           <div class="text-container">
             <div class="stat-title">累计放款金额</div>
-            <div class="stat-value">¥{{ stats.totalLoanAmount }}</div>
+            <div class="stat-value">
+              <CountUpNumber :target="stats.totalLoanAmountValue" to-wan prefix="¥" fallback="¥0.00 万" />
+            </div>
             <div class="stat-subtitle">本月放款 ¥{{ stats.monthlyLoanAmount }}</div>
           </div>
           <div class="stat-icon loan-icon">
@@ -81,7 +83,7 @@
         <div class="stat-main">
           <div class="text-container">
             <div class="stat-title">逾期率</div>
-            <div class="stat-value">{{ stats.overdueRate }}%</div>
+            <div class="stat-value"><CountUpNumber :target="Number(stats.overdueRate)" :decimals="1" suffix="%" /></div>
             <div class="stat-subtitle">较健康水平</div>
           </div>
           <div class="stat-icon overdue-icon">
@@ -252,6 +254,7 @@ import {
   Monitor
 } from '@element-plus/icons-vue'
 import { useNotificationStream } from '@/composables/useNotificationStream'
+import CountUpNumber from '@/components/shared/CountUpNumber.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -292,6 +295,7 @@ const stats = reactive({
   pendingApplications: 0,
   applicationGrowth: 0,
   totalLoanAmount: '0',
+  totalLoanAmountValue: 0, // 原始金额（元），供 CountUp 动画使用
   monthlyLoanAmount: '0',
   loanGrowth: 0,
   overdueRate: 0,
@@ -531,6 +535,7 @@ const fetchUserData = async () => {
       // 模拟贷款金额数据（如果 API 没有返回）
       // TODO: 当后端提供贷款金额统计 API 时，替换此处
       stats.totalLoanAmount = formatToWan(totalLoanAmount)
+      stats.totalLoanAmountValue = totalLoanAmount
       stats.monthlyLoanAmount = formatToYuan(monthlyLoanAmount)
       stats.loanGrowth = 18.7 // TODO: 从 API 获取
       

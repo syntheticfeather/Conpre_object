@@ -1,75 +1,82 @@
 <template>
-  <div class="header">
-    待办审核
-    <div class="header-right">
-      <div class="toggle-group">
-        <button
-          :class="{ active: reviewMode === 'loan' }"
-          @click="switchMode('loan')"
-        >
-          贷款申请
-        </button>
-        <button
-          :class="{ active: reviewMode === 'postpone' }"
-          @click="switchMode('postpone')"
-        >
-          延期申请
-        </button>
+  <div class="page-stage" :class="{ 'stage--detail': showDetailModal }">
+    <!-- 列表面板：页头 + 欢迎条 + 列表，整页左滑出场 -->
+    <div class="stage-pane pane-list">
+      <div class="header">
+        待办审核
+        <div class="header-right">
+          <div class="toggle-group">
+            <button
+              :class="{ active: reviewMode === 'loan' }"
+              @click="switchMode('loan')"
+            >
+              贷款申请
+            </button>
+            <button
+              :class="{ active: reviewMode === 'postpone' }"
+              @click="switchMode('postpone')"
+            >
+              延期申请
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="welcome-section">
+        <div class="welcome-info">
+          <h1 class="welcome-title">欢迎回来，管理员</h1>
+          <div class="date-info">
+            <span>今日日期：{{ currentDate }}</span>
+            <span class="divider">|</span>
+            <span>数据实时更新</span>
+          </div>
+        </div>
+        <div class="action-buttons">
+          <el-button class="screen-btn" @click="goToDVScreen" type="primary" size="default">
+            <el-icon><Monitor /></el-icon>
+            数据大屏
+          </el-button>
+        </div>
+      </div>
+
+      <div class="apply-dashboard" ref="dashboardRef">
+        <div v-if="loading" class="loading">
+          加载中...
+        </div>
+
+        <template v-if="reviewMode === 'loan'">
+          <component
+            :is="currentLoanComponent"
+            :applications="currentLoanApplications"
+            @show-detail="showDetail"
+            @refresh="loadLoanApplications"
+          />
+        </template>
+
+        <template v-if="reviewMode === 'postpone'">
+          <component
+            :is="currentPostponeComponent"
+            :postpone-requests="currentPostponeRequests"
+            @show-detail="showDetail"
+            @refresh="loadPostponeRequests"
+          />
+        </template>
       </div>
     </div>
-  </div>
 
-  <div class="welcome-section">
-    <div class="welcome-info">
-      <h1 class="welcome-title">欢迎回来，管理员</h1>
-      <div class="date-info">
-        <span>今日日期：{{ currentDate }}</span>
-        <span class="divider">|</span>
-        <span>数据实时更新</span>
-      </div>
-    </div>
-    <div class="action-buttons">
-      <el-button class="screen-btn" @click="goToDVScreen" type="primary" size="default">
-        <el-icon><Monitor /></el-icon>
-        数据大屏
-      </el-button>
-    </div>
-  </div>
-
-  <div class="apply-dashboard" ref="dashboardRef">
-    <div v-if="loading" class="loading">
-      加载中...
-    </div>
-
-    <template v-if="reviewMode === 'loan'">
-      <component
-        :is="currentLoanComponent"
-        :applications="currentLoanApplications"
-        @show-detail="showDetail"
-        @refresh="loadLoanApplications"
+    <!-- 详情面板：从右侧整页滑入占满 -->
+    <div class="stage-pane pane-detail">
+      <ApplicationDetailModal
+        ref="detailModalRef"
+        v-model="showDetailModal"
+        :application-id="selectedRequestId"
+        :review-type="reviewMode"
+        :is-pending="activeTab === 'pending'"
+        embedded
+        @close="closeDetailModal"
+        @submit="handleReviewSubmit"
       />
-    </template>
-
-    <template v-if="reviewMode === 'postpone'">
-      <component
-        :is="currentPostponeComponent"
-        :postpone-requests="currentPostponeRequests"
-        @show-detail="showDetail"
-        @refresh="loadPostponeRequests"
-      />
-    </template>
-
-    <ApplicationDetailModal
-      ref="detailModalRef"
-      v-model="showDetailModal"
-      :application-id="selectedRequestId"
-      :review-type="reviewMode"
-      :is-pending="activeTab === 'pending'"
-      modal
-      @close="closeDetailModal"
-      @submit="handleReviewSubmit"
-      @transition-complete="scrollToDetail"
-    />
+    </div>
   </div>
 </template>
 
@@ -165,18 +172,6 @@ const detailModalRef = ref(null)
 const showDetail = (id) => {
   selectedRequestId.value = id
   showDetailModal.value = true
-}
-
-const scrollToDetail = () => {
-  const tryScroll = (attempts = 0) => {
-    const detailPanel = document.querySelector('.inline-detail-panel')
-    if (detailPanel && detailPanel.offsetHeight > 0) {
-      detailPanel.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    } else if (attempts < 10) {
-      requestAnimationFrame(() => tryScroll(attempts + 1))
-    }
-  }
-  requestAnimationFrame(() => tryScroll())
 }
 
 const closeDetailModal = () => {
@@ -300,6 +295,74 @@ onMounted(async () => {
 
 .apply-dashboard {
   padding: 20px;
+}
+
+/* ===== Push 转场舞台：列表整页左滑消失、详情整页右滑占满 ===== */
+/* 几何公理：列表静止位 X=0，详情静止位 X=+100%（屏外右侧），两页等宽 */
+/* 节奏统一引用 base.css 全局 token：--page-stage-enter / -leave / -ease */
+.page-stage {
+  position: relative;
+  overflow: hidden;
+}
+
+.stage-pane {
+  width: 100%;
+  will-change: transform;
+}
+
+/* 激活面板 relative 占流（决定舞台高度）且层级在上；非激活面板 absolute 叠放 */
+.pane-list {
+  position: relative;
+  z-index: 2;
+  transform: translateX(0);
+  visibility: visible;
+  transition: transform var(--page-stage-enter) var(--page-stage-ease),
+              visibility 0s;
+}
+
+.pane-detail {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  padding: 0 20px 20px;
+  background: var(--html-bg, #f5f7fa);
+  transform: translateX(100%);
+  visibility: hidden;
+  overflow-y: auto;
+  transition: transform var(--page-stage-leave) var(--page-stage-ease),
+              visibility 0s linear var(--page-stage-leave);
+}
+
+/* 打开详情：列表脱离文档流滑向屏外左侧，详情接管并从右侧滑入 */
+.stage--detail .pane-list {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  transform: translateX(-100%);
+  visibility: hidden;
+  pointer-events: none;
+  transition: transform var(--page-stage-leave) var(--page-stage-ease),
+              visibility 0s linear var(--page-stage-leave);
+}
+
+.stage--detail .pane-detail {
+  position: relative;
+  z-index: 2;
+  transform: translateX(0);
+  visibility: visible;
+  transition: transform var(--page-stage-enter) var(--page-stage-ease),
+              visibility 0s;
+}
+
+.stage--detail :deep(.inline-detail-panel) {
+  margin-top: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pane-list,
+  .pane-detail {
+    transition-duration: 1ms !important;
+  }
 }
 
 .header {

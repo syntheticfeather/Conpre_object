@@ -1,5 +1,5 @@
 <template>
-  <div v-if="visible" class="user-detail-container">
+  <div class="user-detail-container">
     <!-- 顶部标题栏 -->
     <div class="detail-header">
       <div class="header-left">
@@ -858,7 +858,7 @@ const fetchProductList = async () => {
 }
 
 const close = () => {
-  visible.value = false
+  // 显隐与滑出动画由外层 PageStage 负责，这里仅通知父级关闭
   emit('close')
 }
 
