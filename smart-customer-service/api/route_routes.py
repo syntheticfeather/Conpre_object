@@ -26,13 +26,51 @@ INTENTS = {
     "APPLY_LOAN":      "申请贷款、提交贷款申请、我要贷款",
     "COMPLAINT":       "投诉、不满意、有问题要反馈、要投诉",
     "CONSULT":         "咨询、推荐、对比、评估、建议、哪个好、能不能贷",
+    "QUERY_REPAYMENT": "查询已有还款计划、还款明细、还了多少期、下一期还多少",
+    "QUERY_CREDIT":    "查询自己的信用分、信用评分、信用等级",
 }
 
 # 这些意图不管置信度多少都走 Agent
 AGENT_ONLY_INTENTS = {"COMPLAINT", "CONSULT"}
 
-# 置信度阈值：低于此值降级到 Agent
+# 置信度阈值：低于此值降级到 Agent（Phase 2 校准后确定，校准依据见评测报告）
 CONFIDENCE_THRESHOLD = 0.8
+
+# ========== Few-shot 边界库（Phase 2） ==========
+# 边界对优先级最高：每条都带一句话 reason，示范"为什么是这个意图"。
+# json_object 模式下 CoT 只能作为 JSON 字段，不能输出"前置文本 + JSON"。
+# 注意：示例措辞刻意与评测集用例不同句（避免测试泄漏）；且发现所用模型在
+# "真实输入与示例轮逐字相同"时会返回空 content，故示例不得照搬真实高频原句。
+# 逐字命中场景由 classify_route 入口的精确匹配短路处理（不调 LLM 直接返回标注答案）。
+ROUTER_FEWSHOTS = [
+    ("我那笔贷款审批出结果了吗",
+     {"reason": "问自己那笔申请的审批结果，是查进度", "intent": "QUERY_STATUS", "confidence": 0.95}),
+    ("现在申请贷款容易通过吗",
+     {"reason": "问审批难度/政策，没指向具体某笔申请，属咨询", "intent": "CONSULT", "confidence": 0.9}),
+    ("借15万分24期，帮我算下每个月要还多少钱",
+     {"reason": "给出金额期限要具体月供数字，是计算", "intent": "CALCULATE", "confidence": 0.95}),
+    ("你们的利息按什么方式计算",
+     {"reason": "问计息规则而不是要某笔账的数字，属咨询", "intent": "CONSULT", "confidence": 0.9}),
+    ("你们目前都有哪几款贷款",
+     {"reason": "明确要产品清单", "intent": "LIST_PRODUCTS", "confidence": 0.95}),
+    ("我这种情况选哪个产品比较好",
+     {"reason": "要选择建议而非产品列表，属咨询推荐", "intent": "CONSULT", "confidence": 0.85}),
+    ("不小心逾期一天了，该怎么处理",
+     {"reason": "求助怎么处理，没有不满或投诉动作，属咨询", "intent": "CONSULT", "confidence": 0.9}),
+    ("什么垃圾服务，我必须投诉你们",
+     {"reason": "强烈不满情绪且明确要投诉", "intent": "COMPLAINT", "confidence": 0.98}),
+    ("我的贷款每个月要还多少看下还款计划",
+     {"reason": "查已有贷款的还款明细，不是算新的，是查还款记录", "intent": "QUERY_REPAYMENT", "confidence": 0.95}),
+    ("我还了几期了，下一期什么时候到期",
+     {"reason": "查已有还款进度和到期日，是查还款记录", "intent": "QUERY_REPAYMENT", "confidence": 0.95}),
+    ("我的信用评分是多少",
+     {"reason": "查自己的信用分，是查信用记录", "intent": "QUERY_CREDIT", "confidence": 0.95}),
+    ("我的信用等级怎么样，能贷多少",
+     {"reason": "前半问信用分属查信用，后半问能贷多少属咨询；主意图是查信用分", "intent": "QUERY_CREDIT", "confidence": 0.85}),
+]
+
+# 示例文本 → 人工标注答案，供 classify_route 入口精确匹配短路
+_FEWSHOT_LOOKUP = {text: obj for text, obj in ROUTER_FEWSHOTS}
 
 # ========== LLM 客户端 ==========
 
@@ -58,8 +96,20 @@ async def classify_route(request: RouteRequest):
     """对用户消息做意图分类，返回 intent + confidence + action。"""
     message = request.message
 
+    # 精确匹配短路：真实输入与示例轮逐字相同时（strip 后），直接返回人工标注答案。
+    # 示例本就是该句话的标准答案，不调 LLM：零延迟零成本，且彻底绕开
+    # "逐字重复触发空 content"的模型怪癖。
+    exact = _FEWSHOT_LOOKUP.get(message.strip())
+    if exact:
+        action = _decide_action(exact["intent"], exact["confidence"])
+        logger.info(f"路由(示例短路): '{message[:40]}' → {exact['intent']} (c={exact['confidence']}, {action})")
+        return RouteResult(
+            intent=exact["intent"], confidence=exact["confidence"],
+            action=action, reason=exact["reason"],
+        )
+
     intents_desc = "\n".join(f"  {k}: {v}" for k, v in INTENTS.items())
-    prompt = f"""你是一个路由分类器。将用户消息分类到以下意图之一，输出 JSON。
+    system_prompt = f"""你是一个路由分类器。将用户消息分类到以下意图之一，输出 JSON。
 
 意图定义:
 {intents_desc}
@@ -68,28 +118,52 @@ async def classify_route(request: RouteRequest):
 - 如果用户消息和多个意图相关，选最匹配的那个
 - 如果都不匹配，用 CONSULT
 - confidence 是你对分类的确定程度(0~1)，非常确定给0.9+，不太确定给0.5-0.7
+- reason 用一句话写出关键判断依据（区分易混意图：查自己的进度≠咨询政策；要具体数字=计算，问规则=咨询；要列表=LIST_PRODUCTS，要建议=CONSULT；求助≠投诉，带强烈不满且明确要投诉才是 COMPLAINT；查已有还款记录=QUERY_REPAYMENT，算新贷款月供=CALCULATE；查自己信用分=QUERY_CREDIT，问能不能贷=CONSULT）
 
-输出格式: {{"intent": "QUERY_STATUS", "confidence": 0.95}}
+输出格式: {{"reason": "一句话判断依据", "intent": "QUERY_STATUS", "confidence": 0.95}}"""
 
-用户消息: {message}"""
+    # few-shot 以多轮示例注入（assistant 回合同样只输出 JSON，兼容 json_object）
+    messages = [{"role": "system", "content": system_prompt}]
+    for example_text, example_obj in ROUTER_FEWSHOTS:
+        messages.append({"role": "user", "content": example_text})
+        messages.append({"role": "assistant", "content": json.dumps(example_obj, ensure_ascii=False)})
+    messages.append({"role": "user", "content": message})
 
     try:
         client = _get_llm()
         response = client.chat.completions.create(
             model="deepseek-v4-flash",
-            messages=[{"role": "user", "content": prompt}],
+            messages=messages,
             temperature=0.0,
-            max_tokens=100,
+            max_tokens=200,
             response_format={"type": "json_object"},
         )
+        raw_content = response.choices[0].message.content
 
-        intent, confidence = _parse_response(response.choices[0].message.content.strip())
+        # 兜底：模型偶发返回空 content（逐字重复场景已在入口短路，此处兜其他未知原因），
+        # 去掉示例轮仅保留 system + 真实消息重试一次
+        if not raw_content or not raw_content.strip():
+            logger.warning("Router 返回空 content，剥离 few-shot 重试一次")
+            response = client.chat.completions.create(
+                model="deepseek-v4-flash",
+                messages=[{"role": "system", "content": system_prompt},
+                          {"role": "user", "content": message}],
+                temperature=0.0,
+                max_tokens=200,
+                response_format={"type": "json_object"},
+            )
+            raw_content = response.choices[0].message.content
+
+        intent, confidence, reason = _parse_response((raw_content or "").strip())
 
         action = _decide_action(intent, confidence)
 
-        logger.info(f"路由: '{message[:40]}...' → {intent} (c={confidence:.2f}, {action})")
+        logger.info(f"路由: '{message[:40]}...' → {intent} (c={confidence:.2f}, {action}) reason={reason}")
 
-        return RouteResult(intent=intent, confidence=round(confidence, 4), action=action)
+        return RouteResult(
+            intent=intent, confidence=round(confidence, 4),
+            action=action, reason=reason,
+        )
 
     except Exception as e:
         logger.warning(f"路由分类失败，降级到 AGENT: {e}")
@@ -100,25 +174,26 @@ async def classify_route(request: RouteRequest):
 
 
 def _parse_response(content: str) -> tuple:
-    """从 LLM 响应中解析 intent 和 confidence"""
+    """从 LLM 响应中解析 intent、confidence、reason（reason 仅用于追溯，不影响分流）"""
     try:
         obj = json.loads(content)
         intent = obj.get("intent", "").upper().strip()
         confidence = float(obj.get("confidence", 0.5))
+        reason = str(obj.get("reason", "")).strip() or None
 
         # 精确匹配
         if intent in INTENTS:
-            return intent, _clamp(confidence)
+            return intent, _clamp(confidence), reason
 
         # 模糊匹配
         for key in INTENTS:
             if key in intent or intent in key:
-                return key, _clamp(confidence)
+                return key, _clamp(confidence), reason
 
-        return "CONSULT", _clamp(confidence)
+        return "CONSULT", _clamp(confidence), reason
     except (json.JSONDecodeError, AttributeError, ValueError):
         pass
-    return "CONSULT", 0.5
+    return "CONSULT", 0.5, None
 
 
 def _clamp(val: float) -> float:

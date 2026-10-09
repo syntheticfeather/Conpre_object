@@ -24,5 +24,8 @@ public class UserGetProductResponse {
     private BigDecimal maxAmount;
 
     private List<Integer> terms;
-    private List<LoanOptionResponse> options;   
+    private List<LoanOptionResponse> options;
+
+    /** 推荐理由（仅推荐接口返回时填充，普通列表接口为 null） */
+    private String recommendReason;
 }

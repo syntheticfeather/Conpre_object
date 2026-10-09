@@ -41,7 +41,18 @@ def rebuild_bm25_index():
 
 @tool
 async def search_web(query: str, max_results: int = 3) -> str:
-    """使用 Tavily 搜索引擎搜索网络信息。当需要获取最新的外部信息时使用。"""
+    """搜索互联网获取实时外部信息：最新利率行情、政策新闻、官网公告等知识库未收录的内容。
+
+    何时使用：用户询问"现在/最新"的外部行情、新闻、公告，或答案不在行内知识库中。
+    何时不要使用：产品规则、政策、办理流程等行内知识（用 search_knowledge）；
+                  要个性化产品推荐（用 recommend_products）；
+                  查自己申请进度、还款明细、信用分等个人数据（系统自动处理，不需搜索）。
+    失败处理：搜索失败或无结果时，告知用户暂时无法获取外部信息，严禁编造搜索结果。
+
+    Args:
+        query: 搜索关键词，用完整自然语言表达
+        max_results: 返回结果条数，默认 3
+    """
     try:
         print(f"【开始调用 Tavily 搜索】: {query}")
         result = tavily_client.search(
@@ -59,7 +70,18 @@ async def search_web(query: str, max_results: int = 3) -> str:
 
 @tool
 async def search_knowledge(query: str, top_k: int = 2) -> str:
-    """在知识库中搜索相关信息。当用户询问常见问题、政策规则、产品信息时使用。"""
+    """在贷款知识库中检索权威信息：产品规则、政策、利率说明、申请条件、还款规则、办理流程、常见问题。
+
+    何时使用：用户询问产品/政策/规则/流程类问题，或需要确认行内业务口径时。
+    何时不要使用：要个性化产品推荐（用 recommend_products）；
+                  查自己申请进度、还款明细、信用分等个人数据（系统自动处理，不需搜索）；
+                  查询实时行情、新闻等外部信息（用 search_web）。
+    失败处理：返回"知识库中未找到相关信息"时，直接告知用户暂无相关信息，严禁编造答案。
+
+    Args:
+        query: 检索问题，使用完整自然语言（如"提前还款违约金怎么收"）
+        top_k: 返回结果条数，默认 2
+    """
     try:
         # 1. Query 改写
         search_query = query_rewriter.rewrite(query)

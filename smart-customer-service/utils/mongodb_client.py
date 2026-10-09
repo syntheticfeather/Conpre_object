@@ -346,11 +346,11 @@ class MongoDBClient:
             print(f"Error paginating messages: {e}")
             return {"items": [], "next_cursor": None, "has_more": False}
 
-    def get_active_prompt(self, category: str = "loan_customer_service") -> Optional[Dict]:
-        """获取当前激活的提示词"""
+    def get_active_prompt(self, category: str = "base") -> Optional[Dict]:
+        """获取指定 category 当前激活的提示词（默认 base 全局模板；意图层传 intent 小写）"""
         try:
             prompt = self._prompts_collection.find_one(
-                {"category": category, "is_active": True},  # 默认类别：loan_customer_service（贷款客服）
+                {"category": category, "is_active": True},
                 sort=[("version", -1)] # 版本降序
             )
             return prompt
@@ -393,7 +393,7 @@ class MongoDBClient:
                 prompt = self.get_prompt_by_id(prompt_id)
                 if prompt:
                     self._prompts_collection.update_many(
-                        {"category": prompt.get("category", "loan_customer_service"), "is_active": True, "prompt_id": {"$ne": prompt_id}},
+                        {"category": prompt.get("category", "base"), "is_active": True, "prompt_id": {"$ne": prompt_id}},
                         {"$set": {"is_active": False, "updated_at": update_data["updated_at"]}}
                     )
             

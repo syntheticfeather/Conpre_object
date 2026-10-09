@@ -11,11 +11,14 @@ public enum ChatIntent {
     APPLY_LOAN,       // 申请贷款
     COMPLAINT,        // 投诉
     CONSULT,          // 咨询/推荐/评估
+    QUERY_REPAYMENT,  // 查询已有还款计划/还款明细
+    QUERY_CREDIT,     // 查询自己的信用分
     UNKNOWN;          // 无法识别/降级兜底
 
     public boolean isWorkflow() {
         return this == QUERY_STATUS || this == CALCULATE
-            || this == LIST_PRODUCTS || this == APPLY_LOAN;
+            || this == LIST_PRODUCTS || this == APPLY_LOAN
+            || this == QUERY_REPAYMENT || this == QUERY_CREDIT;
     }
 
     /** 从 JSON 字符串反序列化 */

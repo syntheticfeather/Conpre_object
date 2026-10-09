@@ -11,5 +11,6 @@ public class UserSelfResponse {
     private Long userId;
     private String userName;
     private String avatar;
+    private Integer creditScore;
 
 }

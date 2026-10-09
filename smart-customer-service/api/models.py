@@ -23,6 +23,10 @@ class ChatRequest(BaseModel):
     message: str = Field(..., min_length=1, max_length=1000, description="用户消息")
     session_id: Optional[str] = None
     agent_mode: Optional[str] = "react"  # react / plan / reflection / plan+reflection
+    # Router 分类结果，由 Java 调 /api/route 后在 forward 时原样透传；
+    # 缺省/低置信时 Python 侧按 general 片段组装（行为与改造前一致）
+    intent: Optional[str] = Field(None, description="路由意图，如 CALCULATE/CONSULT")
+    confidence: Optional[float] = Field(None, ge=0.0, le=1.0, description="路由置信度 0~1")
 
 class ChatResponse(BaseModel):
     message: str
@@ -63,16 +67,36 @@ class KnowledgeItemUpdate(BaseModel):
     answer: Optional[str] = None
     category: Optional[str] = None
 
+class FewShot(BaseModel):
+    """意图片段内的少样本示例（输入 → 期望做法）"""
+    input: str = Field(..., min_length=1, description="用户示例消息")
+    expect: str = Field(..., min_length=1, description="期望的处理做法")
+
+
 class PromptContent(BaseModel):
-    role_definition: str = Field(..., min_length=1, description="AI 的身份定义")
-    business_rules: str = Field(..., min_length=1, description="业务逻辑约束")
-    tone_style: str = Field(..., min_length=1, description="回复的语气风格")
+    """提示词内容。base 文档主要用 role_definition/tone_style/business_rules；
+    意图片段文档主要用 business_rules/few_shots/output_extra。各字段均可选以兼容两类文档。"""
+    role_definition: Optional[str] = Field("", description="AI 的身份定义（base 使用）")
+    business_rules: Optional[str] = Field("", description="业务逻辑约束（base=通用规则，意图=本意图特有规则）")
+    tone_style: Optional[str] = Field("", description="回复的语气风格（base 使用）")
+    few_shots: Optional[List[FewShot]] = Field(None, description="意图少样本示例")
+    output_extra: Optional[str] = Field("", description="该意图的输出附加要求（L4 意图部分）")
+
+
+class PromptCreate(BaseModel):
+    """创建提示词请求体（替代旧的 query 参数形式）"""
+    name: str = Field(..., min_length=1, description="展示名")
+    category: str = Field("base", description="分类：base/general/query_status/calculate/list_products/apply_loan/complaint/consult")
+    version: Optional[str] = Field(None, description="版本号，缺省按同 category 递增")
+    content: PromptContent
 
 
 class PromptContentUpdate(BaseModel):
     role_definition: Optional[str] = None
     business_rules: Optional[str] = None
     tone_style: Optional[str] = None
+    few_shots: Optional[List[FewShot]] = None
+    output_extra: Optional[str] = None
 
 
 class PromptUpdate(BaseModel):
@@ -130,6 +154,7 @@ class RouteResult(BaseModel):
     intent: str = Field(..., description="分类意图")
     confidence: float = Field(..., ge=0.0, le=1.0, description="置信度 0~1")
     action: str = Field(..., description="WORKFLOW 或 AGENT")
+    reason: Optional[str] = Field(None, description="一句话分类依据（CoT，供日志追溯与置信度校准）")
 
 
 # --- LLM 参数提取模型 ---

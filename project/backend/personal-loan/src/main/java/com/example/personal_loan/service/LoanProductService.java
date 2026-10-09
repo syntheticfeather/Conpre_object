@@ -61,4 +61,7 @@ public interface LoanProductService {
     List<UserGetProductResponse> getAllLoanProducts();
     // 查询最新上架的 top-k 产品
     List<UserGetProductResponse> getTopLoanProducts(int limit);
+
+    // 基于用户信用分规则打分推荐 top-3 产品
+    List<UserGetProductResponse> recommendProducts(Long userId);
 }

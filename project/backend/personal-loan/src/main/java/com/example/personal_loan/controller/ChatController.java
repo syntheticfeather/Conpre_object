@@ -50,7 +50,10 @@ public class ChatController {
         if (WORKFLOW.equals(route.getAction()) && userId != null) {
             return chatRouter.handleWorkflow(intent, request.getMessage(), userId, sessionId, token);
         } else {
-            return agentClient.forwardToAgent(request.getMessage(), userId, sessionId, token, agentMode.value());
+            // 原样捎带 /api/route 的分类结果给 Python，用于意图化系统提示词（门槛在 Python 侧）
+            String intentCode = route.getIntent() != null ? route.getIntent().name() : null;
+            return agentClient.forwardToAgent(request.getMessage(), userId, sessionId, token,
+                    agentMode.value(), intentCode, route.getConfidence());
         }
     }
 

@@ -6,7 +6,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from utils.mongodb_client import mongodb_client
-from agent.prompts import get_system_prompt, get_prompt_config
+from agent.prompts import get_system_prompt
 
 
 def test_get_active_prompt():

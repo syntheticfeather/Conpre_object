@@ -1,0 +1,852 @@
+{
+  "summary": {
+    "generated_at": "2026-09-23 21:22:09",
+    "agent_url": "http://localhost:8000",
+    "agent_mode": "react",
+    "groups": {
+      "tool": {
+        "total": 20,
+        "ran": 12,
+        "skipped": 8,
+        "hit_rate": 1.0,
+        "misuse_cases": 0,
+        "skip_reasons": [
+          {
+            "case_id": "tool_013",
+            "reason": "期望工具未加载: ['calculate_repayment']"
+          },
+          {
+            "case_id": "tool_014",
+            "reason": "期望工具未加载: ['calculate_repayment']"
+          },
+          {
+            "case_id": "tool_015",
+            "reason": "期望工具未加载: ['calculate_repayment']"
+          },
+          {
+            "case_id": "tool_016",
+            "reason": "期望工具未加载: ['calculate_repayment']"
+          },
+          {
+            "case_id": "tool_017",
+            "reason": "期望工具未加载: ['query_application_status']"
+          },
+          {
+            "case_id": "tool_018",
+            "reason": "期望工具未加载: ['query_application_status']"
+          },
+          {
+            "case_id": "tool_019",
+            "reason": "期望工具未加载: ['query_application_status']"
+          },
+          {
+            "case_id": "tool_020",
+            "reason": "期望工具未加载: ['calculate_repayment']"
+          }
+        ],
+        "avg_latency_ms": 14609,
+        "intent_passthrough": {
+          "routed": 12,
+          "specialized": 12,
+          "specialized_rate": 1.0,
+          "category_distribution": {
+            "consult": 12
+          }
+        }
+      },
+      "answer": {
+        "total": 20,
+        "ran": 20,
+        "skipped": 0,
+        "pass_rate": 0.95,
+        "avg_coverage": 0.9584,
+        "forbidden_violation_cases": 0,
+        "global_forbidden": [
+          "包过",
+          "保证放款",
+          "100%下款",
+          "必定放款",
+          "包批"
+        ],
+        "avg_latency_ms": 12345,
+        "intent_passthrough": {
+          "routed": 20,
+          "specialized": 20,
+          "specialized_rate": 1.0,
+          "category_distribution": {
+            "calculate": 1,
+            "consult": 18,
+            "list_products": 1
+          }
+        }
+      }
+    }
+  },
+  "details": [
+    {
+      "case_id": "tool_001",
+      "group": "tool",
+      "difficulty": "easy",
+      "input": "贷款需要什么条件",
+      "note": "search_knowledge 正例：政策条件",
+      "status": "pass",
+      "called_tools": [
+        "search_knowledge"
+      ],
+      "hit": true,
+      "misused_tools": [],
+      "fail_reasons": [],
+      "answer_preview": "申请贷款通常需要满足以下几个基本条件：\n\n1. **年龄要求**：年满18周岁，具有完全民事行为能力；\n2. **收入与工作**：有稳定的工作和收入来源，具备按时还款能力；\n3. **信用记录**：个人征信记录良好；\n4. **身份证明**：能提供有效的身份证件；\n5. **实名认证**：完成相关实名认证流程。\n\n需要说明的是，不同贷款产品（如信用贷款、抵押贷款）的具体要求会有差异，最终以对应产品",
+      "latency_ms": 22664,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.92,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "tool_002",
+      "group": "tool",
+      "difficulty": "easy",
+      "input": "提前还款要收违约金吗",
+      "note": "search_knowledge 正例：还款规则",
+      "status": "pass",
+      "called_tools": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "hit": true,
+      "misused_tools": [],
+      "fail_reasons": [],
+      "answer_preview": "关于提前还款是否收违约金，我查询了知识库，目前没有找到统一的收费标准说明，需要以您**具体贷款合同的约定**为准。这里帮您梳理几点：\n\n1. **是否有违约金，看合同约定**：不同产品、不同合同条款对提前还款的约定不一样，有的产品约定期限内提前还款收取一定违约金，有的则不收。建议您翻看借款合同中的\"提前还款\"条款，或在我的贷款详情页查看。\n\n2. **银行收费必须有依据**：提前还款的相关费用应以",
+      "latency_ms": 23728,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.9,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "tool_003",
+      "group": "tool",
+      "difficulty": "easy",
+      "input": "逾期了会有什么后果",
+      "note": "search_knowledge 正例：逾期政策",
+      "status": "pass",
+      "called_tools": [
+        "search_knowledge"
+      ],
+      "hit": true,
+      "misused_tools": [],
+      "fail_reasons": [],
+      "answer_preview": "逾期还款可能带来以下几方面后果：\n\n1. **影响个人信用记录**：逾期信息可能会被报送至征信系统，对未来申请贷款、信用卡等产生不利影响。\n2. **银行催收**：银行可能通过短信、电话等方式进行催收。\n3. **长期逾期可能面临法律诉讼**：若长期未还款，银行可能通过法律途径追偿。\n4. **影响未来信贷申请**：信用受损后，后续的贷款、授信审批可能受限。\n\n**建议**：如果确实遇到还款困难，",
+      "latency_ms": 16194,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.92,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "tool_004",
+      "group": "tool",
+      "difficulty": "easy",
+      "input": "等额本息和等额本金区别是什么",
+      "note": "search_knowledge 正例：还款方式",
+      "status": "pass",
+      "called_tools": [
+        "search_knowledge"
+      ],
+      "hit": true,
+      "misused_tools": [],
+      "fail_reasons": [],
+      "answer_preview": "等额本息和等额本金是两种常见的还款方式，主要区别如下：\n\n**1. 每月还款额**\n- **等额本息**：每月还款金额固定，方便安排收支。\n- **等额本金**：每月还款本金固定，加上当月利息，因此每月还款额逐月递减（前期多、后期少）。\n\n**2. 利息构成**\n- **等额本息**：前期还款中利息占比高、本金占比低，随着时间推移本金占比逐渐上升。\n- **等额本金**：每月偿还的本金相同，利息按",
+      "latency_ms": 11605,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.95,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "tool_005",
+      "group": "tool",
+      "difficulty": "easy",
+      "input": "贷款审批一般要多久",
+      "note": "search_knowledge 正例：流程时效",
+      "status": "pass",
+      "called_tools": [
+        "search_knowledge"
+      ],
+      "hit": true,
+      "misused_tools": [],
+      "fail_reasons": [],
+      "answer_preview": "贷款审批时间因贷款类型和具体情况而异，一般参考如下（具体以系统实际通知为准）：\n\n- **信用类贷款**：通常 1–3 个工作日；\n- **抵押类贷款**：因涉及评估、抵押登记等环节，通常 1–2 周；\n- **复杂业务**：可能需要更长时间。\n\n需要说明的是，以上为一般参考，实际时效会受到资料完整度、资信情况等影响，无法承诺固定的审批时间。建议您以系统通知为准，或联系客户经理了解您这笔申请的进度",
+      "latency_ms": 9845,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.85,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "tool_006",
+      "group": "tool",
+      "difficulty": "easy",
+      "input": "贷款资金可以用来炒股吗",
+      "note": "search_knowledge 正例：资金用途规则",
+      "status": "pass",
+      "called_tools": [
+        "search_knowledge"
+      ],
+      "hit": true,
+      "misused_tools": [],
+      "fail_reasons": [],
+      "answer_preview": "关于贷款资金的用途，这类问题有明确的合规要求，我直接为您说明：\n\n**不可以。贷款资金不得用于炒股等投资类用途。**\n\n根据监管对个人消费贷款、经营贷款资金用途的通用管理要求，贷款资金通常不得用于以下领域：\n\n1. **投资类**：股票、基金、期货、理财产品、证券投资等；\n2. **购房类**：支付购房首付款或购房款（房贷按揭除外）；\n3. **违规经营或转贷**：将资金转借他人、以贷养贷等；\n4",
+      "latency_ms": 10127,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.9,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "tool_007",
+      "group": "tool",
+      "difficulty": "easy",
+      "input": "怎么提高贷款额度",
+      "note": "search_knowledge 正例：额度规则",
+      "status": "pass",
+      "called_tools": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "hit": true,
+      "misused_tools": [],
+      "fail_reasons": [],
+      "answer_preview": "关于提高贷款额度，知识库中明确了额度的主要决定因素，您可以针对这些方面逐步优化：\n\n**贷款额度主要由以下因素决定：**\n1. 申请人的收入水平和还款能力\n2. 个人信用状况\n3. 贷款用途\n4. 银行的信贷政策\n\n**可参考的提升方向：**\n\n1. **提高收入证明充分度**：提供更完整的收入、资产证明（如工资流水、社保公积金缴纳记录等），有助于体现更强的还款能力。\n\n2. **维护良好信用记录",
+      "latency_ms": 9989,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.9,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "tool_008",
+      "group": "tool",
+      "difficulty": "easy",
+      "input": "还款日可以改吗，怎么改",
+      "note": "search_knowledge 正例：还款日规则",
+      "status": "pass",
+      "called_tools": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "hit": true,
+      "misused_tools": [],
+      "fail_reasons": [],
+      "answer_preview": "关于“还款日能不能改、怎么改”，我检索了行内知识库，**目前暂无专门针对还款日变更的明确条目**，所以不能凭猜测给您一个确定答案，抱歉。\n\n给您几点可行的处理方式：\n\n1. **联系贷款客户经理或拨打客服热线**：还款日是否支持变更、以及需要满足什么条件，通常与具体产品的合同约定有关，由人工核实最准确。\n2. **登录手机银行/网上银行查看**：在贷款详情页看看是否有“还款计划调整”“扣款日变更”",
+      "latency_ms": 10459,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.5,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "tool_009",
+      "group": "tool",
+      "difficulty": "easy",
+      "input": "现在最新的贷款市场报价利率LPR是多少",
+      "note": "search_web 正例：外部实时信息",
+      "status": "pass",
+      "called_tools": [
+        "search_web"
+      ],
+      "hit": true,
+      "misused_tools": [],
+      "fail_reasons": [],
+      "answer_preview": "根据公开信息，最新的人民币贷款市场报价利率（LPR）报价如下：\n\n| 日期 | 1年期 | 5年期以上 |\n| --- | --- | --- |\n| 2026-08-20 | 3.00% | 3.50% |\n\n说明：\n- LPR 由全国银行间同业拆借中心每月20日（遇节假日顺延）公布，以上是目前可查到的最近一期报价。\n- 5年期以上 LPR 通常与房贷等中长期贷款的定价参考相关；具体到某笔贷款的",
+      "latency_ms": 14814,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.5,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "tool_010",
+      "group": "tool",
+      "difficulty": "easy",
+      "input": "最近央行有没有调整贷款相关政策",
+      "note": "search_web 正例：最新政策新闻",
+      "status": "pass",
+      "called_tools": [
+        "search_web",
+        "search_web"
+      ],
+      "hit": true,
+      "misused_tools": [],
+      "fail_reasons": [],
+      "answer_preview": "您好，我帮您查了最新的公开信息，整理如下（以下均为外部公开信息，仅供参考）：\n\n**一、最近的贷款市场报价利率（LPR）**\n- 2026年9月20日公布的最新一期LPR：**1年期和5年期以上LPR均与上月持平、维持不变**。\n- 具体数值建议以中国人民银行或全国银行间同业拆借中心官网公布为准。\n\n**二、今年（2026年）已落地的货币政策相关动作**\n1. **再贷款、再贴现利率下调**：央行",
+      "latency_ms": 14189,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.92,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "tool_011",
+      "group": "tool",
+      "difficulty": "easy",
+      "input": "查一下近期商业贷款利率的新闻",
+      "note": "search_web 正例：新闻资讯",
+      "status": "pass",
+      "called_tools": [
+        "search_web"
+      ],
+      "hit": true,
+      "misused_tools": [],
+      "fail_reasons": [],
+      "answer_preview": "帮您查到了近期有关商业贷款利率的消息，整理如下：\n\n**1. 9月LPR（贷款市场报价利率）保持不变**\n- 据21经济网报道，9月贷款市场报价利率维持不变。\n- 相关背景：9月以来货币市场隔夜资金利率（DR001）均值较上月小幅上行，1年期商业银行（AAA级）同业存单到期收益率也略有走高，意味着银行在货币市场的批发融资成本有所上升。\n- 另有数据显示，主要受部分高息定期存款到期重定价等因素带动，",
+      "latency_ms": 9958,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.5,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "tool_012",
+      "group": "tool",
+      "difficulty": "boundary",
+      "input": "2026年最新的存款准备金率是多少",
+      "note": "search_web 正例：年份敏感的外部数据",
+      "status": "pass",
+      "called_tools": [
+        "search_web",
+        "search_web",
+        "search_web"
+      ],
+      "hit": true,
+      "misused_tools": [],
+      "fail_reasons": [],
+      "answer_preview": "关于2026年最新的存款准备金率，我查询了外部公开信息，但**不同来源的数据并不一致**，需要提醒您注意：\n\n**各来源显示的数据（仅供参考）：**\n- CEIC 数据：2026年8月存款准备金率约为 **6.2%**，与7月持平；\n- Trading Economics：大型银行存款准备金率约 **7.x%**；\n- MacroMicro：大型金融机构约 **9.00%**，中小型金融机构约 *",
+      "latency_ms": 21741,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.65,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "tool_013",
+      "group": "tool",
+      "difficulty": "easy",
+      "input": "帮我算20万36期年利率4.5%等额本息月供多少",
+      "note": "MCP 还款计算工具正例（依赖 Java MCP 在线）",
+      "status": "skipped",
+      "reason": "期望工具未加载: ['calculate_repayment']",
+      "called_tools": []
+    },
+    {
+      "case_id": "tool_014",
+      "group": "tool",
+      "difficulty": "easy",
+      "input": "贷款50万3年先息后本每月利息多少",
+      "note": "MCP 还款计算工具正例",
+      "status": "skipped",
+      "reason": "期望工具未加载: ['calculate_repayment']",
+      "called_tools": []
+    },
+    {
+      "case_id": "tool_015",
+      "group": "tool",
+      "difficulty": "easy",
+      "input": "10万借12期4.2%等额本金总利息多少",
+      "note": "MCP 还款计算工具正例",
+      "status": "skipped",
+      "reason": "期望工具未加载: ['calculate_repayment']",
+      "called_tools": []
+    },
+    {
+      "case_id": "tool_016",
+      "group": "tool",
+      "difficulty": "easy",
+      "input": "借30万24期4.8%等额本息每月还多少",
+      "note": "MCP 还款计算工具正例",
+      "status": "skipped",
+      "reason": "期望工具未加载: ['calculate_repayment']",
+      "called_tools": []
+    },
+    {
+      "case_id": "tool_017",
+      "group": "tool",
+      "difficulty": "easy",
+      "input": "帮我查我的贷款申请进度",
+      "note": "MCP 申请进度工具正例（依赖 Java MCP 在线）",
+      "status": "skipped",
+      "reason": "期望工具未加载: ['query_application_status']",
+      "called_tools": []
+    },
+    {
+      "case_id": "tool_018",
+      "group": "tool",
+      "difficulty": "boundary",
+      "input": "我那笔贷款审批到哪了",
+      "note": "MCP 申请进度工具口语化正例",
+      "status": "skipped",
+      "reason": "期望工具未加载: ['query_application_status']",
+      "called_tools": []
+    },
+    {
+      "case_id": "tool_019",
+      "group": "tool",
+      "difficulty": "boundary",
+      "input": "查我的贷款申请到哪一步了",
+      "note": "误用反例：查自己进度不应走知识库",
+      "status": "skipped",
+      "reason": "期望工具未加载: ['query_application_status']",
+      "called_tools": []
+    },
+    {
+      "case_id": "tool_020",
+      "group": "tool",
+      "difficulty": "boundary",
+      "input": "帮我算20万3年月供多少",
+      "note": "误用反例：算账不应走知识库",
+      "status": "skipped",
+      "reason": "期望工具未加载: ['calculate_repayment']",
+      "called_tools": []
+    },
+    {
+      "case_id": "answer_001",
+      "group": "answer",
+      "difficulty": "easy",
+      "input": "你好",
+      "note": "寒暄：有响应即可",
+      "status": "pass",
+      "coverage": 1.0,
+      "matched_keywords": [],
+      "forbidden_hits": [],
+      "called_tools": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "fail_reasons": [],
+      "answer": "您好！很高兴为您服务。😊\n\n我注意到您之前对提前还款收费的问题比较关注，很理解您的顾虑。先跟您说明一下提前还款的几个关键点，供您参考：\n\n**办理提前还款的注意事项**\n1. 需提前联系银行进行**预约**；\n2. 办理前**先确认是否收取提前还款违约金**，以及具体标准；\n3. 准备好还款资金；\n4. 了解还款后**剩余本金和利息的计算方式**；\n5. 办理完成后**及时索取还款证明**。\n\n关于您关心的\"是否乱收费\"问题，我需要坦诚告知：**当前知识库中未收录具体的违约金收取标准（如是否收费、收费标准、免费期等）**，各产品条款可能存在差异。为避免给您不准确的信息，建议您通过以下方式核实：\n- 查看您**贷款合同**中关于提前还款的约定条款；\n- 联系您的**客户经理**或致电银行官方客服，确认您名下产品的具体收费规则。\n\n如果您能告诉我具体是**哪款产品**，我可以帮您进一步检索相关规则；若确实收费不合理，也可以引导您通过官方渠道反馈核实。请问有什么可以帮您的吗？",
+      "latency_ms": 17613,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.5,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "answer_002",
+      "group": "answer",
+      "difficulty": "easy",
+      "input": "贷款需要什么条件",
+      "note": "要点覆盖：收入+征信",
+      "status": "fail",
+      "coverage": 0.5,
+      "matched_keywords": [
+        "收入"
+      ],
+      "forbidden_hits": [],
+      "called_tools": [
+        "search_knowledge"
+      ],
+      "fail_reasons": [
+        "要点覆盖不足 ['收入']/['收入', '征信']"
+      ],
+      "answer": "申请个人贷款通常需要满足以下基本条件：\n\n1. **年龄要求**：年满18周岁，具有完全民事行为能力；\n2. **收入要求**：有稳定的工作和收入来源，具备按时还款的能力；\n3. **信用要求**：个人信用记录良好；\n4. **身份证明**：能提供有效的身份证明；\n5. **实名认证**：完成实名认证。\n\n不同贷款产品（如信用贷款、抵押贷款）在具体条件上可能有所差异，建议您结合自身情况选择合适的产品。\n\n另外，我注意到您之前对提前还款的收费问题有疑问，如果方便的话，我可以帮您查一下提前还款的相关规则，看看费用是怎么计算的，您看需要吗？",
+      "latency_ms": 20728,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.95,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "answer_003",
+      "group": "answer",
+      "difficulty": "easy",
+      "input": "提前还款要违约金吗",
+      "note": "要点覆盖：违约金规则",
+      "status": "pass",
+      "coverage": 1.0,
+      "matched_keywords": [
+        "违约金"
+      ],
+      "forbidden_hits": [],
+      "called_tools": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "fail_reasons": [],
+      "answer": "理解您对提前还款收费问题的关注，这类费用确实容易让人困惑。我先说明一下查询到的情况：\n\n**关于\"提前还款是否收违约金\"**\n- 是否收取、以及收取标准，通常**取决于您办理的具体贷款产品合同约定**，不同产品规则不一样，并没有统一口径。\n- 知识库中目前只提供了提示性内容：提前还款前建议**先确认该笔贷款是否有违约金**，并提前联系银行预约、了解还款后剩余本金和利息的计算方式。\n- 知识库暂未收录各产品的具体违约金费率/免收条件，因此我无法直接给您一个确切数字，避免给您误导。\n\n**给您几点建议**\n1. 查看您的**贷款合同/借款协议**中\"提前还款\"相关条款，这是判断是否收费最直接的依据。\n2. 通过**手机银行、官方客服或您的客户经理**，提供您的具体产品名称，核实该笔贷款是否属于免收违约金的情形。\n3. 若您认为某项收费与合同约定不符，可要求对方**出具收费依据**并保留好相关凭证，便于后续申诉处理。\n\n如果您能告诉我具体的贷款产品名称，我可以帮您再检索一下是否有对应的规则说明。另外，您也可以随时联系人工客服进一步核实费用明细，请结合自身情况谨慎决策。",
+      "latency_ms": 17154,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.9,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "answer_004",
+      "group": "answer",
+      "difficulty": "easy",
+      "input": "逾期了会有什么后果",
+      "note": "要点覆盖：逾期主题",
+      "status": "pass",
+      "coverage": 1.0,
+      "matched_keywords": [
+        "逾期"
+      ],
+      "forbidden_hits": [],
+      "called_tools": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "fail_reasons": [],
+      "answer": "理解您的心情，也谢谢您把关注点告诉我们。关于**逾期还款的后果**，根据行内知识库的信息，主要有以下几方面：\n\n1. **影响个人信用记录**：逾期记录可能上报并影响您的征信。\n2. **可能被银行催收**：银行会通过短信、电话等方式进行催收提醒。\n3. **长期逾期可能面临法律诉讼**：若长期拖欠，可能进入法律程序。\n4. **影响未来信贷申请**：征信受损后，后续申请贷款、信用卡等可能受限。\n\n此外，逾期通常还会产生**罚息**，具体计收标准以您签署的借款合同约定为准——这一点知识库中没有具体比例，建议您查看合同条款或联系客户经理确认，避免道听途说。\n\n几点小建议：\n- 如果只是临时资金周转紧张，可以**提前联系银行**沟通，看是否符合申请延期的条件（部分情况可申请，需审批，可能产生额外费用）。\n- 尽量在还款日前存足款项，或设置自动扣款，减少非主观逾期。\n\n需要的话，我也可以帮您查一下**延期/协商还款**的具体办理流程。请问您目前是有具体的账单遇到困难了吗？我可以帮您进一步看看。",
+      "latency_ms": 16175,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.92,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "answer_005",
+      "group": "answer",
+      "difficulty": "easy",
+      "input": "等额本息和等额本金有什么区别",
+      "note": "要点覆盖：两种方式都要提到",
+      "status": "pass",
+      "coverage": 1.0,
+      "matched_keywords": [
+        "等额本息",
+        "等额本金"
+      ],
+      "forbidden_hits": [],
+      "called_tools": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "fail_reasons": [],
+      "answer": "等额本息和等额本金是两种常见的还款方式，主要区别在于**每月还款额的变化规律**和**利息结构**，可以这样理解：\n\n**1. 等额本息**\n- 每月还款金额**固定不变**。\n- 前期还款中利息占比较高，本金占比较低；随着时间推移，利息占比逐渐下降。\n- 因为前期还的本金少，整体占用的本金时间长，**相同条件下总利息通常相对较高**。\n\n**2. 等额本金**\n- 每月偿还的**本金固定**，利息随剩余本金逐月减少，所以**月供逐月递减**。\n- 前期还款压力较大，后期越来越轻。\n- 由于本金还得更快，**相同条件下总利息通常相对较少**。\n\n**主要维度对比**\n\n| 维度 | 等额本息 | 等额本金 |\n|---|---|---|\n| 每月还款额 | 固定 | 逐月递减 |\n| 前期压力 | 相对较小 | 相对较大 |\n| 总利息 | 相对较高 | 相对较低 |\n| 适合情况 | 收入稳定、希望月供固定好规划 | 前期还款能力较强、希望少付利息 |\n\n**给您的一点建议**\n- 若您收入稳定、希望每月支出固定，可考虑等额本息；若前期资金较充裕、想减少总利息，可考虑等额本金。\n- 这两种方式在提前还款后，剩余本金和利息的计算方式会有所不同，**建议您结合自身还款能力和资金安排谨慎决策**。\n\n如果您告诉我贷款金额、期限和利率，我可以帮您做具体的月供和利息测算；也可以直接使用产品页面的还款测算工具试算对比。另外，您之前提到的提前还款收费问题，如需了解违约金的具体规则，我可以帮您进一步核实。",
+      "latency_ms": 11498,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.95,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "answer_006",
+      "group": "answer",
+      "difficulty": "easy",
+      "input": "贷款审批一般要多久",
+      "note": "要点覆盖：审批时效",
+      "status": "pass",
+      "coverage": 1.0,
+      "matched_keywords": [
+        "审批"
+      ],
+      "forbidden_hits": [],
+      "called_tools": [
+        "search_knowledge"
+      ],
+      "fail_reasons": [],
+      "answer": "贷款审批时间会因银行和贷款类型不同而有差异，一般参考如下：\n\n1. **信用贷款**：通常 **1–3 个工作日**；\n2. **抵押贷款**：因涉及抵押物评估、抵押登记等环节，通常需要 **1–2 周**；\n3. **复杂业务**：可能需要更长时间；\n4. 具体进度建议咨询您的客户经理了解。\n\n需要说明的是：以上为一般参考时长，实际审批结果和时间以系统及银行的实际通知为准，无法承诺具体的放款时间。\n\n如果您想查询自己某笔申请目前的进度，可以告诉我，我帮您看下；也可以直接通过手机银行或联系客户经理查询。\n\n另外，注意到您之前对提前还款的收费问题比较关注，如果您需要，我可以帮您查一下提前还款的收费规则，为您核对是否合理。",
+      "latency_ms": 7723,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.9,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "answer_007",
+      "group": "answer",
+      "difficulty": "easy",
+      "input": "贷款资金可以用来炒股吗",
+      "note": "要点覆盖：明确否定用途（任一表述）",
+      "status": "pass",
+      "coverage": 0.667,
+      "matched_keywords": [
+        "不可以",
+        "禁止"
+      ],
+      "forbidden_hits": [],
+      "called_tools": [
+        "search_knowledge"
+      ],
+      "fail_reasons": [],
+      "answer": "关于贷款资金的用途，这个问题的答案很明确：**不可以。**\n\n贷款资金有明确的使用范围限制，通常**不得用于以下用途**：\n\n- **股票、基金、期货等证券投资**（即您问的\"炒股\"）\n- **购买房产**（包括支付购房首付）\n- **投资理财、购买理财产品**\n- 其他与申请时约定用途不符的领域\n\n**合规提示：**\n\n1. 贷款资金应按照您申请时填写的用途使用，一般是用于**日常消费、装修、教育、经营周转**等合规场景。\n2. 银行会对资金流向进行监测，若发现资金违规流入股市、楼市等禁止领域，**可能被要求提前结清贷款**，并影响您的个人信用记录。\n3. 违规使用还可能涉及违约，产生额外后果。\n\n需要说明的是，以上是通用合规口径。目前知识库中暂无针对该问题更细化的行内条款，如果您对**具体产品的资金用途约定**或**已发生情况的处理**有疑问，建议您通过手机银行或联系您的客户经理进一步确认，以获得准确答复。\n\n请问还有其他可以帮您的吗？",
+      "latency_ms": 8494,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.95,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "answer_008",
+      "group": "answer",
+      "difficulty": "easy",
+      "input": "怎么提高贷款额度",
+      "note": "要点覆盖：额度主题",
+      "status": "pass",
+      "coverage": 1.0,
+      "matched_keywords": [
+        "额度"
+      ],
+      "forbidden_hits": [],
+      "called_tools": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "fail_reasons": [],
+      "answer": "关于提高贷款额度，可以从银行核定额度时主要参考的几个因素入手。根据我行贷款额度的确定规则，额度主要取决于**收入与还款能力、个人信用状况、贷款用途、银行信贷政策**这四项，您可以针对性地优化：\n\n**1. 提升还款能力证明**\n- 保持稳定、连续的工作与收入流水，避免频繁更换工作\n- 可补充提供公积金、社保、完税证明、资产证明（如房产、存款、理财）等材料，帮助银行更全面评估您的还款能力\n\n**2. 维护良好信用记录**\n- 按时足额还款，避免逾期\n- 控制多头借贷、降低已有负债率（如信用卡使用率、其他贷款余额），负债过高通常会影响可批额度\n\n**3. 明确合规的贷款用途**\n- 提供清晰、合规的用途说明及相关凭证，用途越明确，越有利于额度审批\n\n**4. 关注产品与政策差异**\n- 不同产品的额度上限、准入条件不同；也可关注是否有针对优质客户的额度调整政策，或通过增加共同借款人、提供抵押/担保等方式提升额度\n\n**几点温馨提示：**\n- 最终额度以系统审批结果为准，无法提前承诺具体金额\n- 建议您结合自身实际还款能力谨慎评估，避免过度负债\n- 以上信息仅供参考，具体请以我行最新产品和审批政策为准\n\n如果您方便告知是想提升哪类贷款（如信用贷、房贷等）的额度，我可以帮您进一步查询对应的具体条件和材料要求。",
+      "latency_ms": 10219,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.92,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "answer_009",
+      "group": "answer",
+      "difficulty": "easy",
+      "input": "征信不好还能贷款吗",
+      "note": "要点覆盖：征信主题",
+      "status": "pass",
+      "coverage": 1.0,
+      "matched_keywords": [
+        "征信"
+      ],
+      "forbidden_hits": [],
+      "called_tools": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "fail_reasons": [],
+      "answer": "关于\"征信不好能否贷款\"，这是个很实际的问题，我帮您说明一下：\n\n**1. 征信是重要的审核因素**\n征信报告会记录您的信贷记录、还款记录、逾期情况及查询记录等，银行审核贷款时，**信用记录良好**是常见的申请条件之一。因此征信状况不佳，确实可能对审批结果产生影响。\n\n**2. 但结果并非绝对**\n具体能否通过，取决于逾期的严重程度、时间、是否已结清、您当前的收入与还款能力，以及申请的产品类型等多方面因素，**最终以系统实际审批结果为准**，我们无法事先承诺。\n\n**3. 给您的几点建议**\n- 先查询一下自己的征信报告，确认是否有错误记录或已结清的信息可以更新；\n- 如有逾期，尽量尽快结清并保持后续按时还款，良好的记录会逐步积累；\n- 不同产品的准入要求不同，建议您结合自身情况，与客户经理沟通适合的产品方向。\n\n需要提醒的是，以上信息仅供参考，建议您结合自身还款能力谨慎决策，具体以我行实际审核为准。\n\n如果您方便的话，也可以告诉我您目前征信的具体情况（比如逾期次数、是否已结清），我可以帮您看看是否有更合适的产品方向。",
+      "latency_ms": 11979,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.95,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "answer_010",
+      "group": "answer",
+      "difficulty": "boundary",
+      "input": "你们有哪些贷款产品",
+      "note": "线上实测：知识库缺产品清单，基线预期偏低",
+      "status": "pass",
+      "coverage": 1.0,
+      "matched_keywords": [
+        "产品"
+      ],
+      "forbidden_hits": [],
+      "called_tools": [
+        "search_knowledge",
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "fail_reasons": [],
+      "answer": "关于具体在售的贷款产品清单，我查询了行内知识库，**目前没有检索到包含具体产品名称、额度区间与期限区间的完整产品清单**，为避免误导，我不能凭空列举产品名或额度，请您以产品页面实际展示为准。\n\n不过，从知识库中可以确认的相关信息如下：\n\n**按担保方式/用途划分的常见贷款类型**\n- **信用贷款**：无需抵押担保，审批时间通常为 1-3 个工作日\n- **抵押贷款**：需进行评估与抵押登记，审批时间通常为 1-2 周\n- 知识库中也提到贷款类型会涉及**个人消费、农业生产、企业经营**等用途方向（具体产品以页面为准）\n\n**利率口径**\n- 贷款利率根据贷款类型和期限有所不同，需在产品页面查看具体的年化利率，我这边不掌握统一数值\n\n**温馨提示**\n- 上面信息仅供参考，请结合自身还款能力谨慎决策\n- 如需查看完整产品清单和额度、期限、当前年化利率，建议登录手机银行/网上银行的产品页面，或联系您的客户经理获取\n\n另外，我注意到您之前关心**提前还款收费**的问题。如果您希望，我可以帮您查一下行内关于提前还款违约金/手续费的具体规则，您看需要吗？\n\n如果方便，也可以告诉我您的用途（消费/经营/农业）和大致的资金需求金额，我帮您判断哪类产品可能更匹配。",
+      "latency_ms": 10986,
+      "routed_intent": "LIST_PRODUCTS",
+      "routed_confidence": 0.95,
+      "prompt_category": "list_products"
+    },
+    {
+      "case_id": "answer_011",
+      "group": "answer",
+      "difficulty": "boundary",
+      "input": "有哪些产品推荐",
+      "note": "线上实测同款，基线预期偏低",
+      "status": "pass",
+      "coverage": 1.0,
+      "matched_keywords": [
+        "产品"
+      ],
+      "forbidden_hits": [],
+      "called_tools": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "fail_reasons": [],
+      "answer": "关于具体的贷款产品推荐，我需要先跟您说明一下：**目前知识库中没有收录具体的产品清单**，所以我无法直接报出某几款产品名称，以免给您不准确的信息。不过，我可以结合知识库里的规则，帮您理清\"怎么选\"的思路。\n\n**结合您之前对提前还款收费的顾虑，建议重点关注以下几点：**\n\n1. **提前还款条款**：不同产品对提前还款违约金的规定不一样，办理前建议明确确认\"是否有违约金、怎么收、是否需预约\"。知识库提示：提前还款需提前联系银行预约、确认是否有违约金、备好资金，并了解剩余本息计算方式、办完后索取还款证明。\n2. **还款方式**：目前常见的有等额本息、等额本金、先息后本、一次性还本付息四种，各有特点——\n   - 等额本息：每月还款额相同，前期利息占比高；\n   - 等额本金：每月本金相同，利息逐月递减，总利息相对较少；\n   - 先息后本／一次性还本付息：短期资金周转常用，到期需一次性还本，压力较大。\n3. **利率口径**：利率随贷款类型和期限不同，具体以产品页面展示的**年化利率**为准。\n\n**为了给您更贴合的建议，可以告诉我：**\n- 您的资金用途大概是什么？（提醒：贷款资金不得用于购房、炒股等违规用途）\n- 期望的额度和期限？\n- 更看重低利率，还是还款灵活／提前还款友好？\n\n另外，如果确实遇到提前还款收费不清晰或认为存在不合理收费的情况，建议直接联系您的客户经理或官方客服核实处理，以官方口径为准。\n\n以上内容仅供参考，建议您结合自身还款能力和实际需求谨慎决策。您方便说说上面几个情况吗？我再帮您细化。",
+      "latency_ms": 12428,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.75,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "answer_012",
+      "group": "answer",
+      "difficulty": "easy",
+      "input": "帮我算20万36期4.5%等额本息月供多少",
+      "note": "要点覆盖：给出月供表述",
+      "status": "pass",
+      "coverage": 1.0,
+      "matched_keywords": [
+        "月供",
+        "每月"
+      ],
+      "forbidden_hits": [],
+      "called_tools": [],
+      "fail_reasons": [],
+      "answer": "抱歉，还款测算工具当前暂时不可用，我无法直接为您算出准确数字，为避免给您错误信息，就不做手工估算了。\n\n建议您通过以下方式获取准确结果：\n1. **页面还款测算器**：在贷款申请/产品页面找到\"还款测算\"入口，输入金额 20 万元、期限 36 期、年化利率 4.5%、选择\"等额本息\"，即可得到月供、总利息和还款计划。\n2. **手机银行 App**：进入贷款专区，一般也提供试算功能。\n3. 如需协助，可联系您的客户经理或人工客服。\n\n补充说明：等额本息的特点是每月还款额固定，前期利息占比较高、本金占比较低，总体利息会高于等额本金。测算结果仅供参考，实际以合同约定为准。\n\n需要的话，稍后工具恢复我可以再帮您测算。",
+      "latency_ms": 11609,
+      "routed_intent": "CALCULATE",
+      "routed_confidence": 0.98,
+      "prompt_category": "calculate"
+    },
+    {
+      "case_id": "answer_013",
+      "group": "answer",
+      "difficulty": "adversarial",
+      "input": "你们能保证我贷款一定批下来吗",
+      "note": "合规：不得承诺放款结果",
+      "status": "pass",
+      "coverage": 1.0,
+      "matched_keywords": [
+        "审批"
+      ],
+      "forbidden_hits": [],
+      "called_tools": [],
+      "fail_reasons": [],
+      "answer": "关于审批结果，我需要如实说明：**无法承诺贷款一定获批，也不存在\"保证放款\"\"包过\"这类说法。**\n\n具体来说：\n\n1. **审批由系统综合评估决定**：银行会根据您的资信状况、还款能力、负债情况、用途合规性等多方面因素综合判断，最终结果以系统实际通知为准。\n\n2. **没有时效承诺**：我们不承诺\"秒批\"或固定时限，实际审批进度请以系统通知或客户经理告知为准。\n\n3. **申请建议**：\n   - 如实、完整地提供申请资料，有助于提高审批效率；\n   - 提交前可先确认自身征信、负债及用途是否符合产品要求；\n   - 结果无论是否通过，都会有相应通知。\n\n另外，注意到您此前对提前还款收费有疑虑。如果您愿意，我可以帮您查询一下**提前还款违约金/手续费的收取规则**，让您提前了解清楚，避免后续产生误解。您需要我帮您查吗？\n\n建议您结合自身还款能力谨慎决策，如有疑问也可联系人工客服进一步确认。",
+      "latency_ms": 9198,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.9,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "answer_014",
+      "group": "answer",
+      "difficulty": "boundary",
+      "input": "贷款还不上了会坐牢吗",
+      "note": "要点覆盖：逾期后果主题，不恐吓",
+      "status": "pass",
+      "coverage": 1.0,
+      "matched_keywords": [
+        "逾期"
+      ],
+      "forbidden_hits": [],
+      "called_tools": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "fail_reasons": [],
+      "answer": "关于\"贷款还不上会不会坐牢\"，我基于一般法律规定和常见处理口径为您说明（知识库暂无针对此问题的专门条目，以下供您参考，具体请以专业法律意见为准）：\n\n**1. 一般逾期属于民事纠纷，通常不涉及坐牢**\n正常的贷款逾期、还不上，本质上是您与银行之间的**民事债务纠纷**。银行一般会通过催收、协商、诉讼等民事途径追偿，**不会因为单纯\"还不上钱\"就直接导致坐牢**。\n\n**2. 逾期可能产生的实际后果**\n根据知识库信息，逾期还款可能带来：\n- 影响个人信用记录；\n- 可能被银行催收；\n- 长期逾期可能导致法律诉讼；\n- 影响未来的信贷申请。\n\n**3. 可能触及法律责任的少数情形**\n如果涉及以下情况，则可能承担更严重的法律责任（甚至刑事风险），例如：\n- 以**虚假资料骗贷**、贷款诈骗；\n- 有能力偿还却**恶意转移财产、拒不执行**法院生效判决；\n- 其他涉嫌欺诈、恶意逃废债的行为。\n\n**4. 如果确实遇到还款困难**\n- 可以尝试与银行沟通，看是否符合**贷款延期**条件（一般需提前申请、信用良好、银行审批、可能产生额外费用，并需签订延期协议）；\n- 主动沟通、协商还款方案，通常比失联、逃避更有利于解决问题。\n\n需要说明的是，以上为一般性说明，不构成法律意见。如果您的具体情况较复杂，建议结合自身情况咨询专业律师，或联系您的客户经理/人工客服进一步确认。\n\n另外我注意到您之前对提前还款收费有疑问，如果方便，也可以告诉我具体是哪个环节的费用，我帮您一起核实。",
+      "latency_ms": 13650,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.85,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "answer_015",
+      "group": "answer",
+      "difficulty": "boundary",
+      "input": "提前还款划算吗",
+      "note": "要点覆盖：提前还款评估",
+      "status": "pass",
+      "coverage": 1.0,
+      "matched_keywords": [
+        "提前还款"
+      ],
+      "forbidden_hits": [],
+      "called_tools": [
+        "search_knowledge",
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "fail_reasons": [],
+      "answer": "关于提前还款是否划算，需要结合您的具体情况判断，没有绝对答案。我帮您把关键维度梳理一下：\n\n**一、先确认\"成本端\"：是否收费、收多少**\n- 部分贷款产品提前还款会收取违约金或手续费，标准以**您签署的借款合同约定**为准，并非统一收费。\n- 知识库提示，办理前应\"确认是否有提前还款违约金\"，并\"了解还款后的剩余本金和利息计算方式\"。\n- 建议您直接核对合同条款，或联系客户经理/客服确认您这笔贷款的**具体收取标准（比例、按次数还是按金额）**。如果您对费用依据有疑问，可以要求对方出示合同中的对应条款，这是您的正当权利。\n\n**二、再看\"收益端\"：提前还款能省多少钱**\n主要看两个因素：\n1. **贷款利率高低**：若贷款利率明显高于您手头资金的可能收益（如存款、稳健理财），提前还款\"省下的利息\"更多，相对更划算；反之则未必。\n2. **还款方式与还款阶段**：\n   - 等额本息：前期利息占比高，**越早提前还，省的利息越多**；已还到中后期，剩余利息本身不多，省息效果会明显减弱。\n   - 等额本金：利息逐月递减，同样越早还越划算。\n   - 先息后本/一次性还本付息：到期才还本金，提前还主要影响的是本金占用时间和对应利息。\n\n**三、别忘了\"流动性\"**\n提前还款会占用一笔现金，建议您预留 3–6 个月的应急资金，避免影响日常周转。如果提前还款还要付一笔费用，而省下的利息有限，那性价比就要打折扣。\n\n**四、关于\"划算\"的简单判断思路**\n- 有违约金 + 利率较低 + 已还款中后期 → 通常不太划算，可优先保留现金。\n- 无违约金或费用很低 + 利率较高 + 处于还款前期 → 相对更划算。\n> 以上思路仅供参考，请结合自身还款能力与资金安排谨慎决策。\n\n**五、具体能省多少，建议用工具测算**\n您这笔贷款的月供、利息、提前还款后能省多少，需要按具体金额和期限计算。目前已无法在线为您直接测算，建议您通过手机银行/官网的**贷款计算器**输入金额、利率、期限试算，或让客户经理出一份提前还款测算表，这样更直观。\n\n如果您告诉我贷款金额、年化利率、剩余期限和还款方式，我也可以帮您梳理测算思路。",
+      "latency_ms": 15397,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.95,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "answer_016",
+      "group": "answer",
+      "difficulty": "easy",
+      "input": "还款日怎么改",
+      "note": "要点覆盖：还款日主题",
+      "status": "pass",
+      "coverage": 1.0,
+      "matched_keywords": [
+        "还款日"
+      ],
+      "forbidden_hits": [],
+      "called_tools": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "fail_reasons": [],
+      "answer": "关于「修改还款日」这个问题，我查询了行内知识库，目前**没有找到相关的明确规则说明**，暂时无法给您准确答复，抱歉。\n\n一般建议您通过以下途径确认是否可以调整，以及具体条件：\n\n1. **联系您的贷款客户经理**：这是最直接的方式，可确认您的贷款产品是否支持变更还款日；\n2. **拨打银行客服热线**：说明您的需求，由人工坐席协助核实；\n3. **前往贷款经办网点**：当面咨询并办理（部分产品变更还款日可能需签署补充协议）。\n\n需要提醒的是，是否能修改、以及是否涉及费用，会因具体贷款产品的合同约定而不同，建议以银行官方渠道的实际答复为准，不要轻信非官方说法。\n\n另外，看到您对提前还款收费的问题比较关注，如果您愿意，可以把具体遇到的情况告诉我，我可以帮您查一下相关的规则口径，或协助您找到合适的反馈渠道。",
+      "latency_ms": 11566,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.9,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "answer_017",
+      "group": "answer",
+      "difficulty": "easy",
+      "input": "贷款被拒了一般是什么原因",
+      "note": "要点覆盖：拒贷原因",
+      "status": "pass",
+      "coverage": 1.0,
+      "matched_keywords": [
+        "征信",
+        "收入"
+      ],
+      "forbidden_hits": [],
+      "called_tools": [
+        "search_knowledge"
+      ],
+      "fail_reasons": [],
+      "answer": "贷款被拒通常与银行审批时的几个核心维度有关，结合我行个人贷款的准入要求，常见原因大致有以下几类：\n\n**1. 信用记录方面**\n- 征信存在逾期记录，尤其近期的连续逾期或长期逾期；\n- 征信查询次数过多（短期内频繁申请贷款/信用卡）；\n- 存在不良记录，如呆账、代偿、被列为失信被执行人等。\n\n**2. 还款能力方面**\n- 没有稳定的工作或收入来源，收入证明不足；\n- 负债率过高（已有贷款、信用卡欠款较多），月供压力超出承受范围；\n- 收入流水与实际申报不符。\n\n**3. 申请资料方面**\n- 身份证明、实名认证等资料不完整或过期；\n- 提交的信息不真实、前后不一致；\n- 未满足基本准入条件（如年龄未满18周岁、非完全民事行为能力人等）。\n\n**4. 其他因素**\n- 贷款用途不符合规定（如用于购房、炒股等违规用途）；\n- 抵押类贷款中，抵押物评估价值不足或不符合要求；\n- 申请人所属行业、职业被列为限制类。\n\n如果您是某笔具体申请被拒，建议您联系客户经理或通过手机银行查看具体原因，以便针对性改善。另外，不同产品和银行的审批标准会有差异，以上仅供参考，具体以审批结果和系统通知为准。\n\n请问您是想了解一般情况，还是有针对某笔申请需要分析呢？",
+      "latency_ms": 8178,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.95,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "answer_018",
+      "group": "answer",
+      "difficulty": "boundary",
+      "input": "什么是DTI负债收入比",
+      "note": "要点覆盖：DTI 与收入比",
+      "status": "pass",
+      "coverage": 1.0,
+      "matched_keywords": [
+        "收入"
+      ],
+      "forbidden_hits": [],
+      "called_tools": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "fail_reasons": [],
+      "answer": "关于 **DTI（Debt-to-Income Ratio，负债收入比）**，说明如下：\n\n**基本概念（通用定义）**\n- DTI 是衡量个人还款能力的核心指标，指您**每月需偿还的全部债务**与**每月税前收入**的比值。\n- 计算公式大致为：**DTI = 每月债务还款总额 ÷ 每月收入 × 100%**\n- 其中\"每月债务\"通常包括：房贷、车贷、信用卡最低还款额、各类消费贷款月供等。\n\n**举例说明**\n- 若您月收入 1 万元，每月需还房贷 3000 元、车贷 1000 元、信用卡最低还款 500 元，则月债务合计 4500 元，DTI = 4500 ÷ 10000 = 45%。\n- 一般来说，DTI 越低，说明负债压力越小、还款能力越强。\n\n**为什么重要**\n- DTI 常被金融机构作为授信审批、额度评估的参考指标之一，比值过高可能影响审批结果或可贷额度。\n\n**需要说明的是**：我行的知识库中暂未收录 DTI 的具体计算口径、门槛标准等信息，因此以上为通用概念解释，**并不代表我行的实际审批标准**。若您想了解本行在具体产品中对负债收入比的要求，建议您结合自身情况咨询客户经理或人工客服确认。\n\n需要我帮您查询其他贷款规则，或测算某笔贷款的月供吗？",
+      "latency_ms": 10839,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.9,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "answer_019",
+      "group": "answer",
+      "difficulty": "boundary",
+      "input": "你们的贷款利息高不高",
+      "note": "要点覆盖：利率主题",
+      "status": "pass",
+      "coverage": 1.0,
+      "matched_keywords": [
+        "利率"
+      ],
+      "forbidden_hits": [],
+      "called_tools": [
+        "search_knowledge",
+        "search_web"
+      ],
+      "fail_reasons": [],
+      "answer": "关于利率高低，我先说明两点：\n\n**1. 具体利率需以产品页面为准**\n根据行内规定，贷款利率会根据**贷款类型、期限、以及您的个人资质**等因素综合确定，不同产品差异较大，因此没有一个统一的\"高\"或\"低\"数字。您可以在具体产品页面查看该产品的适用利率区间，或咨询客户经理获取针对您情况的报价。\n\n**2. 目前市场基准利率参考（外部公开信息）**\n- 2026年9月20日最新一期LPR：**1年期 3.0%，5年期以上 3.5%**（已连续维持不变）\n- 说明：LPR是贷款定价的参考基准，实际执行利率会在此基础上结合产品类型、期限和借款人资质上下浮动。以上均为**年化利率**口径。\n\n所以是否\"偏高\"，建议您结合自身资质和同期限产品的年化利率综合比较，也可以让我帮您算一下具体产品的月供和总利息（需提供金额、期限、年化利率）。\n\n另外，注意到您之前对**提前还款收费**有疑问。如果您愿意，我可以帮您查一下提前还款违约金的具体规则和计算方式，方便您核对是否存在不合理收费。需要的话告诉我贷款产品和已还款情况即可。\n\n以上信息仅供参考，请结合自身还款能力谨慎决策。",
+      "latency_ms": 14100,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.9,
+      "prompt_category": "consult"
+    },
+    {
+      "case_id": "answer_020",
+      "group": "answer",
+      "difficulty": "easy",
+      "input": "谢谢",
+      "note": "寒暄：礼貌收尾即可",
+      "status": "pass",
+      "coverage": 1.0,
+      "matched_keywords": [],
+      "forbidden_hits": [],
+      "called_tools": [],
+      "fail_reasons": [],
+      "answer": "不客气，很高兴能帮到您！😊\n\n关于您之前提到的提前还款收费问题，我完全理解您的顾虑。如果您方便的话，可以告诉我具体的收费项目或金额，我帮您核对一下是否符合规定，或者协助您进一步反馈。\n\n另外，也提醒您：\n- 提前还款是否收费、怎么收，通常以您签署的**借款合同条款**为准，建议您查阅合同或联系客户经理确认；\n- 若您认为存在不合理收费，可通过**手机银行、客服热线或客户经理**渠道正式反馈，保留好相关凭证。\n\n还有其他想了解的吗？我随时为您服务。",
+      "latency_ms": 7372,
+      "routed_intent": "CONSULT",
+      "routed_confidence": 0.5,
+      "prompt_category": "consult"
+    }
+  ]
+}

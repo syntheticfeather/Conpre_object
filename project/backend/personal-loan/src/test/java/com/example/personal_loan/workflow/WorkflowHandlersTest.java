@@ -104,7 +104,7 @@ class WorkflowHandlersTest {
         var product = new UserGetProductResponse(
                 1L, "个人消费贷", "用于个人消费", "消费", null,
                 null, new BigDecimal("10000"), new BigDecimal("500000"),
-                List.of(12, 24, 36), new ArrayList<>()
+                List.of(12, 24, 36), new ArrayList<>(), null
         );
         when(loanProductService.getTopLoanProducts(5)).thenReturn(List.of(product));
 
@@ -143,7 +143,7 @@ class WorkflowHandlersTest {
         var product = new UserGetProductResponse(
                 1L, "个人消费贷", "消费用途", "消费", null,
                 null, new BigDecimal("10000"), new BigDecimal("500000"),
-                List.of(12, 24, 36), List.of(opt)
+                List.of(12, 24, 36), List.of(opt), null
         );
         when(loanProductService.getTopLoanProducts(5)).thenReturn(List.of(product));
 

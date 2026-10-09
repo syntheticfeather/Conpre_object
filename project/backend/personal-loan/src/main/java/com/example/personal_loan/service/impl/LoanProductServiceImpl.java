@@ -1,6 +1,7 @@
 package com.example.personal_loan.service.impl;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,6 +29,7 @@ import com.example.personal_loan.mapper.LoanOptionMapper;
 import com.example.personal_loan.mapper.LoanProductMapper;
 import com.example.personal_loan.mapper.OrderMapper;
 import com.example.personal_loan.service.LoanProductService;
+import com.example.personal_loan.service.CreditScoreCalculator;
 
 @Service
 public class LoanProductServiceImpl implements LoanProductService{
@@ -43,6 +45,9 @@ public class LoanProductServiceImpl implements LoanProductService{
 
     @Autowired
     private OrderMapper orderMapper;
+
+    @Autowired
+    private CreditScoreCalculator creditScoreCalculator;
 
     /*
      * 管理员使用
@@ -518,6 +523,60 @@ public class LoanProductServiceImpl implements LoanProductService{
             response.setOptions(optionResponses);
             return response;
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserGetProductResponse> recommendProducts(Long userId) {
+        var allProducts = getAllLoanProducts();
+        if (allProducts == null || allProducts.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        int creditScore = creditScoreCalculator.calculate(userId);
+
+        return allProducts.stream()
+            .peek(p -> p.setRecommendReason(scoreProduct(p, creditScore).reason()))
+            .sorted((a, b) -> Double.compare(scoreProduct(b, creditScore).score(), scoreProduct(a, creditScore).score()))
+            .limit(3)
+            .collect(Collectors.toList());
+    }
+
+    /** 对单个产品按信用分打分，返回分数和推荐理由 */
+    private record Scored(double score, String reason) {}
+
+    private Scored scoreProduct(UserGetProductResponse p, int creditScore) {
+        BigDecimal minRate = p.getOptions() != null
+            ? p.getOptions().stream().map(LoanOptionResponse::getInterestRate)
+                .min(BigDecimal::compareTo).orElse(BigDecimal.valueOf(100))
+            : BigDecimal.valueOf(100);
+
+        // interestRate 存的是小数（0.038 = 3.8%），展示时乘 100 并保留两位小数去尾零
+        BigDecimal ratePercentBd = minRate.multiply(BigDecimal.valueOf(100))
+            .setScale(2, RoundingMode.HALF_UP).stripTrailingZeros();
+        String ratePercentStr = ratePercentBd.toPlainString();
+        double ratePercent = ratePercentBd.doubleValue();
+
+        double score;
+        String reason;
+
+        if (creditScore >= 700) {
+            score = 100 - ratePercent * 10;
+            reason = "信用分优秀，匹配低利率产品（最低年化" + ratePercentStr + "%）";
+        } else if (creditScore >= 600) {
+            score = 80 - ratePercent * 5;
+            reason = "信用分良好，可申请此产品（年化" + ratePercentStr + "%起）";
+        } else if (creditScore >= 500) {
+            score = 60 - p.getMinAmount().doubleValue() / 100000;
+            reason = "信用分一般，推荐从低额度产品开始（" + p.getMinAmount() + "元起）";
+        } else {
+            score = 40 - p.getMinAmount().doubleValue() / 50000;
+            reason = "信用分较低，建议先尝试小额产品积累信用";
+        }
+
+        if (p.getPromotionDetails() != null && !p.getPromotionDetails().isEmpty()) {
+            score += 5;
+        }
+        return new Scored(score, reason);
     }
 
     // 内部工具方法，生成terms列表

@@ -43,7 +43,8 @@ class ChatAgent:
         else:
             self._agent = react
 
-    async def chat(self, message: str, session_id: str, user_id: str = None, token: str = None):
+    async def chat(self, message: str, session_id: str, user_id: str = None,
+                   token: str = None, intent: str = None, confidence: float = 1.0):
         # ===== 对话前：注入长期记忆（Semantic 优先 + Episode 兜底） =====
         # 会话兜底创建 / 首条判断 / 落库 / 标题生成统一由 ChatHistoryService 处理，
         # WORKFLOW 路径（Java 本地处理后回调 /api/chat/persist）也走同一服务。
@@ -79,8 +80,12 @@ class ChatAgent:
                 logger.debug(f"记忆检索跳过: {e}")
 
         # ===== Agent 执行 =====
+        # intent/confidence 为 Router 分类结果（Java 原样透传），缺省时内层按 general 组装
         full_response = ""
-        async for chunk in self._agent.chat(enriched_message, session_id, user_id, token):
+        async for chunk in self._agent.chat(
+            enriched_message, session_id, user_id, token,
+            intent=intent, confidence=confidence,
+        ):
             yield chunk
             try:
                 evt = json.loads(chunk)

@@ -77,14 +77,22 @@ public class AgentClientService {
     }
 
     public SseEmitter forwardToAgent(String message, Long userId,
-                                      String sessionId, String token, String agentMode) {
+                                      String sessionId, String token, String agentMode,
+                                      String intent, Double confidence) {
         SseEmitter emitter = new SseEmitter(120_000L);
 
-        var request = Map.of(
-                "message", message,
-                "session_id", sessionId != null ? sessionId : "",
-                "agent_mode", agentMode
-        );
+        // 原样透传 Router 的 intent/confidence，Java 不做门槛判断
+        // （HashMap 允许 value 为 null；仅在非空时放入，缺省即 Python 侧 general 兜底）
+        Map<String, Object> request = new java.util.HashMap<>();
+        request.put("message", message);
+        request.put("session_id", sessionId != null ? sessionId : "");
+        request.put("agent_mode", agentMode);
+        if (intent != null) {
+            request.put("intent", intent);
+        }
+        if (confidence != null) {
+            request.put("confidence", confidence);
+        }
 
         Flux<String> sseFlux = webClient.post()
                 .uri("/api/chat/stream")

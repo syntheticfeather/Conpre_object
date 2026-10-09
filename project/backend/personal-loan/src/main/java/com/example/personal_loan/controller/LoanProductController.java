@@ -31,6 +31,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -58,6 +59,16 @@ public class LoanProductController {
         log.info("/loan-products/user/search api success called with name: {}", name);
         List<UserGetProductResponse> results = loanProductService.searchProductsByName(name);
         return ResponseEntity.ok(ApiResult.success(results));
+    }
+
+    @GetMapping(value = "/recommend", produces = "application/json")
+    @Operation(summary = "推荐贷款产品", description = "基于用户信用分规则打分推荐 top-3 贷款产品")
+    public ResponseEntity<ApiResult<List<UserGetProductResponse>>> recommendProducts(
+            HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        log.info("/loan-products/recommend success called for user {}", userId);
+        List<UserGetProductResponse> recommended = loanProductService.recommendProducts(userId);
+        return ResponseEntity.ok(ApiResult.success(recommended));
     }
 
     // ========== 管理端 ==========

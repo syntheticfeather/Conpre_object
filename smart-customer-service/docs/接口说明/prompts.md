@@ -1,5 +1,51 @@
 # 提示词管理
 
+Phase 1 起提示词按 **category 分档管理**，同 category 多版本互斥激活（仅一条 `is_active=true`）。系统提示词每次对话实时组装，修改/激活/停用/删除激活文档后**立即生效**（无需重启）。
+
+## category 一览
+
+| category | 用途 | content 主要字段 |
+| --- | --- | --- |
+| base | 全局角色定义 + 语气 + 兜底业务规则 | role_definition、business_rules、tone_style |
+| general | 低置信/未知意图时的通用业务规则 | business_rules |
+| query_status / calculate / list_products / apply_loan / complaint / consult | 6 个意图专属片段（意图置信度 ≥0.6 时注入） | business_rules（本意图特有规则）、few_shots（少样本）、output_extra |
+
+content 各字段均为可选，按文档类型选用；意图片段字段的详细写法参考 [提示词精细化.md](../提示词精细化.md) 3.1 节。
+
+## 字段说明
+
+### 提示词文档顶层字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| prompt_id | string | 系统生成 | 提示词唯一标识（UUID；种子文档使用固定 id 如 `prompt_calculate_default`），创建后不可修改 |
+| name | string | 是 | 展示名称 |
+| category | string | 否 | 分档标识，创建时缺省为 `base`；仅允许上表中的 8 个值，非法值返回 400 |
+| is_active | boolean | 系统默认 | 是否为该 category 当前激活版本；新建默认 false；同一 category 至多一条 true，激活时其余自动停用 |
+| version | string | 系统生成 | 版本号，格式 `主版本.次版本`（如 1.0）；创建时缺省按同 category 激活版本自增，content 实际变更时自动 +0.1 |
+| content | object | 是 | 提示词内容，子字段见下表；创建时可传空对象 `{}` |
+| created_at | datetime | 系统生成 | 创建时间，格式 `YYYY-MM-DD HH:mm:ss` |
+| updated_at | datetime | 系统生成 | 最近更新时间，格式 `YYYY-MM-DD HH:mm:ss` |
+
+### content 子字段（均为可选）
+
+| 字段 | 类型 | 适用文档 | 说明 |
+| --- | --- | --- | --- |
+| role_definition | string | base | L1 角色层：AI 身份定义 |
+| business_rules | string | base / general / 意图片段 | 业务规则：base 为兜底通用规则，general 为通用规则，意图片段只写**本意图特有规则**（建议 ≤300 字，措辞用"可能"） |
+| tone_style | string | base | L4 输出层：回复语气与风格 |
+| few_shots | array&lt;object&gt; | 意图片段 | 本场景少样本示例，元素结构见下表 |
+| output_extra | string | 意图片段 | L4 输出层：该意图的附加输出要求（如利率口径、免责提示） |
+
+### few_shots 元素字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| input | string | 是 | 示例用户消息 |
+| expect | string | 是 | 期望的处理做法（如应调用的工具、应答边界） |
+
+---
+
 ## 1. 获取所有提示词
 
 网址：/api/prompts
@@ -8,23 +54,39 @@
 
 返回数据
 
-``` json
+```json
 {
   "code": 200,
   "data": [
     {
-      "prompt_id": "default_prompt",
-      "name": "默认贷款智能客服提示词",
-      "category": "loan_customer_service",
+      "prompt_id": "prompt_base_default",
+      "name": "基础全局提示词（L1角色/L4语气/兜底规则）",
+      "category": "base",
       "is_active": true,
       "version": "1.0",
       "content": {
-        "role_definition": "你是一个友好的贷款智能客服，能回答用户有关贷款的问题。",
-        "business_rules": "1. 当用户提出具体问题时，你的首要任务是直接回答该问题。\n2. 只有在用户首次打招呼（如单独的'你好'）且没有提出具体问题时，才使用欢迎语\n3. 如果用户的消息包含具体问题，回答该问题而不是使用欢迎语。\n4. **贷款申请状态**：如果用户让你帮忙查询进度或状态，使用 `query_application_status` 工具。\n5. **还款计算**：如果用户让你帮忙计算月供、利息或计划，使用 `calculate_repayment` 工具。\n6. **通用知识问答**：对于所有其他问题（包括产品规则、政策、常见问题、如何操作等），必须先使用 `search_knowledge` 工具在知识库中检索相关信息，基于检索结果回答。\n   - *注意：不要假设知识库内容，必须显式调用此工具获取最新信息。*\n7. **未知问题处理**：如果 `search_knowledge` 返回无结果，友好地回答用户暂无相关信息，引导用户转向人工客服，不能编造信息。\n8. **获取实时信息**：如果用户询问当前或现在最新的外部信息，使用 `search_web` 工具搜索网络。\n9. **拒绝行为**：严禁编造数据，严禁提及Token等技术术语，严禁提及个人隐私信息如手机号、身份证号、银行卡号等。",
-        "tone_style": "语气友好、专业，简洁明了。调用工具时，直接调用，不要询问用户是否需要调用。"
+        "role_definition": "你是一个友好、专业的贷款智能客服，负责回答用户关于贷款产品、申请、还款等方面的问题。",
+        "business_rules": "1. 当用户提出具体问题时，首要任务是直接回答该问题……",
+        "tone_style": "语气友好、专业，简洁明了；分点陈述复杂内容；不使用绝对化表述。"
       },
-      "created_at": "2026-05-09 08:35:39",
-      "updated_at": "2026-05-09 08:35:39"
+      "created_at": "2026-09-22 20:58:12",
+      "updated_at": "2026-09-22 20:58:12"
+    },
+    {
+      "prompt_id": "prompt_calculate_default",
+      "name": "意图片段-还款计算",
+      "category": "calculate",
+      "is_active": true,
+      "version": "1.0",
+      "content": {
+        "business_rules": "- 用户可能需要月供、利息、总还款额、还款计划等具体数字，必须调用 `calculate_repayment` 工具，严禁心算或估算……",
+        "few_shots": [
+          { "input": "帮我算一下20万36期4.5%等额本息总利息", "expect": "参数齐全，直接调用 calculate_repayment，不从知识库找答案" }
+        ],
+        "output_extra": "展示利率统一使用年化利率口径；数字结果后附“测算结果仅供参考，实际以合同约定为准”。"
+      },
+      "created_at": "2026-09-22 20:58:12",
+      "updated_at": "2026-09-22 20:58:12"
     }
   ],
   "message": "获取提示词列表成功"
@@ -37,89 +99,114 @@
 
 请求方式：POST
 
-请求参数说明：
+请求参数说明（JSON body）：
 
-| 参数 | 类型 | 描述 | 是否必填 | 示例 |
-| --- | --- | --- | --- | --- |
-| name | string | 提示词名称 | 是 | 见示例 |
-| version | string | 版本号 | 否，若不填会基于当前使用的提示词自增 | "" |
-| role_definition | string | 角色定义 | 是 | 见请求示例 |
-| business_rules | string | 业务规则 | 是 | 见请求示例 |
-| tone_style | string | 语气风格 | 是 | 见请求示例 |
+| 参数 | 类型 | 描述 | 是否必填 |
+| --- | --- | --- | --- |
+| name | string | 提示词名称 | 是 |
+| category | string | 分类，默认 `base`；允许值：base / general / query_status / calculate / list_products / apply_loan / complaint / consult，非法值返回 400 | 否 |
+| version | string | 版本号；不填则基于同 category 当前激活版本自增（如 1.0 → 1.1），该 category 无激活文档时为 1.0 | 否 |
+| content | object | 提示词内容，字段见文首 category 一览表；均为可选 | 是（可为空对象） |
 
-请求示例（网址）：/api/prompts?name=测试提示词名称
-
-若有version参数：/api/prompts?name=测试提示词名称&version=2.0
-
-请求示例（请求体）
+请求示例（新建意图片段）
 
 ```json
 {
-  "role_definition": "测试的角色定位",
-  "business_rules": "1. 优先解决用户的核心问题\n2. 遇到无法处理的问题时，转接人工客服\n3. 保持礼貌和专业的服务态度\n4. 不泄露公司机密信息\n5. 遵守数据隐私保护规定",
-  "tone_style": "专业、严谨、清晰，使用技术术语但配合通俗解释，避免歧义，逻辑性强"
+  "name": "意图片段-投诉（测试版）",
+  "category": "complaint",
+  "content": {
+    "business_rules": "- 先共情安抚，再处理问题\n- 不承诺赔偿，争议规则先检索知识库",
+    "few_shots": [
+      { "input": "提前还款扣了我违约金，这不合理吧", "expect": "先安抚，再核对违约金规则，不承诺退款" }
+    ],
+    "output_extra": "全程使用安抚性措辞，避免争辩。"
+  }
 }
 ```
 
 返回数据
 
-``` json
+```json
 {
   "code": 201,
   "data": {
-    "prompt_id": "ff98c2d5-a1da-490c-890e-d878807bdb32",
-    "name": "测试提示词名称",
-    "category": "customer_service",
+    "prompt_id": "9c6d193d-dc2a-4824-8692-10192976794f",
+    "name": "意图片段-投诉（测试版）",
+    "category": "complaint",
     "is_active": false,
-    "version": "2.0",
+    "version": "1.1",
     "content": {
-      "role_definition": "测试的角色定位",
-      "business_rules": "1. 优先解决用户的核心问题\n2. 遇到无法处理的问题时，转接人工客服\n3. 保持礼貌和专业的服务态度\n4. 不泄露公司机密信息\n5. 遵守数据隐私保护规定",
-      "tone_style": "专业、严谨、清晰，使用技术术语但配合通俗解释，避免歧义，逻辑性强"
+      "role_definition": "",
+      "business_rules": "- 先共情安抚，再处理问题\n- 不承诺赔偿，争议规则先检索知识库",
+      "tone_style": "",
+      "few_shots": [
+        {
+          "input": "提前还款扣了我违约金，这不合理吧",
+          "expect": "先安抚，再核对违约金规则，不承诺退款"
+        }
+      ],
+      "output_extra": "全程使用安抚性措辞，避免争辩。"
     },
-    "created_at": "2026-05-11 11:21:55",
-    "updated_at": "2026-05-11 11:21:55"
+    "created_at": "2026-09-23 20:12:21",
+    "updated_at": "2026-09-23 20:12:21"
   },
   "message": "创建提示词成功"
 }
 ```
 
+说明：新建文档默认 `is_active=false`，需调用启用接口（见第 7 节）激活；激活后同 category 旧文档自动停用。
+
 ## 3. 获取启用的提示词
 
-网址：/api/prompts/active
+网址：/api/prompts/active?category={category}
 
 请求方式：GET
 
-返回数据
+请求参数说明：
+
+| 参数 | 类型 | 描述 | 是否必填 |
+| --- | --- | --- | --- |
+| category | string | 提示词分类，默认 `base` | 否 |
+
+请求示例（网址）：/api/prompts/active?category=complaint
+
+返回数据（该 category 无激活文档时返回 404）：
 
 ```json
 {
   "code": 200,
   "data": {
-    "prompt_id": "default_prompt",
-    "name": "默认贷款智能客服提示词",
-    "category": "loan_customer_service",
+    "prompt_id": "prompt_complaint_default",
+    "name": "意图片段-投诉",
+    "category": "complaint",
     "is_active": true,
     "version": "1.0",
     "content": {
-      "role_definition": "你是一个友好的贷款智能客服，能回答用户有关贷款的问题。",
-      "business_rules": "1. 当用户提出具体问题时，你的首要任务是直接回答该问题。\n2. 只有在用户首次打招呼（如单独的'你好'）且没有提出具体问题时，才使用欢迎语\n3. 如果用户的消息包含具体问题，回答该问题而不是使用欢迎语。\n4. **贷款申请状态**：如果用户让你帮忙查询进度或状态，使用 `query_application_status` 工具。\n5. **还款计算**：如果用户让你帮忙计算月供、利息或计划，使用 `calculate_repayment` 工具。\n6. **通用知识问答**：对于所有其他问题（包括产品规则、政策、常见问题、如何操作等），必须先使用 `search_knowledge` 工具在知识库中检索相关信息，基于检索结果回答。\n   - *注意：不要假设知识库内容，必须显式调用此工具获取最新信息。*\n7. **未知问题处理**：如果 `search_knowledge` 返回无结果，友好地回答用户暂无相关信息，引导用户转向人工客服，不能编造信息。\n8. **获取实时信息**：如果用户询问当前或现在最新的外部信息，使用 `search_web` 工具搜索网络。\n9. **拒绝行为**：严禁编造数据，严禁提及Token等技术术语，严禁提及个人隐私信息如手机号、身份证号、银行卡号等。",
-      "tone_style": "语气友好、专业，简洁明了。调用工具时，直接调用，不要询问用户是否需要调用。"
+      "role_definition": "",
+      "business_rules": "- 用户可能带有不满情绪，先共情安抚（如“非常理解您的心情”），再处理问题；不与用户争辩、不推卸责任。\n- 不承诺赔偿、不代表公司认定责任；费用/违约金争议先用 `search_knowledge` 核对规则再回应。\n- 需核实身份或订单时，引导用户通过安全渠道提供，不在对话中索取敏感信息。\n- 达到升级条件（强烈不满、重复投诉、涉及资金损失）时，明确引导人工客服或投诉热线。",
+      "tone_style": "",
+      "few_shots": [
+        {
+          "input": "提前还款扣了我违约金，这不合理吧",
+          "expect": "先安抚，再核对违约金规则说明，不承诺退款，必要时引导人工"
+        }
+      ],
+      "output_extra": ""
     },
-    "created_at": "2026-05-09 08:35:39",
-    "updated_at": "2026-05-10 21:59:25"
+    "created_at": "2026-09-23 12:00:35",
+    "updated_at": "2026-09-23 12:00:35"
   },
   "message": "获取激活提示词成功"
 }
 ```
 
-## 4. 根据id获取提示词
+## 4. 根据 id 获取提示词
 
 网址：/api/prompts/{prompt_id}
 
 请求方式：GET
 
-返回数据
+返回数据：结构同第 1 节单个元素；不存在时返回 404。
 
 ## 5. 修改提示词
 
@@ -127,28 +214,23 @@
 
 请求方式：PUT
 
-请求参数说明：
+请求参数说明（JSON body，均可选，但至少提供一项）：
 
-| 字段名 | 类型 | 是否必填 | 说明 | 示例值 |
-| --- | --- | --- | --- | --- |
-| prompt_id | 提示词id | 是 | 提示词的唯一标识 | default_prompt |
-| name | 提示词名称 | 否 | 修改后的提示词的名称 | default_prompt_after_change |
-| content | 提示词内容 | 否 | 修改后的提示词的内容 | {"role_definition": "", "business_rules": "", "tone_style": "回答友好且专业"} |
-| is_active | 是否启用 | 否 | 是否启用该提示词 | true |
+| 字段名 | 类型 | 是否必填 | 说明 |
+| --- | --- | --- | --- |
+| name | string | 否 | 新名称；空字符串视为不修改 |
+| content | object | 否 | 部分更新：仅传需要修改的字段（role_definition / business_rules / tone_style / few_shots / output_extra），**空字符串字段视为不修改**；内容有实际变更时版本号自动自增 |
+| is_active | boolean | 否 | 改为 true 时激活，同 category 其他文档自动停用 |
 
-请求示例（网址）：/api/prompts/default_prompt
+请求示例（网址）：/api/prompts/prompt_calculate_default
 
 请求示例（请求体）：
 
 ```json
 {
-  "name": "default_prompt_after_change",
   "content": {
-    "role_definition": "",
-    "business_rules": "",
-    "tone_style": "回答友好且专业"
-  },
-  "is_active": true
+    "output_extra": "展示利率统一使用年化利率口径。"
+  }
 }
 ```
 
@@ -162,13 +244,15 @@
 }
 ```
 
+说明：若修改的是激活中的文档（或本次将其激活），组装缓存立即失效，改动即时生效，无需重启。
+
 ## 6. 删除提示词
 
 网址：/api/prompts/{prompt_id}
 
 请求方式：DELETE
 
-请求示例（网址）：/api/prompts/default_prompt
+请求示例（网址）：/api/prompts/prompt_calculate_default
 
 返回数据
 
@@ -176,82 +260,39 @@
 {
   "code": 200,
   "data": {
-    "prompt_id": "default_prompt"
+    "prompt_id": "prompt_calculate_default"
   },
   "message": "删除提示词成功"
 }
 ```
 
+说明：删除激活中的文档同样会立即清空组装缓存。
+
 ## 7. 启用提示词
 
-网址：/api/prompts/{prompt_id}/active
+网址：/api/prompts/{prompt_id}/activate
 
 请求方式：PUT
 
-请求参数说明：
+请求示例（网址）：/api/prompts/prompt_calculate_default/activate
 
-| 字段名 | 类型 | 是否必填 | 说明 | 示例值 |
-| --- | --- | --- | --- | --- |
-| prompt_id | 提示词id | 是 | 提示词的唯一标识 | default_prompt |
+返回数据：结构同第 1 节单个元素（返回激活后的文档，`is_active=true`）。
 
-请求示例（网址）：/api/prompts/default_prompt/active
-
-返回数据
-
-```json
-{
-  "code": 200,
-  "data": {
-    "prompt_id": "default_prompt",
-    "name": "默认贷款智能客服提示词",
-    "category": "loan_customer_service",
-    "is_active": true,
-    "version": "1.0",
-    "content": {
-      "role_definition": "你是一个友好的贷款智能客服，能回答用户有关贷款的问题。",
-      "business_rules": "1. 当用户提出具体问题时，你的首要任务是直接回答该问题。\n2. 只有在用户首次打招呼（如单独的'你好'）且没有提出具体问题时，才使用欢迎语\n3. 如果用户的消息包含具体问题，回答该问题而不是使用欢迎语。\n4. **贷款申请状态**：如果用户让你帮忙查询进度或状态，使用 `query_application_status` 工具。\n5. **还款计算**：如果用户让你帮忙计算月供、利息或计划，使用 `calculate_repayment` 工具。\n6. **通用知识问答**：对于所有其他问题（包括产品规则、政策、常见问题、如何操作等），必须先使用 `search_knowledge` 工具在知识库中检索相关信息，基于检索结果回答。\n   - *注意：不要假设知识库内容，必须显式调用此工具获取最新信息。*\n7. **未知问题处理**：如果 `search_knowledge` 返回无结果，友好地回答用户暂无相关信息，引导用户转向人工客服，不能编造信息。\n8. **获取实时信息**：如果用户询问当前或现在最新的外部信息，使用 `search_web` 工具搜索网络。\n9. **拒绝行为**：严禁编造数据，严禁提及Token等技术术语，严禁提及个人隐私信息如手机号、身份证号、银行卡号等。",
-      "tone_style": "语气友好、专业，简洁明了。调用工具时，直接调用，不要询问用户是否需要调用。"
-    },
-    "created_at": "2026-05-09 08:35:39",
-    "updated_at": "2026-05-10 21:59:25"
-  },
-  "message": "激活提示词成功"
-}
-```
+说明：激活后同 category 其他文档自动停用（互斥）；组装缓存立即失效。
 
 ## 8. 禁用提示词
 
-网址：/api/prompts/{prompt_id}/deactive
+网址：/api/prompts/{prompt_id}/deactivate
 
 请求方式：PUT
 
-请求参数说明：
+请求示例（网址）：/api/prompts/prompt_calculate_default/deactivate
 
-| 字段名 | 类型 | 是否必填 | 说明 | 示例值 |
-| --- | --- | --- | --- | --- |
-| prompt_id | 提示词id | 是 | 提示词的唯一标识 | default_prompt |
+返回数据：结构同第 1 节单个元素（返回停用后的文档，`is_active=false`）。
 
-请求示例（网址）：/api/prompts/default_prompt/deactive
+## 错误码
 
-返回数据
-
-``` json
-{
-  "code": 200,
-  "data": {
-    "prompt_id": "default_prompt",
-    "name": "默认贷款智能客服提示词",
-    "category": "loan_customer_service",
-    "is_active": false,
-    "version": "1.0",
-    "content": {
-      "role_definition": "你是一个友好的贷款智能客服，能回答用户有关贷款的问题。",
-      "business_rules": "1. 当用户提出具体问题时，你的首要任务是直接回答该问题。\n2. 只有在用户首次打招呼（如单独的'你好'）且没有提出具体问题时，才使用欢迎语\n3. 如果用户的消息包含具体问题，回答该问题而不是使用欢迎语。\n4. **贷款申请状态**：如果用户让你帮忙查询进度或状态，使用 `query_application_status` 工具。\n5. **还款计算**：如果用户让你帮忙计算月供、利息或计划，使用 `calculate_repayment` 工具。\n6. **通用知识问答**：对于所有其他问题（包括产品规则、政策、常见问题、如何操作等），必须先使用 `search_knowledge` 工具在知识库中检索相关信息，基于检索结果回答。\n   - *注意：不要假设知识库内容，必须显式调用此工具获取最新信息。*\n7. **未知问题处理**：如果 `search_knowledge` 返回无结果，友好地回答用户暂无相关信息，引导用户转向人工客服，不能编造信息。\n8. **获取实时信息**：如果用户询问当前或现在最新的外部信息，使用 `search_web` 工具搜索网络。\n9. **拒绝行为**：严禁编造数据，严禁提及Token等技术术语，严禁提及个人隐私信息如手机号、身份证号、银行卡号等。",
-      "tone_style": "语气友好、专业，简洁明了。调用工具时，直接调用，不要询问用户是否需要调用。"
-    },
-    "created_at": "2026-05-09 08:35:39",
-    "updated_at": "2026-05-10 21:57:51"
-  },
-  "message": "停用提示词成功"
-}
-```
+| HTTP | 场景 |
+| --- | --- |
+| 400 | category 不在白名单；未提供任何更新数据 |
+| 404 | 提示词不存在；该 category 无激活提示词 |

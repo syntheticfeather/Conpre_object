@@ -39,6 +39,7 @@ import com.example.personal_loan.mapper.UserMapper;
 import com.example.personal_loan.service.LocalFileStorageService;
 import com.example.personal_loan.service.UserService;
 import com.example.personal_loan.utils.CalculateUtil;
+import com.example.personal_loan.service.CreditScoreCalculator;
 import com.example.personal_loan.utils.JwtUtil;
 import com.example.personal_loan.utils.RedisUtil;
 
@@ -77,6 +78,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private CalculateUtil calculateUtil;
+
+    @Autowired
+    private CreditScoreCalculator creditScoreCalculator;
 
     // 文件大小限制：5MB
     private static final long MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -255,7 +259,8 @@ public class UserServiceImpl implements UserService {
         return new UserSelfResponse(
                 user.getId(),
                 user.getUserName(),
-                "/uploads/"+user.getAvatar()
+                "/uploads/"+user.getAvatar(),
+                creditScoreCalculator.calculate(userId)
         );
     }
 

@@ -1,12 +1,18 @@
 # smart-customer-service/api/prompt_routes.py
-from fastapi import APIRouter, HTTPException
-from api.models import PromptContent, PromptUpdate, PromptResponse, ResponseModel
+from fastapi import APIRouter, HTTPException, Query
+from api.models import PromptCreate, PromptUpdate, PromptResponse, ResponseModel
 from utils.mongodb_client import mongodb_client
+from agent.prompts import (
+    BASE_CATEGORY, GENERAL_CATEGORY, INTENT_CATEGORIES, invalidate_prompt_cache,
+)
 from typing import List
 import datetime
 from datetime import datetime
 
 router = APIRouter(prefix="/api/prompts", tags=["prompts"])
+
+# 允许建档/管理的 category 白名单
+ALLOWED_CATEGORIES = {BASE_CATEGORY, GENERAL_CATEGORY} | INTENT_CATEGORIES
 
 @router.get("", response_model=ResponseModel[List[PromptResponse]])
 def get_prompts():
@@ -31,12 +37,12 @@ def get_prompts():
         raise HTTPException(status_code=500, detail=f"获取提示词列表失败: {str(e)}")
 
 @router.get("/active", response_model=ResponseModel[PromptResponse])
-def get_active_prompt():
-    """获取当前激活的提示词"""
+def get_active_prompt(category: str = Query(BASE_CATEGORY, description="提示词分类")):
+    """获取指定 category 当前激活的提示词（默认 base）"""
     try:
-        prompt = mongodb_client.get_active_prompt()
+        prompt = mongodb_client.get_active_prompt(category=category)
         if not prompt:
-            raise HTTPException(status_code=404, detail="未找到激活的提示词")
+            raise HTTPException(status_code=404, detail=f"未找到 category={category} 的激活提示词")
         prompt_response = PromptResponse(
             prompt_id=prompt.get("prompt_id"),
             name=prompt.get("name"),
@@ -77,34 +83,41 @@ def get_prompt(prompt_id: str):
         raise HTTPException(status_code=500, detail=f"获取提示词失败: {str(e)}")
 
 @router.post("", response_model=ResponseModel[PromptResponse])
-def create_prompt(name: str, content: PromptContent, version: str = None):
-    """创建新的提示词"""
+def create_prompt(body: PromptCreate):
+    """创建新的提示词（按 category 建档；新建默认未激活）"""
     try:
         import uuid
-        
-        # 如果 version 为 None 或空字符串，查找现有激活的提示词版本号并加1
+
+        category = (body.category or BASE_CATEGORY).strip().lower()
+        if category not in ALLOWED_CATEGORIES:
+            raise HTTPException(
+                status_code=400,
+                detail=f"非法 category={category}，允许值：{sorted(ALLOWED_CATEGORIES)}"
+            )
+
+        # version 缺省时，按同 category 激活版本递增
+        version = body.version
         if not version:
-            # 获取激活的提示词
-            active_prompt = mongodb_client.get_active_prompt()
+            active_prompt = mongodb_client.get_active_prompt(category=category)
             if active_prompt:
                 current_version = active_prompt.get("version", "1.0")
                 major, minor = map(int, current_version.split("."))
                 version = f"{major}.{minor + 1}"
             else:
                 version = "1.0"
-        
-        # 构造提示词数据
+
+        # 构造提示词数据（exclude_none 保持旧文档不出现多余空字段）
         prompt_data = {
             "prompt_id": str(uuid.uuid4()),
-            "name": name,
-            "category": "customer_service", # 当前默认
-            "is_active": False,  # 默认禁用
+            "name": body.name,
+            "category": category,
+            "is_active": False,  # 默认禁用，需显式激活（激活时同 category 互斥）
             "version": version,
-            "content": content.model_dump(),
+            "content": body.content.model_dump(exclude_none=True),
             "created_at": datetime.now(),
             "updated_at": datetime.now()
         }
-        
+
         # 创建提示词
         result = mongodb_client.create_prompt(prompt_data)
         if not result:
@@ -171,7 +184,11 @@ def update_prompt(prompt_id: str, prompt_update: PromptUpdate):
         result = mongodb_client.update_prompt(prompt_id, update_data)
         if not result:
             raise HTTPException(status_code=500, detail="更新提示词失败")
-        
+
+        # 若改的是激活文档（内容或激活态），立即清空组装缓存，不等 TTL
+        if prompt.get("is_active") or update_data.get("is_active"):
+            invalidate_prompt_cache()
+
         return {"code": 200, "data": None, "message": "更新提示词成功"}
     except HTTPException:
         raise
@@ -187,11 +204,14 @@ def activate_prompt(prompt_id: str):
         if not prompt:
             raise HTTPException(status_code=404, detail="提示词不存在")
         
-        # 激活提示词
+        # 激活提示词（update_prompt 内部已做同 category 互斥停用）
         result = mongodb_client.update_prompt(prompt_id, {"is_active": True})
         if not result:
             raise HTTPException(status_code=500, detail="激活提示词失败")
-        
+
+        # 立即生效，不等 TTL
+        invalidate_prompt_cache()
+
         # 获取激活后的提示词
         activated_prompt = mongodb_client.get_prompt_by_id(prompt_id)
         prompt_response = PromptResponse(
@@ -223,6 +243,7 @@ def deactivate_prompt(prompt_id: str):
         result = mongodb_client.deactivate_prompt(prompt_id)
         if not result:
             raise HTTPException(status_code=500, detail="停用提示词失败")
+        invalidate_prompt_cache()
         
         # 获取停用后的提示词
         deactivated_prompt = mongodb_client.get_prompt_by_id(prompt_id)
@@ -252,10 +273,15 @@ def delete_prompt(prompt_id: str):
             raise HTTPException(status_code=404, detail="提示词不存在")
         
         # 删除提示词
+        was_active = bool(prompt.get("is_active"))
         result = mongodb_client.get_prompts_collection().delete_one({"prompt_id": prompt_id})
         if result.deleted_count == 0:
             raise HTTPException(status_code=500, detail="删除提示词失败")
-        
+
+        # 删除的若是激活文档，清空组装缓存（否则最长 TTL 内仍组装已删除文档）
+        if was_active:
+            invalidate_prompt_cache()
+
         return ResponseModel(code=200, data={"prompt_id": prompt_id}, message="删除提示词成功")
     except HTTPException:
         raise

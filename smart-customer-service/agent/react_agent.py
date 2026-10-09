@@ -2,7 +2,6 @@
 """ReAct Agent — 纯 while 循环，不做 Plan/Reflection"""
 
 import os, json, logging
-from datetime import datetime
 from typing import AsyncGenerator
 
 from dotenv import load_dotenv
@@ -15,6 +14,7 @@ from agent.base_agent import BaseAgent
 from agent.prompts import get_system_prompt
 from tools.tool_manager import tool_manager
 from utils.context import set_token
+from utils.context_budget import ContextBudgetManager
 from utils.mongodb_client import mongodb_client
 
 load_dotenv()
@@ -40,7 +40,6 @@ class ReactAgent(BaseAgent):
         )
 
         tools = tool_manager.get_all_tools()
-        system_prompt_template = get_system_prompt()
 
         prompt = ChatPromptTemplate.from_messages([
             ("system", "{system_prompt}"),
@@ -53,7 +52,8 @@ class ReactAgent(BaseAgent):
         self.agent_executor = AgentExecutor(
             agent=agent, tools=tools, verbose=True, return_intermediate_steps=True
         )
-        self.system_prompt_template = system_prompt_template
+        # 注意：系统提示词不在构造期固化——每次 chat 按意图实时组装，
+        # 管理后台改提示词后最多 TTL(60s) 生效，无需重启进程。
 
     # ========== 核心 ==========
 
@@ -63,29 +63,29 @@ class ReactAgent(BaseAgent):
         session_id: str,
         user_id: str = None,
         token: str = None,
+        intent: str = None,
+        confidence: float = 1.0,
     ) -> AsyncGenerator[str, None]:
         try:
             if token:
                 set_token(token)
 
-            # 恢复历史（新方案：chat_messages 集合分页查询，返回最新 N 条且已升序）
+            # 恢复历史（chat_messages 集合分页查询，返回最新 N 条且已升序）
+            # 注入前经 ContextBudgetManager 按 token 预算分层处理：
+            #   < 60% 原样；60%-80% 最近 5 条+摘要；> 80% 最近 3 条+摘要
+            # 摘要每次实时生成（on-the-fly），不落库；失败退化为最近 N 条原文。
             processed_history = []
             if session_id:
                 history = mongodb_client.get_messages_paginated(
                     session_id, limit=10
                 ).get("items", [])
-                for msg in history:
-                    if msg["role"] == "user":
-                        processed_history.append(HumanMessage(content=msg["content"]))
-                    elif msg["role"] == "assistant":
-                        processed_history.append(AIMessage(content=msg["content"]))
+                budget_mgr = ContextBudgetManager()
+                processed_history = await budget_mgr.build_context(history)
 
-            # 填系统提示
-            current_date = datetime.now().strftime("%Y年%m月%d日 %H:%M:%S")
+            # 每次请求实时组装系统提示词（五层架构；热更新；含意图专属片段）
             tools = tool_manager.get_all_tools()
-            tools_desc = "\n".join(f"- `{t.name}`: {t.description}" for t in tools)
-            filled_system_prompt = self.system_prompt_template.format(
-                current_date=current_date, tools_description=tools_desc
+            filled_system_prompt = get_system_prompt(
+                intent=intent, confidence=confidence, tools=tools
             )
 
             input_data = {

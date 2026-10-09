@@ -102,7 +102,14 @@ async def chat_stream(body: ChatRequest, credentials: HTTPAuthorizationCredentia
     agent_mode = body.agent_mode or "react"
     agent = get_chat_agent(agent_mode)
 
-    logger.info(f"开始处理请求 session={session_id} mode={agent_mode} msg={message[:30]}")
+    # Router 分类结果由 Java 原样透传（缺省/低置信时提示词按 general 组装）
+    intent = body.intent
+    confidence = body.confidence if body.confidence is not None else 1.0
+
+    logger.info(
+        f"开始处理请求 session={session_id} mode={agent_mode} "
+        f"intent={intent} confidence={confidence} msg={message[:30]}"
+    )
 
     # 异步生成事件流
     async def event_generator():
@@ -115,7 +122,10 @@ async def chat_stream(body: ChatRequest, credentials: HTTPAuthorizationCredentia
             async with asyncio.timeout(120):
             
                 # 流式接收与分发
-                async for chunk in agent.chat(message, session_id, user_id, token):
+                async for chunk in agent.chat(
+                    message, session_id, user_id, token,
+                    intent=intent, confidence=confidence,
+                ):
                     # 尝试解析 JSON 格式的事件
                     try:
                         event_data = json.loads(chunk)
