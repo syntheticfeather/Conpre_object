@@ -186,10 +186,10 @@
         </el-card>
       </el-tab-pane>
     </el-tabs>
-  </div>
 
-  <button class="chat-fab" @click="chatVisible = true" title="智能对话调试">💬</button>
-  <ChatDialog v-model="chatVisible" />
+    <button class="chat-fab" @click="chatVisible = true" title="智能对话调试">💬</button>
+    <ChatDialog v-model="chatVisible" />
+  </div>
 </template>
 
 <script setup>

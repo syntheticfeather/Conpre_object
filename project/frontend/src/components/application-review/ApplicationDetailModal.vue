@@ -11,27 +11,25 @@
     </div>
 
     <div v-loading="loading">
-      <!-- ========== loan 分支：严格对齐图示 ========== -->
-      <template v-if="reviewType !== 'postpone'">
-        <!-- 顶栏：标题 + 右侧操作按钮（待审核态）或状态 pill（已处理态） -->
-        <div class="loan-topbar">
-          <span class="loan-topbar__title">贷款信息</span>
-          <div class="loan-topbar__actions">
-            <template v-if="isPending">
-              <button class="btn-reject" @click="handleSubmit(false)">不通过</button>
-              <button class="btn-pass" @click="handleSubmit(true)">通过</button>
-            </template>
-            <template v-else>
-              <span class="status-pill" :class="statusMeta.cls">
-                <i class="status-pill__dot" />
-                {{ statusMeta.text }}
-              </span>
-            </template>
-          </div>
+      <!-- ========== 顶栏：loan=贷款信息 / postpone=项目信息，右侧按钮或状态 pill ========== -->
+      <div class="loan-topbar">
+        <span class="loan-topbar__title">{{ reviewType === 'postpone' ? '项目信息' : '贷款信息' }}</span>
+        <div class="loan-topbar__actions">
+          <template v-if="isPending">
+            <button class="btn-reject" @click="handleSubmit(false)">不通过</button>
+            <button class="btn-pass" @click="handleSubmit(true)">通过</button>
+          </template>
+          <template v-else>
+            <span class="status-pill" :class="detailStatusMeta.cls">
+              <i class="status-pill__dot" />
+              {{ detailStatusMeta.text }}
+            </span>
+          </template>
         </div>
+      </div>
 
-        <!-- 3×2 九宫格：严格对齐字段清单 -->
-        <section class="loan-grid">
+      <!-- ========== loan 分支：贷款申请 3×2 九宫格 ========== -->
+      <section v-if="reviewType !== 'postpone'" class="loan-grid">
           <div class="loan-tile">
             <div class="loan-tile__icon"><span class="iconfont icon-chanpin"></span></div>
             <div class="loan-tile__body">
@@ -76,9 +74,77 @@
           </div>
         </section>
 
+        <!-- ========== postpone 分支：项目信息（订单视角 3×2 九宫格，数据取自关联订单） ========== -->
+        <section v-else class="loan-grid">
+          <div class="loan-tile">
+            <div class="loan-tile__icon"><span class="iconfont icon-chanpin"></span></div>
+            <div class="loan-tile__body">
+              <div class="loan-tile__label">贷款项目</div>
+              <div class="loan-tile__value">{{ orderProductName }}</div>
+            </div>
+          </div>
+          <div class="loan-tile">
+            <div class="loan-tile__icon"><span class="iconfont icon-jine"></span></div>
+            <div class="loan-tile__body">
+              <div class="loan-tile__label">贷款金额</div>
+              <div class="loan-tile__value">{{ formatCurrency(orderInfo?.loanAmount) }}</div>
+            </div>
+          </div>
+          <div class="loan-tile">
+            <div class="loan-tile__icon"><span class="iconfont icon-riqiqishu"></span></div>
+            <div class="loan-tile__body">
+              <div class="loan-tile__label">当前期数</div>
+              <div class="loan-tile__value">{{ orderInfo?.currentTerm ?? '—' }} 期</div>
+            </div>
+          </div>
+          <div class="loan-tile">
+            <div class="loan-tile__icon"><span class="iconfont icon-jiekuanqishu"></span></div>
+            <div class="loan-tile__body">
+              <div class="loan-tile__label">总期数</div>
+              <div class="loan-tile__value">{{ orderInfo?.term ?? '—' }} 期</div>
+            </div>
+          </div>
+          <div class="loan-tile">
+            <div class="loan-tile__icon"><span class="iconfont icon-huankuan"></span></div>
+            <div class="loan-tile__body">
+              <div class="loan-tile__label">已还金额</div>
+              <div class="loan-tile__value">{{ formatCurrency(orderInfo?.repaidAmount) }}</div>
+            </div>
+          </div>
+          <div class="loan-tile">
+            <div class="loan-tile__icon"><span class="iconfont icon-complete"></span></div>
+            <div class="loan-tile__body">
+              <div class="loan-tile__label">订单状态</div>
+              <div class="loan-tile__value" :class="orderStatusClass">{{ orderInfo?.status || '—' }}</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 延期申请元信息条：申请ID / 申请延期期数 / 申请时间 / 审核时间 -->
+        <div v-if="reviewType === 'postpone'" class="loan-postpone-meta">
+          <div class="loan-postpone-meta__item">
+            <span class="loan-postpone-meta__label">申请ID</span>
+            <span class="loan-postpone-meta__value">{{ postponeDetail?.id || '—' }}</span>
+          </div>
+          <div class="loan-postpone-meta__item">
+            <span class="loan-postpone-meta__label">申请延期期数</span>
+            <span class="loan-postpone-meta__value">第 {{ postponeDetail?.currentTerm ?? '—' }} 期</span>
+          </div>
+          <div class="loan-postpone-meta__item">
+            <span class="loan-postpone-meta__label">申请时间</span>
+            <span class="loan-postpone-meta__value">{{ formatDate(postponeDetail?.createdAt) }}</span>
+          </div>
+          <div class="loan-postpone-meta__item">
+            <span class="loan-postpone-meta__label">审核时间</span>
+            <span class="loan-postpone-meta__value">
+              {{ postponeDetail?.reviewedAt ? formatDate(postponeDetail.reviewedAt) : '待审核' }}
+            </span>
+          </div>
+        </div>
+
         <!-- 拒绝原因：AI拒绝（仅左）/ 人工拒绝（左AI + 右人工 两端） -->
         <div
-          v-if="loanApplication?.rejectReason && loanApplication.rejectReason !== '无'"
+          v-if="reviewType !== 'postpone' && loanApplication?.rejectReason && loanApplication.rejectReason !== '无'"
           class="reject-banner"
         >
           <template v-if="isManualReject">
@@ -99,7 +165,18 @@
           </template>
         </div>
 
-        <!-- 下方：左栏（申请人）1 : 右栏（状态+认证）2 -->
+        <!-- postpone 分支拒绝原因：纯文本，单侧展示 -->
+        <div
+          v-else-if="reviewType === 'postpone' && postponeDetail?.rejectReason"
+          class="reject-banner"
+        >
+          <div class="reject-banner__left">
+            <span class="reject-banner__label">拒绝原因：</span>
+            <span class="reject-banner__value">{{ postponeDetail.rejectReason }}</span>
+          </div>
+        </div>
+
+        <!-- 下方：左栏（申请人）1 : 右栏（状态+认证）2，两个分支共享 -->
         <section class="loan-bottom-cols">
           <!-- 左栏：申请人信息（头像居中在上 → 下方竖排所有字段） -->
           <div class="loan-col loan-col--applicant">
@@ -171,89 +248,31 @@
                 <div class="loan-cert-item__icon"><span class="iconfont" :class="certIcon(key)"></span></div>
                 <div class="loan-cert-item__body">
                   <div class="loan-cert-item__label">{{ label }}</div>
-                  <div class="loan-cert-item__click" :class="{ 'is-locked': !isMaterialUploaded(key) }">
-                    {{ isMaterialUploaded(key) ? '点击查看' : '待认证' }}
+                  <div
+                    class="loan-cert-item__click"
+                    :class="isMaterialUploaded(key) ? 'is-uploaded' : 'is-locked'"
+                  >
+                    {{ isMaterialUploaded(key) ? '已认证' : '未认证' }}
                   </div>
                 </div>
-                <div class="loan-cert-item__state" :class="{ 'is-locked': !isMaterialUploaded(key) }">
-                  查看详情
-                </div>
-                <!-- 身份证 / 银行卡号码展开 -->
+                <!-- 右侧状态位：默认「查看详情」；点击身份证/银行卡后就地替换为号码；未认证显示 — -->
                 <div
-                  v-if="showCertDetails[key] && (key === 'idCard' || key === 'bankCardId') && isMaterialUploaded(key)"
-                  class="loan-cert-item__detail"
+                  class="loan-cert-item__state"
+                  :class="{
+                    'is-locked': !isMaterialUploaded(key),
+                    'is-number': showCertDetails[key] && (key === 'idCard' || key === 'bankCardId')
+                  }"
                 >
-                  {{ userCertInfo?.[key] }}
+                  <template v-if="!isMaterialUploaded(key)">—</template>
+                  <template v-else-if="showCertDetails[key] && (key === 'idCard' || key === 'bankCardId')">
+                    {{ userCertInfo?.[key] }}
+                  </template>
+                  <template v-else>查看详情</template>
                 </div>
               </div>
             </div>
           </div>
         </section>
-      </template>
-
-      <!-- ========== postpone 分支：保持上一轮改好的结构不动 ========== -->
-      <template v-else>
-        <section class="applicant-card applicant-card--compact">
-          <div class="applicant-card__avatar-wrap">
-            <img :src="avatarUrl" alt="用户头像" class="applicant-card__avatar">
-          </div>
-          <div class="applicant-card__info">
-            <div class="applicant-card__name">
-              {{ userInfo?.userName || '—' }}
-              <span class="applicant-card__uid">#{{ userInfo?.id || '—' }}</span>
-            </div>
-            <div class="applicant-card__meta"><span class="iconfont icon-phone"></span>{{ userInfo?.phone || '—' }}</div>
-            <div class="applicant-card__meta"><span class="iconfont icon-zhuceshijian"></span>注册于 {{ formatDate(userInfo?.createTime) || '—' }}</div>
-          </div>
-        </section>
-
-        <div class="section">
-          <h4>延期申请信息</h4>
-          <div class="detail-grid">
-            <div class="detail-item">
-              <span>申请ID：</span>
-              <span>{{ postponeDetail?.id || '—' }}</span>
-            </div>
-            <div class="detail-item">
-              <span>订单ID：</span>
-              <span>{{ postponeDetail?.orderId || '—' }}</span>
-            </div>
-            <div class="detail-item">
-              <span>用户ID：</span>
-              <span>{{ postponeDetail?.userId || '—' }}</span>
-            </div>
-            <div class="detail-item">
-              <span>当前期数：</span>
-              <span>{{ postponeDetail?.currentTerm || '—' }} 期</span>
-            </div>
-            <div class="detail-item">
-              <span>状态：</span>
-              <span>{{ postponeDetail?.status || '—' }}</span>
-            </div>
-            <div class="detail-item">
-              <span>申请时间：</span>
-              <span>{{ formatDate(postponeDetail?.createdAt) || '—' }}</span>
-            </div>
-            <div v-if="postponeDetail?.reviewedAt" class="detail-item">
-              <span>审核时间：</span>
-              <span>{{ formatDate(postponeDetail?.reviewedAt) || '—' }}</span>
-            </div>
-          </div>
-          <div v-if="postponeDetail?.rejectReason" class="rejectReasons">
-            <span>拒绝原因：</span>
-            <span>{{ postponeDetail?.rejectReason || '—' }}</span>
-          </div>
-        </div>
-
-        <!-- postpone 分支操作按钮 / 状态显示（保留原逻辑） -->
-        <div v-if="isPending" class="action-buttons">
-          <button class="btn-pass" @click="handleSubmit(true)">通过</button>
-          <button class="btn-reject" @click="handleSubmit(false)">不通过</button>
-        </div>
-        <div v-else class="status-display">
-          <span>状态: {{ postponeDetail?.status || '—' }}</span>
-        </div>
-      </template>
     </div>
 
     <ImagePreview
@@ -269,6 +288,7 @@
 import { ref, watch, computed, Transition } from 'vue';
 import { ElCollapseTransition } from 'element-plus';
 import { applicationAPI, authAPI, userAPI } from '@/api';
+import { useLoanStore } from '@/stores/loan';
 import ImagePreview from '@/components/shared/ImagePreview.vue';
 import { ElMessage } from 'element-plus';
 
@@ -302,6 +322,9 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue', 'close', 'submit', 'transition-complete']);
 
+// 产品列表全局缓存（应用生命周期内只拉一次），供延期分支把 productId 映射为产品名
+const loanStore = useLoanStore();
+
 const applicationDetail = ref(null);
 const postponeDetail = ref(null);
 const userDetail = ref(null);
@@ -310,6 +333,7 @@ const loading = ref(false);
 const showImagePreview = ref(false)
 const previewImages = ref([])
 const previewTitle = ref('')
+// 身份证/银行卡号码就地展开状态：点击后右侧「查看详情」替换为号码，再点收起
 const showCertDetails = ref({})
 
 const certTypeMap = {
@@ -341,6 +365,33 @@ const userCertInfo = computed(() => {
 })
 
 const loanApplication = computed(() => applicationDetail.value?.data?.application)
+
+/* ========== postpone 分支：项目信息数据组装 ==========
+   延期详情接口只返回 orderId，而用户详情接口（本分支必调）已内嵌完整 order[]，
+   直接按 orderId 在前端匹配即可，无需再发订单请求
+   （用户端 /api/orders/{id} 有订单归属校验，管理员 token 调用会 403）。 */
+const orderInfo = computed(() => {
+  const orderId = postponeDetail.value?.orderId
+  if (orderId == null) return null
+  const list = userDetail.value?.order || []
+  return list.find(o => String(o.id) === String(orderId)) || null
+})
+
+// 产品名：用 loanStore 内的产品列表做 productId → productName 映射，取不到时回退显示 #id
+const orderProductName = computed(() => {
+  const productId = orderInfo.value?.productId
+  if (productId == null) return '—'
+  const product = loanStore.products.find(p => String(p.id) === String(productId))
+  return product?.productName || ('#' + productId)
+})
+
+// 订单状态语义色：正常沿用品牌蓝 / 已逾期红 / 已完成绿
+const ORDER_STATUS_CLASS_MAP = {
+  '正常': 'is-status-normal',
+  '已逾期': 'is-status-overdue',
+  '已完成': 'is-status-done'
+}
+const orderStatusClass = computed(() => ORDER_STATUS_CLASS_MAP[orderInfo.value?.status] || '')
 
 const avatarUrl = computed(() => {
   const avatar = userDetail.value?.user?.avatar || applicationDetail.value?.data?.user?.avatar
@@ -436,6 +487,12 @@ const fetchPostponeDetail = async (id) => {
     const response = await applicationAPI.getPostponeDetail(id)
     if (response.code === 200) {
       postponeDetail.value = response.data
+
+      // 项目信息的产品名依赖产品列表；store 已缓存则跳过，未缓存则异步拉取，
+      // 不阻塞详情渲染——products 到达后 orderProductName 计算属性会自动更新
+      if (!loanStore.hasProducts) {
+        loanStore.fetchProducts()
+      }
 
       const userId = response.data?.userId
       if (userId) {
@@ -598,6 +655,22 @@ const statusMeta = computed(() => {
   return STATUS_META_MAP[raw] || { text: raw || '—', cls: '', actionLabel: '状态未知' }
 })
 
+// 延期申请状态：后端为纯中文字符串 待审核 / 已通过 / 已拒绝
+const POSTPONE_STATUS_META_MAP = {
+  '待审核': { text: '待审核', cls: 'is-pending' },
+  '已通过': { text: '已通过', cls: 'is-pass' },
+  '已拒绝': { text: '已拒绝', cls: 'is-manual-reject' }
+}
+
+// 顶栏状态 pill 统一入口：postpone 走延期状态表，其余复用贷款状态表
+const detailStatusMeta = computed(() => {
+  if (props.reviewType === 'postpone') {
+    const raw = postponeDetail.value?.status
+    return POSTPONE_STATUS_META_MAP[raw] || { text: raw || '—', cls: '' }
+  }
+  return statusMeta.value
+})
+
 // 人工拒绝判定：后端 status === '人工拒绝'
 const isManualReject = computed(() => loanApplication.value?.status === '人工拒绝')
 
@@ -639,19 +712,19 @@ const CERT_ICON_MAP = {
 }
 const certIcon = (key) => CERT_ICON_MAP[key] || 'icon-biaoji'
 
-// 统一的认证 tile 点击处理：复用既有 isMaterialUploaded / materialMap / certTypeMap / fetchCertImage
-// 与旧 material-item 点击行为保持完全一致，消除两套逻辑分叉
+// 统一的认证 tile 点击处理：
+// - 身份证/银行卡：右侧「查看详情」与号码就地切换（toggle），不新增 DOM 行，不影响布局
+// - 未认证材料给出提示
+// - 图片类材料调认证接口取图预览
 const handleCertTileClick = (key) => {
   if (!isMaterialUploaded(key)) {
     ElMessage.warning('该材料未上传')
     return
   }
-  // 身份证/银行卡：toggle 展开/收起号码
   if (key === 'idCard' || key === 'bankCardId') {
     showCertDetails.value[key] = !showCertDetails.value[key]
     return
   }
-  // 图片类材料：调认证接口取图
   const certId = userCertInfo.value?.[key]
   if (certId) {
     handleMaterialClick(key, certId)
