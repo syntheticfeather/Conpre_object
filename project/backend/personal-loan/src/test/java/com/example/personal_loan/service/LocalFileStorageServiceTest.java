@@ -8,6 +8,7 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,22 +68,20 @@ class LocalFileStorageServiceTest {
 
     @Test
     void testStoreFile_NullFile() {
-        BusinessException exception = assertThrows(BusinessException.class, () -> 
-            localFileStorageService.storeFile(null, "property", 1L, "immovables/property")
-        );
-        assertEquals(400, exception.getCode());
-        assertTrue(exception.getMessage().contains("图片为空"));
+        String result = localFileStorageService.storeFile(
+                null, "property", 1L, "immovables/property");
+
+        assertNull(result);
     }
 
     @Test
     void testStoreFile_EmptyFile() {
         when(mockFile.isEmpty()).thenReturn(true);
 
-        BusinessException exception = assertThrows(BusinessException.class, () -> 
-            localFileStorageService.storeFile(mockFile, "property", 1L, "immovables/property")
-        );
-        assertEquals(400, exception.getCode());
-        assertTrue(exception.getMessage().contains("图片为空"));
+        String result = localFileStorageService.storeFile(
+                mockFile, "property", 1L, "immovables/property");
+
+        assertNull(result);
     }
 
     @Test
@@ -217,6 +216,19 @@ class LocalFileStorageServiceTest {
             localFileStorageService.storeFile(mockFile, "property", 1L, "immovables/property")
         );
         assertTrue(exception.getMessage().contains("文件存储失败"));
+    }
+
+    @Test
+    void testStoreFile_PdfExtension() {
+        when(mockFile.isEmpty()).thenReturn(false);
+        when(mockFile.getOriginalFilename()).thenReturn("report.pdf");
+
+        String result = localFileStorageService.storeFile(
+                mockFile, "credit", 1L, "tri/credit-report");
+
+        assertNotNull(result);
+        assertTrue(result.contains("tri/credit-report/credit_1_"));
+        assertTrue(result.endsWith(".pdf"));
     }
 
     @Test
