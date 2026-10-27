@@ -41,3 +41,7 @@ venv/
 # 其他
 .trae
 /project/frontend/document/front-doc
+
+# LLM 特征缓存与生成的样例数据（可由脚本重建）
+ml-risk-model/.cache/
+ml-risk-model/data/llm_features/
