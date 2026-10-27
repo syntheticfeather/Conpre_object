@@ -21,8 +21,9 @@
           v-show="appStore.theme !== 'dark'"
           class="theme-icon moon" 
           title="切换到暗色模式"
+          @click="setTheme('dark')"
         >
-          <!-- @click="setTheme('dark')" -->
+          
           <Moon />
         </el-icon>
         <!-- 月亮图标：暗色模式下隐藏 -->
@@ -30,8 +31,8 @@
           v-show="appStore.theme !== 'light'"
           class="theme-icon sunny" 
           title="切换到亮色模式"
+          @click="setTheme('light')"
         >
-          <!-- @click="setTheme('light')" -->
           <Sunny />
         </el-icon>
       </div>

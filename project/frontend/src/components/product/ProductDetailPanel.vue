@@ -7,7 +7,7 @@
         <div class="nav-title-group">
           <div class="title-row">
             <h1 class="product-name">{{ productData.productName || '—' }}</h1>
-            <span class="category-tag">{{ productData.loanUsage || '个人贷款' }}</span>
+            <span class="category-tag">{{ productData.productType || '未分类' }}</span>
             <span class="status-badge" :class="productData.status === '上架中' ? 'online' : 'offline'">
               <span class="status-dot"></span>
               {{ productData.status === '上架中' ? '上线中' : '已下线' }}
@@ -47,7 +47,7 @@
     <!-- 产品概览卡片 -->
     <div class="hero-card">
       <div class="hero-left">
-        <span class="hero-category">{{ productData.loanUsage || '个人贷款' }}</span>
+        <span class="hero-category">{{ productData.productType || '未分类' }}</span>
         <h2 class="hero-title">{{ productData.productName || '—' }}</h2>
         <p class="hero-desc">{{ (productData.description || '—') +' | '+ (productData.promotionDetails || '') }}</p>
       </div>
@@ -134,11 +134,13 @@
               <el-input-number
                 v-model="option.interestRate"
                 :min="0"
-                :step="0.0001"
-                :precision="4"
-              />
+                :step="0.1"
+                :precision="2"
+              >
+                <template #suffix>%</template>
+              </el-input-number>
             </td>
-            <td v-else>{{ (option.interestRate * 100).toFixed(2) }}%</td>
+            <td v-else>{{ Number(option.interestRate || 0).toFixed(2) }}%</td>
             
             <td v-if="isEditMode">
               <el-select v-model="option.repaidType">
@@ -179,6 +181,13 @@
         <el-col :span="16">
           <el-form-item label="产品名称" prop="productName">
             <el-input v-model="editForm.productName" />
+          </el-form-item>
+          <el-form-item label="产品类型" prop="productType">
+            <el-select v-model="editForm.productType" placeholder="请选择产品类型" style="width: 100%">
+              <el-option label="个人消费" value="个人消费" />
+              <el-option label="农业生产" value="农业生产" />
+              <el-option label="企业经营" value="企业经营" />
+            </el-select>
           </el-form-item>
           <el-form-item label="产品描述" prop="description">
             <el-input v-model="editForm.description" type="textarea" :rows="3" />
@@ -324,8 +333,15 @@ const loadProductDetail = async () => {
         editForm.value.termStep = null
       }
 
-      originalOptions.value = productData.value.options || []
-      options.value = [...originalOptions.value]
+      // 利率统一以百分数（%）在界面呈现，提交时再转回小数存储
+      const normalizedOptions = (productData.value.options || []).map(opt => ({
+        ...opt,
+        interestRate: opt.interestRate != null
+          ? Number((opt.interestRate * 100).toFixed(4))
+          : opt.interestRate
+      }))
+      originalOptions.value = normalizedOptions
+      options.value = normalizedOptions.map(opt => ({ ...opt }))
     } else {
       ElMessage.error('加载产品详情失败: ' + (response.message || '未知错误'))
     }
@@ -343,14 +359,14 @@ const enterEditMode = () => {
 const cancelEdit = () => {
   isEditMode.value = false
   editForm.value = { ...productData.value }
-  options.value = [...originalOptions.value]
+  options.value = originalOptions.value.map(opt => ({ ...opt }))
 }
 
 // 添加方案行
 const addOptionRow = () => {
   options.value.push({
     loanPeriod: 12,
-    interestRate: 0.05,
+    interestRate: 5.0,
     repaidType: '等额本息'
   })
 }
@@ -369,8 +385,17 @@ const saveChanges = async () => {
       return
     }
 
+    // 界面以百分数编辑，提交前转回小数（后端 interest_rate 存 DECIMAL 小数）
+    const toDecimalRate = (rate) => Number((Number(rate) / 100).toFixed(6))
+
     // 收集要创建和删除的选项
-    const toCreate = options.value.filter(opt => !opt.optionId)
+    const toCreate = options.value
+      .filter(opt => !opt.optionId)
+      .map(opt => ({
+        loanPeriod: opt.loanPeriod,
+        interestRate: toDecimalRate(opt.interestRate),
+        repaidType: opt.repaidType
+      }))
     const toDeleteIds = originalOptions.value
       .filter(origOpt => !options.value.some(opt => opt.optionId === origOpt.optionId))
       .map(opt => opt.optionId)
@@ -398,16 +423,15 @@ const saveChanges = async () => {
       .map(opt => ({
         optionId: opt.optionId,
         ...(opt.loanPeriod !== undefined && { loanPeriod: opt.loanPeriod }),
-        ...(opt.interestRate !== undefined && { interestRate: opt.interestRate }),
+        ...(opt.interestRate !== undefined && { interestRate: toDecimalRate(opt.interestRate) }),
         ...(opt.repaidType !== undefined && { repaidType: opt.repaidType }),
       }))
 
     // 收集基本字段中真正有变更的字段
     const submitData = {}
-    const basicFields = ['productName', 'description', 'loanUsage',
+    const basicFields = ['productName', 'description', 'loanUsage', 'productType',
                          'minTerm', 'maxTerm', 'termStep',
-                         'minAmount', 'maxAmount', 'promotionDetails',
-                         'status']
+                         'minAmount', 'maxAmount', 'promotionDetails']
     for (const field of basicFields) {
       if (editForm.value[field] !== undefined) {
         submitData[field] = editForm.value[field]
@@ -486,7 +510,7 @@ const formatAmount = (amount) => {
 const getAvgRate = () => {
   if (!options.value || options.value.length === 0) return '0'
   const avg = options.value.reduce((sum, opt) => sum + (opt.interestRate || 0), 0) / options.value.length
-  return (avg * 100).toFixed(1)
+  return avg.toFixed(1)
 }
 
 const getTermRange = () => {
@@ -500,13 +524,13 @@ const getTermRange = () => {
 const getMinRate = () => {
   if (!options.value || options.value.length === 0) return '0'
   const min = Math.min(...options.value.map(opt => opt.interestRate || 0))
-  return (min * 100).toFixed(2)
+  return min.toFixed(2)
 }
 
 const getMaxRate = () => {
   if (!options.value || options.value.length === 0) return '0'
   const max = Math.max(...options.value.map(opt => opt.interestRate || 0))
-  return (max * 100).toFixed(2)
+  return max.toFixed(2)
 }
 
 const getOnlineDays = () => {

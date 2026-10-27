@@ -49,6 +49,11 @@ a {
     --table-head-bg: #335b623b;
     --table-th-td-border: #e0e0e0;
     --table-tr-hover:  #e2e2e2;
+    /* 表格水印背景（低对比抽象图，仅申请审核列表开启） */
+    --table-watermark: url('../../images/table-watermark.jpg');
+    --table-watermark-opacity: 0.07;
+    /* 固定表格高度（四类申请列表统一，切换时高度不抖动） */
+    --table-fixed-height: 200px;
     /*批量处理框*/
     --batch-actions-bg: #f6ffed;
     --batch-actions-border: #b7eb8f;
@@ -562,6 +567,11 @@ a {
     --el-color-warning-light-9: #FEF4E2;
     --el-color-danger: #EF4444;
     --el-color-danger-light-9: #FEEBEB;
+
+    /* 主内容区画布（亮色：浅灰对角渐变，全页面统一） */
+    --main-content-bg: linear-gradient(135deg, #f5f7fa 0%, #e4e8ed 100%);
+    /* 主内容区纹理：透明底叶片线稿（亮色=品牌蓝），改色请编辑 images/patterns/leaves-blue.svg */
+    --main-content-pattern: url('../../images/patterns/leaves-blue.svg');
 }
 
 /* 深色模式 */
@@ -587,6 +597,8 @@ html.dark {
     --table-head-bg: #6262623b;
     --table-th-td-border: #525591;
     --table-tr-hover: #1f2a40;
+    /* 暗色下水印进一步压低，避免在深底上发灰 */
+    --table-watermark-opacity: 0.05;
     /*批量处理框*/
     --batch-actions-bg: #f6ffed;
     --batch-actions-border: #b7eb8f;
@@ -1052,6 +1064,11 @@ html.dark {
     --el-color-warning-light-9: rgba(245, 158, 11, 0.14);
     --el-color-danger: #EF4444;
     --el-color-danger-light-9: rgba(239, 68, 68, 0.14);
+
+    /* 主内容区画布（暗色：纯色，与 --html-bg 一致） */
+    --main-content-bg: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+    /* 暗色纹理改用品牌青，避免浅蓝在深底上发灰；改色请编辑 leaves-teal.svg */
+    --main-content-pattern: url('../../images/patterns/leaves-teal.svg');
 }
 
 /*字体图标-右尖括号*/

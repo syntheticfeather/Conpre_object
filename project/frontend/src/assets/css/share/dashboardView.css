@@ -42,7 +42,10 @@
   z-index: 100;
 
   padding: var(--space-md) var(--space-lg);
-  background: var(--html-bg);
+  /* 透明底 SVG 纹理铺在原渐变之上：颜色由主题令牌决定，无需混合模式抠白 */
+  background-image: var(--main-content-pattern), var(--main-content-bg);
+  background-repeat: repeat, no-repeat;
+  background-attachment: local, scroll;
 
   border-radius: var(--radius-lg) 0 0 0; /* 仅左上/右上圆角，顶部平 */
   border-left: 1px solid var(--float-border);
@@ -57,41 +60,6 @@
   scrollbar-width: thin;
   scrollbar-color: rgba(59, 130, 246, 0.3) transparent;
 }
-
-/* ===== 顶部内容渐隐带 =====
-   sticky 吸附滚动容器顶部，负 margin 不占布局，
-   内容滚入时在 40px 内淡入卡片底色，不再"撞硬边" */
-/* .main-content::before {
-  content: "";
-  position: sticky;
-  top: -16px;
-  display: block;
-  height: 20px;
-  margin-bottom: -20px;
-  z-index: 20;
-  pointer-events: none;
-  background: linear-gradient(180deg,
-    var(--html-bg) 0%,
-    var(--html-bg) 30%,
-    transparent 100%);
-} */
-
-/* ===== 底部内容渐隐带 =====
-   sticky 吸附底部，内容滚出前在 48px 内淡出到卡片底色 */
-/* .main-content::after {
-  content: "";
-  position: sticky;
-  bottom: -16px;
-  display: block;
-  height: 20px;
-  margin-top: -24px;
-  z-index: 20;
-  pointer-events: none;
-  background: linear-gradient(0deg,
-    var(--html-bg) 0%,
-    var(--html-bg) 40%,
-    transparent 100%);
-} */
 
 /* ===== 机制 4：滚动条主题化（细、品牌蓝、透明轨道）===== */
 .main-content::-webkit-scrollbar {

@@ -4,6 +4,8 @@
     <BaseTable
       :data-source="paginatedPostponeRequests"
       :columns="columns"
+      height="var(--table-fixed-height)"
+      watermark
       :current-page="currentPage"
       :total="filteredPostponeRequests.length"
       :page-size="pageSize"

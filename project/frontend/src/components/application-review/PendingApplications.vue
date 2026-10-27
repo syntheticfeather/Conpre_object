@@ -4,6 +4,8 @@
     <BaseTable
       :data-source="paginatedApplications"
       :columns="columns"
+      height="var(--table-fixed-height)"
+      watermark
       :current-page="currentPage"
       :total="filteredApplications.length"
       :page-size="pageSize"

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220">
+  <!-- 叶片线稿平铺纹理：亮色主题（品牌蓝） -->
+  <defs>
+    <g id="leaf" fill="none" stroke="#3B82F6" stroke-opacity=".12"
+       stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M0 0C8-12 22-16 32-13 30-2 15 8 0 0Z"/>
+      <path d="M1.5-1C11-5 22-9 30-12" stroke-width=".8"/>
+    </g>
+  </defs>
+  <use href="#leaf" transform="translate(24 26) rotate(-22)"/>
+  <use href="#leaf" transform="translate(96 18) rotate(8)"/>
+  <use href="#leaf" transform="translate(170 30) rotate(28)"/>
+  <use href="#leaf" transform="translate(40 88) rotate(12)"/>
+  <use href="#leaf" transform="translate(112 80) rotate(-14)"/>
+  <use href="#leaf" transform="translate(186 96) rotate(6)"/>
+  <use href="#leaf" transform="translate(20 150) rotate(18)"/>
+  <use href="#leaf" transform="translate(92 154) rotate(-8)"/>
+  <use href="#leaf" transform="translate(166 160) rotate(22)"/>
+</svg>

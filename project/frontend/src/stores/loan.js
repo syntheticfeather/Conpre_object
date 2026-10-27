@@ -11,7 +11,7 @@ export const useLoanStore = defineStore('loan', {
 
   getters: {
     hasProducts: (state) => state.products.length > 0,
-    activeProducts: (state) => state.products.filter((p) => p.status === 'ACTIVE')
+    activeProducts: (state) => state.products.filter((p) => p.status === '上架中')
   },
 
   actions: {

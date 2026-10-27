@@ -1,265 +1,636 @@
-/* 主内容区 */
+/* ============================================================
+   新增贷款产品页 — Aurora Dashboard 布局
+   颜色/间距/圆角/动效全部引用设计令牌（share/base.css）
+   ============================================================ */
+
 .add-product-view {
-  padding: 20px;
+  padding: var(--space-lg) var(--space-lg) var(--space-xl);
 }
 
-/* 标题 */
-.header {
+/* ---------------- 页头：吸附，标题 + 返回按钮 ---------------- */
+.apv-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: var(--space-md);
+  padding: 0 0 12px;
 }
-.header h1 {
-  font-size: 24px;
+/* 遮住 .main-content 顶部内边距，避免滚动时内容从页头上方露出 */
+.apv-header::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: var(--space-md);
+}
+.apv-header__title {
+  margin: 0 auto 0 0;
+  font-size: var(--text-xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary, var(--color-black));
+}
+
+.apv-header__back {
+  flex: none;
+  padding: 8px 18px;
+  font-size: var(--text-sm);
   font-weight: 600;
-  margin: 0;
-}
-/* 返回产品列表按钮 */
-.btn-back {
-  font-size: 14px;
-}
-
-/* 步骤指示器 */
-.step-indicator {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
-  gap: 40px;
-}
-.step-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-.step-number {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background-color: var(--addproduct-step-bg);
-  color: var(--addproduct-step-text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 16px;
-  transition: all 0.3s;
-}
-.step-item.active .step-number {
-  background-color: var(--color-primary);
-  color: var(--color-white);
-}
-.step-label {
-  font-size: 14px;
-  color: var(--addproduct-step-text);
-  transition: all 0.3s;
-}
-.step-item.active .step-label {
-  color: var(--color-primary);
-  font-weight: 500;
-}
-.step-line {
-  width: 80px;
-  height: 2px;
-  background-color: var(--addproduct-step-bg);
-  margin: 0 8px;
-}
-
-/*  一级表单容器 */
-.form-container {
-  margin: 0 40px;
-  padding: 40px;
-
-  background-color: var(--add-container-bg);
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  border-radius: 12px;
-  overflow-y: auto;
-}
-
-.el-form-item:nth-child(4) {
-  margin-left:10px;
-}
-
-/* 可选方案区域 */
-.options-section {
-  margin-top: 5px;
-  padding-top: 20px;
-  border-top: 1px solid var(--addproduct-section-border);
-}
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 5px;
-}
-.section-header h3 {
-  margin: 0;
-
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--addproduct-label-text);
-}
-
-/* 添加选项按钮 */
-.btn-add {
-  padding: 8px 16px;
-  background-color: var(--product-btn-primary);
-  color: var(--color-white);
-  border: none;
-  border-radius: 12px;
+  color: var(--text-secondary);
+  background: var(--card-bg);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--radius-full);
   cursor: pointer;
-  font-size: 14px;
+  transition: all var(--duration-fast) var(--ease-out-expo);
+}
+.apv-header__back:hover {
+  color: var(--brand-600);
+  border-color: var(--brand-500);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px -8px rgba(59, 130, 246, 0.55);
+}
+
+/* ---------------- 三栏骨架 ---------------- */
+.apv-shell {
+  display: grid;
+  grid-template-columns: 224px minmax(0, 1fr) 300px;
+  gap: var(--space-md);
+  align-items: start;
+}
+
+/* ---------------- 左栏 ---------------- */
+.apv-rail {
+  position: sticky;
+  top: 84px;
+  display: grid;
+  gap: var(--space-md);
+}
+.apv-panel {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  box-shadow: var(--float-shadow);
+}
+.apv-completion {
   display: flex;
   align-items: center;
-  transition: background-color 0.3s;
+  gap: 12px;
 }
-.btn-add:hover {
-  background-color: var(--product-btn-hover);
+.apv-completion__meta strong {
+  display: block;
+  font-size: var(--text-lg);
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  color: var(--text-primary, var(--color-black));
 }
-/* 选项表容器 */
-.table-container {
-  overflow-y: auto;
-  max-height: 300px;
-  width: 100%;
+.apv-completion__meta span {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
 }
-/* 选项表 */
-.options-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 16px;
+
+.apv-tip {
+  padding: 12px 14px;
+  background: linear-gradient(
+    160deg,
+    rgba(245, 158, 11, 0.12),
+    var(--card-bg)
+  );
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: var(--radius-md);
 }
-.options-table thead {
-  background-color: var(--addproduct-section-bg);
+.apv-tip__head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--status-warning);
+  margin-bottom: 6px;
 }
-.options-table th {
-  padding: 12px 16px;
-  text-align: left;
+.apv-tip p {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+.apv-tip b {
+  color: var(--brand-600);
+}
+
+/* 营销信息（左栏常驻面板） */
+.apv-promo__head {
+  margin-bottom: 12px;
+}
+.apv-promo__label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: var(--text-sm);
   font-weight: 600;
-  color: var(--addproduct-hint-text);
-  border-bottom: 1px solid var(--addproduct-section-border);
+  color: var(--text-secondary);
 }
-.options-table td {
-  padding: 4px;
-  border-bottom: 1px solid var(--addproduct-section-border);
+
+/* ---------------- 中栏 ---------------- */
+.apv-main {
+  display: grid;
+  gap: var(--space-md);
+  min-width: 0;
+}
+.apv-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-md) 18px;
+  box-shadow: var(--float-shadow);
+  /* 三张表单卡统一限高，超出在卡内滚动 */
+  max-height: 500px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.apv-card::-webkit-scrollbar {
+  width: 6px;
+}
+.apv-card::-webkit-scrollbar-track {
+  background: transparent;
+}
+.apv-card::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.3);
+  border-radius: 3px;
+}
+.apv-card::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.55);
+}
+.apv-card__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: var(--space-md);
+}
+.apv-card__icon {
+  width: 30px;
+  height: 30px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  background: var(--brand-50);
+  color: var(--brand-600);
+}
+.apv-card__title {
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--text-primary, var(--color-black));
+}
+.apv-card__index {
+  margin-left: auto;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-color-placeholder);
+}
+.apv-card__count {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--brand-600);
+  background: var(--brand-50);
+  padding: 2px 9px;
+  border-radius: var(--radius-full);
+}
+
+/* 栅格：卡片内字段排布 */
+.apv-grid {
+  display: grid;
+  gap: var(--space-md);
+}
+.apv-grid--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.apv-span-2 {
+  grid-column: 1 / -1;
+}
+
+/* Element Plus 表单元素贴合卡片 */
+.apv-card :deep(.el-form-item) {
+  margin-bottom: 0;
+}
+.apv-card :deep(.el-form-item__label) {
+  padding-bottom: 6px;
+  line-height: 1.4;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* 只读值（如档位数） */
+.apv-readonly {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 12px;
+  font-size: var(--text-sm);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  color: var(--brand-600);
+  background: var(--brand-50);
+  border: 1px dashed rgba(59, 130, 246, 0.4);
+  border-radius: var(--radius-sm);
+}
+
+/* ---------------- 期限档位数轴 ---------------- */
+.apv-axis {
+  margin-top: 18px;
+}
+.apv-axis__label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.apv-axis__track {
+  position: relative;
+  height: 4px;
+  margin: 16px 8px 30px;
+  border-radius: 2px;
+  background: var(--brand-100);
+}
+.apv-axis__tick {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 9px;
+  height: 9px;
+  border-radius: var(--radius-full);
+  background: var(--card-bg);
+  border: 2px solid var(--brand-500);
+}
+.apv-axis__tick.is-first {
+  width: 11px;
+  height: 11px;
+  background: var(--status-warning);
+  border-color: var(--status-warning);
+}
+.apv-axis__tick b {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+.apv-axis__tick.is-first b {
+  color: var(--status-warning);
+  font-weight: 700;
+}
+
+/* ---------------- 利率区间带 ---------------- */
+.apv-rateband {
+  position: relative;
+  height: 6px;
+  margin: 16px 8px 26px;
+}
+.apv-rateband__track {
+  position: absolute;
+  inset: 0;
+  border-radius: 3px;
+  background: var(--fill-color-base);
+}
+.apv-rateband__fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--brand-500), var(--brand-600));
+}
+.apv-rateband__tick {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+  background: var(--card-bg);
+  border: 2px solid var(--brand-600);
+}
+.apv-axis__legend {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+/* ---------------- 金额快捷 chips ---------------- */
+.apv-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.apv-chip {
+  padding: 4px 11px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--fill-color-light);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out-expo);
+}
+.apv-chip:hover {
+  color: var(--brand-600);
+  border-color: var(--brand-500);
+  background: var(--brand-50);
+}
+
+/* ---------------- 可选方案表格 ---------------- */
+.apv-tablewrap {
+  overflow-x: auto;
+}
+.apv-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+/* 列宽：期限/利率定宽，还款方式取剩余，操作列仅容纳删除按钮 */
+.apv-col-term,
+.apv-col-rate {
+  width: 24%;
+}
+.apv-col-op {
+  width: 64px;
+}
+
+.apv-table th {
+  padding: 12px 12px;
+  text-align: left;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--table-head-bg);
+  border-bottom: 1px solid var(--border-color-light);
+}
+.apv-table th:first-child {
+  border-top-left-radius: var(--radius-sm);
+}
+.apv-table th:last-child {
+  border-top-right-radius: var(--radius-sm);
+}
+/* 操作列：不留左右内边距，让 32px 按钮居中 */
+.apv-table th:last-child,
+.apv-table td:last-child {
+  padding-left: 0;
+  padding-right: 0;
+  text-align: center;
+}
+.apv-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-color-lighter);
   vertical-align: middle;
 }
-.options-table tbody tr:hover {
-  background-color: var(--table-tr-hover);
-  background-color: var(--addproduct-highlight-bg);
-}
-/* 添加选项按钮 */
-.btn-add-empty {
-  padding: 10px 20px;
-  background-color: var(--product-btn-primary);
-  color: var(--color-white);
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-}
-.btn-add-empty:hover {
-  background-color: var(--product-btn-hover);
+.apv-table td :deep(.el-input-number),
+.apv-table td :deep(.el-select) {
+  width: 100%;
 }
 
-/* 删除选项按钮 */
-.btn-delete {
-  padding: 8px 12px;
-  background-color: var(--product-btn-danger);
-  color: var(--color-white);
-  border: none;
-  border-radius: 12px;
+.apv-opdel {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  margin: 0 auto;
+  color: var(--text-color-placeholder);
+  background: var(--card-bg);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.3s;
+  transition: all var(--duration-fast) var(--ease-out-expo);
 }
-.btn-delete:hover:not(:disabled) {
-  background-color: var(--product-btn-danger-hover);
+.apv-opdel:hover:not(:disabled) {
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+  background: var(--fill-color-danger-bg);
 }
-.btn-delete:disabled {
-  background-color: var(--product-btn-disabled);
+.apv-opdel:disabled {
+  color: var(--text-color-disabled);
   cursor: not-allowed;
+  opacity: 0.6;
 }
 
-/* 表单提示 */
-.form-tips {
-  background-color: var(--addproduct-tip-bg);
-  padding: 12px 16px;
-  border-radius: 12px;
-  border-left: 4px solid var(--addproduct-tip-border);
+.apv-optbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+.apv-note {
+  margin-top: 12px;
+  padding: 10px 14px;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  background: var(--fill-color-light);
+  border-left: 3px solid var(--brand-500);
+  border-radius: var(--radius-sm);
+}
+
+/* ---------------- 按钮 ---------------- */
+.apv-btn {
+  padding: 9px 20px;
+  font-size: var(--text-sm);
+  font-weight: 650;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out-expo);
+}
+.apv-btn--ghost {
+  color: var(--text-secondary);
+  background: var(--card-bg);
+  border-color: var(--border-color-base);
+}
+.apv-btn--ghost:hover {
+  color: var(--brand-600);
+  border-color: var(--brand-500);
+  background: var(--brand-50);
+}
+.apv-btn--primary {
+  color: var(--color-white);
+  background: var(--brand-500);
+  box-shadow: 0 8px 20px -8px rgba(59, 130, 246, 0.6);
+}
+.apv-btn--primary:hover {
+  background: var(--brand-600);
+  transform: translateY(-1px);
+}
+
+/* ---------------- 右栏：预览卡 ---------------- */
+.apv-side {
+  position: sticky;
+  top: 84px;
+  display: grid;
+  gap: var(--space-md);
+}
+.apv-preview {
+  position: relative;
+  overflow: hidden;
+  padding: 18px;
+  color: var(--color-white);
+  background: linear-gradient(
+    150deg,
+    var(--brand-purple) 0%,
+    var(--brand-600) 55%,
+    var(--brand-500) 100%
+  );
+  border-radius: var(--radius-md);
+  box-shadow: 0 18px 40px -18px rgba(37, 99, 235, 0.55);
+}
+.apv-preview::after {
+  content: "";
+  position: absolute;
+  top: -50px;
+  right: -40px;
+  width: 150px;
+  height: 150px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.14);
+  pointer-events: none;
+}
+.apv-preview__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-full);
+}
+.apv-preview__name {
+  position: relative;
+  z-index: 1;
+  margin: 12px 0 3px;
+  font-size: var(--text-lg);
+  font-weight: 750;
+  letter-spacing: -0.02em;
+}
+.apv-preview__desc {
+  position: relative;
+  z-index: 1;
+  min-height: 34px;
+  margin-bottom: 16px;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.8);
+}
+.apv-preview__stats {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.apv-stat em {
+  display: block;
+  margin-bottom: 3px;
+  font-style: normal;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.66);
+}
+.apv-stat b {
+  font-size: var(--text-base);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  word-break: break-all;
+}
+.apv-preview__foot {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-sm);
   margin-top: 16px;
+  padding-top: 13px;
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.85);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
-.form-tips p {
-  margin: 0;
-  color: var(--addproduct-hint-text);
-  font-size: 14px;
-}
-
-/* 表单操作按钮 */
-.form-actions {
-  display: flex; 
-  justify-content: center; /* 水平居中 */
-  align-items: center; /* 垂直居中（防止按钮高度不一致时错位） */
-
-  margin-top: 40px;
-  gap: 20px; /* 保持按钮之间的间距 */
-}
-.form-actions .btn {
-  padding: 8px 24px;
-
-  min-width: 100px;
-  font-size: 14px;
-  transition: all 0.3s;
+.apv-preview__foot span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* 返回上一步按钮 */
-.btn-prev {
-  background-color: var(--product-btn-disabled);
+/* ---------------- 右栏：步骤切换 ---------------- */
+.apv-stepbar {
+  display: grid;
+  gap: 10px;
 }
-.btn-prev:hover {
-  background-color: var(--product-btn-disabled-hover);
+.apv-stepbar__pos {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-color-placeholder);
+}
+.apv-stepbar__btns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-sm);
+}
+.apv-stepbar__btns .apv-btn {
+  width: 100%;
+}
+
+/* ---------------- 通用工具类 ---------------- */
+.apv-mono {
+  font-variant-numeric: tabular-nums;
+}
+.apv-hint {
+  font-size: 11px;
+  color: var(--text-color-placeholder);
+}
+.apv-ic {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+
+/* ---------------- 响应式 ---------------- */
+@media (max-width: 1180px) {
+  .apv-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .apv-rail,
+  .apv-side {
+    position: static;
+  }
+  .apv-rail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 768px) {
   .add-product-view {
-    padding: 16px;
+    padding: var(--space-md);
   }
-  
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+  .apv-header {
+    flex-wrap: wrap;
+    gap: 10px 12px;
   }
-  
-  .header h1 {
-    font-size: 20px;
+  .apv-header__title {
+    flex: 1 0 100%;
+    margin-right: 0;
+    font-size: var(--text-lg);
   }
-  
-  .form-container {
-    padding: 16px;
+  .apv-rail {
+    grid-template-columns: minmax(0, 1fr);
   }
-  
-  .form-section h3 {
-    font-size: 16px;
-  }
-  
-  .section-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-  
-  .btn-add {
-    align-self: flex-start;
-  }
-  
-  .form-actions {
-    flex-direction: column;
-  }
-  
-  .btn-cancel,
-  .btn-confirm {
-    width: 100%;
+  .apv-grid--2 {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

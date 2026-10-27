@@ -63,6 +63,12 @@
         </span>
       </template>
 
+      <!-- 产品类型列 -->
+      <template #productType="{ record }">
+        <a-tag v-if="record.productType" color="blue">{{ record.productType }}</a-tag>
+        <span v-else>—</span>
+      </template>
+
       <!-- 金额范围列 -->
       <template #amountRange="{ record }">
         {{ record.minAmount || 0 }} - {{ record.maxAmount || 0 }} 元
@@ -164,7 +170,9 @@ const chips = [
   { key: 'success', label: '在售中', color: 'var(--status-success)' },
   { key: 'warning', label: '已下架', color: 'var(--status-warning)' },
   { key: 'week', label: '本周新增', color: 'var(--brand-500)' },
-  { key: 'priority', label: '高优先级', color: '#8B5CF6' }
+  { key: 'type-consumer', label: '个人消费', color: '#409EFF' },
+  { key: 'type-agri', label: '农业生产', color: '#67C23A' },
+  { key: 'type-enterprise', label: '企业经营', color: '#8B5CF6' }
 ]
 
 // 本周一 0 点
@@ -184,8 +192,12 @@ const filteredProducts = computed(() => {
       return list.filter(p => p.status !== '上架中')
     case 'week':
       return list.filter(p => p.createTime && new Date(p.createTime).getTime() >= weekStart)
-    case 'priority': // 高优先级：大额产品（最高可贷 ≥10万）
-      return list.filter(p => Number(p.maxAmount) >= 100000)
+    case 'type-consumer':
+      return list.filter(p => p.productType === '个人消费')
+    case 'type-agri':
+      return list.filter(p => p.productType === '农业生产')
+    case 'type-enterprise':
+      return list.filter(p => p.productType === '企业经营')
     default:
       return list
   }
@@ -208,40 +220,54 @@ const columns = [
   {
     title: '贷款名称',
     dataIndex: 'productName',
-    key: 'productName'
+    key: 'productName',
+    width: 140
   },
   {
     title: '贷款描述',
     dataIndex: 'description',
     key: 'description',
+    width: 150,
     slotName: 'description'
   },
   {
     title: '贷款用途',
     dataIndex: 'loanUsage',
-    key: 'loanUsage'
+    key: 'loanUsage',
+    width: 120
+  },
+  {
+    title: '产品类型',
+    dataIndex: 'productType',
+    key: 'productType',
+    width: 100,
+    slotName: 'productType'
   },
   {
     title: '金额范围',
     key: 'amountRange',
+    width: 150,
     slotName: 'amountRange'
   },
   {
     title: '产品状态',
     dataIndex: 'status',
     key: 'status',
+    width: 85,
     slotName: 'status'
   },
   {
     title: '更新时间',
     dataIndex: 'updateTime',
     key: 'updateTime',
+    width: 160,
     slotName: 'updateTime'
   },
   {
     title: '创建时间',
     dataIndex: 'createTime',
     key: 'createTime',
+    width: 160,
     slotName: 'createTime'
   }
 ]
@@ -593,7 +619,7 @@ const formatDate = (dateString) => {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 150px;
+  max-width: 50px;
   display: inline-block;
 }
 

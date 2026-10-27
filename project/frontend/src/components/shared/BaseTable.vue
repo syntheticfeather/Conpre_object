@@ -1,5 +1,5 @@
 <template>
-  <div class="table-content">
+  <div class="table-content" :class="{ 'has-watermark': watermark }">
     <!-- 批量操作区域 -->
     <div v-if="showBatchActions && selectedRowKeys.length > 0" class="batch-actions">
       <span class="selected-info">已选择 {{ selectedRowKeys.length }} 项</span>
@@ -164,6 +164,16 @@ const props = defineProps({
     type: String,
     default: '220px'
   },
+  // 固定表体高度（不传则不改变原有行为），用于多个列表切换时保持高度稳定
+  height: {
+    type: String,
+    default: ''
+  },
+  // 在表体卡片内叠一层低对比水印图，仅申请审核列表按需开启
+  watermark: {
+    type: Boolean,
+    default: false
+  },
   emptyTitle: {
     type: String,
     default: '暂无数据'
@@ -177,6 +187,8 @@ const props = defineProps({
     default: ''
   }
 })
+
+const tableHeight = computed(() => props.height || 'auto')
 
 const emit = defineEmits([
   'page-change',
@@ -199,9 +211,8 @@ const processedColumns = computed(() => {
     cols.unshift({
       title: '序号',
       key: 'index',
-      width: 70,
-      align: 'center',
-      fixed: 'left'
+      width: 55,
+      align: 'center'
     })
   }
 
@@ -209,9 +220,8 @@ const processedColumns = computed(() => {
     cols.push({
       title: '操作',
       key: 'action',
-      width: 150,
-      align: 'center',
-      fixed: 'right'
+      width: 200,
+      align: 'center'
     })
   }
 
@@ -290,6 +300,8 @@ defineExpose({
 
 <style scoped>
 .table-content {
+  display: flex;
+  flex-direction: column;
   padding-bottom: 10px;
 
   background-color: var(--table-content-bg);
@@ -298,10 +310,36 @@ defineExpose({
   transition: transform 0.3s;
 }
 
+/* ===== 表体水印：伪元素叠层，只做氛围不参与交互 ===== */
+.table-content.has-watermark {
+  position: relative;
+  overflow: hidden;
+}
+
+.table-content.has-watermark::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--table-watermark) center / cover no-repeat;
+  opacity: var(--table-watermark-opacity, 0.08);
+  pointer-events: none;
+}
+
+.table-content.has-watermark > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* 表格根节点让出底色，水印才能透出来；表头保留半透明品牌底 */
+.table-content.has-watermark :deep(.ant-table) {
+  background-color: transparent;
+}
+
 .data-table {
 
   width: 100%;
   min-height: v-bind(minHeight);
+  height: v-bind(tableHeight);
   color: var(--table-color);
   overflow-y: hidden;
 }

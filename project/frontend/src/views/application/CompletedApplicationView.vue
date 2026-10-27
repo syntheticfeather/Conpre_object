@@ -5,46 +5,46 @@
       <div class="header">
         已办审核
         <div class="header-right">
-          <div class="toggle-group">
-            <button
-              :class="{ active: reviewMode === 'loan' }"
-              @click="switchMode('loan')"
-            >
-              贷款申请
-            </button>
-            <button
-              :class="{ active: reviewMode === 'postpone' }"
-              disabled
-              style="cursor: not-allowed; opacity: 0.5;"
-            >
-              延期申请
-            </button>
-          </div>
+          <SegmentedControl
+            :model-value="reviewMode"
+            :options="reviewOptions"
+            label="审核类型"
+            @update:model-value="switchMode"
+          />
         </div>
       </div>
 
       <div class="apply-dashboard">
-        <div v-if="loading" class="loading">
-          加载中...
+        <!-- 两份列表常驻同一网格单元，由 CSS 自动撑出行高；切换只做透明度/位移的合成层动画 -->
+        <div class="list-stack">
+          <div
+            class="list-pane"
+            :class="{ 'is-hidden': reviewMode !== 'loan' }"
+            :inert="reviewMode !== 'loan' || null"
+          >
+            <component
+              :is="CompletedApplications"
+              :applications="currentLoanApplications"
+              @show-detail="showDetail"
+              @refresh="loadLoanApplications"
+            />
+          </div>
+
+          <div
+            class="list-pane"
+            :class="{ 'is-hidden': reviewMode !== 'postpone' }"
+            :inert="reviewMode !== 'postpone' || null"
+          >
+            <component
+              :is="PostponeCompletedList"
+              :postpone-requests="currentPostponeRequests"
+              @show-detail="showDetail"
+              @refresh="loadPostponeRequests"
+            />
+          </div>
         </div>
 
-        <template v-if="reviewMode === 'loan'">
-          <component
-            :is="CompletedApplications"
-            :applications="currentLoanApplications"
-            @show-detail="showDetail"
-            @refresh="loadLoanApplications"
-          />
-        </template>
-
-        <template v-if="reviewMode === 'postpone'">
-          <component
-            :is="PostponeCompletedList"
-            :postpone-requests="currentPostponeRequests"
-            @show-detail="showDetail"
-            @refresh="loadPostponeRequests"
-          />
-        </template>
+        <div v-if="loading" class="list-loading-bar" aria-hidden="true"></div>
       </div>
     </div>
 
@@ -64,12 +64,17 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useApplicationStore } from '@/stores/application'
+import SegmentedControl from '@/components/shared/SegmentedControl.vue'
 import CompletedApplications from '@/components/application-review/CompletedApplications.vue'
 import PostponeCompletedList from '@/components/application-review/PostponeCompletedList.vue'
 import ApplicationDetailModal from '@/components/application-review/ApplicationDetailModal.vue'
 
 const applicationStore = useApplicationStore()
 const reviewMode = ref('loan')
+const reviewOptions = [
+  { key: 'loan', label: '贷款申请' },
+  { key: 'postpone', label: '延期申请', disabled: true }
+]
 const showDetailModal = ref(false)
 const selectedRequestId = ref(null)
 const loading = ref(false)
@@ -78,6 +83,7 @@ const currentLoanApplications = computed(() => applicationStore.completedApplica
 const currentPostponeRequests = computed(() => applicationStore.completedPostponeRequests)
 
 const switchMode = (mode) => {
+  if (reviewMode.value === mode) return
   reviewMode.value = mode
   loadData()
 }
@@ -119,7 +125,68 @@ onMounted(() => {
 
 <style scoped>
 .apply-dashboard {
+  position: relative;
   padding: 20px;
+}
+
+/* ===== 列表切换：同一格叠放 + 交叉淡化 + 同向位移（方案 1+2） ===== */
+.list-stack {
+  display: grid;
+}
+
+.list-pane {
+  grid-area: 1 / 1;
+
+  opacity: 1;
+  transform: translateX(0);
+  transition:
+    opacity var(--duration-fast) var(--ease-out-expo),
+    transform var(--duration-fast) var(--ease-out-expo);
+}
+
+.list-pane.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* 左格退场向左、右格退场向右，方向与分段控件滑块一致 */
+.list-pane:nth-child(1).is-hidden {
+  transform: translateX(-12px);
+}
+
+.list-pane:nth-child(2).is-hidden {
+  transform: translateX(12px);
+}
+
+/* 切换请求期间用顶部细进度条替代"加载中"占位，不改变文档流高度 */
+.list-loading-bar {
+  position: absolute;
+  top: 6px;
+  left: 20px;
+  right: 20px;
+  height: 3px;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.list-loading-bar::after {
+  content: '';
+  display: block;
+  width: 40%;
+  height: 100%;
+  background: var(--brand-500);
+  border-radius: inherit;
+  animation: list-loading-slide 900ms ease-in-out infinite;
+}
+
+@keyframes list-loading-slide {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(350%);
+  }
 }
 
 /* ===== Push 转场舞台：列表整页左滑消失、详情整页右滑占满 ===== */
@@ -185,8 +252,13 @@ onMounted(() => {
 
 @media (prefers-reduced-motion: reduce) {
   .pane-list,
-  .pane-detail {
+  .pane-detail,
+  .list-pane {
     transition-duration: 1ms !important;
+  }
+
+  .list-loading-bar::after {
+    animation: none;
   }
 }
 
@@ -194,42 +266,11 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin:20px 20px 0 20px;
+  margin:0px 20px;
 }
 
 .header-right {
   display: flex;
   align-items: center;
-}
-
-.toggle-group {
-  display: flex;
-  border: 1px solid var(--border-color-base);
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.toggle-group button {
-  padding: 6px 16px;
-  border: none;
-  background: var(--color-white);
-  color: var(--text-secondary);
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s;
-}
-
-
-.toggle-group button.active {
-  background: var(--color-primary);
-  color: var(--color-white);
-  border-radius: 12px;
-}
-
-
-.loading {
-  text-align: center;
-  padding: 40px;
-  color: var(--text-color-caption);
 }
 </style>

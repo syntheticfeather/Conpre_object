@@ -179,7 +179,7 @@
                 <el-tag size="small" :type="tool.source === 'mcp' ? 'warning' : 'info'">
                   {{ tool.source === 'mcp' ? 'MCP' : '内置' }}
                 </el-tag>
-                <el-button link type="primary">查看详情 ></el-button>
+                <el-button link type="primary" @click="openToolDetail(tool)">查看详情 ></el-button>
               </div>
             </div>
           </div>
@@ -189,6 +189,90 @@
 
     <button class="chat-fab" @click="chatVisible = true" title="智能对话调试">💬</button>
     <ChatDialog v-model="chatVisible" />
+
+    <!-- 工具详情弹窗 -->
+    <el-dialog
+      v-model="detailVisible"
+      :title="`工具详情 — ${selectedTool?.name || selectedTool?.toolName || '未知'}`"
+      width="700px"
+      :close-on-click-modal="false"
+      destroy-on-close
+    >
+      <template v-if="selectedTool">
+        <!-- 头部概要 -->
+        <div class="detail-header">
+          <div class="detail-header__icon" :class="{ 'tool-icon--mcp': selectedTool.source === 'mcp' }">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 7h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h2"/>
+              <rect x="9" y="3" width="6" height="4" rx="1"/>
+            </svg>
+          </div>
+          <div class="detail-header__info">
+            <div class="detail-header__name">{{ selectedTool.name || selectedTool.toolName }}</div>
+            <div class="detail-header__meta">
+              <el-tag size="small" :type="selectedTool.source === 'mcp' ? 'warning' : 'info'">
+                {{ selectedTool.source === 'mcp' ? 'MCP' : '内置' }}
+              </el-tag>
+              <el-tag size="small" :type="selectedTool.enabled ? 'success' : 'info'">
+                {{ selectedTool.enabled ? '已启用' : '已禁用' }}
+              </el-tag>
+            </div>
+          </div>
+        </div>
+
+        <!-- 完整描述 -->
+        <div class="detail-section">
+          <div class="detail-section__title">工具描述</div>
+          <div class="detail-desc">{{ selectedTool.description || selectedTool.desc || '暂无描述' }}</div>
+        </div>
+
+        <!-- 基本字段列表 -->
+        <div class="detail-section">
+          <div class="detail-section__title">基本信息</div>
+          <div class="detail-fields">
+            <div v-if="selectedTool.id || selectedTool.toolName" class="detail-field">
+              <span class="detail-field__label">工具标识</span>
+              <span class="detail-field__value mono">{{ selectedTool.id || selectedTool.toolName }}</span>
+            </div>
+            <div v-if="selectedTool.source" class="detail-field">
+              <span class="detail-field__label">来源</span>
+              <span class="detail-field__value">{{ selectedTool.source === 'mcp' ? 'MCP 服务器' : '内置工具' }}</span>
+            </div>
+            <div v-if="selectedTool.enabled !== undefined" class="detail-field">
+              <span class="detail-field__label">状态</span>
+              <span class="detail-field__value">
+                <el-tag size="small" :type="selectedTool.enabled ? 'success' : 'info'">
+                  {{ selectedTool.enabled ? '已启用' : '已禁用' }}
+                </el-tag>
+              </span>
+            </div>
+            <div v-if="selectedTool.server_id" class="detail-field">
+              <span class="detail-field__label">所属服务器</span>
+              <span class="detail-field__value mono">{{ selectedTool.server_id }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 原始 JSON（兜底展示所有额外字段） -->
+        <div class="detail-section">
+          <div class="detail-section__title">原始数据</div>
+          <el-input
+            :model-value="JSON.stringify(selectedTool, null, 2)"
+            type="textarea"
+            :rows="8"
+            readonly
+            class="detail-raw"
+          />
+        </div>
+      </template>
+
+      <template #footer>
+        <el-button @click="detailVisible = false">关闭</el-button>
+        <el-button type="primary" :disabled="!selectedTool?.enabled" @click="toggleToolStatus(selectedTool)">
+          {{ selectedTool?.enabled ? '禁用该工具' : '启用该工具' }}
+        </el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -211,6 +295,8 @@ const chatVisible = ref(false)
 const isEditing = ref(false)
 const formRef = ref(null)
 const argsInput = ref('')
+const detailVisible = ref(false)
+const selectedTool = ref(null)
 
 // 添加/编辑表单默认折叠，点 CTA 按钮或"编辑"时展开
 const showServerForm = ref(false)
@@ -394,10 +480,19 @@ const toggleToolStatus = async (tool) => {
     const newStatus = !tool.enabled
     await toolsAPI.updateStatus(tool.name, newStatus)
     ElMessage.success(newStatus ? '已启用' : '已禁用')
+    // 详情弹窗内同步更新本地状态，让按钮立即切换文案
+    if (selectedTool.value && selectedTool.value.name === tool.name) {
+      selectedTool.value.enabled = newStatus
+    }
     await fetchTools()
   } catch {
     ElMessage.error('操作失败')
   }
+}
+
+const openToolDetail = (tool) => {
+  selectedTool.value = tool
+  detailVisible.value = true
 }
 
 const handleTabChange = (tab) => {
@@ -605,5 +700,116 @@ onMounted(fetchServers)
   align-items: center;
   padding-top: 12px;
   border-top: 1px dashed #e2e8f0;
+}
+
+/* ===== 工具详情弹窗样式 ===== */
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(45, 27, 105, 0.06));
+  border-radius: 10px;
+}
+.detail-header__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(59, 130, 246, 0.1);
+  color: #3B82F6;
+  flex-shrink: 0;
+}
+.detail-header__icon.tool-icon--mcp {
+  background: rgba(45, 27, 105, 0.1);
+  color: #2D1B69;
+}
+.detail-header__info {
+  flex: 1;
+  min-width: 0;
+}
+.detail-header__name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+.detail-header__meta {
+  display: flex;
+  gap: 6px;
+}
+
+.detail-section {
+  margin-bottom: 18px;
+}
+.detail-section__title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 8px;
+  padding-left: 8px;
+  border-left: 3px solid #3B82F6;
+}
+
+.detail-desc {
+  padding: 12px 14px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #334155;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.detail-fields {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px 16px;
+}
+.detail-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #f8fafc;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+.detail-field__label {
+  font-size: 12px;
+  color: #94a3b8;
+  flex-shrink: 0;
+  min-width: 70px;
+}
+.detail-field__value {
+  font-size: 13px;
+  color: #1e293b;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.detail-field__value.mono {
+  font-family: "JetBrains Mono", "Fira Code", Consolas, monospace;
+  font-size: 12px;
+  color: #3b82f6;
+}
+
+.detail-raw :deep(.el-textarea__inner) {
+  font-family: "JetBrains Mono", "Fira Code", Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #475569;
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  resize: vertical;
+}
+.detail-raw :deep(.el-textarea__inner):focus {
+  border-color: #3B82F6;
 }
 </style>

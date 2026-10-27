@@ -733,6 +733,32 @@ html.dark .approval-stat .stat-value {
   color: var(--text-color);
 }
 
+/* 最新动态列表：深色卡片内的文字与悬停态适配 */
+html.dark .activity-text {
+  color: var(--text-color);
+}
+
+html.dark .activity-time {
+  color: var(--text-secondary);
+}
+
+html.dark .activity-item:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+html.dark .activity-item.clickable:hover {
+  background-color: rgba(59, 130, 246, 0.15);
+}
+
+html.dark .activity-item.new-item {
+  background-color: rgba(24, 144, 255, 0.15);
+}
+
+/* 贷款用途进度条轨道：浅色 #f0f0f0 在暗色下会成为亮条 */
+html.dark .purpose-bar {
+  background: rgba(255, 255, 255, 0.1);
+}
+
 /* ==================== 8. 遗留样式（保持兼容性） ==================== */
 
 /* 原有图表区域（兼容旧版本） */
