@@ -7,6 +7,7 @@ public enum BusinessType {
     PAYMENT_REQUESTED("payment_requested_", "PAYMENT_REQUESTED", RabbitMQConfig.PAYMENT_REQUESTED_ROUTING_KEY),
     NOTIFICATION("notif_", "NOTIFICATION", RabbitMQConfig.NOTIFICATION_ROUTING_KEY),
     PAYMENT_SUCCESS("payment_success_", "PAYMENT_SUCCESS", RabbitMQConfig.PAYMENT_SUCCESS_ROUTING_KEY),
+    RISK_JOB_CREATED("risk_job_created_", "RISK_JOB_CREATED", RabbitMQConfig.RISK_JOB_CREATED_ROUTING_KEY),
     ;
 
     private final String messageIdPrefix;

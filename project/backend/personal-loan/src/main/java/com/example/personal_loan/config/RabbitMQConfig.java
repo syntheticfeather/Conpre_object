@@ -43,6 +43,18 @@ public class RabbitMQConfig {
     public static final String DLX = "dlx"; // 死信交换机
     public static final String DLQ_ROUTING_KEY = "dlx-dead-letter-routing-key";// 死信路由键
 
+    // ========== L7.2 风控异步链路 ==========
+    public static final String RISK_EXCHANGE = "risk.exchange";
+    public static final String RISK_JOB_CREATED_QUEUE = "risk.job.created.queue";
+    public static final String RISK_JOB_COMPLETED_QUEUE = "risk.job.completed.queue";
+    public static final String RISK_JOB_CREATED_RETRY_QUEUE = "risk.job.created.retry.queue";
+    public static final String RISK_JOB_COMPLETED_RETRY_QUEUE = "risk.job.completed.retry.queue";
+
+    public static final String RISK_JOB_CREATED_ROUTING_KEY = "risk.job.created";
+    public static final String RISK_JOB_COMPLETED_ROUTING_KEY = "risk.job.completed";
+    public static final String RISK_JOB_CREATED_RETRY_ROUTING_KEY = "risk.job.created.retry";
+    public static final String RISK_JOB_COMPLETED_RETRY_ROUTING_KEY = "risk.job.completed.retry";
+
     /**
      * 声明 Topic Exchange（持久化）
      */
@@ -194,6 +206,75 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(paymentRequestedRetryQueue())
                 .to(dlx())
                 .with(PAYMENT_REQUESTED_RETRY_ROUTING_KEY);
+    }
+
+    // ========== L7.2 风控异步链路 ==========
+
+    @Bean
+    public TopicExchange riskExchange() {
+        return new TopicExchange(RISK_EXCHANGE, true, false);
+    }
+
+    @Bean
+    public Queue riskJobCreatedQueue() {
+        return QueueBuilder.durable(RISK_JOB_CREATED_QUEUE)
+                .withArgument("x-dead-letter-exchange", DLX)
+                .withArgument("x-dead-letter-routing-key", RISK_JOB_CREATED_RETRY_ROUTING_KEY)
+                .build();
+    }
+
+    @Bean
+    public Queue riskJobCompletedQueue() {
+        return QueueBuilder.durable(RISK_JOB_COMPLETED_QUEUE)
+                .withArgument("x-dead-letter-exchange", DLX)
+                .withArgument("x-dead-letter-routing-key", RISK_JOB_COMPLETED_RETRY_ROUTING_KEY)
+                .build();
+    }
+
+    @Bean
+    public Binding bindRiskJobCreatedQueue() {
+        return BindingBuilder.bind(riskJobCreatedQueue())
+                .to(riskExchange())
+                .with(RISK_JOB_CREATED_ROUTING_KEY);
+    }
+
+    @Bean
+    public Binding bindRiskJobCompletedQueue() {
+        return BindingBuilder.bind(riskJobCompletedQueue())
+                .to(riskExchange())
+                .with(RISK_JOB_COMPLETED_ROUTING_KEY);
+    }
+
+    @Bean
+    public Queue riskJobCreatedRetryQueue() {
+        return QueueBuilder.durable(RISK_JOB_CREATED_RETRY_QUEUE)
+                .withArgument("x-message-ttl", 10000)
+                .withArgument("x-dead-letter-exchange", RISK_EXCHANGE)
+                .withArgument("x-dead-letter-routing-key", RISK_JOB_CREATED_ROUTING_KEY)
+                .build();
+    }
+
+    @Bean
+    public Queue riskJobCompletedRetryQueue() {
+        return QueueBuilder.durable(RISK_JOB_COMPLETED_RETRY_QUEUE)
+                .withArgument("x-message-ttl", 10000)
+                .withArgument("x-dead-letter-exchange", RISK_EXCHANGE)
+                .withArgument("x-dead-letter-routing-key", RISK_JOB_COMPLETED_ROUTING_KEY)
+                .build();
+    }
+
+    @Bean
+    public Binding riskJobCreatedRetryBinding() {
+        return BindingBuilder.bind(riskJobCreatedRetryQueue())
+                .to(dlx())
+                .with(RISK_JOB_CREATED_RETRY_ROUTING_KEY);
+    }
+
+    @Bean
+    public Binding riskJobCompletedRetryBinding() {
+        return BindingBuilder.bind(riskJobCompletedRetryQueue())
+                .to(dlx())
+                .with(RISK_JOB_COMPLETED_RETRY_ROUTING_KEY);
     }
 
 }

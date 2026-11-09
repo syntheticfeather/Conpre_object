@@ -30,7 +30,16 @@ public class RabbitUtil {
     }
 
     public void sendToApp(String routingKey ,Object message, CorrelationData correlationData) {
-        rabbitTemplate.convertAndSend(RabbitMQConfig.LOAN_EXCHANGE, routingKey, message, correlationData);
+        // L7.2：risk.* 主题走独立的 risk.exchange，其余沿用 loan.exchange
+        String exchange = routingKey != null && routingKey.startsWith("risk.")
+                ? RabbitMQConfig.RISK_EXCHANGE
+                : RabbitMQConfig.LOAN_EXCHANGE;
+        rabbitTemplate.convertAndSend(exchange, routingKey, message, correlationData);
+    }
+
+    // 向 risk.exchange 发送消息（L7.2）
+    public void sendToRisk(String routingKey, Object message) {
+        rabbitTemplate.convertAndSend(RabbitMQConfig.RISK_EXCHANGE, routingKey, message);
     }
 
     public void sendToDLX(String routingKey, Object message) {

@@ -141,6 +141,30 @@ agent:
   service:
     url: http://localhost:8000
 
+# L7.1 风控 LLM 特征同步闭环配置
+risk:
+  # feature flag：开启/关闭 L7.1 新链路（生产环境默认 false，灰度开启）
+  llm:
+    enabled: false
+
+  # L7.2 异步骨架开关（默认 false 走 L7.1 同步；开启后走 MQ 异步）
+  async:
+    enabled: true
+
+  # Python FastAPI 风控特征服务配置
+  service:
+    url: http://127.0.0.1:8000
+    api-key: classroom-demo-key
+    timeout-ms: 30000
+    # 材料路径前缀（如果 Python RISK_DOC_BASE_DIR 和 Java file-storage.base-dir 相同，留空即可）
+    doc-path-prefix: ""
+
+  # L7.2 异步任务超时补偿配置
+  job:
+    timeout-minutes: 30           # QUEUED 超过多久视为超时
+    timeout-scan-interval-ms: 300000  # 扫描间隔，默认 5 分钟
+    max-attempts: 3               # 超时后最多重投几次
+
 # SpringDoc 配置
 springdoc:
   api-docs:

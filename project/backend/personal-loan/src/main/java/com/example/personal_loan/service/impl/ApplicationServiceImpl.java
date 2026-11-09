@@ -7,6 +7,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.example.personal_loan.aop.RedisLocked;
 import com.example.personal_loan.dto.ApplicationRequest;
@@ -30,6 +32,8 @@ import com.example.personal_loan.service.ApplicationService;
 import com.example.personal_loan.service.AuthService;
 import com.example.personal_loan.service.LoanProductService;
 import com.example.personal_loan.service.MlTrainingLogService;
+import com.example.personal_loan.service.RiskFeatureOrchestrator;
+import com.example.personal_loan.service.RiskJobAsyncService;
 import com.example.personal_loan.service.RiskScoringService;
 import com.example.personal_loan.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -81,6 +85,12 @@ public class ApplicationServiceImpl implements ApplicationService{
 
     @Autowired
     private RiskScoringService riskScoringService;
+
+    @Autowired(required = false)
+    private RiskFeatureOrchestrator riskFeatureOrchestrator;
+
+    @Autowired(required = false)
+    private RiskJobAsyncService riskJobAsyncService;
 
     /**
      * 添加贷款申请
@@ -171,6 +181,45 @@ public class ApplicationServiceImpl implements ApplicationService{
 
         // 🆕 采集 ML 训练特征（失败不阻塞主流程）
         mlTrainingLogService.collectFeatures(userId, application.getId());
+
+        // 🆕 L7 风控链路（失败不阻塞主流程）：
+        //    L7.2 异步开关开启时入队并返回；
+        //    L7.1 同步链路改为事务提交后再执行，避免在申请提交的数据库事务内等待 Python HTTP。
+        try {
+            final Long appId = application.getId();
+            if (riskJobAsyncService != null && riskJobAsyncService.isEnabled()) {
+                riskJobAsyncService.enqueue(userId, appId);
+            } else if (riskFeatureOrchestrator != null && riskFeatureOrchestrator.isEnabled()) {
+                scheduleL7SyncAfterCommit(userId, appId);
+            }
+        } catch (Exception e) {
+            // 任何异常都不应该影响申请提交 —— LLM 链路是增强功能
+            log.error("[L7] 风控链路异常 userId={} appId={}: {}",
+                    userId, application.getId(), e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 把 L7.1 同步风控计算注册到当前事务的 afterCommit 回调中。
+     * 这样 Python HTTP 调用不会占用申请提交的数据库连接。
+     */
+    private void scheduleL7SyncAfterCommit(Long userId, Long applicationId) {
+        if (!TransactionSynchronizationManager.isActualTransactionActive()) {
+            // 无事务时直接执行（兼容测试场景）
+            riskFeatureOrchestrator.execute(userId, applicationId);
+            return;
+        }
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                try {
+                    riskFeatureOrchestrator.execute(userId, applicationId);
+                } catch (Exception e) {
+                    log.error("[L7.1] afterCommit 同步风控计算失败 userId={} appId={}: {}",
+                            userId, applicationId, e.getMessage(), e);
+                }
+            }
+        });
     }
 
     /**
