@@ -1,6 +1,7 @@
 package com.example.personal_loan.mq;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +41,7 @@ public class PaymentRequestedConsumer {
 
     @RabbitListener(queues = RabbitMQConfig.PAYMENT_REQUESTED_QUEUE)
     public void consume(Message message, Channel channel) throws IOException {
-        String payload = new String(message.getBody());
+        String payload = new String(message.getBody(), StandardCharsets.UTF_8);
         String messageId = message.getMessageProperties().getHeader("messageId");
         Long tag = rabbitUtil.getTag(message);
 

@@ -1,5 +1,6 @@
 package com.example.personal_loan.mq;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -62,7 +63,7 @@ public class OutboxMessagePoller {
         MessageProperties props = new MessageProperties();
         props.setHeader("messageId", outbox.getMessageId()); // ← 放入 header
         props.setContentType("application/json");
-        return new Message(outbox.getPayload().getBytes(), props);
+        return new Message(outbox.getPayload().getBytes(StandardCharsets.UTF_8), props);
     }
 
     public void sendAndMarkMessage (OutboxMessage message, CorrelationData correlationData){

@@ -2,6 +2,7 @@ package com.example.personal_loan.mq;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class PaymentSuccessConsumer {
 
     @RabbitListener(queues = RabbitMQConfig.PAYMENT_SUCCESS_QUEUE)
     public void consume(Message message, Channel channel) throws IOException {
-        String payload = new String(message.getBody());
+        String payload = new String(message.getBody(), StandardCharsets.UTF_8);
         String messageId = message.getMessageProperties().getHeader("messageId");
         Long tag = rabbitUtil.getTag(message);
         if (messageId == null) {
