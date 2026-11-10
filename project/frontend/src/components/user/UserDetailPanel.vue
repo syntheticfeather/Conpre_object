@@ -390,6 +390,7 @@ import { loanAPI } from '@/api'
 import ImagePreview from '@/components/shared/ImagePreview.vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import * as echarts from 'echarts'
+import { getChartTheme, onChartThemeChange } from '@/utils/chartTheme'
 import {
   ArrowLeft, Edit, Lock, CircleClose, Loading, Phone, Location,
   StarFilled, CreditCard, TrendCharts, CircleCheck, CircleCheckFilled, User, Clock
@@ -414,6 +415,7 @@ const error = ref(null)
 const activeTab = ref('basic')
 const radarChartRef = ref(null)
 let radarChart = null
+let unsubscribeChartTheme = null
 
 const showImagePreview = ref(false)
 const previewImages = ref([])
@@ -606,10 +608,15 @@ const initRadarChart = () => {
   radarChart = echarts.init(radarChartRef.value)
 
   const radarData = calculateRadarData()
+  const t = getChartTheme()
 
   const option = {
+    textStyle: { color: t.text },
     tooltip: {
-      trigger: 'item'
+      trigger: 'item',
+      backgroundColor: t.tooltipBg,
+      borderColor: t.tooltipBorder,
+      textStyle: { color: t.tooltipText }
     },
     radar: {
       indicator: radarData.map(item => ({
@@ -618,22 +625,22 @@ const initRadarChart = () => {
       })),
       radius: '65%',
       axisName: {
-        color: '#666',
+        color: t.textSecondary,
         fontSize: 12
       },
       splitArea: {
         areaStyle: {
-          color: ['#f8f9fa', '#fff']
+          color: t.splitArea
         }
       },
       axisLine: {
         lineStyle: {
-          color: '#e0e0e0'
+          color: t.axisLine
         }
       },
       splitLine: {
         lineStyle: {
-          color: '#e0e0e0'
+          color: t.splitLine
         }
       }
     },
@@ -884,6 +891,7 @@ watch(activeTab, (newTab) => {
 })
 
 onMounted(() => {
+  unsubscribeChartTheme = onChartThemeChange(initRadarChart)
   fetchProductList()
   nextTick(() => {
     initRadarChart()
@@ -891,6 +899,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  unsubscribeChartTheme?.()
   if (radarChart) {
     radarChart.dispose()
   }

@@ -14,7 +14,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-md) var(--space-lg);
+  padding: 0 var(--space-lg);
   border-bottom: 1px solid var(--border-color-lighter);
   background-color: var(--detail-head-bg);
 }
@@ -31,14 +31,14 @@
   font-size: var(--text-base);
   font-weight: 500;
   cursor: pointer;
-  color: var(--brand-500);
+  color: var(--brand-500-fg);
   padding: 6px 12px;
   border-radius: var(--radius-md);
   transition: color var(--duration-fast) var(--ease-out-expo);
 }
 
 .back-btn:hover {
-  color: var(--brand-600);
+  color: var(--brand-600-fg);
 }
 
 /* ========== loan 分支：顶栏 ========== */
@@ -198,7 +198,7 @@
 
 .loan-tile__label {
   font-size: var(--text-sm);
-  color: #31343b;
+  color: var(--text-color);
   margin-bottom: 4px;
 }
 
@@ -304,11 +304,14 @@
 }
 
 .loan-col {
+  display: flex;
+  flex-direction: column;
+
   border: 1px solid var(--border-color-light);
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
-  display: flex;
-  flex-direction: column;
+  
+  background: var(--card-bg);
   box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
   transition: transform var(--duration-fast) var(--ease-out-expo),
               box-shadow var(--duration-fast) var(--ease-out-expo);
@@ -410,7 +413,7 @@
   padding: 2px 8px;
   border-radius: var(--radius-full);
   background: var(--brand-50);
-  color: var(--brand-600);
+  color: var(--brand-600-fg);
   font-style: normal;
 }
 
@@ -554,7 +557,7 @@
 .loan-cert-item__state {
   font-size: var(--text-xs, 11px);
   font-weight: 500;
-  color: var(--brand-500);
+  color: var(--brand-500-fg);
   flex-shrink: 0;
   white-space: nowrap;
 }
@@ -707,7 +710,7 @@
 .loan-cert-item__icon .iconfont {
   font-size: 18px;
   line-height: 1;
-  color: var(--brand-500);
+  color: var(--brand-500-fg);
 }
 
 .applicant-card__meta .iconfont {
@@ -767,4 +770,43 @@
     flex-direction: column;
     text-align: center;
   }
+}
+
+/* ========== 暗色主题覆盖 ========== */
+html.dark .loan-tile {
+  box-shadow: none;
+  border-color: var(--border-color);
+}
+
+/* 6 个 tile 的浅色系背景在暗色下改为同色相半透明底 */
+html.dark .loan-tile:nth-child(1) { background: rgba(59, 130, 246, 0.15); } /* 蓝 */
+html.dark .loan-tile:nth-child(2) { background: rgba(139, 92, 246, 0.15); } /* 紫 */
+html.dark .loan-tile:nth-child(3) { background: rgba(20, 184, 166, 0.15); } /* 青 */
+html.dark .loan-tile:nth-child(4) { background: rgba(16, 185, 129, 0.15); } /* 薄荷 */
+html.dark .loan-tile:nth-child(5) { background: rgba(236, 72, 153, 0.15); } /* 粉 */
+html.dark .loan-tile:nth-child(6) { background: rgba(245, 158, 11, 0.15); } /* 琥珀 */
+
+html.dark .loan-tile:nth-child(1) .loan-tile__icon { background: rgba(59, 130, 246, 0.25); }
+html.dark .loan-tile:nth-child(2) .loan-tile__icon { background: rgba(139, 92, 246, 0.25); }
+html.dark .loan-tile:nth-child(3) .loan-tile__icon { background: rgba(20, 184, 166, 0.25); }
+html.dark .loan-tile:nth-child(4) .loan-tile__icon { background: rgba(16, 185, 129, 0.25); }
+html.dark .loan-tile:nth-child(5) .loan-tile__icon { background: rgba(236, 72, 153, 0.25); }
+html.dark .loan-tile:nth-child(6) .loan-tile__icon { background: rgba(245, 158, 11, 0.25); }
+
+/* 深底上提亮一档数值色，语义色保持 */
+html.dark .loan-tile__value {
+  color: #8fa8e0;
+}
+
+html.dark .loan-tile__value.is-status-overdue {
+  color: var(--status-danger);
+}
+
+html.dark .loan-tile__value.is-status-done {
+  color: var(--status-success);
+}
+
+html.dark .loan-col {
+  box-shadow: none;
+  border-color: var(--border-color);
 }

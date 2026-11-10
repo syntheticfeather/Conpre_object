@@ -769,7 +769,7 @@ onMounted(async () => {
   gap: 8px;
   padding: 6px 10px;
   margin-bottom: 10px;
-  background: var(--bg-color-light, #f5f7fa);
+  background: var(--surface-subtle);
   border-radius: 6px;
 }
 

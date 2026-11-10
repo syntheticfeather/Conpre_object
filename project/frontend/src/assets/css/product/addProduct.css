@@ -31,7 +31,7 @@
   font-size: var(--text-xl);
   font-weight: 700;
   letter-spacing: -0.02em;
-  color: var(--text-primary, var(--color-black));
+  color: var(--text-color);
 }
 
 .apv-header__back {
@@ -47,7 +47,7 @@
   transition: all var(--duration-fast) var(--ease-out-expo);
 }
 .apv-header__back:hover {
-  color: var(--brand-600);
+  color: var(--brand-600-fg);
   border-color: var(--brand-500);
   transform: translateY(-1px);
   box-shadow: 0 6px 16px -8px rgba(59, 130, 246, 0.55);
@@ -85,7 +85,7 @@
   font-size: var(--text-lg);
   font-weight: 750;
   letter-spacing: -0.02em;
-  color: var(--text-primary, var(--color-black));
+  color: var(--text-color);
 }
 .apv-completion__meta span {
   font-size: var(--text-sm);
@@ -118,7 +118,7 @@
   color: var(--text-secondary);
 }
 .apv-tip b {
-  color: var(--brand-600);
+  color: var(--brand-600-fg);
 }
 
 /* 营销信息（左栏常驻面板） */
@@ -177,12 +177,12 @@
   place-items: center;
   border-radius: var(--radius-sm);
   background: var(--brand-50);
-  color: var(--brand-600);
+  color: var(--brand-600-fg);
 }
 .apv-card__title {
   font-size: var(--text-base);
   font-weight: 700;
-  color: var(--text-primary, var(--color-black));
+  color: var(--text-color);
 }
 .apv-card__index {
   margin-left: auto;
@@ -193,7 +193,7 @@
 .apv-card__count {
   font-size: var(--text-sm);
   font-weight: 600;
-  color: var(--brand-600);
+  color: var(--brand-600-fg);
   background: var(--brand-50);
   padding: 2px 9px;
   border-radius: var(--radius-full);
@@ -232,7 +232,7 @@
   font-size: var(--text-sm);
   font-weight: 650;
   font-variant-numeric: tabular-nums;
-  color: var(--brand-600);
+  color: var(--brand-600-fg);
   background: var(--brand-50);
   border: 1px dashed rgba(59, 130, 246, 0.4);
   border-radius: var(--radius-sm);
@@ -342,7 +342,7 @@
   transition: all var(--duration-fast) var(--ease-out-expo);
 }
 .apv-chip:hover {
-  color: var(--brand-600);
+  color: var(--brand-600-fg);
   border-color: var(--brand-500);
   background: var(--brand-50);
 }
@@ -454,7 +454,7 @@
   border-color: var(--border-color-base);
 }
 .apv-btn--ghost:hover {
-  color: var(--brand-600);
+  color: var(--brand-600-fg);
   border-color: var(--brand-500);
   background: var(--brand-50);
 }

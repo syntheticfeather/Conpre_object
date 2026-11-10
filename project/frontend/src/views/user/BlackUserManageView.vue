@@ -51,7 +51,7 @@ const closeUserDetail = () => {
 
 <style scoped>
 .black-user-manage-view {
-  padding: 20px;
+  padding: 0 20px;
 }
 
 .title {

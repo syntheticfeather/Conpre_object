@@ -56,7 +56,7 @@ defineEmits(['update:modelValue'])
 }
 
 .filter-chip:hover {
-  color: var(--brand-600);
+  color: var(--brand-600-fg);
   border-color: var(--brand-500);
   transform: translateY(-1px);
 }

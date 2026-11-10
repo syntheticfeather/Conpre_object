@@ -23,9 +23,13 @@ a {
 
 /* 通用属性值预设 - 亮色模式 */
 :root {
+    /* 让浏览器原生控件（滚动条、下拉、日期选择器）跟随主题 */
+    color-scheme: light;
+
     /* 基础颜色 */
     --html-bg:#fff;
     --text-color: #303133;
+    --text-muted: #909399;
 
     /* 导航栏颜色 */
     --nabar-color: #041a4a;
@@ -81,6 +85,7 @@ a {
     --add-container-bg: white;
 
     --card-bg: #ffffff;
+    --surface-subtle: #f5f7fa;                         /* 卡片内的浅色分区 / hover 底色 */
     --text-secondary: #606266;
     --border-color: #dcdfe6;
     --hover-bg: #f5f7fa;
@@ -535,6 +540,9 @@ a {
     --brand-100: #DBEAFE;                       /* 品牌蓝浅底 */
     --brand-500: #3B82F6;                       /* 主操作蓝 */
     --brand-600: #2563EB;                       /* 主操作蓝（按下/深色） */
+    /* 文字专用：填充色放到深底上会"发光"，文字需要单独一档 */
+    --brand-500-fg: #3B82F6;
+    --brand-600-fg: #2563EB;
     --brand-accent: #25E0BF;                    /* 强调青（成功/激活，渐变右端） */
 
     /* 语义状态色 */
@@ -576,8 +584,11 @@ a {
 
 /* 深色模式 */
 html.dark {
+    color-scheme: dark;
+
     --html-bg:#1a1a2e;
     --text-color: #e0e0e0;
+    --text-muted: #9a9aa8;
 
     --nabar-color: #1a1a2e;
     --nabar-shadow-color: 5px 5px 6px rgb(0 0 0);
@@ -585,6 +596,8 @@ html.dark {
     --sidebar-color:#1c2b52;
     --sidebar-bg-color: #16213e;
     --sidebar-shadow-color: 2px 0 8px rgb(17 22 36);
+    /* 暗色下侧栏选中项用"提亮"而不是"压黑" */
+    --sidebar-active-color: rgba(255, 255, 255, 0.1);
 
     /*标题颜色*/
     --title-color: #d0d2d6;
@@ -600,19 +613,21 @@ html.dark {
     /* 暗色下水印进一步压低，避免在深底上发灰 */
     --table-watermark-opacity: 0.05;
     /*批量处理框*/
-    --batch-actions-bg: #f6ffed;
-    --batch-actions-border: #b7eb8f;
+    --batch-actions-bg: rgba(103, 194, 58, 0.14);
+    --batch-actions-border: rgba(103, 194, 58, 0.4);
     --selected-info-color: #52c41a;
     /*详情框*/
     --auth-item-bg: #8EC0E4;
     --detail-color: #ced3dc;
-    --detail-bg:#5c5c71;
+    --detail-bg:#232338;
     --detail-head-bg:#1a1a2e;
     --detail-border:#f5f5f5;
     --detail-shadow: 3px 3px 6px rgb(136 139 142 / 56%);
     --detail-subtitle-color: #94c4ea;
     --option-th-color: #2b2b2c;
     --detail-option-th-bg: #0c073559;
+    /* 详情/聊天等浅底区域，暗色下不能沿用 #f0f2f5 */
+    --detail-normal-bg: #1f1f33;
 
     /*分页组件颜色*/
     --pag-buttom-bg: #252542;
@@ -629,6 +644,10 @@ html.dark {
 
     /* 卡片和文字颜色 */
     --card-bg: #1a1a2e;
+    --surface-subtle: #232338;
+    /* 品牌色在深底上做文字要提亮（约 6.8:1），填充仍用 --brand-500/600 */
+    --brand-500-fg: #60A5FA;
+    --brand-600-fg: #60A5FA;
     --text-secondary: #b0b0b0;
     --border-color: #444;
     --hover-bg: #252542;
@@ -898,8 +917,8 @@ html.dark {
     --login-bg: #11131d;
     --login-border: rgba(255, 255, 255, 0.5);
     --login-input-bg: rgba(255, 255, 255, 0);
-    --login-input-text: #000;
-    --login-input-filled-bg: #fff;
+    --login-input-text: #e8e8ea;
+    --login-input-filled-bg: #2b2b45;
     --login-disabled-bg: #555;
     --login-disabled-border: #666;
     --login-disabled-shadow: rgba(0,0,0,0.3);
@@ -1174,8 +1193,6 @@ html.dark {
 
 /*标题*/
 .header {
-    margin-top: 10px;
-
     width: auto;
     color: var(--title-color);
 

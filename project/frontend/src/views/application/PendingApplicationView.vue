@@ -1,7 +1,7 @@
 <template>
-  <div class="page-stage" :class="{ 'stage--detail': showDetailModal }">
+  <PageStage :active="showDetailModal">
     <!-- 列表面板：页头 + 欢迎条 + 列表，整页左滑出场 -->
-    <div class="stage-pane pane-list">
+    <template #list>
       <div class="header">
         待办审核
         <div class="header-right">
@@ -63,22 +63,24 @@
 
         <div v-if="loading" class="list-loading-bar" aria-hidden="true"></div>
       </div>
-    </div>
+    </template>
 
     <!-- 详情面板：从右侧整页滑入占满 -->
-    <div class="stage-pane pane-detail">
-      <ApplicationDetailModal
-        ref="detailModalRef"
-        v-model="showDetailModal"
-        :application-id="selectedRequestId"
-        :review-type="reviewMode"
-        :is-pending="activeTab === 'pending'"
-        embedded
-        @close="closeDetailModal"
-        @submit="handleReviewSubmit"
-      />
-    </div>
-  </div>
+    <template #detail>
+      <div class="application-detail-inner">
+        <ApplicationDetailModal
+          ref="detailModalRef"
+          v-model="showDetailModal"
+          :application-id="selectedRequestId"
+          :review-type="reviewMode"
+          :is-pending="activeTab === 'pending'"
+          embedded
+          @close="closeDetailModal"
+          @submit="handleReviewSubmit"
+        />
+      </div>
+    </template>
+  </PageStage>
 </template>
 
 <script setup>
@@ -93,6 +95,7 @@ import CompletedApplications from '@/components/application-review/CompletedAppl
 import PostponePendingList from '@/components/application-review/PostponePendingList.vue'
 import PostponeCompletedList from '@/components/application-review/PostponeCompletedList.vue'
 import ApplicationDetailModal from '@/components/application-review/ApplicationDetailModal.vue'
+import PageStage from '@/components/shared/PageStage.vue'
 
 const applicationStore = useApplicationStore()
 const router = useRouter()
@@ -368,70 +371,17 @@ onMounted(async () => {
   }
 }
 
-/* ===== Push 转场舞台：列表整页左滑消失、详情整页右滑占满 ===== */
-/* 几何公理：列表静止位 X=0，详情静止位 X=+100%（屏外右侧），两页等宽 */
-/* 节奏统一引用 base.css 全局 token：--page-stage-enter / -leave / -ease */
-.page-stage {
-  position: relative;
-  overflow: hidden;
-}
-
-.stage-pane {
-  width: 100%;
-  will-change: transform;
-}
-
-/* 激活面板 relative 占流（决定舞台高度）且层级在上；非激活面板 absolute 叠放 */
-.pane-list {
-  position: relative;
-  z-index: 2;
-  transform: translateX(0);
-  visibility: visible;
-  transition: transform var(--page-stage-enter) var(--page-stage-ease),
-              visibility 0s;
-}
-
-.pane-detail {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
+/* ===== Push 转场舞台：结构与转场节奏均由 PageStage 组件统一提供 ===== */
+/* 详情面板内层：不设背景色 */
+.application-detail-inner {
   padding: 0 20px 20px;
-  background: var(--html-bg, #f5f7fa);
-  transform: translateX(100%);
-  visibility: hidden;
-  overflow-y: auto;
-  transition: transform var(--page-stage-leave) var(--page-stage-ease),
-              visibility 0s linear var(--page-stage-leave);
 }
 
-/* 打开详情：列表脱离文档流滑向屏外左侧，详情接管并从右侧滑入 */
-.stage--detail .pane-list {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  transform: translateX(-100%);
-  visibility: hidden;
-  pointer-events: none;
-  transition: transform var(--page-stage-leave) var(--page-stage-ease),
-              visibility 0s linear var(--page-stage-leave);
-}
-
-.stage--detail .pane-detail {
-  position: relative;
-  z-index: 2;
-  transform: translateX(0);
-  visibility: visible;
-  transition: transform var(--page-stage-enter) var(--page-stage-ease),
-              visibility 0s;
-}
-
-.stage--detail :deep(.inline-detail-panel) {
+.application-detail-inner :deep(.inline-detail-panel) {
   margin-top: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pane-list,
-  .pane-detail,
   .list-pane {
     transition-duration: 1ms !important;
   }

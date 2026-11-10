@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { setChartTheme } from '@/utils/chartTheme'
 
 export const useAppStore = defineStore('app', {
   state: () => ({
@@ -45,6 +46,8 @@ export const useAppStore = defineStore('app', {
       } else {
         document.documentElement.classList.remove('dark')
       }
+      // Canvas 图表读不到 CSS 变量，需要主动通知重绘
+      setChartTheme(this.theme)
     },
 
     resetState() {

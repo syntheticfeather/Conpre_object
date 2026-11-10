@@ -5,6 +5,21 @@
     <link rel="icon" type="image/png" href="/logo.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#2D1B69">
+    <script>
+      // 首屏防闪烁：在应用挂载前恢复主题类名，避免刷新时先白后黑
+      try {
+        var savedStore = JSON.parse(localStorage.getItem('app-store') || '{}')
+        if (savedStore.theme === 'dark') {
+          document.documentElement.classList.add('dark')
+        }
+      } catch (e) {
+        /* 存储数据异常时保持默认亮色 */
+      }
+    </script>
+    <style>
+      /* 应用样式加载前先把底色铺上，避免第一帧白屏 */
+      html.dark { background-color: #1a1a2e; }
+    </style>
     <title>XIN Finance · 管理员控制台</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

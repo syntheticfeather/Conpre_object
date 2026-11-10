@@ -622,13 +622,13 @@ onMounted(fetchServers)
 .tool-empty {
   grid-column: 1 / -1;
   text-align: center;
-  color: #94a3b8;
+  color: var(--text-muted);
   padding: 40px 0;
 }
 .tool-card {
   position: relative;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 16px;
   overflow: hidden;
@@ -644,7 +644,7 @@ onMounted(fetchServers)
 }
 .tool-card:hover {
   box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
-  border-color: #cbd5e1;
+  border-color: var(--border-color);
 }
 .tool-header {
   display: flex;
@@ -674,19 +674,19 @@ onMounted(fetchServers)
 .tool-name {
   font-size: 14px;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--text-color);
   margin-bottom: 4px;
 }
 .tool-desc-short {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .tool-desc {
   font-size: 12px;
-  color: #64748b;
+  color: var(--text-secondary);
   line-height: 1.6;
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -699,7 +699,7 @@ onMounted(fetchServers)
   justify-content: space-between;
   align-items: center;
   padding-top: 12px;
-  border-top: 1px dashed #e2e8f0;
+  border-top: 1px dashed var(--border-color-light);
 }
 
 /* ===== 工具详情弹窗样式 ===== */
@@ -734,7 +734,7 @@ onMounted(fetchServers)
 .detail-header__name {
   font-size: 16px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-color);
   margin-bottom: 6px;
 }
 .detail-header__meta {
@@ -748,7 +748,7 @@ onMounted(fetchServers)
 .detail-section__title {
   font-size: 13px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--text-secondary);
   margin-bottom: 8px;
   padding-left: 8px;
   border-left: 3px solid #3B82F6;
@@ -758,10 +758,10 @@ onMounted(fetchServers)
   padding: 12px 14px;
   font-size: 14px;
   line-height: 1.7;
-  color: #334155;
-  background: #f8fafc;
+  color: var(--text-secondary);
+  background: var(--surface-subtle);
   border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-color-light);
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -776,19 +776,19 @@ onMounted(fetchServers)
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  background: #f8fafc;
+  background: var(--surface-subtle);
   border-radius: 6px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-color-light);
 }
 .detail-field__label {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--text-muted);
   flex-shrink: 0;
   min-width: 70px;
 }
 .detail-field__value {
   font-size: 13px;
-  color: #1e293b;
+  color: var(--text-color);
   font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -804,12 +804,32 @@ onMounted(fetchServers)
   font-family: "JetBrains Mono", "Fira Code", Consolas, monospace;
   font-size: 12px;
   line-height: 1.5;
-  color: #475569;
-  background: #f8fafc;
-  border-color: #e2e8f0;
+  color: var(--text-secondary);
+  background: var(--surface-subtle);
+  border-color: var(--border-color-light);
   resize: vertical;
 }
 .detail-raw :deep(.el-textarea__inner):focus {
   border-color: #3B82F6;
+}
+
+/* ===== 暗色主题覆盖 ===== */
+html.dark .tool-card:hover {
+  box-shadow: none;
+  border-color: var(--border-color-light);
+}
+
+html.dark .tool-icon--mcp {
+  background: rgba(139, 124, 240, 0.18);
+  color: #8b7cf0;
+}
+
+html.dark .detail-header {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.16), rgba(45, 27, 105, 0.28));
+}
+
+html.dark .detail-header__icon.tool-icon--mcp {
+  background: rgba(139, 124, 240, 0.18);
+  color: #8b7cf0;
 }
 </style>

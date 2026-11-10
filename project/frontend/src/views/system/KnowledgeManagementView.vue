@@ -802,13 +802,13 @@ onMounted(async () => {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-color);
 }
 
 .card-desc {
   margin: 0 0 16px 0;
   font-size: 13px;
-  color: #909399;
+  color: var(--text-muted);
   padding-left: 28px;
 }
 
@@ -832,28 +832,28 @@ onMounted(async () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 1.5px dashed #e4e7ed;
+  border: 1.5px dashed var(--border-color-light);
   border-radius: 6px;
-  background: #f5f7fa;
+  background: var(--surface-subtle);
   cursor: not-allowed;
   opacity: 0.75;
   transition: none;
 }
 
 .faq-attachment-upload :deep(.el-upload-dragger:hover) {
-  border-color: #e4e7ed;
-  background: #f5f7fa;
+  border-color: var(--border-color-light);
+  background: var(--surface-subtle);
 }
 
 .faq-upload-icon {
   font-size: 28px;
-  color: #c0c4cc;
+  color: var(--text-muted);
   margin-bottom: 4px;
 }
 
 .faq-upload-text {
   font-size: 13px;
-  color: #909399;
+  color: var(--text-muted);
 }
 
 .faq-upload-tip {
@@ -870,7 +870,7 @@ onMounted(async () => {
   gap: 12px;
   margin-top: 14px;
   padding: 12px 16px;
-  background: #f5f7fa;
+  background: var(--surface-subtle);
   border-radius: 6px;
 }
 
@@ -880,7 +880,7 @@ onMounted(async () => {
 
 .actions-hint {
   font-size: 13px;
-  color: #606266;
+  color: var(--text-secondary);
 }
 
 /* ====== 文档上传区域样式 ====== */
@@ -899,9 +899,9 @@ onMounted(async () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 2px dashed #d9d9d9;
+  border: 2px dashed var(--border-color);
   border-radius: 8px;
-  background: #fafafa;
+  background: var(--surface-subtle);
   transition: all 0.3s;
 }
 
@@ -912,13 +912,13 @@ onMounted(async () => {
 
 .doc-upload-icon {
   font-size: 48px;
-  color: #c0c4cc;
+  color: var(--text-muted);
   margin-bottom: 12px;
 }
 
 .doc-upload-text {
   font-size: 14px;
-  color: #606266;
+  color: var(--text-secondary);
 }
 
 .doc-upload-text em {
@@ -930,7 +930,7 @@ onMounted(async () => {
 .upload-guide {
   margin-top: 16px;
   padding: 12px 16px;
-  background: #f5f7fa;
+  background: var(--surface-subtle);
   border-radius: 6px;
   border-left: 3px solid #409eff;
 }
@@ -938,7 +938,7 @@ onMounted(async () => {
 .guide-title {
   font-size: 13px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-color);
   margin-bottom: 8px;
 }
 
@@ -950,7 +950,7 @@ onMounted(async () => {
 
 .guide-list li {
   font-size: 12px;
-  color: #606266;
+  color: var(--text-secondary);
   line-height: 1.8;
   display: flex;
   gap: 8px;
@@ -958,18 +958,18 @@ onMounted(async () => {
 }
 
 .guide-list li strong {
-  color: #303133;
+  color: var(--text-color);
   min-width: 110px;
 }
 
 .guide-list li span {
-  color: #909399;
+  color: var(--text-muted);
 }
 
 .guide-note {
   margin-top: 10px;
   padding-top: 10px;
-  border-top: 1px dashed #e4e7ed;
+  border-top: 1px dashed var(--border-color-light);
   font-size: 12px;
   color: #e6a23c;
 }
@@ -977,7 +977,7 @@ onMounted(async () => {
 /* ====== 上传结果列表 ====== */
 .upload-result-list {
   margin-top: 16px;
-  border: 1px solid #ebeef5;
+  border: 1px solid var(--border-color-light);
   border-radius: 6px;
   overflow: hidden;
 }
@@ -987,11 +987,11 @@ onMounted(async () => {
   justify-content: space-between;
   align-items: center;
   padding: 10px 12px;
-  background: #fafafa;
-  border-bottom: 1px solid #ebeef5;
+  background: var(--surface-subtle);
+  border-bottom: 1px solid var(--border-color-light);
   font-size: 13px;
   font-weight: 500;
-  color: #606266;
+  color: var(--text-secondary);
 }
 
 .result-items {
@@ -1004,7 +1004,7 @@ onMounted(async () => {
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--border-color-light);
   transition: background 0.2s;
 }
 
@@ -1013,7 +1013,7 @@ onMounted(async () => {
 }
 
 .result-item:hover {
-  background: #f5f7fa;
+  background: var(--hover-bg);
 }
 
 .result-item .el-icon {
@@ -1049,13 +1049,13 @@ onMounted(async () => {
 
 .item-name {
   font-size: 13px;
-  color: #303133;
+  color: var(--text-color);
   word-break: break-all;
 }
 
 .item-status {
   font-size: 11px;
-  color: #909399;
+  color: var(--text-muted);
 }
 
 /* ====== 搜索和列表区域 ====== */
@@ -1130,7 +1130,7 @@ onMounted(async () => {
   color: var(--text-color);
 }
 .content-text {
-  background: var(--knowledge-content-bg, #f5f7fa);
+  background: var(--knowledge-content-bg, var(--surface-subtle));
   padding: 16px;
   border-radius: 8px;
   white-space: pre-wrap;
@@ -1152,7 +1152,7 @@ onMounted(async () => {
 }
 .faq-count {
   font-size: 14px;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 .faq-card-grid {
   display: grid;
@@ -1166,8 +1166,8 @@ onMounted(async () => {
 }
 .faq-card {
   position: relative;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 20px;
   cursor: pointer;
@@ -1184,7 +1184,7 @@ onMounted(async () => {
 }
 .faq-card:hover {
   box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
-  border-color: #cbd5e1;
+  border-color: var(--border-color);
 }
 .faq-card-top {
   display: flex;
@@ -1194,7 +1194,7 @@ onMounted(async () => {
 }
 .faq-update-time {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 .faq-question {
   display: flex;
@@ -1213,7 +1213,7 @@ onMounted(async () => {
 .faq-question-text {
   font-size: 15px;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--text-color);
   line-height: 1.5;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -1222,7 +1222,7 @@ onMounted(async () => {
 }
 .faq-answer {
   font-size: 13px;
-  color: #64748b;
+  color: var(--text-secondary);
   line-height: 1.6;
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -1239,7 +1239,7 @@ onMounted(async () => {
   align-items: center;
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 1px dashed #e2e8f0;
+  border-top: 1px dashed var(--border-color-light);
 }
 .faq-action-left {
   display: flex;
@@ -1247,6 +1247,20 @@ onMounted(async () => {
 }
 .faq-expand-hint {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--text-muted);
+}
+
+/* ====== 暗色主题覆盖 ====== */
+html.dark .doc-upload-demo :deep(.el-upload-dragger:hover) {
+  background: rgba(64, 158, 255, 0.12);
+}
+
+html.dark .faq-upload-tip {
+  color: #e6a23c;
+}
+
+html.dark .faq-card:hover {
+  box-shadow: none;
+  border-color: var(--border-color-light);
 }
 </style>

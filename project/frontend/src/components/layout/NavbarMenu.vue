@@ -904,6 +904,26 @@ img[alt="admin"] {
   color: var(--brand-500, #3B82F6);
 }
 
+/* ===== 暗色模式：通知面板与管理员菜单 ===== */
+html.dark .notification-panel {
+  background: rgba(26, 26, 46, 0.94);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+html.dark #admin-table {
+  background: rgba(26, 26, 46, 0.94);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+html.dark .admin-menu-item { color: #d4dae3; }
+
+html.dark .admin-menu-item:hover {
+  background: rgba(96, 165, 250, 0.15);
+  color: #93c5fd;
+}
+
 .admin-menu-item--danger:hover {
   background: rgba(239, 68, 68, 0.08);
   color: var(--status-danger, #EF4444);

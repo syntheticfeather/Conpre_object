@@ -734,6 +734,47 @@ onMounted(async () => {
   transform: translateY(-2px);
 }
 
+/* ===== 暗色模式 ===== */
+html.dark .auth-card {
+  background: #1f1f33;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6),
+              0 8px 24px rgba(0, 0, 0, 0.4);
+}
+html.dark .form-title { color: #e8e8ea; }
+html.dark .form-subtitle,
+html.dark .agreement,
+html.dark .btn-ghost { color: #a8abb2; }
+html.dark .tab-switch { border-bottom-color: #3a3a52; }
+html.dark .tab-switch button { color: #8b8b99; }
+html.dark .tab-switch button.active { color: #60a5fa; }
+html.dark .tab-switch button.active::after { background: #60a5fa; }
+html.dark .field input {
+  color: #e8e8ea;
+  background: #2b2b45;
+  border-color: #3a3a52;
+}
+html.dark .field input:focus {
+  background: #232338;
+  border-color: #60a5fa;
+}
+html.dark .field input::placeholder,
+html.dark .field--with-suffix .field-suffix,
+html.dark .link-muted { color: #8b8b99; }
+html.dark .btn-code {
+  color: #93c5fd;
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(96, 165, 250, 0.4);
+}
+html.dark .btn-code:hover:not(:disabled) { background: rgba(59, 130, 246, 0.25); }
+html.dark .btn-code:disabled {
+  color: #6b6b76;
+  background: #2b2b45;
+  border-color: #3a3a52;
+}
+html.dark .btn-ghost { border-color: #3a3a52; }
+html.dark .btn-ghost:hover { border-color: #4a4a6a; background: #232338; }
+html.dark .agreement a { color: #60a5fa; }
+
 /* ===== 响应式 ===== */
 @media (max-width: 768px) {
   .auth-card { height: auto; min-height: 600px; }

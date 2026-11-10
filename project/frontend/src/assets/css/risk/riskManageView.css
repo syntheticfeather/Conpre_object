@@ -3,7 +3,7 @@
 /* 风险仪表板主容器 */
 .risk-dashboard {
   padding: 24px;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ed 100%);
+
   min-height: 100vh;
 }
 
@@ -24,7 +24,7 @@
 .welcome-title {
   font-size: 24px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-color);
   margin: 0 0 8px 0;
 }
 
@@ -123,7 +123,7 @@
   padding: 24px;
   min-height: 166px;
   height: auto;
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
@@ -160,7 +160,7 @@
 .stat-value {
   font-size: 32px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-color);
   margin-bottom: 8px;
 }
 
@@ -268,7 +268,7 @@
 }
 
 .activity-item:hover {
-  background-color: #f9f9f9;
+  background-color: var(--surface-subtle);
 }
 
 .activity-item.clickable {
@@ -276,12 +276,12 @@
 }
 
 .activity-item.clickable:hover {
-  background-color: #f0f5ff;
+  background-color: var(--hover-bg);
 }
 
 /* 新活动项高亮效果 */
 .activity-item.new-item {
-  background-color: #f0f9ff;
+  background-color: var(--surface-subtle);
   border-left: 3px solid #1890ff;
   animation: pulse 2s infinite;
 }
@@ -384,7 +384,7 @@
 /* 统计数值 */
 .approval-stat .stat-value {
   font-size: 24px;
-  color: #1a1a1a;
+  color: var(--text-color);
   margin: 0;
 }
 
@@ -415,7 +415,7 @@
 
 /* 图表卡片容器 */
 .chart-card {
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -470,7 +470,7 @@
 .chart-title {
   font-size: 16px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-color);
   margin: 0 0 4px 0;
 }
 
@@ -565,7 +565,7 @@
 .legend-value {
   margin-left: auto;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-color);
 }
 
 /* --- 5.3 贷款用途分布 --- */
@@ -594,7 +594,7 @@
 /* 用途进度条容器 */
 .purpose-bar {
   height: 8px;
-  background: #f0f0f0;
+  background: var(--surface-subtle);
   border-radius: 12px;
   overflow: hidden;
 }
@@ -610,7 +610,7 @@
 .purpose-percentage {
   font-size: 14px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-color);
   text-align: right;
 }
 
@@ -733,6 +733,22 @@ html.dark .approval-stat .stat-value {
   color: var(--text-color);
 }
 
+/* 通过/拒绝两个大色块：暗色下用同色相低透明度，文字提亮 */
+html.dark .approval-stat.approved {
+  background: linear-gradient(135deg, rgba(90, 216, 166, 0.18) 0%, rgba(90, 216, 166, 0.08) 100%);
+}
+html.dark .approval-stat.rejected {
+  background: linear-gradient(135deg, rgba(248, 116, 116, 0.18) 0%, rgba(248, 116, 116, 0.08) 100%);
+}
+html.dark .approval-stat.approved .stat-value,
+html.dark .approval-stat.approved .el-icon {
+  color: #7ee2b8;
+}
+html.dark .approval-stat.rejected .stat-value,
+html.dark .approval-stat.rejected .el-icon {
+  color: #ff9d9d;
+}
+
 /* 最新动态列表：深色卡片内的文字与悬停态适配 */
 html.dark .activity-text {
   color: var(--text-color);
@@ -769,7 +785,7 @@ html.dark .purpose-bar {
 .section-title {
   font-size: 18px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-color);
   margin: 0 0 20px 0;
 }
 
@@ -780,7 +796,7 @@ html.dark .purpose-bar {
 }
 
 .chart-item {
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -789,10 +805,27 @@ html.dark .purpose-bar {
 .chart-title {
   font-size: 15px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-color);
   margin: 0 0 16px 0;
 }
 
 .chart-container {
   height: 280px;
+}
+
+/* ===== 暗色模式：彩色状态块换成同色相低透明度 ===== */
+html.dark .activity-item.new-item {
+  background-color: rgba(24, 144, 255, 0.12);
+}
+
+html.dark .connection-status.connected {
+  background-color: rgba(82, 196, 26, 0.14);
+  border-color: rgba(82, 196, 26, 0.4);
+  color: #95de64;
+}
+
+html.dark .connection-status.disconnected {
+  background-color: rgba(250, 84, 28, 0.14);
+  border-color: rgba(250, 84, 28, 0.4);
+  color: #ff9c6e;
 }

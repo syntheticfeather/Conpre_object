@@ -476,7 +476,7 @@ defineExpose({
 /* 空态 CTA 按钮：默认浅蓝底 + 深蓝字（独立 class 定点覆盖，不影响其他 primary 按钮） */
 .empty-state__cta.ant-btn-primary,
 .empty-state__cta.ant-btn-primary:not(:disabled):not(.ant-btn-disabled):focus {
-  color: var(--brand-600);
+  color: var(--brand-600-fg);
   background: var(--brand-100);
   border-color: var(--brand-100);
   box-shadow: 0 2px 6px rgba(147, 143, 143, 0.25);

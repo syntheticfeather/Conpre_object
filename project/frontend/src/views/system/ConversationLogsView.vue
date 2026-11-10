@@ -282,6 +282,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import * as echarts from 'echarts'
 import request from '@/utils/request'
+import { getChartTheme, onChartThemeChange } from '@/utils/chartTheme'
 import LoadingDots from '@/components/shared/LoadingDots.vue'
 import ContentTooltip from '@/components/shared/ContentTooltip.vue'
 
@@ -315,6 +316,7 @@ let toolCallChart = null
 let categoryChart = null
 let trendChart = null
 let responseTimeChart = null
+let unsubscribeChartTheme = null
 
 const getSatisfactionColor = (percentage) => {
   if (percentage >= 80) return '#67c23a'
@@ -322,14 +324,41 @@ const getSatisfactionColor = (percentage) => {
   return '#f56c6c'
 }
 
+// 图表基础配色：canvas 读不到 CSS 变量，统一从 chartTheme 取
+const getChartColors = () => {
+  const t = getChartTheme()
+  return {
+    text: t.text,
+    textSecondary: t.textSecondary,
+    axisLine: t.axisLine,
+    splitLine: t.splitLine,
+    tooltip: {
+      backgroundColor: t.tooltipBg,
+      borderColor: t.tooltipBorder,
+      textStyle: { color: t.tooltipText }
+    }
+  }
+}
+
 const renderToolCallChart = (data) => {
   if (!toolCallChartRef.value) return
   if (!toolCallChart) toolCallChart = echarts.init(toolCallChartRef.value)
+  const c = getChartColors()
   toolCallChart.setOption({
-    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    textStyle: { color: c.text },
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, ...c.tooltip },
     grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
-    xAxis: { type: 'category', data: data.map(d => d.name), axisLabel: { rotate: 30 } },
-    yAxis: { type: 'value' },
+    xAxis: {
+      type: 'category',
+      data: data.map(d => d.name),
+      axisLabel: { color: c.textSecondary, rotate: 30 },
+      axisLine: { lineStyle: { color: c.axisLine } }
+    },
+    yAxis: {
+      type: 'value',
+      axisLabel: { color: c.textSecondary },
+      splitLine: { lineStyle: { color: c.splitLine } }
+    },
     series: [{ type: 'bar', data: data.map(d => d.value), itemStyle: { color: '#409EFF' } }]
   })
 }
@@ -337,8 +366,10 @@ const renderToolCallChart = (data) => {
 const renderCategoryChart = (data) => {
   if (!categoryChartRef.value) return
   if (!categoryChart) categoryChart = echarts.init(categoryChartRef.value)
+  const c = getChartColors()
   categoryChart.setOption({
-    tooltip: { trigger: 'item' },
+    textStyle: { color: c.text },
+    tooltip: { trigger: 'item', ...c.tooltip },
     series: [{
       type: 'pie', radius: ['40%', '70%'],
       data: data.map(d => ({ name: d.name, value: d.value })),
@@ -350,11 +381,23 @@ const renderCategoryChart = (data) => {
 const renderTrendChart = (data) => {
   if (!trendChartRef.value) return
   if (!trendChart) trendChart = echarts.init(trendChartRef.value)
+  const c = getChartColors()
   trendChart.setOption({
-    tooltip: { trigger: 'axis' },
+    textStyle: { color: c.text },
+    tooltip: { trigger: 'axis', ...c.tooltip },
     grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
-    xAxis: { type: 'category', data: data.map(d => d.date), boundaryGap: false },
-    yAxis: { type: 'value' },
+    xAxis: {
+      type: 'category',
+      data: data.map(d => d.date),
+      boundaryGap: false,
+      axisLabel: { color: c.textSecondary },
+      axisLine: { lineStyle: { color: c.axisLine } }
+    },
+    yAxis: {
+      type: 'value',
+      axisLabel: { color: c.textSecondary },
+      splitLine: { lineStyle: { color: c.splitLine } }
+    },
     series: [{
       type: 'line', smooth: true, data: data.map(d => d.count),
       areaStyle: { color: 'rgba(64, 158, 255, 0.15)' },
@@ -366,13 +409,41 @@ const renderTrendChart = (data) => {
 const renderResponseTimeChart = (data) => {
   if (!responseTimeChartRef.value) return
   if (!responseTimeChart) responseTimeChart = echarts.init(responseTimeChartRef.value)
+  const c = getChartColors()
   responseTimeChart.setOption({
-    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    textStyle: { color: c.text },
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, ...c.tooltip },
     grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
-    xAxis: { type: 'category', data: data.map(d => d.range) },
-    yAxis: { type: 'value' },
+    xAxis: {
+      type: 'category',
+      data: data.map(d => d.range),
+      axisLabel: { color: c.textSecondary },
+      axisLine: { lineStyle: { color: c.axisLine } }
+    },
+    yAxis: {
+      type: 'value',
+      axisLabel: { color: c.textSecondary },
+      splitLine: { lineStyle: { color: c.splitLine } }
+    },
     series: [{ type: 'bar', data: data.map(d => d.count), itemStyle: { color: '#67c23a' } }]
   })
+}
+
+// 记住最近一次数据，主题切换时据此重绘，避免重新请求接口
+const latestChartData = ref({})
+
+const renderAllCharts = () => {
+  const c = latestChartData.value
+  renderToolCallChart(c.toolCalls || defaultToolCallData)
+  renderCategoryChart(c.categories || defaultCategoryData)
+  renderTrendChart(c.trend || defaultTrendData)
+  renderResponseTimeChart(c.responseTime || defaultResponseTimeData)
+}
+
+const handleChartThemeChange = () => {
+  ;[toolCallChart, categoryChart, trendChart, responseTimeChart].forEach(c => c?.dispose())
+  toolCallChart = categoryChart = trendChart = responseTimeChart = null
+  renderAllCharts()
 }
 
 const fetchStatsData = async () => {
@@ -388,12 +459,14 @@ const fetchStatsData = async () => {
       topQuestions.value = res.data.topQuestions || []
       unresolvedQuestions.value = res.data.unresolvedQuestions || []
       const c = res.data.charts || {}
+      latestChartData.value = c
       renderToolCallChart(c.toolCalls || defaultToolCallData)
       renderCategoryChart(c.categories || defaultCategoryData)
       renderTrendChart(c.trend || defaultTrendData)
       renderResponseTimeChart(c.responseTime || defaultResponseTimeData)
     }
   } catch {
+    latestChartData.value = {}
     renderToolCallChart(defaultToolCallData)
     renderCategoryChart(defaultCategoryData)
     renderTrendChart(defaultTrendData)
@@ -543,12 +616,14 @@ const handleResize = () => {
 }
 
 onMounted(async () => {
+  unsubscribeChartTheme = onChartThemeChange(handleChartThemeChange)
   await fetchStatsData()
   await fetchLogs()
   window.addEventListener('resize', handleResize)
 })
 
 onUnmounted(() => {
+  unsubscribeChartTheme?.()
   window.removeEventListener('resize', handleResize)
   ;[toolCallChart, categoryChart, trendChart, responseTimeChart].forEach(c => c?.dispose())
 })

@@ -141,7 +141,7 @@ const doSend = async () => {
   width: 350px;
   height: calc(100% - 60px);
   max-height: 680px;
-  background: #fff;
+  background: var(--card-bg);
   display: flex;
   flex-direction: column;
   border-radius: 16px;
@@ -187,7 +187,7 @@ const doSend = async () => {
   flex: 1;
   overflow-y: auto;
   padding: 16px 18px;
-  background: #f5f7fa;
+  background: var(--surface-subtle);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -230,8 +230,8 @@ const doSend = async () => {
 }
 
 .assistant-bubble {
-  background: #fff;
-  color: #333;
+  background: var(--card-bg);
+  color: var(--text-color);
   border-bottom-left-radius: 4px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
@@ -264,8 +264,8 @@ const doSend = async () => {
 }
 
 .assistant-content pre {
-  background: #f6f8fa;
-  border: 1px solid #e4e7ed;
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-color-light);
   border-radius: 8px;
   padding: 12px 16px;
   overflow-x: auto;
@@ -275,7 +275,7 @@ const doSend = async () => {
 .assistant-content pre code {
   background: none;
   padding: 0;
-  color: #333;
+  color: var(--text-color);
 }
 
 .assistant-content a {
@@ -287,8 +287,8 @@ const doSend = async () => {
   border-left: 4px solid #1a73e8;
   padding-left: 12px;
   margin: 8px 0;
-  color: #666;
-  background: #f8f9fa;
+  color: var(--text-secondary);
+  background: var(--surface-subtle);
   border-radius: 0 4px 4px 0;
 }
 
@@ -309,13 +309,13 @@ const doSend = async () => {
 
 .assistant-content th,
 .assistant-content td {
-  border: 1px solid #e4e7ed;
+  border: 1px solid var(--border-color-light);
   padding: 6px 10px;
   text-align: left;
 }
 
 .assistant-content th {
-  background: #f5f7fa;
+  background: var(--surface-subtle);
   font-weight: 600;
 }
 
@@ -325,16 +325,16 @@ const doSend = async () => {
 
 .message-tool {
   font-size: 12px;
-  color: #909399;
+  color: var(--text-muted);
   padding: 4px 10px;
-  background: #e8eaed;
+  background: var(--surface-subtle);
   border-radius: 12px;
   max-width: 90%;
 }
 
 .thinking-indicator {
   text-align: center;
-  color: #909399;
+  color: var(--text-muted);
   font-size: 13px;
   padding: 8px 0;
   animation: pulse 1.2s ease-in-out infinite;
@@ -349,15 +349,15 @@ const doSend = async () => {
   display: flex;
   gap: 8px;
   padding: 12px 14px;
-  border-top: 1px solid #e4e7ed;
-  background: #fff;
+  border-top: 1px solid var(--border-color-light);
+  background: var(--card-bg);
   flex-shrink: 0;
 }
 
 .chat-input {
   flex: 1;
   height: 38px;
-  border: 1px solid #dcdfe6;
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 0 12px;
   font-size: 14px;
@@ -415,13 +415,23 @@ const doSend = async () => {
 .chat-slide-leave-to .chat-panel {
   transform: translateX(100%);
 }
+
+/* ====== 暗色主题覆盖 ====== */
+html.dark .chat-panel {
+  box-shadow: 0 0 0 1px var(--border-color), -4px 0 24px rgba(0, 0, 0, 0.5);
+}
+
+html.dark .assistant-bubble {
+  box-shadow: none;
+  border: 1px solid var(--border-color);
+}
 </style>
 
 <style>
 .assistant-content {
   font-size: 14px;
   line-height: 1.7;
-  color: #333;
+  color: var(--text-color);
 }
 
 .assistant-content h1,
@@ -431,7 +441,7 @@ const doSend = async () => {
   margin: 14px 0 8px;
   font-weight: 600;
   line-height: 1.4;
-  color: #1a1a1a;
+  color: var(--text-color);
 }
 
 .assistant-content h1 { font-size: 17px; }
@@ -501,8 +511,8 @@ const doSend = async () => {
   border-left: 3px solid #1a73e8;
   padding: 6px 12px;
   margin: 8px 0;
-  color: #666;
-  background: #f8f9fa;
+  color: var(--text-secondary);
+  background: var(--surface-subtle);
   border-radius: 0 6px 6px 0;
 }
 
@@ -519,13 +529,13 @@ const doSend = async () => {
 
 .assistant-content th,
 .assistant-content td {
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-color-light);
   padding: 6px 10px;
   text-align: left;
 }
 
 .assistant-content th {
-  background: #f5f5f5;
+  background: var(--surface-subtle);
   font-weight: 600;
 }
 
@@ -540,7 +550,7 @@ const doSend = async () => {
 
 .assistant-content hr {
   border: none;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--border-color-light);
   margin: 12px 0;
 }
 

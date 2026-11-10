@@ -243,7 +243,7 @@ import { loanAPI } from '@/api'
 
 const props = defineProps({
   productId: {
-    type: [String, Number],
+    type: [String, Number, null],
     required: true
   }
 })
@@ -555,8 +555,7 @@ watch(() => props.productId, (newVal) => {
 .product-detail {
   display: flex;
   flex-direction: column;
-  padding: 24px;
-  background: var(--detail-normal-bg);
+  padding: 0 24px;
   min-height: 100vh;
 }
 
@@ -564,7 +563,7 @@ watch(() => props.productId, (newVal) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 24px;
+  padding: 0 24px 0 0;
   border-radius: 12px;
   margin-bottom: 16px;
 }
@@ -578,7 +577,7 @@ watch(() => props.productId, (newVal) => {
 .back-icon {
   font-size: 20px;
   cursor: pointer;
-  color: #606266;
+  color: var(--text-secondary);
   transition: color 0.2s;
 }
 
@@ -602,7 +601,7 @@ watch(() => props.productId, (newVal) => {
   margin: 0;
   font-size: 20px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-color);
 }
 
 .category-tag {
@@ -628,7 +627,7 @@ watch(() => props.productId, (newVal) => {
 }
 
 .status-badge.offline {
-  color: #909399;
+  color: var(--text-muted);
   background: #f4f4f5;
 }
 
@@ -641,7 +640,7 @@ watch(() => props.productId, (newVal) => {
 
 .product-meta {
   font-size: 13px;
-  color: #909399;
+  color: var(--text-muted);
 }
 
 .nav-right {
@@ -714,7 +713,7 @@ watch(() => props.productId, (newVal) => {
 }
 
 .stat-card {
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 16px;
   padding: 24px 20px;
   display: flex;
@@ -762,7 +761,7 @@ watch(() => props.productId, (newVal) => {
 .stat-value {
   font-size: 22px;
   font-weight: 700;
-  color: #303133;
+  color: var(--text-color);
 }
 
 .stat-card.blue .stat-value { color: #409eff; }
@@ -773,17 +772,17 @@ watch(() => props.productId, (newVal) => {
 
 .stat-label {
   font-size: 14px;
-  color: #606266;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
 .stat-sub {
   font-size: 12px;
-  color: #909399;
+  color: var(--text-muted);
 }
 
 .options-section {
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 16px;
   padding: 24px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
@@ -799,7 +798,7 @@ watch(() => props.productId, (newVal) => {
 .section-header h4 {
   margin: 0;
   font-size: 16px;
-  color: #303133;
+  color: var(--text-color);
   font-weight: 600;
 }
 
@@ -823,21 +822,21 @@ watch(() => props.productId, (newVal) => {
 }
 
 .options-table th {
-  background: #f5f7fa;
+  background: var(--surface-subtle);
   padding: 12px;
   text-align: center;
-  border-bottom: 2px solid #ebeef5;
+  border-bottom: 2px solid var(--border-color-light);
   font-weight: 600;
   font-size: 14px;
-  color: #606266;
+  color: var(--text-secondary);
 }
 
 .options-table td {
   padding: 12px;
-  border-bottom: 1px solid #ebeef5;
+  border-bottom: 1px solid var(--border-color-light);
   font-size: 14px;
   text-align: center;
-  color: #303133;
+  color: var(--text-color);
 }
 
 .btn-delete {
@@ -855,7 +854,7 @@ watch(() => props.productId, (newVal) => {
 }
 
 .edit-form {
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 16px;
   padding: 24px;
   margin-top: 20px;
@@ -868,4 +867,29 @@ watch(() => props.productId, (newVal) => {
   gap: 12px;
   margin-top: 16px;
 }
+
+/* ===== 暗色模式：彩色标签与图标底板需要换成低透明度色 ===== */
+html.dark .stat-card,
+html.dark .options-section,
+html.dark .edit-form {
+  box-shadow: none;
+  border: 1px solid var(--border-color);
+}
+
+html.dark .category-tag {
+  color: #60a5fa;
+  background: rgba(64, 158, 255, 0.15);
+}
+html.dark .status-badge.online { background: rgba(103, 194, 58, 0.15); }
+html.dark .status-badge.offline { background: rgba(144, 147, 153, 0.15); }
+
+html.dark .stat-card.blue .stat-icon { background: rgba(64, 158, 255, 0.15); }
+html.dark .stat-card.purple .stat-icon { background: rgba(156, 39, 176, 0.18); }
+html.dark .stat-card.green .stat-icon { background: rgba(76, 175, 80, 0.15); }
+html.dark .stat-card.orange .stat-icon { background: rgba(255, 152, 0, 0.15); }
+html.dark .stat-card.red .stat-icon { background: rgba(244, 67, 54, 0.15); }
+
+/* #9c27b0 在深底对比不足，提亮一档 */
+html.dark .stat-card.purple .stat-icon,
+html.dark .stat-card.purple .stat-value { color: #c084fc; }
 </style>

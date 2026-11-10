@@ -242,6 +242,7 @@ import { ref, onMounted, onUnmounted, reactive, computed, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { userAPI, loanApplicationAPI, notificationAPI } from '@/api'
 import * as echarts from 'echarts'
+import { onChartThemeChange } from '@/utils/chartTheme'
 import { 
   User, 
   Document, 
@@ -458,6 +459,7 @@ const monthlyApprovalRef = ref(null)
 let applicationTrendChart = null
 let riskDistributionChart = null
 let monthlyApprovalChart = null
+let offChartTheme = null
 
 // 窗口大小变化处理
 const handleResize = () => {
@@ -916,7 +918,16 @@ const fetchRiskLevelData = async () => {
       
       // 风险分布环形图
       if (riskDistributionRef.value) {
+        // 主题切换后会再次调用，先销毁旧实例，避免 "already initialized"
+        if (riskDistributionChart) {
+          riskDistributionChart.dispose()
+        }
         riskDistributionChart = echarts.init(riskDistributionRef.value)
+        // canvas 读不到 CSS 变量，按当前主题取色
+        const isDark = document.documentElement.classList.contains('dark')
+        const riskColors = isDark
+          ? { none: '#33507A', low: '#3E9E7C', medium: '#B8860B', high: '#B45454' }
+          : { none: '#C6E5FF', low: '#5AD8A6', medium: '#F6BD16', high: '#F87474' }
         riskDistributionChart.setOption({
           tooltip: {
             trigger: 'item',
@@ -956,7 +967,7 @@ const fetchRiskLevelData = async () => {
               avoidLabelOverlap: false,
               itemStyle: {
                 borderRadius: 10,
-                borderColor: '#fff',
+                borderColor: isDark ? 'transparent' : '#fff',
                 borderWidth: 2
               },
               label: {
@@ -974,10 +985,10 @@ const fetchRiskLevelData = async () => {
                 show: false
               },
               data: [
-                { value: riskLevelCount['0'], name: '无风险', itemStyle: { color: '#C6E5FF' } },
-                { value: riskStats.lowRisk, name: '低风险', itemStyle: { color: '#5AD8A6' } },
-                { value: riskStats.mediumRisk, name: '中风险', itemStyle: { color: '#F6BD16' } },
-                { value: riskStats.highRisk, name: '高风险', itemStyle: { color: '#F87474' } }
+                { value: riskLevelCount['0'], name: '无风险', itemStyle: { color: riskColors.none } },
+                { value: riskStats.lowRisk, name: '低风险', itemStyle: { color: riskColors.low } },
+                { value: riskStats.mediumRisk, name: '中风险', itemStyle: { color: riskColors.medium } },
+                { value: riskStats.highRisk, name: '高风险', itemStyle: { color: riskColors.high } }
               ]
             }
           ]
@@ -1020,6 +1031,11 @@ onMounted(async () => {
 
   window.addEventListener('resize', handleResize)
 
+  // 主题切换时重绘风险分布环形图
+  offChartTheme = onChartThemeChange(() => {
+    if (riskDistributionRef.value) fetchRiskLevelData()
+  })
+
   // 检查是否需要滚动到最新动态区域
   if (route.query.scrollTo === 'activities') {
     await nextTick()
@@ -1036,6 +1052,7 @@ onMounted(async () => {
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
   closeNotificationStream()
+  if (offChartTheme) offChartTheme()
 
   ;[applicationTrendChart, riskDistributionChart, monthlyApprovalChart].forEach(chart => {
     if (chart) {

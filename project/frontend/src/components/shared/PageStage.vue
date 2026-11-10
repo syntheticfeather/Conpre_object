@@ -55,7 +55,6 @@ defineProps({
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: var(--html-bg, #f5f7fa);
   transform: translateX(100%);
   visibility: hidden;
   overflow-y: auto;

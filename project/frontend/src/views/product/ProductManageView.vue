@@ -63,7 +63,7 @@ const goToAddProduct = () => {
 
 <style scoped>
 .loan-management {
-  padding: 20px;
+  padding: 0 20px;
 }
 
 .header {

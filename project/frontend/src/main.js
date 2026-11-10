@@ -10,6 +10,7 @@ import DataVVue3 from '@kjgl77/datav-vue3'
 
 // 样式加载顺序：组件库默认样式在前，项目 base.css 作为最终主题覆盖层在最后
 import 'element-plus/dist/index.css'
+import 'element-plus/theme-chalk/dark/css-vars.css' // Element 官方暗色变量包，跟随 html.dark 生效
 import 'ant-design-vue/dist/reset.css'
 import './assets/css/share/base.css'
 import './assets/iconfont/iconfont.css'

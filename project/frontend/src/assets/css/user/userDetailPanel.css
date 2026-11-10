@@ -1,9 +1,8 @@
 .user-detail-container {
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  padding: 0 20px;
   border-radius: 12px;
-  background: #f5f7fa;
   min-height: 100vh;
 }
 
@@ -24,7 +23,7 @@
 .back-icon {
   font-size: 20px;
   cursor: pointer;
-  color: #606266;
+  color: var(--text-secondary);
   transition: color 0.2s;
 }
 
@@ -42,12 +41,12 @@
   margin: 0;
   font-size: 20px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-color);
 }
 
 .user-id {
   font-size: 12px;
-  color: #909399;
+  color: var(--text-muted);
 }
 
 .header-right {
@@ -62,7 +61,7 @@
 }
 
 .basic-info-card {
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 16px;
   padding: 24px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
@@ -73,7 +72,7 @@
   align-items: center;
   gap: 24px;
   padding-bottom: 24px;
-  border-bottom: 1px solid #ebeef5;
+  border-bottom: 1px solid var(--border-color-light);
 }
 
 .avatar-section {
@@ -101,7 +100,7 @@
   height: 14px;
   border-radius: 50%;
   background: #909399;
-  border: 2px solid #fff;
+  border: 2px solid var(--card-bg);
 }
 
 .online-dot.online {
@@ -122,7 +121,7 @@
 .user-name {
   font-size: 20px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-color);
 }
 
 .contact-row {
@@ -135,7 +134,7 @@
   align-items: center;
   gap: 6px;
   font-size: 14px;
-  color: #909399;
+  color: var(--text-muted);
 }
 
 .credit-score-card {
@@ -149,7 +148,7 @@
 
 .score-label {
   font-size: 12px;
-  color: #909399;
+  color: var(--text-muted);
   margin-bottom: 8px;
 }
 
@@ -199,7 +198,7 @@
 .stat-value {
   font-size: 20px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-color);
   margin-bottom: 4px;
 }
 
@@ -216,17 +215,17 @@
 }
 
 .stat-value.date {
-  color: #909399;
+  color: var(--text-muted);
   font-size: 16px;
 }
 
 .stat-label {
   font-size: 12px;
-  color: #909399;
+  color: var(--text-muted);
 }
 
 .tabs-section {
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 16px;
   padding: 20px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
@@ -255,10 +254,10 @@
 .left-panel,
 .right-panel {
   flex: 1;
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 12px;
   padding: 20px;
-  border: 1px solid #ebeef5;
+  border: 1px solid var(--border-color-light);
 }
 
 .panel-title {
@@ -267,10 +266,10 @@
   gap: 8px;
   font-size: 15px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-color);
   margin-bottom: 20px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #ebeef5;
+  border-bottom: 1px solid var(--border-color-light);
 }
 
 .info-list {
@@ -284,7 +283,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 14px 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--border-color-light);
 }
 
 .info-row:last-child {
@@ -297,7 +296,7 @@
 }
 
 .info-row.clickable:hover {
-  background-color: #f5f7fa;
+  background-color: var(--hover-bg);
   padding-left: 8px;
   padding-right: 8px;
   margin-left: -8px;
@@ -307,12 +306,12 @@
 
 .info-label {
   font-size: 13px;
-  color: #909399;
+  color: var(--text-muted);
 }
 
 .info-value {
   font-size: 14px;
-  color: #303133;
+  color: var(--text-color);
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -340,10 +339,10 @@
 
 .detail-subtitle {
   font-size: 15px;
-  color: #606266;
+  color: var(--text-secondary);
   margin: 0 0 16px 0;
   padding-bottom: 12px;
-  border-bottom: 1px solid #ebeef5;
+  border-bottom: 1px solid var(--border-color-light);
   font-weight: 500;
 }
 
@@ -358,25 +357,25 @@
 }
 
 .data-table thead th {
-  background: #f5f7fa;
+  background: var(--surface-subtle);
   padding: 12px;
   text-align: left;
-  border-bottom: 2px solid #ebeef5;
+  border-bottom: 2px solid var(--border-color-light);
   font-weight: 600;
-  color: #606266;
+  color: var(--text-secondary);
   white-space: nowrap;
 }
 
 .data-table tbody td {
   padding: 10px 12px;
-  border-bottom: 1px solid #f0f0f0;
-  color: #606266;
+  border-bottom: 1px solid var(--border-color-light);
+  color: var(--text-secondary);
   white-space: nowrap;
 }
 
 .no-data-cell {
   text-align: center;
-  color: #909399;
+  color: var(--text-muted);
   padding: 24px;
 }
 
@@ -396,19 +395,19 @@
   justify-content: space-between;
   align-items: center;
   padding: 14px 16px;
-  background: #f5f7fa;
+  background: var(--surface-subtle);
   border-radius: 8px;
 }
 
 .metric-label {
   font-size: 13px;
-  color: #909399;
+  color: var(--text-muted);
 }
 
 .metric-value {
   font-size: 14px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-color);
 }
 
 .metric-value.low-risk {
@@ -424,7 +423,7 @@
 }
 
 .metric-value.amount {
-  color: #303133;
+  color: var(--text-color);
 }
 
 .risk-alert-box {
@@ -459,7 +458,7 @@
 
 .alert-desc {
   font-size: 13px;
-  color: #909399;
+  color: var(--text-muted);
 }
 
 .loading-state {
@@ -468,7 +467,7 @@
   justify-content: center;
   gap: 12px;
   padding: 60px;
-  color: #909399;
+  color: var(--text-muted);
   font-size: 14px;
 }
 
@@ -484,6 +483,26 @@
 .no-data {
   text-align: center;
   padding: 80px;
-  color: #909399;
+  color: var(--text-muted);
   font-size: 14px;
+}
+
+/* ===== 暗色模式：需要换色相/透明度的局部 ===== */
+/* 暗色下卡片与页面底色相同，用边框代替阴影表达层级 */
+html.dark .basic-info-card,
+html.dark .tabs-section {
+  box-shadow: none;
+  border: 1px solid var(--border-color);
+}
+
+html.dark .credit-score-card {
+  background: linear-gradient(135deg, #232347 0%, #1f2a52 100%);
+}
+
+html.dark .risk-alert-box {
+  background: rgba(103, 194, 58, 0.12);
+}
+
+html.dark .error-state {
+  background: rgba(245, 108, 108, 0.12);
 }
